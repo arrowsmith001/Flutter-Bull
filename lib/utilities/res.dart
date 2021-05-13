@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:math' as math;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'extensions.dart';
+import '../extensions.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart';
 
-import 'gen/assets.gen.dart';
+import '../gen/assets.gen.dart';
 
 class ResourceManager{
 
@@ -19,6 +20,11 @@ class ResourceManager{
 
   Stream<double> loadAllResources() async*{
 
+    // STRINGS
+    fsData.addField('strings', 'privacy_policy', 'content');
+    await fsData.fetch();
+
+    // IMAGES
     List<AssetGenImage> desiredUiImages = [];
     desiredUiImages.add(Assets.images.transparentBubble);
     desiredUiImages.add(Assets.images.transparentBullImg);
@@ -50,6 +56,7 @@ class ResourceManager{
   }
 
   var uiImageMap = new Map<String, ui.Image>();
+  FirestoreData fsData = new FirestoreData();
 
   ui.Image getUiImage(var v){
     try{
@@ -71,10 +78,49 @@ class UiImageData{
   String path;
 }
 
+class FirestoreData {
+
+  var firestore = FirebaseFirestore.instance;
+  FirestoreData();
+
+  void addField(String collectionName, String docName, String field, [dynamic value]){
+    firestorePathToValues.addAll(
+        {[collectionName, docName].join('/') : {}
+    });
+  }
+
+  dynamic getValue(String path, [String field = 'content']){
+    if(!firestorePathToValues.containsKey(path)) throw new Exception('Firestore path not found. Did you import it in ResourceManager?');
+    var value = firestorePathToValues[path]![field];
+    if(value == null) throw new Exception('Firestore value not found. Did you import it in ResourceManager?');
+    return value;
+  }
+
+  Future<void> fetch() async{
+    for(String path in firestorePathToValues.keys)
+      {
+        List<String> pathSplit = path.split('/');
+        String collectionName = pathSplit[0];
+        String docName = pathSplit[1];
+
+        var snap = await firestore.collection(collectionName).doc(docName).get();
+        dynamic value = snap.data();
+        firestorePathToValues[path] = value;
+      }
+  }
+
+  Map<String,Map<String,dynamic>> firestorePathToValues = {};
+}
+
 Future<UiImageData> loadUiImage(String assetPath) async {
   final data = await rootBundle.load(assetPath);
   final list = Uint8List.view(data.buffer);
   final completer = Completer<ui.Image>();
   ui.decodeImageFromList(list, completer.complete);
   return new UiImageData(await completer.future, assetPath);
+}
+
+
+class MyFunctions{
+  static getRectFromUiImage(ui.Image image) => new Rect.fromLTRB(0,0,image.width.toDouble(),image.height.toDouble());
 }

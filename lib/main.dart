@@ -2,170 +2,167 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:math' as math;
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import 'package:flutter_bull/pages/1MainMenu/background.dart';
-import 'package:flutter_bull/pages/1MainMenu/title.dart';
+import 'package:flutter_bull/pages/1MainMenu/_mainMenu.dart';
 import 'package:flutter_bull/particles.dart';
-import 'package:flutter_bull/resources.dart';
-import 'package:flutter_bull/utilities.dart';
+import 'package:flutter_bull/utilities/localRes.dart';
+import 'package:flutter_bull/utilities/res.dart';
+import 'package:flutter_bull/utilities/prefs.dart';
+import 'package:flutter_bull/utilities/profile.dart';
+import 'package:multiple_stream_builder/multiple_stream_builder.dart';
+import 'package:prefs/prefs.dart';
+import 'package:provider/provider.dart';
 import 'extensions.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
 
-   @override
+
+    @override
     Widget build(BuildContext context) {
 
-     ResourceManager rm = new ResourceManager();
-     return StreamBuilder<double>(
-         stream: rm.loadAllResources(),
-         builder: (ctx, snap){
 
-           if(!snap.hasData || snap.data != 1.0) {
-
-             double value = snap.data??0;
-
-             int progress = (100 * value).round();
-             return Center(
-                   child: Column(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     children: [
-                       Column(
-                         mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                           CircularProgressIndicator(value: snap.data??0),
-                           Text(progress.toString() + "%", textDirection: TextDirection.ltr)
-                         ],
-                       ).ExpandedExt()
-                     ],
-                   ),
-                 );
-           }
-
-           return CupertinoApp(
-             title: 'Flutter Bull',
-             theme: CupertinoThemeData(
-                 primaryColor: AppColors.MainColor
-             ),
-             home: MainMenu(),
-           );
-
-         });
-
-  }
-}
+     final Future<FirebaseApp> _fbInit = Firebase.initializeApp();
 
 
-class MainMenu extends StatefulWidget {
+      var loading = Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                //Text(snaps.item1 == null || snaps.item1.connectionState != ConnectionState.done ? "Setting up Firebase..." : "Firebase Setup", textDirection: TextDirection.ltr),
+                //Text(snaps.item2 == null ? "Loading Profile..." : "Profile loaded", textDirection: TextDirection.ltr),
+                //Text("Loading resources..." + snaps.item3.data.toString(), textDirection: TextDirection.ltr),
+              ],
+            ).ExpandedExt()
+          ],
+        ),
+      );
 
-  @override
-  _MainMenuState createState() => _MainMenuState();
-}
+      return FutureBuilder(
+        future: _fbInit,
+        builder: (context, snap){
 
-class _MainMenuState extends State<MainMenu> {
+          if(snap.hasData && !snap.hasError && snap.connectionState == ConnectionState.done)
+            {
+              ResourceManager resMan = new ResourceManager();
+              ProfileManager proMan = new ProfileManager();
+              PrefsManager prefMan = new PrefsManager();
 
-  @override
-  Widget build(BuildContext context) {
+              final Stream<bool> loadProfile = proMan.loadProfileFromPreferences().asStream();
+              final Stream<double> loadResources = resMan.loadAllResources();
+              final Stream prefs = prefMan.initializePrefs().asStream();
 
+              return StreamBuilder3<bool?, double?, dynamic>(
+                  streams: Tuple3(loadProfile, loadResources, prefs),
+                  initialData: Tuple3(null, 0, null),
+                  builder: (context, snaps){
 
-    var primaryColor = CupertinoTheme.of(context).primaryColor;
-    var fadedPrimaryColor = ui.Color.lerp(primaryColor, Colors.white, 0.2)!;
-    var darkenedPrimaryColor = ui.Color.lerp(primaryColor, Colors.black, 0.2)!;
+                    bool stream2Done = snaps.item1 != null;
+                    bool stream3Done = snaps.item2.data == 1.0;
+                    bool stream4Done = snaps.item3 != null;
 
-    var offset = 0.04;
-    var backgroundDecoration = new BoxDecoration(
-        gradient: LinearGradient(
-            colors: [
-              fadedPrimaryColor,
-              primaryColor,
-              primaryColor,
-              fadedPrimaryColor
-            ],
-            stops: [
-              0, offset, 1-offset, 1
-            ]));
+                    if(stream2Done && stream3Done && stream4Done)
+                    {
+                      return CupertinoApp(
+                        title: 'Utter Bull',
+                        theme: CupertinoThemeData(
+                            primaryColor: AppColors.MainColor
+                        ),
+                        home: MainMenu(),
+                      );
+                    }
 
-    // Button vars
-    var buttonIconSize = 65.0;
-    var minFontSize = 10.0;
-    var fontSize = 30.0;
-
-    var CreateGameButton = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        AutoSizeText("CREATE GAME", minFontSize: minFontSize, maxLines: 2, textAlign: TextAlign.end, style: AppStyles.MainMenuButtonTextStyle(fontSize)).FlexibleExt(),
-        Assets.images.bullAddGlowBrown.image().SizedBoxExt(height: buttonIconSize, width: buttonIconSize).PaddingExt(new EdgeInsets.fromLTRB(15,5,15,5)).FlexibleExt()
-      ],
-    );
-
-    var JoinGameButton = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        AutoSizeText("JOIN GAME", minFontSize: minFontSize, maxLines: 2, textAlign: TextAlign.end, style: AppStyles.MainMenuButtonTextStyle(fontSize)).FlexibleExt(),
-        Assets.images.arrowsGlowBrownEdit.image().SizedBoxExt(height: buttonIconSize, width: buttonIconSize).PaddingExt(new EdgeInsets.fromLTRB(15,5,15,5)).FlexibleExt()
-      ],
-    );
-
-    return SafeArea(
-      child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Stack(
-            children: [
-
-              MainMenuBackgroundEffect(),
-
-              Column(
-                children: [
-
-                  Column(
-
-                  ).FlexibleExt(1),
-
-                  Column(
-                    children: [
-                      UtterBullTitle()
-                    ]
-
-                  ).FlexibleExt(2),
-
-                  Row(
-                    children: [
-                      Column(
-
-                        mainAxisAlignment: MainAxisAlignment.end,
-
-                        children: [
-
-                          CreateGameButton,
-
-                          JoinGameButton,
-
-                        ],
-
-                      ).PaddingExt(new EdgeInsets.fromLTRB(0,0,0,25)).FlexibleExt()
-                    ],
-                  ).ExpandedExt()
-
-                ],
-              )
-            ],
-          )
+                    return loading;
+                  });
+            }
+          return loading;
+        },
+      );
 
 
-      ).BoxDecorationContainerExt(backgroundDecoration),
-    );
+
+
+
+     // return FutureBuilder(
+     //   //future: Future.wait([_fbInit, loadProfile]),
+     //     builder: (context, AsyncSnapshot<List<dynamic>> snap)
+     //   {
+     //
+     //   if(snap.data?[0].hasError?? false){
+     //     print("Firebase error");
+     //     return Text("Firebase error", textDirection: TextDirection.ltr);
+     //   }
+     //
+     //   if(snap.data?[0].connectionState == ConnectionState.done)
+     //     {
+     //       return StreamBuilder<double>(
+     //           stream: loadResources,
+     //           builder: (ctx, snap){
+     //
+     //             if(!snap.hasData || snap.data != 1.0) {
+     //
+     //               double value = snap.data??0;
+     //
+     //               int progress = (100 * value).round();
+     //               return Center(
+     //                 child: Column(
+     //                   mainAxisAlignment: MainAxisAlignment.center,
+     //                   children: [
+     //                     Column(
+     //                       mainAxisAlignment: MainAxisAlignment.center,
+     //                       children: [
+     //                         CircularProgressIndicator(value: snap.data??0),
+     //                         Text(progress.toString() + "%", textDirection: TextDirection.ltr)
+     //                       ],
+     //                     ).ExpandedExt()
+     //                   ],
+     //                 ),
+     //               );
+     //             }
+     //
+     //             //return app;
+     //
+     //           });
+     //     }
+     //
+     //     return Center(
+     //       child: Column(
+     //         mainAxisAlignment: MainAxisAlignment.center,
+     //         children: [
+     //           Column(
+     //             mainAxisAlignment: MainAxisAlignment.center,
+     //             children: [
+     //               CircularProgressIndicator(),
+     //               Text("Setting up Firebase...", textDirection: TextDirection.ltr)
+     //             ],
+     //           ).ExpandedExt()
+     //         ],
+     //       ),
+     //     );
+     //
+     // });
 
   }
 }
+
+
+
+
 
 
 

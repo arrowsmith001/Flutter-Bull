@@ -97,6 +97,7 @@ class $AssetsImagesGen {
   AssetGenImage get phone => const AssetGenImage('assets/images/phone.png');
   AssetGenImage get plusSign =>
       const AssetGenImage('assets/images/plus_sign.PNG');
+  AssetGenImage get shutter => const AssetGenImage('assets/images/shutter.png');
   AssetGenImage get soundBg =>
       const AssetGenImage('assets/images/sound_bg.png');
   AssetGenImage get soundOff =>

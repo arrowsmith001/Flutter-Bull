@@ -9,9 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/particles.dart';
-import 'package:flutter_bull/resources.dart';
-import 'package:flutter_bull/utilities.dart';
+import 'package:flutter_bull/utilities/localRes.dart';
+import 'package:flutter_bull/utilities/res.dart';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 import 'package:image/image.dart';
 import '../../widgets.dart';
 
@@ -127,18 +128,25 @@ class Bubble extends ImageParticle{
 
   final double baseSpeed = 3;
 
+  late double scale;
+
   late double x;
   late double y;
   late double desiredWidth;
   late double desiredHeight;
   late double ySpeed;
   double drift = 0.4;
-  double driftOffset = Random().nextDouble() * 2 * 3.14;
+  double driftOffset = Random().nextDouble() * 2 * math.pi;
 
-  Bubble(this.image, this.screenSize, {double scale = 1.0}){
+  late ui.Color blendColor;
+  late ui.Color color;
+
+  Bubble(this.image, this.screenSize, {this.scale = 1.0}){
     this.desiredWidth = image.width * scale;
     this.desiredHeight = image.height * scale;
     ySpeed = baseSpeed * scale;
+
+    blendColor = new ui.Color.fromARGB(155, getRandomInt(255), getRandomInt(255), getRandomInt(255));
   }
 
   ui.Image image;
@@ -161,13 +169,16 @@ class Bubble extends ImageParticle{
     
   }
 
+  getRandomInt(int max) => Random().nextInt(max);
+
   @override
   void draw(Canvas canvas, Size size) {
 
-
     canvas.drawImageRect(image, getImageRect(),
         new Rect.fromLTRB(x, y, x+desiredWidth, y+desiredHeight),
-        new Paint()..color = Colors.white..invertColors=true); //Offset(size.width/i, size.height/i)
+        new Paint()
+          ..colorFilter = ColorFilter.mode(blendColor, ui.BlendMode.srcATop)
+          ..invertColors=false); //Offset(size.width/i, size.height/i)
 
   }
 

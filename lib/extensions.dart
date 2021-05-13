@@ -57,5 +57,13 @@ extension WidgetModifier on Widget {
     );
   }
 
+  // Wraps widget in a Container widget with a Box Decoration
+  Widget ScaleExt(double value) {
+    return Transform.scale(
+      scale: value,
+      child: this,
+    );
+  }
+
 
 }
