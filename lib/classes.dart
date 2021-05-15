@@ -33,6 +33,29 @@ abstract class SingleImageCustomPainterAlwaysRepaint extends CustomPainter {
 
 }
 
+class MyBorderRadii {
+
+  static const DIALOG_BORDER_RADIUS = 10.0;
+  static const BorderRadius BOTTOM_ONLY = BorderRadius.only(
+      bottomLeft: Radius.circular(DIALOG_BORDER_RADIUS),
+      bottomRight: Radius.circular(DIALOG_BORDER_RADIUS));
+
+  static const BorderRadius TOP_ONLY = BorderRadius.only(
+      topLeft: Radius.circular(DIALOG_BORDER_RADIUS),
+      topRight: Radius.circular(DIALOG_BORDER_RADIUS));
+
+  static const BorderRadius ALL = BorderRadius.all(Radius.circular(DIALOG_BORDER_RADIUS));
+
+  static const BorderRadius NONE = BorderRadius.zero;
+
+  static const BorderRadius BOTTOM_LEFT_ONLY = BorderRadius.only(
+      bottomLeft: Radius.circular(DIALOG_BORDER_RADIUS));
+
+  static const BorderRadius BOTTOM_RIGHT_ONLY = BorderRadius.only(
+      bottomRight: Radius.circular(DIALOG_BORDER_RADIUS));
+}
+
+
 class Validators{
 
   static String? EmailValidation<T>(T value){

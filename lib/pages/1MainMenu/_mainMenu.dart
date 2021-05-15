@@ -44,13 +44,13 @@ class MainMenu extends StatefulWidget {
   _MainMenuState createState() => _MainMenuState();
 }
 
-class _MainMenuState extends State<MainMenu> with SingleTickerProviderStateMixin {
+class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
-  late AnimationController _animController;
-  late Animation<double> dialogPopAnim, anim1, anim2, anim3, anim4;
+  late AnimationController _animController, _animController2, _animController3;
+  late Animation<double> dialogPopAnim, anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8; // _animController1
+  late Animation<double> anim1_2; // _animController2
   final Interpolator overshootInterp = OvershootInterpolator();
   final Interpolator hardOvershootInterp = OvershootInterpolator(5);
-
 
   @override
   void initState() {
@@ -60,11 +60,26 @@ class _MainMenuState extends State<MainMenu> with SingleTickerProviderStateMixin
     _animController.duration = Duration(milliseconds: 5000);
     dialogPopAnim = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(0, 0.1)));
 
-    double intervalValue = 0.1, staggerValue = 0.03;
+    _animController2 = new AnimationController(vsync: this);
+    _animController2.addListener(() {setState(() { });});
+    _animController2.duration = Duration(milliseconds: 500);
+    anim1_2 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController2, curve: Interval(0, 1)));
+
+    // Make cyclic
+    _animController3 = new AnimationController(vsync: this);
+    _animController3.addListener(() {setState(() { });});
+    _animController3.duration = Duration(milliseconds: 3000);
+    _animController3.repeat(reverse: true);
+
+    double intervalValue = 0.1, staggerValue = 0.01;
     anim1 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue, staggerValue + intervalValue)));
     anim2 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*2, staggerValue*2 + intervalValue)));
     anim3 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*3, staggerValue*3 + intervalValue)));
     anim4 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*4, staggerValue*4 + intervalValue)));
+    anim5 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*5, staggerValue*5 + intervalValue)));
+    anim6 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*6, staggerValue*6 + intervalValue)));
+    anim7 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*7, staggerValue*7 + intervalValue)));
+    anim8 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*8, staggerValue*8 + intervalValue)));
     _animController.forward();
 
     this._profileImage = widget.proMan.profile.image;
@@ -88,6 +103,8 @@ class _MainMenuState extends State<MainMenu> with SingleTickerProviderStateMixin
   @override
   void dispose(){
     _animController.dispose();
+    _animController2.dispose();
+    _animController3.dispose();
     _textController.dispose();
     super.dispose();
   }
@@ -161,242 +178,250 @@ class _MainMenuState extends State<MainMenu> with SingleTickerProviderStateMixin
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _animController.forward(from: 0);
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     // SETUP
     bool anySetupRequired = !privacyPolicy || !profileSetup || !tutorialSetup;
 
-    Widget privacyPolicyDialog = Center(
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.85),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          child: Column(
-            children: [
+    double dialogBorderRadius = MyCupertinoStyleDialog.DIALOG_BORDER_RADIUS;
 
-              Text('Utter Bull', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold)).PaddingExt(EdgeInsets.fromLTRB(0,20,0,0)),
-              Text('Privacy Policy', style: TextStyle(fontSize: 24)).PaddingExt(EdgeInsets.fromLTRB(0,5,0,10)),
+    Widget privacyPolicyDialog = MyCupertinoStyleDialogWithButtons(
+       columnChildren: [
+          MyCupertinoStyleBox(
+            borderRadius: MyBorderRadii.TOP_ONLY,
 
-              SingleChildScrollView(
-                child: Text(widget.resMan.fsData.getValue('strings/privacy_policy')),
-              ).PaddingExt(EdgeInsets.symmetric(horizontal: 20, vertical: 10)).ExpandedExt(),
+              content:
+          Column(children: [
 
-              Row(
-                children: [
-                  CupertinoButton(
-                   // color: Color.fromARGB(82, 238, 225, 225),
-                    onPressed: () => onPrivacyPolicyAcceptedPressed(true),
-                    child: Text('Accept', style: TextStyle(color: Colors.black, fontFamily: FontFamily.lapsusProBold)),)
-                  .PaddingExt(EdgeInsets.symmetric(horizontal: 12))
-                      .ExpandedExt()
-                ],
-              ),
+            Text('Utter Bull', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold)).PaddingExt(EdgeInsets.fromLTRB(0,20,0,0)),
+            Text('Privacy Policy', style: TextStyle(fontSize: 24)).PaddingExt(EdgeInsets.fromLTRB(0,5,0,10)),
+          ],)),
 
-              Row(
-                children: [
-                  CupertinoButton(
-                    onPressed: () => onPrivacyPolicyAcceptedPressed(false),
-                    child: Text('Reject', style: TextStyle(color: Colors.red, fontFamily: FontFamily.lapsusProBold)),)
-                      .PaddingExt(EdgeInsets.symmetric(vertical: 8))
-                      .ExpandedExt()
-                ],
-              ),
-            ],
+        SingleChildScrollView(
+          child: Text(widget.resMan.fsData.getValue('strings/privacy_policy')),
+        ).PaddingExt(EdgeInsets.symmetric(horizontal: 20, vertical: 10)).ExpandedExt(),
+
+      ],
+      flexList: [1, 2],
+      buttons: [
+
+            MyCupertinoStyleButton(
+              height: 100,
+                glowPosition: Alignment.bottomLeft,
+              value: _animController3.value,
+                color: Color.fromARGB(255, 255, 206, 206),
+                borderRadius: MyBorderRadii.BOTTOM_LEFT_ONLY,
+                text: AutoSizeText('I\'m not okay with that', textAlign: TextAlign.center,
+                   minFontSize: 16, style: TextStyle(color: Colors.red, fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
+                onPressed: () => onPrivacyPolicyAcceptedPressed(false)),
+
+        MyCupertinoStyleButton(
+            height: 100,
+          glowPosition: Alignment.bottomRight,
+            value: _animController3.value,
+            color: Color.fromARGB(255, 211, 243, 255),
+            borderRadius: MyBorderRadii.BOTTOM_RIGHT_ONLY,
+            text: AutoSizeText('I\'m cool with that', textAlign: TextAlign.center,
+                minFontSize: 16, style: TextStyle(color: Color.fromARGB(
+                    255, 27, 47, 163), fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
+            onPressed: () => onPrivacyPolicyAcceptedPressed(true)),
+
+
+      ]
+    );
+
+    Widget profileSetupDialog = MyCupertinoStyleDialog(
+        [
+      Column(
+        children: [
+
+          MyCupertinoStyleBox(
+            borderRadius: MyBorderRadii.TOP_ONLY,
+              content: Text('Set up your profile', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold))
+                  .PaddingExt(EdgeInsets.fromLTRB(0,15,0,10))
+                  .ScaleExt(hardOvershootInterp.getValue(anim1.value))
           ),
-        )
-    ).PaddingExt(EdgeInsets.all(40));
 
-    Widget profileSetupDialog = Center(
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.85),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          child: Column(
+          Text('Just a photo and name, so your friends recognise you!', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,)
+              .PaddingExt(EdgeInsets.fromLTRB(0,20,0,0))
+              .ScaleExt(hardOvershootInterp.getValue(anim2.value)),
+
+        ],
+      ),
+
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text('Photo', style: TextStyle(
+                  fontSize: 24,
+                  fontFamily: FontFamily.lapsusProBold,
+                  fontWeight: FontWeight.bold)),
+              _profileImage == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
+            ],
+          ).PaddingExt(EdgeInsets.symmetric(vertical: 12))
+              .ScaleExt(hardOvershootInterp.getValue(anim3.value))
+              .FlexibleExt(),
 
-              Column(
-                children: [
-                  Text('Set up your profile', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold)).PaddingExt(EdgeInsets.fromLTRB(0,20,0,0)),
+          GestureDetector(
+            onTap: () { profileImageSelection(ImageSource.camera); },
+            child: Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  //color: Color.fromARGB(101, 229, 220, 220),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Color.lerp(Colors.blueAccent, Colors.white, _animController3.value)!, width: 3),
+                    image: DecorationImage(
+                      fit: BoxFit.scaleDown,
+                      image: _profileImage == null ? Assets.images.shutter : _profileImage!.image,
+                    ))),
+          ).ScaleExt(hardOvershootInterp.getValue(anim4.value)),
 
-                  Text('Just a photo and name, so your friends recognise you!', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,).PaddingExt(EdgeInsets.fromLTRB(0,20,0,0)),
-
-                ],
-              ).ScaleExt(hardOvershootInterp.getValue(anim1.value)),
-
-              Column(
+          CupertinoButton(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Photo', style: TextStyle(
-                          fontSize: 24,
-                          fontFamily: FontFamily.lapsusProBold,
-                          fontWeight: FontWeight.bold)),
-                      _profileImage == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
-                    ],
-                  ).PaddingExt(EdgeInsets.symmetric(vertical: 12)).FlexibleExt(),
-
-                  GestureDetector(
-                    onTap: () { profileImageSelection(ImageSource.camera); },
-                    child: Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                            //color: Color.fromARGB(101, 229, 220, 220),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.blueAccent, width: 3),
-                            image: DecorationImage(
-                              fit: BoxFit.scaleDown,
-                              image: _profileImage == null ? Assets.images.shutter : _profileImage!.image,
-                            ))),
-                  ),
-
-                  CupertinoButton(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.image),
-                          Text('Choose from gallery', style: TextStyle(color: Colors.black))
-                        ],
-                      ),
-                      onPressed: (){ profileImageSelection(ImageSource.gallery); })
-                ],
-              )
-                  .ScaleExt(hardOvershootInterp.getValue(anim2.value))
-                  .FlexibleExt(3),
-
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Name', style: TextStyle(
-                          fontSize: 24,
-                          fontFamily: FontFamily.lapsusProBold,
-                          fontWeight: FontWeight.bold)),
-                      _profileName == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
-                    ],
-                  ).PaddingExt(EdgeInsets.symmetric(vertical: 12)).FlexibleExt(),
-
-                  CupertinoTextField(
-                    placeholder: 'Enter your name here',
-                    placeholderStyle: TextStyle(fontFamily: FontFamily.lapsusProBold,color: Colors.grey),
-                    controller: _textController,
-                    padding: EdgeInsets.all(18),)
-                      .PaddingExt(EdgeInsets.symmetric(horizontal: 20))
-                ],
-              )
-                  .ScaleExt(hardOvershootInterp.getValue(anim3.value))
-                  .FlexibleExt(2),
-
-              Row(
-                children: [
-                  CupertinoButton(
-                    onPressed: () => onProfileSetupPressed(),
-                    child: Text('Finish',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontFamily: FontFamily.lapsusProBold,
-                            color: _profileImage == null || _profileName == null
-                                ? Colors.grey : Colors.blueAccent)),).ExpandedExt()
-                ],
-              )
-                  .ScaleExt(hardOvershootInterp.getValue(anim4.value)),
-            ],
-          ),
-        )
-    ).PaddingExt(EdgeInsets.all(40));
-
-
-    Widget tutorialSetupDialog = Center(
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.85),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          child: Column(
-            children: [
-
-              Column(
-                children: [
-                  Text('Welcome to Utter Bull!!', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold)).PaddingExt(EdgeInsets.fromLTRB(0,20,0,0)),
-
-                ],
-              ).ScaleExt(hardOvershootInterp.getValue(anim1.value)),
-
-              SizedBox(child: Assets.images.bullIcon.image(), height: 150),
-
-              Column(
-                children: [
-                  Text("This is a social game to play with a few friends. Make sure you\'re all in the same room or video call.",
-                    textAlign: TextAlign.center,).PaddingExt(EdgeInsets.symmetric(vertical: 12)),
-
-                  RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                          style: TextStyle(color: Colors.black),
-                          children:
-                          [
-                            TextSpan(text: 'If you\'ve never played Utter Bull, it is '),
-                            TextSpan(text: 'highly', style: TextStyle(fontWeight: FontWeight.bold)),
-                            TextSpan(text: ' recommended that you '),
-                            TextSpan(text: 'enable tutorial hints', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
-                            TextSpan(text: ' throughout your first game. You can disable these any time.')
-                          ])).PaddingExt(EdgeInsets.symmetric(vertical: 12)),
-
-                  RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                          style: TextStyle(color: Colors.black),
-                          children:
-                          [
-                            TextSpan(text: "All tutorial info can be identified by...")
-                          ])).PaddingExt(EdgeInsets.symmetric(vertical: 12)),
-                ]
-              ).PaddingExt(EdgeInsets.symmetric(horizontal: 16)),
-
-              Container().ExpandedExt(),
-
-              Row(
-                children: [
-                  CupertinoButton(
-                    color: Color.fromARGB(75, 213, 226, 255),
-                    padding: EdgeInsets.all(16),
-                    onPressed: () => onTutorialSetupPressed(true),
-                    child: Text('Yes! Enable all the tutorial info',
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontFamily: FontFamily.lapsusProBold,
-                            color: _profileImage == null || _profileName == null
-                                ? Colors.grey : Colors.blueAccent)),)
-                      .PaddingExt(EdgeInsets.symmetric(horizontal: 8)).ExpandedExt()
+                  Icon(Icons.image),
+                  Text('Choose from gallery', style: TextStyle(color: Colors.black)).PaddingExt(EdgeInsets.symmetric(horizontal: 8))
                 ],
               ),
+              onPressed: (){ profileImageSelection(ImageSource.gallery); }
+          ).ScaleExt(hardOvershootInterp.getValue(anim5.value))
+        ],
+      )
+          .FlexibleExt(4),
 
-              Row(
-                children: [
-                  CupertinoButton(
-                    color: Color.fromARGB(55, 255, 186, 156),
-                    padding: EdgeInsets.all(16),
-                    onPressed: () => onTutorialSetupPressed(false),
-                    child: Text('No tutorial info, I\'m already a pro',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: FontFamily.lapsusProBold,
-                            color: Colors.deepOrangeAccent)),)
-                      .PaddingExt(EdgeInsets.all(8)).ExpandedExt()
-                ],
-              )
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Name', style: TextStyle(
+                  fontSize: 24,
+                  fontFamily: FontFamily.lapsusProBold,
+                  fontWeight: FontWeight.bold)),
+              _profileName == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
             ],
-          ),
-        )
-    ).PaddingExt(EdgeInsets.all(40));
+          ).PaddingExt(EdgeInsets.symmetric(vertical: 12))
+              .ScaleExt(hardOvershootInterp.getValue(anim6.value))
+              .FlexibleExt(),
+
+          CupertinoTextField(
+            placeholder: 'Enter your name here',
+            placeholderStyle: TextStyle(fontFamily: FontFamily.lapsusProBold,color: Colors.grey),
+            controller: _textController,
+            padding: EdgeInsets.all(18),)
+              .PaddingExt(EdgeInsets.symmetric(horizontal: 20))
+              .ScaleExt(hardOvershootInterp.getValue(anim7.value))
+        ],
+      )
+          .FlexibleExt(2),
+
+      Text('You can edit these any time').FlexibleExt(),
+
+      MyCupertinoStyleButton(
+        onPressed: () => onProfileSetupPressed(),
+      borderRadius: MyBorderRadii.BOTTOM_ONLY,
+      text: Text('Finish', textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontFamily: FontFamily.lapsusProBold,
+          color: _profileImage == null || _profileName == null
+              ? Colors.grey : Colors.blueAccent)),)
+    ]);
+
+
+    Widget tutorialSetupDialog = MyCupertinoStyleDialogWithButtons(
+      columnChildren: [
+        MyCupertinoStyleBox(
+          borderRadius: MyBorderRadii.TOP_ONLY,
+            content: Column(
+              children: [
+                Text('Welcome to Utter Bull!!',
+                    style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold))
+                    .ScaleExt(hardOvershootInterp.getValue(anim1.value))
+                    .PaddingExt(EdgeInsets.fromLTRB(0,20,0,10)),
+
+
+                SizedBox(child: Assets.images.bullIcon.image(), height: hardOvershootInterp.getValue(anim6.value)*150)
+                    .PaddingExt(EdgeInsets.fromLTRB(0,10,0,10))
+
+
+              ],
+            ),
+        ),
+
+        Column(
+            children: [
+              Text("This is a social game to play with a few friends. Make sure you\'re all in the same room or video call.",
+                textAlign: TextAlign.center,).PaddingExt(EdgeInsets.symmetric(vertical: 12))
+                  .ScaleExt(hardOvershootInterp.getValue(anim2.value)),
+
+              RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children:
+                      [
+                        TextSpan(text: 'If you\'ve never played Utter Bull, it is '),
+                        TextSpan(text: 'highly', style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: ' recommended that you '),
+                        TextSpan(text: 'enable tutorial hints', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
+                        TextSpan(text: ' throughout your first game. You can disable these any time.')
+                      ])).PaddingExt(EdgeInsets.symmetric(vertical: 12)).ScaleExt(hardOvershootInterp.getValue(anim3.value)),
+
+              RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children:
+                      [
+                        TextSpan(text: "All tutorial info can be identified by...")
+                      ])).PaddingExt(EdgeInsets.symmetric(vertical: 12))
+                  .ScaleExt(hardOvershootInterp.getValue(anim4.value)),
+            ]
+        ).PaddingExt(EdgeInsets.symmetric(horizontal: 16)),
+
+        Container().ExpandedExt(),
+
+      ],
+      flexList: [1, 2],
+        buttons: [
+
+          MyCupertinoStyleButton(
+              height: 100,
+              glowPosition: Alignment.bottomLeft,
+              value: _animController3.value,
+              color: Color.fromARGB(255, 255, 206, 206),
+              borderRadius: MyBorderRadii.BOTTOM_LEFT_ONLY,
+              text: AutoSizeText('No tutorial info, I\'m already a pro', textAlign: TextAlign.center,
+                  minFontSize: 16, style: TextStyle(color: Colors.red, fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
+              onPressed: () => onTutorialSetupPressed(false)).ScaleExt(hardOvershootInterp.getValue(anim6.value)),
+
+          MyCupertinoStyleButton(
+              height: 100,
+              glowPosition: Alignment.bottomRight,
+              value: _animController3.value,
+              color: Color.fromARGB(255, 211, 243, 255),
+              borderRadius: MyBorderRadii.BOTTOM_RIGHT_ONLY,
+              text: AutoSizeText('Yes! Enable all tutorial info', textAlign: TextAlign.center,
+                  minFontSize: 16, style: TextStyle(color: Color.fromARGB(
+                      255, 27, 47, 163), fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
+              onPressed: () => onTutorialSetupPressed(true)).ScaleExt(hardOvershootInterp.getValue(anim7.value)),
+
+
+
+      ]
+    );
 
 
     // BACKGROUND
@@ -501,6 +526,7 @@ class _MainMenuState extends State<MainMenu> with SingleTickerProviderStateMixin
 
     return SafeArea(
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.transparent,
           body: Stack(
             children: [
@@ -576,3 +602,5 @@ class _MainMenuState extends State<MainMenu> with SingleTickerProviderStateMixin
 
 
 }
+
+

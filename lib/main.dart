@@ -57,6 +57,10 @@ class MyApp extends StatelessWidget {
         future: _fbInit,
         builder: (context, snap){
 
+          if(snap.hasError){
+            print(snap.error);
+          }
+
           if(snap.hasData && !snap.hasError && snap.connectionState == ConnectionState.done)
             {
               ResourceManager resMan = new ResourceManager();
@@ -72,9 +76,12 @@ class MyApp extends StatelessWidget {
                   initialData: Tuple3(null, 0, null),
                   builder: (context, snaps){
 
+
                     bool stream2Done = snaps.item1 != null;
                     bool stream3Done = snaps.item2.data == 1.0;
                     bool stream4Done = snaps.item3 != null;
+
+                    print(stream2Done.toString() + " " + stream3Done.toString() + " " + stream4Done.toString());
 
                     if(stream2Done && stream3Done && stream4Done)
                     {
