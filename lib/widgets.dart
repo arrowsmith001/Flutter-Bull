@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'classes.dart';
+import 'package:flutter_bull/gen/fonts.gen.dart';
+import 'classes/classes.dart';
 import 'extensions.dart';
 
 
@@ -10,7 +11,6 @@ class MyCupertinoStyleDialog extends StatelessWidget {
       {this.borderRadius = MyBorderRadii.ALL, this.outsidePadding = const EdgeInsets.all(PADDING)});
 
   final List<Widget> columnChildren;
-  static const DIALOG_BORDER_RADIUS = 10.0;
   static const double PADDING = 40.0;
   final BorderRadius borderRadius;
   final EdgeInsets outsidePadding;
@@ -144,6 +144,50 @@ class MyCupertinoStyleBox extends StatelessWidget {
     );
   }
 }
+
+class MyListItem extends StatelessWidget {
+  const MyListItem({this.text = 'Your text here', this.iconData = Icons.circle, required this.onTap});
+  final String text;
+  final IconData iconData;
+  final dynamic Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            Container(
+              child: Text(text,
+                textAlign: TextAlign.end,
+                style: TextStyle(fontSize: 26, fontFamily: FontFamily.lapsusProBold),)
+                  .PaddingExt(EdgeInsets.symmetric(vertical: 8, horizontal: 18)),
+            )
+                .FlexibleExt(),
+
+            Container(
+              width: 50,
+              child: Icon(iconData, size: 50, color: Colors.black,),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+              color: Colors.blue),
+            )
+
+
+          ],
+        ),
+        decoration: BoxDecoration(
+            color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(100))
+        ),
+      ),
+    );
+  }
+}
+
 
 
 class EmptyWidget extends StatelessWidget {

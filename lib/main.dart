@@ -2,24 +2,28 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:math' as math;
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import 'package:flutter_bull/pages/1MainMenu/_mainMenu.dart';
+import 'package:flutter_bull/pages/1MainMenu/_main_menu.dart';
 import 'package:flutter_bull/particles.dart';
-import 'package:flutter_bull/utilities/localRes.dart';
+import 'package:flutter_bull/utilities/_center.dart';
+import 'package:flutter_bull/utilities/local_res.dart';
+import 'package:flutter_bull/utilities/firebase.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/profile.dart';
 import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
+import 'classes/firebase.dart';
 import 'extensions.dart';
 import 'dart:ui' as ui;
-import 'package:image/image.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +38,6 @@ class MyApp extends StatelessWidget {
 
 
      final Future<FirebaseApp> _fbInit = Firebase.initializeApp();
-
 
       var loading = Center(
         child: Column(
@@ -63,34 +66,68 @@ class MyApp extends StatelessWidget {
 
           if(snap.hasData && !snap.hasError && snap.connectionState == ConnectionState.done)
             {
-              ResourceManager resMan = new ResourceManager();
-              ProfileManager proMan = new ProfileManager();
-              PrefsManager prefMan = new PrefsManager();
+              final ManagerCenter m = new ManagerCenter();
 
-              final Stream<bool> loadProfile = proMan.loadProfileFromPreferences().asStream();
-              final Stream<double> loadResources = resMan.loadAllResources();
-              final Stream prefs = prefMan.initializePrefs().asStream();
+              final Stream<double> loadResources = m.resources.loadAllResources();
+              final Stream prefs = m.prefs.initializePrefs().asStream();
+              final Stream<UserCredential> userCredential = FirebaseAuth.instance.signInAnonymously().asStream();
 
-              return StreamBuilder3<bool?, double?, dynamic>(
-                  streams: Tuple3(loadProfile, loadResources, prefs),
-                  initialData: Tuple3(null, 0, null),
+              return StreamBuilder3<double?, dynamic, UserCredential>(
+                  streams: Tuple3(loadResources, prefs, userCredential),
+                  initialData: Tuple3(0, null, null),
                   builder: (context, snaps){
 
+                    bool stream1Done = snaps.item1.data == 1.0;
+                    bool stream2Done = snaps.item2 != null;
+                    bool stream3Done = snaps.item3 != null
+                        && snaps.item3.hasData
+                        && snaps.item3.data!.user != null;
 
-                    bool stream2Done = snaps.item1 != null;
-                    bool stream3Done = snaps.item2.data == 1.0;
-                    bool stream4Done = snaps.item3 != null;
+                    print(stream1Done.toString()
+                        + " " + stream2Done.toString()
+                        + " " + stream3Done.toString());
 
-                    print(stream2Done.toString() + " " + stream3Done.toString() + " " + stream4Done.toString());
-
-                    if(stream2Done && stream3Done && stream4Done)
+                    if(stream1Done && stream2Done && stream3Done)
                     {
-                      return CupertinoApp(
+
+                      DatabaseOps ops = new FirebaseOps();
+
+                      var app = CupertinoApp(
                         title: 'Utter Bull',
                         theme: CupertinoThemeData(
                             primaryColor: AppColors.MainColor
                         ),
                         home: MainMenu(),
+                      );
+
+                      //return app;
+
+                      return MultiProvider(
+                        providers: [
+                          ListenableProvider<DatabaseOps>.value(value: ops),
+                          StreamProvider<Player?>(
+                            initialData: null,
+                            create: (_) => ops.streamCurrentPlayer(),
+                          ),
+                          StreamProvider<Image?>(
+                            initialData: null,
+                            create: (_) => ops.streamCurrentPlayerImage(),
+                          ),
+                          StreamProvider<String?>(
+                            initialData: null,
+                            create: (_) => ops.streamCurrentPlayerRoomCode(),
+                          ),
+                          StreamProvider<Room?>(
+                            initialData: null,
+                            create: (_) => ops.streamRoom(Provider.of<String?>(context)),
+                          )
+
+
+
+                          //ChangeNotifierProvider<FirebaseOps>(create: (_) => ops)
+
+                        ],
+                        child: app,
                       );
                     }
 

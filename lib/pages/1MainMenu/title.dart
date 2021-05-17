@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:flutter_bull/utilities/res.dart';
 
-import '../../classes.dart';
+import '../../classes/classes.dart';
 
 
 class UtterBullTitle extends StatefulWidget {

@@ -2,11 +2,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../extensions.dart';
-import '../../utilities/localRes.dart';
+import '../../utilities/local_res.dart';
 
 class MainMenuButton extends StatelessWidget {
 
-  MainMenuButton(this.text, this.image, this.callback, {this.fontSize = 16, this.minFontSize = 16, this.imageSize = 16});
+  MainMenuButton(this.text, this.image, this.onPressed, {this.fontSize = 16, this.minFontSize = 16, this.imageSize = 16});
 
   String text;
   Widget image;
@@ -14,14 +14,12 @@ class MainMenuButton extends StatelessWidget {
   double minFontSize;
   double imageSize;
 
-  void Function() callback;
+  dynamic Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
-        callback.call();
-      },
+      onTap: onPressed,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

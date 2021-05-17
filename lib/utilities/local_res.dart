@@ -23,9 +23,9 @@ class AppStyles {
 
 class AppStrings{
   static const String PRIVACY_POLICY_ACCEPTED = 'privacyPolicyAccepted';
-  static const String FIRST_TIME_PROFILE_SETUP = 'firstTimeProfileSetup';
-  static const String FIRST_TIME_TUTORIAL_SETUP = 'firstTimeTutorialSetup';
+  static const String PREFS_FIRST_TIME_PROFILE_SETUP = 'firstTimeProfileSetup';
+  static const String PREFS_FIRST_TIME_TUTORIAL_SETUP = 'firstTimeTutorialSetup';
 
-  static const String TUTORIAL_MODE_ON = 'tutorialModeOn';
+  static const String PREFS_TUTORIAL_MODE_ON = 'tutorialModeOn';
 
 }

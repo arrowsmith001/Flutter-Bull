@@ -65,5 +65,32 @@ extension WidgetModifier on Widget {
     );
   }
 
+  // Wraps widget in a Container widget with a Box Decoration
+  Widget TranslateExt({double dx = 0, double dy = 0}) {
+    return Transform.translate(
+      offset: Offset(dx, dy),
+      child: this,
+    );
+  }
+
+  // Wraps widget in a Container widget with a Box Decoration
+  Widget OpacityExt(double value) {
+    return Opacity(
+      opacity: value,
+      child: this,
+    );
+  }
+
+  // Renders the widget invisible and nullifies all interactivity
+  Widget InvisibleIgnoreExt() {
+    return Visibility(
+      visible: false,
+        maintainSize: true,
+        maintainAnimation: true,
+        maintainState: true,
+        child: IgnorePointer(
+            child: this));
+  }
+
 
 }

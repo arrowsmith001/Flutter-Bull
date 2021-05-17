@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/particles.dart';
-import 'package:flutter_bull/utilities/localRes.dart';
+import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;

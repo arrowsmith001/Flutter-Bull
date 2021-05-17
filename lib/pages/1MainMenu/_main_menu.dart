@@ -9,14 +9,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
-import 'package:flutter_bull/pages/1MainMenu/_widgets.dart';
+import 'package:flutter_bull/pages/1MainMenu/widgets.dart';
 import 'package:flutter_bull/pages/1MainMenu/background.dart';
 import 'package:flutter_bull/pages/1MainMenu/title.dart';
+import 'package:flutter_bull/pages/2GameRoom/_game_room.dart';
 import 'package:flutter_bull/particles.dart';
+import 'package:flutter_bull/utilities/_center.dart';
+import 'package:flutter_bull/utilities/firebase.dart';
 import 'package:flutter_bull/utilities/interpolators.dart';
-import 'package:flutter_bull/utilities/localRes.dart';
+import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/profile.dart';
@@ -24,7 +28,8 @@ import 'package:flutter_bull/widgets.dart';
 import 'package:flutter_circular_text/circular_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
-import '../../classes.dart';
+import 'package:provider/provider.dart';
+import '../../classes/classes.dart';
 import '../../extensions.dart';
 import 'dart:ui' as ui;
 
@@ -36,9 +41,9 @@ class MainMenuSettings{
 
 class MainMenu extends StatefulWidget {
 
-  final ProfileManager proMan = ProfileManager();
-  final PrefsManager prefMan = PrefsManager();
-  final ResourceManager resMan = ResourceManager();
+  final ManagerCenter m = new ManagerCenter();
+
+  final FirebaseOps ops = new FirebaseOps(); // TODO: DELEEEEEEEEEEEETE
 
   @override
   _MainMenuState createState() => _MainMenuState();
@@ -47,10 +52,15 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
   late AnimationController _animController, _animController2, _animController3;
-  late Animation<double> dialogPopAnim, anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8; // _animController1
+  late Animation<double> dialogPopAnim, anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8, anim1Quick; // _animController1
   late Animation<double> anim1_2; // _animController2
   final Interpolator overshootInterp = OvershootInterpolator();
   final Interpolator hardOvershootInterp = OvershootInterpolator(5);
+  final Interpolator decelInterp = DecelerateInterpolator(5);
+
+  late bool privacyPolicy;
+  late bool profileSetup;
+  late bool tutorialSetup;
 
   @override
   void initState() {
@@ -73,6 +83,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
     double intervalValue = 0.1, staggerValue = 0.01;
     anim1 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue, staggerValue + intervalValue)));
+    anim1Quick = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(0, 0.01)));
     anim2 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*2, staggerValue*2 + intervalValue)));
     anim3 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*3, staggerValue*3 + intervalValue)));
     anim4 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*4, staggerValue*4 + intervalValue)));
@@ -82,21 +93,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     anim8 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*8, staggerValue*8 + intervalValue)));
     _animController.forward();
 
-    this._profileImage = widget.proMan.profile.image;
-    this._profileName = widget.proMan.profile.name;
-
-    this.privacyPolicy = widget.prefMan.getBool(AppStrings.PRIVACY_POLICY_ACCEPTED)?? false;
-    this.profileSetup = widget.prefMan.getBool(AppStrings.FIRST_TIME_PROFILE_SETUP)?? false;
-    this.tutorialSetup = widget.prefMan.getBool(AppStrings.FIRST_TIME_TUTORIAL_SETUP)?? false;
+    this.privacyPolicy = widget.m.prefs.getBool(AppStrings.PRIVACY_POLICY_ACCEPTED)?? false;
+    this.profileSetup = widget.m.prefs.getBool(AppStrings.PREFS_FIRST_TIME_PROFILE_SETUP)?? false;
+    this.tutorialSetup = widget.m.prefs.getBool(AppStrings.PREFS_FIRST_TIME_TUTORIAL_SETUP)?? false;
 
     _textController.addListener(() {
-
-      String text = _textController.value.text;
-
-      setState(() {
-        if(Validators.UsernameValidation(text) == null) this._profileName = text;
-        else this._profileName = null;
-      });
+      textEditingValue = _textController.text;
     });
   }
 
@@ -109,12 +111,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  late bool privacyPolicy;
-  late bool profileSetup;
-  late bool tutorialSetup;
-
   Future onTopBarPressed() async {
-    await widget.prefMan.clear();
+    await widget.m.prefs.clear();
     print('Prefs cleared');
   }
 
@@ -123,74 +121,146 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
       SystemNavigator.pop();
       return;
     }
-    await widget.prefMan.setBool(AppStrings.PRIVACY_POLICY_ACCEPTED, true);
+    await widget.m.prefs.setBool(AppStrings.PRIVACY_POLICY_ACCEPTED, true);
     setState(() {
       privacyPolicy = true;
       _animController.forward(from: 0);
     });
   }
 
-  onProfileSetupPressed() async {
-    if(this._profileImage == null || this._profileName == null)
-    {
+  onProfileSetupPressed(BuildContext context) async {
+    if(this._profileImage == null) {
       return;
     }
 
-    String text = await widget.proMan.setName(_textController.value.text);
+    if(textEditingValue != null){
+      await Provider.of<DatabaseOps>(context, listen: false).setName(textEditingValue!);
+    }else if(_profileName == null){
+      return;
+    }
 
-    await widget.prefMan.setBool(AppStrings.FIRST_TIME_PROFILE_SETUP, true);
+    await widget.m.prefs.setBool(AppStrings.PREFS_FIRST_TIME_PROFILE_SETUP, true);
+
     setState(() {
-      _profileName = text;
       profileSetup = true;
       _animController.forward(from: 0);
     });
   }
 
   onTutorialSetupPressed(bool value) async {
-    await widget.prefMan.setBool(AppStrings.TUTORIAL_MODE_ON, value);
-    await widget.prefMan.setBool(AppStrings.FIRST_TIME_TUTORIAL_SETUP, true);
+    await widget.m.prefs.setBool(AppStrings.PREFS_TUTORIAL_MODE_ON, value);
+    await widget.m.prefs.setBool(AppStrings.PREFS_FIRST_TIME_TUTORIAL_SETUP, true);
     setState(() {
       tutorialSetup = true;
       _animController.forward(from: 0);
     });
   }
   
-  void onCreateGame(){
-    print("CREATE GAME PRESSED " + DateTime.now().toString());
+  void onCreateGame(BuildContext context) async {
+    setState(() {loading = true;});
+    await Provider.of<DatabaseOps>(context, listen: false).createGame();
+    await goToGameRoom();
+    setState(() {loading = false;});
+
   }
 
-  void onJoinGame(){
-    print("JOIN GAME PRESSED " + DateTime.now().toString());
+  Future<void> goToGameRoom() async{
+    await Navigator.of(context).push(_mainMenuToGameRoute());
   }
 
+  Route _mainMenuToGameRoute() {
+
+    var ops = Provider.of<DatabaseOps>(context, listen: false);
+
+    return CupertinoPageRoute(builder: (context){
+      return MultiProvider(
+        providers: [
+          ListenableProvider<DatabaseOps>.value(value: ops),
+          StreamProvider<Player?>(
+            initialData: null,
+            create: (_) => ops.streamCurrentPlayer(),
+          ),
+          StreamProvider<Image?>(
+            initialData: null,
+            create: (_) => ops.streamCurrentPlayerImage(),
+          ),
+          StreamProvider<String?>(
+            initialData: null,
+            create: (_) => ops.streamCurrentPlayerRoomCode(),
+          )
+        ],
+          child: GameRoom());
+    });
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => GameRoom(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return child;
+      },
+    );
+  }
+
+  void onJoinGame(BuildContext context) async {
+    await widget.m.db.joinGame('');
+  }
+
+  // IMAGE SELECTION
   final picker = ImagePicker();
   String? _profileName;
   Image? _profileImage;
   TextEditingController _textController = new TextEditingController();
+  String? textEditingValue;
 
-  void profileImageSelection(ImageSource source) async{
+  bool profileEditMenuOpen = false;
+  bool loading = false;
 
-    var pickedImage = await widget.proMan.pickImage(picker, source);
-    if(pickedImage == null) return;
+  void onProfileImageTapped() {
+    if(profileEditMenuOpen)
+    {
+      setState(() {
+        profileEditMenuOpen = false;
+        _animController.reverse(from: 1);
+      });
+    }
+    else
+    {
+      setState(() {
+        profileEditMenuOpen = true;
+        _animController.forward(from: 0);
+      });
+    }
+  }
+
+  void profileImageSelection(BuildContext context, ImageSource source) async {
+
+    setState(() {loading = true;});
+
+    Image? pickedImage;
+    try{  pickedImage = await widget.m.profile.pickImage(context, picker, source); }
+    catch(e){}
+
     setState(() {
+      loading = false;
+      if(pickedImage == null) return;
       _profileImage = pickedImage;
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    _animController.forward(from: 0);
+  void onEditName() {
+
   }
 
   @override
   Widget build(BuildContext context) {
 
+    // PROVIDED VARIABLES
+    Player? player = Provider.of<Player?>(context);
+    Image? playerImage = Provider.of<Image?>(context);
+
+    _profileName = player == null ? null : player.name;
+    _profileImage = playerImage;
+
     // SETUP
     bool anySetupRequired = !privacyPolicy || !profileSetup || !tutorialSetup;
-
-    double dialogBorderRadius = MyCupertinoStyleDialog.DIALOG_BORDER_RADIUS;
 
     Widget privacyPolicyDialog = MyCupertinoStyleDialogWithButtons(
        columnChildren: [
@@ -205,11 +275,10 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
           ],)),
 
         SingleChildScrollView(
-          child: Text(widget.resMan.fsData.getValue('strings/privacy_policy')),
+          child: Text(widget.m.resources.fsData.getValue('strings/privacy_policy')),
         ).PaddingExt(EdgeInsets.symmetric(horizontal: 20, vertical: 10)).ExpandedExt(),
 
       ],
-      flexList: [1, 2],
       buttons: [
 
             MyCupertinoStyleButton(
@@ -234,7 +303,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
             onPressed: () => onPrivacyPolicyAcceptedPressed(true)),
 
 
-      ]
+      ],
+        flexList: [1, 2]
     );
 
     Widget profileSetupDialog = MyCupertinoStyleDialog(
@@ -274,9 +344,9 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               .FlexibleExt(),
 
           GestureDetector(
-            onTap: () { profileImageSelection(ImageSource.camera); },
+            onTap: () { profileImageSelection(context, ImageSource.camera); },
             child: Container(
-                height: 150,
+                height: MediaQuery.of(context).size.height / 10,
                 decoration: BoxDecoration(
                   //color: Color.fromARGB(101, 229, 220, 220),
                     shape: BoxShape.circle,
@@ -295,7 +365,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   Text('Choose from gallery', style: TextStyle(color: Colors.black)).PaddingExt(EdgeInsets.symmetric(horizontal: 8))
                 ],
               ),
-              onPressed: (){ profileImageSelection(ImageSource.gallery); }
+              onPressed: (){ profileImageSelection(context, ImageSource.gallery); }
           ).ScaleExt(hardOvershootInterp.getValue(anim5.value))
         ],
       )
@@ -319,7 +389,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               .FlexibleExt(),
 
           CupertinoTextField(
-            placeholder: 'Enter your name here',
+            placeholder: _profileName != null ? _profileName : 'Enter your name here',
             placeholderStyle: TextStyle(fontFamily: FontFamily.lapsusProBold,color: Colors.grey),
             controller: _textController,
             padding: EdgeInsets.all(18),)
@@ -332,13 +402,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
       Text('You can edit these any time').FlexibleExt(),
 
       MyCupertinoStyleButton(
-        onPressed: () => onProfileSetupPressed(),
+        onPressed: () => onProfileSetupPressed(context),
       borderRadius: MyBorderRadii.BOTTOM_ONLY,
       text: Text('Finish', textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontFamily: FontFamily.lapsusProBold,
           color: _profileImage == null || _profileName == null
               ? Colors.grey : Colors.blueAccent)),)
     ]);
-
 
     Widget tutorialSetupDialog = MyCupertinoStyleDialogWithButtons(
       columnChildren: [
@@ -465,23 +534,23 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               children: [
 
                 Container(
-                    height:75,
+                    height:125,
                     decoration: BoxDecoration(
                         color: Color.fromARGB(205, 255, 116, 116),
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.blueAccent, width: 3),
-                        image: _profileImage == null ? null :
+                        image: playerImage == null ? null :
                         DecorationImage(
                           fit: BoxFit.cover,
-                          image:  _profileImage!.image,
+                          image:  playerImage.image,
                         ))),
 
-                _profileName == null ? EmptyWidget()
+                player == null || player.name == null ? EmptyWidget()
                     : Transform.translate(
-                  offset: Offset(0, -5),
-                  child: AutoSizeText(_profileName, minFontSize: 10, maxLines: 1,
+                  offset: Offset(0, -20),
+                  child: AutoSizeText(player.name, minFontSize: 10, maxLines: 1,
                       style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 32,
                           color: Colors.white,
                           backgroundColor: Colors.blueAccent,
                           fontFamily: FontFamily.lapsusProBold)),
@@ -489,7 +558,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               ],
             ),
             onTap: (){
-              profileImageSelection(ImageSource.camera);
+              onProfileImageTapped();
             }),
 
 
@@ -506,16 +575,43 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
       ],
     );
 
+    Widget profileEditMenu = Container(
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+
+            MyListItem(
+              onTap: () { profileImageSelection(context, ImageSource.camera); },
+              text: 'New photo from camera', iconData: Icons.camera,)
+                .PaddingExt(EdgeInsets.only(bottom: 10, right: 15))
+                .TranslateExt(dy: ((1-hardOvershootInterp.getValue(anim1Quick.value))*-20).toDouble()),
+            MyListItem(
+              onTap: () { profileImageSelection(context, ImageSource.gallery); },
+              text: 'New photo from gallery', iconData: Icons.add_photo_alternate_outlined,)
+                .PaddingExt(EdgeInsets.only(bottom: 10, right: 15))
+                .TranslateExt(dy: ((1-hardOvershootInterp.getValue(anim1Quick.value))*-50).toDouble()),
+            MyListItem(
+              onTap: () { onEditName(); },
+              text: 'Change name', iconData: Icons.edit,)
+                .PaddingExt(EdgeInsets.only(bottom: 10, right: 15))
+                .TranslateExt(dy: ((1-hardOvershootInterp.getValue(anim1Quick.value))*-100).toDouble()),
+
+          ],
+        ),
+      ),
+    );
 
     // BUTTONS
     var buttonIconSize = 65.0;
     var minFontSize = 10.0;
     var fontSize = 30.0;
 
-    Widget createGameButton = MainMenuButton("CREATE GAME", Assets.images.bullAddGlowBrown.image(), onCreateGame,
+    Widget createGameButton = MainMenuButton("CREATE GAME", Assets.images.bullAddGlowBrown.image(), () async { onCreateGame(context); },
         fontSize: fontSize, minFontSize: minFontSize, imageSize: buttonIconSize);
 
-    Widget joinGameButton = MainMenuButton("JOIN GAME", Assets.images.arrowsGlowBrownEdit.image(), onJoinGame,
+    Widget joinGameButton = MainMenuButton("JOIN GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onJoinGame(context); },
         fontSize: fontSize+10, minFontSize: minFontSize, imageSize: buttonIconSize+10);
 
 
@@ -535,58 +631,86 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
               anySetupRequired ?
 
-                  Transform.scale(
-                    scale: 0.6 + 0.4 * overshootInterp.getValue(dialogPopAnim.value),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        (
-                            !privacyPolicy? privacyPolicyDialog.FlexibleExt()
-                                : !profileSetup? profileSetupDialog.FlexibleExt()
-                                : !tutorialSetup? tutorialSetupDialog.FlexibleExt()
-                                : EmptyWidget()
-                        )
-                      ],
-                    ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  (
+                      !privacyPolicy? privacyPolicyDialog.FlexibleExt()
+                          : !profileSetup? profileSetupDialog.FlexibleExt()
+                          : !tutorialSetup? tutorialSetupDialog.FlexibleExt()
+                          : EmptyWidget()
                   )
+                ],
+              ).ScaleExt(0.6 + 0.4 * overshootInterp.getValue(dialogPopAnim.value))
 
                   :
 
-              // Main Column
-              Column(
+              // Main stack
+              Stack(
                 children: [
 
-                  UserBar
-                      .PaddingExt(EdgeInsets.fromLTRB(0, 25, 0, 20))
-                      .FlexibleExt(USER_BAR_FLEX),
-
+                  // Main Column
                   Column(
                     children: [
-                      //Container().ExpandedExt(),
 
-                      UtterBullTitle()
-                      //.PaddingExt(EdgeInsets.fromLTRB(0, 50, 0, 0))
-                          .FlexibleExt(TITLE_FLEX),
+                      // Invisible user bar, for spacing purposes
+                      UserBar
+                          .PaddingExt(EdgeInsets.fromLTRB(0, 10, 0, 10))
+                          .InvisibleIgnoreExt()
+                          .FlexibleExt(USER_BAR_FLEX),
 
-                      Container().ExpandedExt(),
+                      Column(
+                        children: [
+                          UtterBullTitle().FlexibleExt(TITLE_FLEX),
+                        ],
+                      ).ExpandedExt(),
+
+                      // Join/Create Game Buttons
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+
+                          createGameButton,
+
+                          joinGameButton,
+
+                        ],
+                      ).PaddingExt(new EdgeInsets.fromLTRB(0,0,0,20)).FlexibleExt(BUTTONS_FLEX)
+
                     ],
-                  ).ExpandedExt(),
+                  ),
 
 
-                  // Join/Create Game Buttons
+                  // Grey translucent layer
+                  profileEditMenuOpen ? GestureDetector(
+                    onTap: () { onProfileImageTapped(); },
+                      child: Container(color: Colors.black54.withOpacity(0.8),)).OpacityExt(anim1Quick.value) : EmptyWidget(),
+
+                  // Overlaying column
                   Column(
-
-                    mainAxisAlignment: MainAxisAlignment.end,
-
                     children: [
 
-                      createGameButton,
+                      // Actual user bar
+                      UserBar
+                          .PaddingExt(EdgeInsets.fromLTRB(0, 10, 0, 10))
+                          .FlexibleExt(USER_BAR_FLEX),
 
-                      joinGameButton,
-
+                      // On profile tapped list
+                      profileEditMenuOpen ? profileEditMenu.ExpandedExt() : EmptyWidget()
                     ],
+                  ),
 
-                  ).PaddingExt(new EdgeInsets.fromLTRB(0,0,0,20)).FlexibleExt(BUTTONS_FLEX)
+
+                  // Overlaying container with progress indicator
+                  !loading ? EmptyWidget() : Container(
+                    color: Colors.grey.withOpacity(0.3),
+                    child: Center(
+                      child: CircularProgressIndicator(backgroundColor: Colors.redAccent,),
+                    ),
+                  ),
+
+
+
 
                 ],
               )
@@ -598,6 +722,11 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     );
 
   }
+
+
+
+
+
 
 
 

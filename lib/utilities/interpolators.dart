@@ -54,11 +54,12 @@ class BounceInterpolator extends Interpolator{
 
 // For animations than slow down towards the end
 class DecelerateInterpolator extends Interpolator{
-  DecelerateInterpolator();
+  DecelerateInterpolator([this.T=1]);
+  double T;
 
   @override
   double getValue(double t) {
-    return (1 - pow(1-t, 2)).toDouble();
+    return (1 - pow(1-t, 2*T)).toDouble();
   }
 }
 

@@ -222,6 +222,8 @@ PODS:
     - Firebase/Firestore (= 7.11.0)
     - firebase_core
     - Flutter
+  - Firebase/Analytics (7.11.0):
+    - Firebase/Core
   - Firebase/Core (7.11.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (~> 7.11.0)
@@ -377,6 +379,7 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - Firebase/Analytics
   - Firebase/Core
   - Firebase/Firestore
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -456,6 +459,6 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
 
-PODFILE CHECKSUM: 522a67a34985c44f0d926d8a13ffe63686aef89b
+PODFILE CHECKSUM: f6b46694ab75206a0c58649fb404be880d53b128
 
 COCOAPODS: 1.10.1
