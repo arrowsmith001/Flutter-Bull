@@ -6,9 +6,8 @@ class PrefsManager {
   factory PrefsManager() => _instance;
   PrefsManager._internal() {}
 
-  Future initializePrefs() async {
+  Future<void> initializePrefs() async {
     this._prefs = await SharedPreferences.getInstance();
-    return true;
   }
 
   late SharedPreferences _prefs;

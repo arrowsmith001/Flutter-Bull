@@ -46,6 +46,9 @@ dependencies:
   build_runner: ^2.0.3
   firebase_auth: ^1.1.4
   firebase_messaging: ^9.1.4
+  rxdart: ^0.27.0
+  bloc: ^7.0.0
+  flutter_bloc: ^7.0.0
 
 dev_dependencies:
   flutter_test:

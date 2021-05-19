@@ -4,6 +4,16 @@ import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'classes/classes.dart';
 import 'extensions.dart';
 
+class MyLoadingIndicator extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
 
 class MyCupertinoStyleDialog extends StatelessWidget {
 

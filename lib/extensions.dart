@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 
+extension StringModifier on String? {
+  bool isNullOrEmpty() => this == null || this == '';
+}
+
 // Some modifiers for Widgets just to tidy up the code
 extension WidgetModifier on Widget {
 

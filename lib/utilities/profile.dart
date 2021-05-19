@@ -55,7 +55,7 @@ class ImageManager {
     // cachedFile = await file.copy(newPath);
 
     try{
-      await Provider.of<DatabaseOps>(context, listen: false).uploadProfileImage(file);
+      //await Provider.of<DatabaseOps>(context, listen: false).uploadProfileImage(file);
     }
     catch(e){print(e.toString());}
 

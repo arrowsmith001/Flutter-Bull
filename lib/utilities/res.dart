@@ -18,11 +18,7 @@ class ResourceManager{
   factory ResourceManager() => _instance;
   ResourceManager._internal();
 
-  Stream<double> loadAllResources() async*{
-
-    // STRINGS
-    fsData.addField('strings', 'privacy_policy', 'content');
-    await fsData.fetch();
+  Stream<double> loadAllUiImages() async* {
 
     // IMAGES
     List<AssetGenImage> desiredUiImages = [];
@@ -56,7 +52,6 @@ class ResourceManager{
   }
 
   var uiImageMap = new Map<String, ui.Image>();
-  FirestoreData fsData = new FirestoreData();
 
   ui.Image getUiImage(var v){
     try{
@@ -79,37 +74,34 @@ class UiImageData{
 }
 
 class FirestoreData {
-
-  var firestore = FirebaseFirestore.instance;
-  FirestoreData();
-
-  void addField(String collectionName, String docName, String field, [dynamic value]){
-    firestorePathToValues.addAll(
-        {[collectionName, docName].join('/') : {}
-    });
-  }
-
-  dynamic getValue(String path, [String field = 'content']){
-    if(!firestorePathToValues.containsKey(path)) throw new Exception('Firestore path not found. Did you import it in ResourceManager?');
-    var value = firestorePathToValues[path]![field];
-    if(value == null) throw new Exception('Firestore value not found. Did you import it in ResourceManager?');
-    return value;
-  }
-
-  Future<void> fetch() async{
-    for(String path in firestorePathToValues.keys)
-      {
-        List<String> pathSplit = path.split('/');
-        String collectionName = pathSplit[0];
-        String docName = pathSplit[1];
-
-        var snap = await firestore.collection(collectionName).doc(docName).get();
-        dynamic value = snap.data();
-        firestorePathToValues[path] = value;
-      }
-  }
-
-  Map<String,Map<String,dynamic>> firestorePathToValues = {};
+  //
+  // void addField(String collectionName, String docName, String field, [dynamic value]){
+  //   firestorePathToValues.addAll(
+  //       {[collectionName, docName].join('/') : {}
+  //   });
+  // }
+  //
+  // dynamic getValue(String path, [String field = 'content']){
+  //   if(!firestorePathToValues.containsKey(path)) throw new Exception('Firestore path not found. Did you import it in ResourceManager?');
+  //   var value = firestorePathToValues[path]![field];
+  //   if(value == null) throw new Exception('Firestore value not found. Did you import it in ResourceManager?');
+  //   return value;
+  // }
+  //
+  // Future<void> fetch() async{
+  //   for(String path in firestorePathToValues.keys)
+  //     {
+  //       List<String> pathSplit = path.split('/');
+  //       String collectionName = pathSplit[0];
+  //       String docName = pathSplit[1];
+  //
+  //       var snap = await firestore.collection(collectionName).doc(docName).get();
+  //       dynamic value = snap.data();
+  //       firestorePathToValues[path] = value;
+  //     }
+  // }
+  //
+  // Map<String,Map<String,dynamic>> firestorePathToValues = {};
 }
 
 Future<UiImageData> loadUiImage(String assetPath) async {

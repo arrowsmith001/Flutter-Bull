@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -12,29 +13,9 @@ import 'package:flutter_bull/utilities/_center.dart';
 import 'package:flutter_bull/utilities/profile.dart';
 import 'package:uuid/uuid.dart';
 
-abstract class DatabaseOps implements Listenable {
+import '../widgets.dart';
 
-  Future<String?> createGame(); // => room code, if error => null
-
-  Future<bool> joinGame(String roomCode); // => success
-
-  Stream<Player?> streamCurrentPlayer();
-
-  void test(dynamic args);
-
-  Stream<Image?>? streamCurrentPlayerImage();
-
-  Future<void> uploadProfileImage(File file);
-
-  Future<void> setName(String name);
-
-  Stream<String?> streamCurrentPlayerRoomCode();
-
-  Stream<Room?>? streamRoom(String? roomCode); // => id
-
-}
-
-class FirebaseDatabaseOps {
+class FirebaseDatabaseProvider {
   static const String FIREBASE_DATABASE_URL = 'https://flutter-bull-default-rtdb.europe-west1.firebasedatabase.app/';
 
   final DatabaseReference _dbRef = FirebaseDatabase(databaseURL: FIREBASE_DATABASE_URL).reference();
@@ -95,7 +76,7 @@ class FirebaseDatabaseOps {
 
 
 }
-class FirebaseFirestoreOps {
+class FirebaseFirestoreProvider {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String?> getNewGameRoomCode() async {
@@ -125,8 +106,15 @@ class FirebaseFirestoreOps {
     });
   }
 
+  Future<dynamic> getFieldFromDocumentFromCollection(String field, String document, String collection) async {
+    var task = await _firestore.collection(collection).doc(document).get();
+    var data = task.data();
+    if(data == null) return null;
+    return data[field];
+  }
+
 }
-class FirebaseCloudOps {
+class FirebaseCloudProvider {
   static const String PROFILE_IMAGE_PATH = 'images/profile/';
   final FirebaseStorage _cloud = FirebaseStorage.instance;
 
@@ -136,8 +124,15 @@ class FirebaseCloudOps {
 
   Future<Image?> getImage(String profileId) async {
 
-    String url = await _cloud.ref(PROFILE_IMAGE_PATH + profileId).getDownloadURL();
-    return Image.network(url);
+    try{
+      String url = await _cloud.ref(PROFILE_IMAGE_PATH + profileId).getDownloadURL();
+      return Image.network(url,
+          loadingBuilder: (context, child, e) {return MyLoadingIndicator();});
+    }catch(e)
+    {
+      print('ERROR: ${this.runtimeType.toString()} ${e.toString()}');
+      return null;
+    }
   }
 
   Future<void> uploadProfileImage(File file, String ext) async {
@@ -145,31 +140,27 @@ class FirebaseCloudOps {
   }
 
 }
-class FirebaseAuthOps {
+class FirebaseAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String? getCurrentUserId() => _auth.currentUser == null ?  null : _auth.currentUser!.uid;
 
 }
 
-class FirebaseOps extends ChangeNotifier implements DatabaseOps {
+// Assumes FirebaseApp has been initialized
+class FirebaseProvider {
 
-  FirebaseOps();
-  FirebaseDatabaseOps rtd = FirebaseDatabaseOps();
-  FirebaseFirestoreOps fs = FirebaseFirestoreOps();
-  FirebaseCloudOps cloud = FirebaseCloudOps();
-  FirebaseAuthOps auth = FirebaseAuthOps();
+  FirebaseProvider();
 
-  test(dynamic args) {
-    //rtd.test(_getCurrentUserId());
-  }
+  FirebaseDatabaseProvider rtd = FirebaseDatabaseProvider();
+  FirebaseFirestoreProvider fs = FirebaseFirestoreProvider();
+  FirebaseCloudProvider cloud = FirebaseCloudProvider();
+  FirebaseAuthProvider auth = FirebaseAuthProvider();
 
   String? _getCurrentUserId() => auth.getCurrentUserId();
 
-
   // Object Streams
 
-  @override
   Stream<Player?> streamCurrentPlayer() {
     return rtd.streamPlayer(_getCurrentUserId());
   }
@@ -178,15 +169,23 @@ class FirebaseOps extends ChangeNotifier implements DatabaseOps {
     return cloud.getImage(profileId);
   }
 
-  @override
   Stream<Image?> streamCurrentPlayerImage() async* {
     var userId = _getCurrentUserId();
     if(userId == null) yield null;
 
     yield* rtd.streamProfileExt(userId!)
-      .asyncMap((profileId) async {
+        .asyncMap((profileId) async {
 
-        return await getProfileImage(profileId);
+      return await getProfileImage(profileId);
+    });
+  }
+
+  Stream<Image?> streamPlayerImage(String id) async* {
+
+    yield* rtd.streamProfileExt(id)
+        .asyncMap((profileId) async {
+
+      return await getProfileImage(profileId);
     });
   }
 
@@ -194,15 +193,10 @@ class FirebaseOps extends ChangeNotifier implements DatabaseOps {
     return rtd.streamUserRoomCode(_getCurrentUserId());
   }
 
-  Stream<Room?>? streamRoom(String? roomCode){
-    if(roomCode == null) return null;
+  Stream<Room?> streamRoom(String? roomCode){
     return rtd.streamRoom(roomCode);
   }
 
-
-  // Change notifiers
-  roomCodeModel() => _roomCodeModel;
-  var _roomCodeModel = RoomCodeModel();
 
 
   // User functions
@@ -249,23 +243,31 @@ class FirebaseOps extends ChangeNotifier implements DatabaseOps {
     await rtd.setName(_getCurrentUserId(), name);
   }
 
-
-
-
-
-}
-
-class RoomCodeModel extends ChangeNotifier {
-  String? _roomCode;
-  String? get roomCode => _roomCode;
-
-  void setRoomCode(String? newRoomCode){
-    bool notify = roomCode != newRoomCode && newRoomCode != null;
-    _roomCode = newRoomCode;
-    if(notify) notifyListeners();
+  Future<String> getPrivacyPolicyString() async {
+    return await fs.getFieldFromDocumentFromCollection('content','privacy_policy','strings');
   }
 
+  streamPlayer(String id) {
+    return rtd.streamPlayer(id);
+  }
+
+
+
+
+
 }
+
+// class RoomCodeModel extends ChangeNotifier {
+//   String? _roomCode;
+//   String? get roomCode => _roomCode;
+//
+//   void setRoomCode(String? newRoomCode){
+//     bool notify = roomCode != newRoomCode && newRoomCode != null;
+//     _roomCode = newRoomCode;
+//     if(notify) notifyListeners();
+//   }
+//
+// }
 
 class FirebaseUtilities {
 

@@ -16,6 +16,9 @@ class Player {
   String? name;
   String? profileId;
   String? occupiedRoomCode;
+
+  @JsonKey(ignore: true)
+  Image? profileImage;
 }
 
 
@@ -40,4 +43,7 @@ class Room {
 
   String? code;
   List<String> playerIds = [];
+
+  @JsonKey(ignore: true)
+  List<Player> players = [];
 }
