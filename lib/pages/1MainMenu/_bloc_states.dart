@@ -9,7 +9,14 @@ class MainMenuState{
 
 class InitialState extends MainMenuState{
   const InitialState(MainMenuModel model) : super(model);
+}
 
+class PlayerUpdatedState extends MainMenuState{
+  const PlayerUpdatedState(MainMenuModel model) : super(model);
+}
+
+class NewUserIdState extends MainMenuState{
+  const NewUserIdState(MainMenuModel model) : super(model);
 }
 
 class DialogState extends MainMenuState {
@@ -34,6 +41,9 @@ class MenuState extends MainMenuState{
 
 class ProfileImageChangedState extends MainMenuState{
   const ProfileImageChangedState(MainMenuModel model) : super(model);
+}
+class NameChangedState extends MainMenuState{
+  const NameChangedState(MainMenuModel model) : super(model);
 }
 
 class GoToGameRoomState extends MainMenuState{

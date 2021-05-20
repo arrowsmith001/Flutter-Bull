@@ -15,7 +15,7 @@ import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/pages/1MainMenu/_bloc_events.dart';
 import 'package:flutter_bull/pages/1MainMenu/_bloc_states.dart';
-import 'package:flutter_bull/pages/1MainMenu/widgets.dart';
+import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/pages/1MainMenu/background.dart';
 import 'package:flutter_bull/pages/1MainMenu/title.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
@@ -44,7 +44,7 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
-  get _bloc => BlocProvider.of<MainMenuBloc>(context, listen: false);
+  MainMenuBloc get _bloc => BlocProvider.of<MainMenuBloc>(context, listen: false);
 
   late AnimationController _animController, _animController2, _animController3;
   late Animation<double> dialogPopAnim, anim1_1, anim1_2, anim1_3, anim1_4, anim1_5, anim1_6, anim1_7, anim1_8, anim1_Quick; // _animController1
@@ -56,6 +56,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    _bloc.add(SetupEvent());
 
     _animController = new AnimationController(vsync: this);
     _animController.addListener(() {setState(() { });});
@@ -174,28 +176,10 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _bloc.add(ImageSelectionRequested(new ImagePicker(), source));
   }
 
-  buildPlayerAvatar(BuildContext context, MainMenuModel model, {double borderWidth = 5, bool animate = true}) {
-    return Stack(
-      children: [
-
-        Container(
-            decoration: BoxDecoration(
-              //color: Color.fromARGB(101, 229, 220, 220),
-                shape: BoxShape.circle,
-                border: Border.all(
-                    color: Color.lerp(Colors.blueAccent, Colors.white, animate ? _animController3.value : 0)!,
-                    width: borderWidth),
-                image: DecorationImage(
-                  colorFilter: model.syncingImage ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
-                  fit: BoxFit.scaleDown,
-                  image: model.player == null || model.player!.profileImage == null ? Assets.images.shutter : model.player!.profileImage!.image,
-                ))
-        ),
-
-        model.syncingImage ? MyLoadingIndicator() : EmptyWidget()
-
-      ],
-    );
+  Widget buildPlayerAvatar(BuildContext context, MainMenuModel model, {double borderWidth = 5, bool animate = true}) {
+    Player? player = model.player;
+    Image? profileImage = player == null ? null : player.profileImage;
+    return Avatar(profileImage, borderWidth: borderWidth, borderFlashValue: animate ? _animController3.value : 0);
   }
 
 
@@ -353,6 +337,10 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   }
 
   Widget buildProfileSetupDialog(BuildContext context, MainMenuModel model){
+    Player? player = model.player;
+    String? name = player == null ? null : player.name;
+    Image? profileImage = player == null ? null : player.profileImage;
+
     return MyCupertinoStyleDialog(
         [
           Column(
@@ -383,7 +371,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                       fontSize: 24,
                       fontFamily: FontFamily.lapsusProBold,
                       fontWeight: FontWeight.bold)),
-                  model.player!.profileImage == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
+                  profileImage == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
                 ],
               ).PaddingExt(EdgeInsets.symmetric(vertical: 12))
                   .ScaleExt(hardOvershootInterp.getValue(anim1_3.value))
@@ -429,7 +417,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   .FlexibleExt(),
 
               CupertinoTextField(
-                placeholder: model.player?.name != null ? model.player!.name! : 'Enter your name here',
+                placeholder: name == null ? 'Enter your name here' : name,
                 placeholderStyle: TextStyle(fontFamily: FontFamily.lapsusProBold,color: Colors.grey),
                 controller: _profileSetupNameController,
                 padding: EdgeInsets.all(18),)
@@ -445,7 +433,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
             onPressed: () => onProfileSetupPressed(context),
             borderRadius: MyBorderRadii.BOTTOM_ONLY,
             text: Text('Finish', textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontFamily: FontFamily.lapsusProBold,
-                color: model.player!.profileImage == null || model.player!.name == null
+                color: profileImage == null || name == null
                     ? Colors.grey : Colors.blueAccent)),)
         ]);
   }
@@ -662,6 +650,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                     if(s is DialogState || s is MenuState) _animController.forward(from: 0);
                     if(s is ProfileImageChangedState) {_animController2.forward(from: 0);}
                     if(s is GoToGameRoomState) goToGameRoom();
+
                   },
                   builder: (context, state){
 

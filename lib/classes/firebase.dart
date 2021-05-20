@@ -6,11 +6,18 @@ class FirebasePaths {
 
 }
 
+
 @JsonSerializable()
 class Player {
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
+
   Player();
+
+  static const String ID = 'id';
+  static const String NAME = 'name';
+  static const String PROFILE_ID = 'profileId';
+  static const String OCCUPIED_ROOM_CODE = 'occupiedRoomCode';
 
   String? id;
   String? name;
@@ -40,6 +47,8 @@ class Room {
   Map<String, dynamic> toJson() => _$RoomToJson(this);
 
   Room();
+
+  static const String CODE = 'code';
 
   String? code;
   List<String> playerIds = [];

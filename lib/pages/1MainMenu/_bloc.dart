@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/utilities/firebase.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/repository.dart';
@@ -19,21 +20,25 @@ import '_bloc_states.dart';
 class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
   MainMenuBloc({required this.repo}) : super(InitialState(new MainMenuModel())){
 
-    subscriptions.add(repo.streamCurrentPlayerImage().listen((event)
-    {
-      if(event != null) _model.setImage(event);
-    }));
-
-    subscriptions.add(repo.streamCurrentPlayer().listen((event)
-    {
-      _model.player = event;
-      if(_model.player != null && _model.player!.occupiedRoomCode != null)
-        {
-          add(GoToGameRoomEvent());
-        }
-    }));
-
-    _model.addListener(() { add(ProfileImageChangedEvent());  });
+    // subscriptions.add(repo.streamCurrentPlayerImage().listen((event)
+    // {
+    //   if(event != null) _model.setImage(event);
+    // }));
+    //
+    // subscriptions.add(repo.streamCurrentPlayer().listen((event)
+    // {
+    //   _model.player = event;
+    //   if(_model.player != null && _model.player!.occupiedRoomCode != null)
+    //     {
+    //       add(GoToGameRoomEvent());
+    //     }
+    // }));
+    //
+    // repo.subscribeToCurrentPlayer().listen((event) {
+    //   print(event.snapshot.key.toString() + ' : ' + event.snapshot.value.toString());
+    // });
+    //
+    // _model.addListener(() { add(ProfileImageChangedEvent());  });
 
     refreshPrefs();
   }
@@ -47,16 +52,103 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
 
   MainMenuModel _model = new MainMenuModel();
-  List<StreamSubscription> subscriptions = [];
 
   Repository repo;
   PrefsManager get _prefs => PrefsManager();
 
+  List<StreamSubscription> subscriptions = [];
+  StreamSubscription<String?>? userIdSub;
+  StreamSubscription<Player?>? playerSub;
+  StreamSubscription<Map>? playerChangesSub;
+
+  @override
+  void onEvent(MainMenuEvent event) {
+    super.onEvent(event);
+    print('Event received: ' + event.runtimeType.toString() + " at " + DateTime.now().toString());
+  }
 
   @override
   Stream<MainMenuState> mapEventToState(MainMenuEvent event) async* {
 
-    print('Event received: ' + event.runtimeType.toString() + " at " + DateTime.now().toString());
+    if(event is SetupEvent){
+
+      if(userIdSub != null) await userIdSub!.cancel();
+      userIdSub = repo.streamCurrentUserId().listen((userId) {
+        if(userId != null)
+        {
+          add(OnUserIdStreamEvent(userId));
+        }
+      });
+    }
+
+    if(event is OnUserIdStreamEvent)
+    {
+      _model.uid = event.userId;
+
+      // This is just to initialize the player
+      await repo.setPlayerField(_model.uid!, Player.ID, _model.uid);
+
+      if(playerSub != null) await playerSub!.cancel();
+      if(playerChangesSub != null) await playerChangesSub!.cancel();
+
+      playerSub = repo.streamPlayer(_model.uid!).listen((player) {
+        if (player != null) {
+          //print('streamPlayer: ${player.toJson().toString()}' + DateTime.now().toString());
+          add(OnPlayerStreamEvent(player));
+        }
+      });
+
+      playerChangesSub = repo.streamPlayerChanges(_model.uid!).listen((changes) {
+            if (changes != null) {
+              //print('streamPlayerChanges: ${changes.toString()}' + DateTime.now().toString());
+              add(OnPlayerChangeStreamEvent(changes));
+            }
+          });
+    }
+
+
+    if(event is OnPlayerStreamEvent)
+    {
+      Player player = event.player;
+
+      if(_model.player == null || _model.player!.profileImage == null)
+        {
+          print('event is OnPlayerStreamEvent : Initializing player image');
+
+          _model.syncingImage = true;
+          yield MainMenuState(_model);
+
+          Image? newProfileImage = await repo.getProfileImage(player.profileId);
+          player.profileImage = newProfileImage;
+
+          _model.syncingImage = false;
+        }
+
+      _model.setPlayer(player);
+      yield PlayerUpdatedState(_model);
+    }
+
+    if(event is OnPlayerChangeStreamEvent)
+    {
+        if(event.changes.containsKey(Player.PROFILE_ID))
+          {
+            print('OnPlayerChangeStreamEvent: Profile Id Changed');
+            String profileId = event.changes[Player.PROFILE_ID];
+
+            _model.syncingImage = true;
+            yield MainMenuState(_model);
+
+            _model.player!.profileImage = await repo.getProfileImage(profileId);
+
+            _model.syncingImage = false;
+            yield ProfileImageChangedState(_model);
+          }
+        if(event.changes.containsKey(Player.NAME))
+          {
+            yield NameChangedState(_model);
+          }
+    }
+
 
     if(event is PrefsUpdated)
     {
@@ -86,6 +178,7 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
     if(event is ProfileSetupPressed)
     {
       if(event.text.isNullOrEmpty() && (_model.player == null || _model.player!.name.isNullOrEmpty())) return;
+      await repo.setPlayerField(_model.uid!, Player.NAME, event.text);
       await _prefs.setBool(AppStrings.PREFS_FIRST_TIME_PROFILE_SETUP, true);
       refreshPrefs();
     }
@@ -103,26 +196,15 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
         if(pickedFile == null) return;
 
-        _model.syncingImage = true;
-        yield MainMenuState(_model);
-
         File file = new File(pickedFile.path);
-        await repo.uploadProfileImage(file);
-
-        _model.player!.profileImage = Image.file(file);
-        _model.syncingImage = false;
-        yield MainMenuState(_model);
-      }
-
-    if(event is ProfileImageChangedEvent)
-      {
-        yield ProfileImageChangedState(_model);
+        String? fileExt = await repo.uploadProfileImage(file);
+        await repo.setPlayerField(_model.uid!, Player.PROFILE_ID, fileExt);
       }
 
     if(event is NewNameSubmittedEvent)
       {
         if(event.name.isNullOrEmpty()) return;
-        repo.uploadPlayerName(event.name);
+        await repo.setPlayerField(_model.uid!, Player.NAME, event.name);
       }
 
     if(event is DebugEvent)
@@ -141,7 +223,7 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
     if(event is CreateGameEvent)
     {
-      String? roomCode = await repo.createGame();
+      String? roomCode = await repo.createGame(_model.uid!);
       if(roomCode != null) yield GoToGameRoomState(_model);
     }
 
@@ -161,12 +243,21 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
   }
 
 
+
+
 }
 
 
 
 
+
 class MainMenuModel extends ChangeNotifier {
+
+  String? uid; // Null or not determines logged-in/logged-out state
+
+  Player? player;
+  bool syncingImage = false;
+
   bool privacyPolicyAccepted = false;
   bool profileSetUp = false;
   bool tutorialSetUp = false;
@@ -177,10 +268,19 @@ class MainMenuModel extends ChangeNotifier {
     if(notify) notifyListeners();
   }
 
-  Player? player;
-
-  bool syncingImage = false;
-
   String? privacyPolicyString;
+
+  void setUserId(String? userId) {
+    this.uid = userId;
+  }
+
+  void setPlayer(Player player) {
+    if(this.player != null)
+    {
+      player.profileImage = this.player!.profileImage;
+    }
+
+    this.player = player;
+  }
 }
 

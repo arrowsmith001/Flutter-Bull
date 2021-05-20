@@ -29,12 +29,43 @@ class FirebaseDatabaseProvider {
 
   Stream<Player?> streamPlayer(String? userId) {
     return _dbRef.child(DB_PLAYERS).child(userId).onValue
-        .map((event) => Player.fromJson(Map.from(event.snapshot.value))
-    );
+              .map((event) => event.snapshot.value == null ? null : Player.fromJson(Map.from(event.snapshot.value)));
+
   }
+
+  Stream<Map<String,dynamic>> streamPlayerChanges(String userId) {
+    return _dbRef.child(DB_PLAYERS).child(userId).onChildChanged
+        .map((event) => {event.snapshot.key : event.snapshot.value});
+  }
+
+  Stream<Map<String,dynamic>> streamChildChanges(List<String> path) {
+    DatabaseReference ref = _dbRef.reference();
+    for(String s in path) ref = ref.child(s);
+    return ref.onChildChanged
+        .map((event) => {event.snapshot.key : event.snapshot.value});
+  }
+  Stream<Map<String,dynamic>> streamChildAdditions(List<String> path) {
+    DatabaseReference ref = _dbRef.reference();
+    for(String s in path) ref = ref.child(s);
+    return ref.onChildAdded
+        .map((event) => {event.snapshot.key : event.snapshot.value});
+  }
+  Stream<Map<String,dynamic>> streamChildRemovals(List<String> path) {
+    DatabaseReference ref = _dbRef.reference();
+    for(String s in path) ref = ref.child(s);
+    return ref.onChildRemoved
+        .map((event) => {event.snapshot.key : event.snapshot.value});
+  }
+
 
   Future<void> setRoom(Room room) async {
     await _dbRef.child('rooms').child(room.code).set(room.toJson());
+  }
+
+
+  Stream<T> streamPlayerField<T>(String userId, String fieldName) {
+    return _dbRef.child(DB_PLAYERS).child(userId).child(fieldName).onValue
+        .map((event) => event.snapshot.value as T);
   }
 
   void test(dynamic args) async {
@@ -49,8 +80,13 @@ class FirebaseDatabaseProvider {
   }
 
   Future<void> setProfileId(String uid, String fileExt) async {
-    await _dbRef.child(DB_PLAYERS).child(uid).child(DB_PLAYER_PROFILEID).set(fileExt);
   }
+
+  Future<void> setPlayerField(String userId, String fieldId, value) async {
+    await _dbRef.child(DB_PLAYERS).child(userId).child(fieldId).set(value);
+  }
+
+
 
   Future<void> setName(String? userId, String name) async {
     if(userId == null) return null;
@@ -73,6 +109,7 @@ class FirebaseDatabaseProvider {
         .map((event) => Room.fromJson(Map.from(event.snapshot.value))
     );
   }
+
 
 
 }
@@ -122,10 +159,10 @@ class FirebaseCloudProvider {
     //var data = await _cloud.ref(PROFILE_IMAGE_PATH + userId + '.jpg').
   }
 
-  Future<Image?> getImage(String profileId) async {
+  Future<Image?> getProfileImage(String? profileId) async {
 
     try{
-      String url = await _cloud.ref(PROFILE_IMAGE_PATH + profileId).getDownloadURL();
+      String url = await _cloud.ref(PROFILE_IMAGE_PATH + profileId!).getDownloadURL();
       return Image.network(url,
           loadingBuilder: (context, child, e) {return MyLoadingIndicator();});
     }catch(e)
@@ -143,7 +180,7 @@ class FirebaseCloudProvider {
 class FirebaseAuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String? getCurrentUserId() => _auth.currentUser == null ?  null : _auth.currentUser!.uid;
+  Stream<String?> streamCurrentUserId() => _auth.authStateChanges().map((user) => user == null ? null : user.uid);
 
 }
 
@@ -157,66 +194,73 @@ class FirebaseProvider {
   FirebaseCloudProvider cloud = FirebaseCloudProvider();
   FirebaseAuthProvider auth = FirebaseAuthProvider();
 
-  String? _getCurrentUserId() => auth.getCurrentUserId();
+  Stream<String?> streamCurrentUserId() => auth.streamCurrentUserId();
+
+  Stream<Player?> streamPlayer(String id) {
+    return rtd.streamPlayer(id);
+  }
+
+  Stream<Map<String,dynamic>> streamPlayerChanges(String userId) {
+    return rtd.streamPlayerChanges(userId);
+  }
+
+  Future<void> setPlayerField(String userId, String fieldId, dynamic value) async {
+    await rtd.setPlayerField(userId, fieldId, value);
+  }
+
+  Stream<Map<String,dynamic>> streamChildChanges(List<String> path) {
+    return rtd.streamChildChanges(path);
+  }
+  Stream<Map<String,dynamic>> streamChildAdditions(List<String> path) {
+    return rtd.streamChildAdditions(path);
+  }
+  Stream<Map<String,dynamic>> streamChildRemovals(List<String> path) {
+    return rtd.streamChildRemovals(path);
+  }
+
+
+
 
   // Object Streams
 
-  Stream<Player?> streamCurrentPlayer() {
-    return rtd.streamPlayer(_getCurrentUserId());
+
+  Future<Image?> getProfileImage(String? profileId){
+    return cloud.getProfileImage(profileId);
   }
 
-  Future<Image?> getProfileImage(String profileId){
-    return cloud.getImage(profileId);
-  }
 
-  Stream<Image?> streamCurrentPlayerImage() async* {
-    var userId = _getCurrentUserId();
-    if(userId == null) yield null;
 
-    yield* rtd.streamProfileExt(userId!)
-        .asyncMap((profileId) async {
-
-      return await getProfileImage(profileId);
-    });
-  }
-
-  Stream<Image?> streamPlayerImage(String id) async* {
-
-    yield* rtd.streamProfileExt(id)
-        .asyncMap((profileId) async {
-
-      return await getProfileImage(profileId);
-    });
-  }
-
-  Stream<String?> streamCurrentPlayerRoomCode() {
-    return rtd.streamUserRoomCode(_getCurrentUserId());
-  }
 
   Stream<Room?> streamRoom(String? roomCode){
     return rtd.streamRoom(roomCode);
   }
 
 
-
-  // User functions
-
-  @override
-  Future<void> uploadProfileImage(File file) async {
-    String uid = _getCurrentUserId()!;
+  Future<String?> uploadProfileImage(File file) async {
     String photoId = Uuid().v4();
 
     String fileExt = photoId + '.' + file.path.split('.').last;
 
     await cloud.uploadProfileImage(file, fileExt);
-    await rtd.setProfileId(uid, fileExt);
+
+    return fileExt;
   }
 
-  @override
-  Future<String?> createGame() async {
+  Future<void> setProfileId(String userId, String fileExt) async
+  {
+    await rtd.setProfileId(userId, fileExt);
+  }
 
-    String? userId = _getCurrentUserId();
-    if(userId == null) return null;
+  // User functions
+
+
+
+
+
+
+
+  @override
+  Future<String?> createGame(String userId) async {
 
     String? roomCode = await fs.getNewGameRoomCode();
     if(roomCode == null) throw new Exception('Could not create room. Try again later.');
@@ -240,16 +284,19 @@ class FirebaseProvider {
 
   @override
   Future<void> setName(String name) async {
-    await rtd.setName(_getCurrentUserId(), name);
+    //await rtd.setName(_getCurrentUserId(), name);
   }
 
   Future<String> getPrivacyPolicyString() async {
     return await fs.getFieldFromDocumentFromCollection('content','privacy_policy','strings');
   }
 
-  streamPlayer(String id) {
-    return rtd.streamPlayer(id);
+  Stream<T> streamPlayerField<T>(String userId, String fieldName) {
+    return rtd.streamPlayerField<T>(userId, fieldName);
   }
+
+
+
 
 
 
