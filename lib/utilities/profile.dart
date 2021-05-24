@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bull/classes/firebase.dart';
-import 'package:flutter_bull/utilities/firebase.dart';
+import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';

@@ -34,9 +34,6 @@ import '../../routes.dart';
 import '_bloc.dart';
 
 class MainMenu extends StatefulWidget {
-  MainMenu();
-
-  MainMenuBloc mmBloc = MainMenuBloc(repo: Repository());
 
   @override
   _MainMenuState createState() => _MainMenuState();
@@ -177,9 +174,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   }
 
   Widget buildPlayerAvatar(BuildContext context, MainMenuModel model, {double borderWidth = 5, bool animate = true}) {
-    Player? player = model.player;
+    Player? player = model.user;
     Image? profileImage = player == null ? null : player.profileImage;
-    return Avatar(profileImage, borderWidth: borderWidth, borderFlashValue: animate ? _animController3.value : 0);
+    return Avatar(profileImage,
+        defaultImage: Assets.images.shutter,
+        borderWidth: borderWidth,
+        borderFlashValue: animate ? _animController3.value : 0);
   }
 
 
@@ -202,8 +202,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   // Todo generalize
   Widget buildEnterNameTextField(MainMenuModel model) {
     // TODO React to name change event
-    if(model.player != null && model.player!.name == null) {
-      _nameTextController.text = model.player!.name!;
+    if(model.user != null && model.user!.name == null) {
+      _nameTextController.text = model.user!.name!;
     }
 
     return Column(
@@ -337,7 +337,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   }
 
   Widget buildProfileSetupDialog(BuildContext context, MainMenuModel model){
-    Player? player = model.player;
+    Player? player = model.user;
     String? name = player == null ? null : player.name;
     Image? profileImage = player == null ? null : player.profileImage;
 
@@ -524,7 +524,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   }
 
   Widget buildUserBar(BuildContext context, MainMenuModel model){
-    Player? player = model.player;
+    Player? player = model.user;
     Image? playerImage = player == null ? null : player.profileImage;
 
     var userBarLeft = GestureDetector(
@@ -648,13 +648,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   },
                   listener: (context, s){
                     if(s is DialogState || s is MenuState) _animController.forward(from: 0);
-                    if(s is ProfileImageChangedState) {_animController2.forward(from: 0);}
+                    if(s is UserProfileImageChangedState) {_animController2.forward(from: 0);}
                     if(s is GoToGameRoomState) goToGameRoom();
 
                   },
                   builder: (context, state){
 
-                    Player? player = state.model.player;
+                    Player? player = state.model.user;
                     Image? playerImage = player == null ? null : player.profileImage;
 
                     if(state is InitialState) return EmptyWidget();
@@ -690,10 +690,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                                 .InvisibleIgnoreExt()
                                 .FlexibleExt(USER_BAR_FLEX),
 
-                            Column(
-                              children: [
-                                UtterBullTitle().FlexibleExt(TITLE_FLEX),
-                              ],
+                            Container(
+                              //color: AppColors.DebugColor,
+                              child: Column(
+                                children: [
+                                  UtterBullTitle().ExpandedExt(),
+                                ],
+                              ),
                             ).ExpandedExt(),
 
                             // Join/Create Game Buttons

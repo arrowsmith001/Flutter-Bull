@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/classes/firebase.dart';
-import 'package:flutter_bull/utilities/firebase.dart';
+import 'package:flutter_bull/firebase/provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -86,7 +87,26 @@ class Repository {
   }
 
   Future<String?> uploadProfileImage(File file) async {
-    return await _firebaseProvider.uploadProfileImage(file);
+    String? fileExt = await _firebaseProvider.uploadProfileImage(file);
+
+    if(fileExt == null) return null;
+
+    // Create locally
+    // try {
+    //
+    //   var dir = await getApplicationDocumentsDirectory();
+    //   String newPath = dir.path + '/' + fileExt;
+    //   File localFile = new File(newPath);
+    //   localFile = await localFile.create();
+    //   file.copy(newPath);
+    //
+    // }catch(e)
+    // {
+    //   print(e);
+    // }
+
+    return fileExt;
+
   }
 
   Future<void> setPlayerField(String userId, String childId, dynamic value) async {
@@ -133,6 +153,10 @@ class Repository {
 
   Stream<Room?> streamRoom(String roomCode) {
     return _firebaseProvider.streamRoom(roomCode);
+  }
+
+  Future<bool> joinGame(String userId, String roomCode) async {
+    return await _firebaseProvider.joinGame(userId, roomCode);
   }
 
   // Stream<Image?> streamPlayerImage(String id) {

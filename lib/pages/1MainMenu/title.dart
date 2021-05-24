@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:flutter_bull/utilities/res.dart';
 
 import '../../classes/classes.dart';
+import 'package:flutter_bull/extensions.dart';
 
 
 class UtterBullTitle extends StatefulWidget {
@@ -74,11 +75,22 @@ class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProvid
     _controller.dispose();
     super.dispose();
   }
-  
+
+  // List<double> getScaleModifiers(List<ui.Image> list) {
+  //   double smallest = 1.0;
+  //   for(ui.Image img in list)
+  //     {
+  //
+  //     }
+  // }
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
+    //screenSize = largestSizeOfRatio(screenSize, 1, 1);
+
     var size = new Size(screenSize.width, screenSize.height);
+    //List<double> scales = getScaleModifiers([utter_text_image, bull_text_image, bull_image, spiny_1_image, spiny_2_image]);
 
     var utter = CustomPaint(
         foregroundPainter: UtterPainter(utter_text_image, _utterFraction),
@@ -107,6 +119,25 @@ class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProvid
       ],
     );
   }
+
+  Size largestSizeOfRatio(Size screenSize, int width, int height) {
+
+    double currentWidthRatio = screenSize.width.toDouble() / screenSize.height.toDouble();
+    double desiredWidthRatio = width / height;
+
+    return Size(screenSize.width, screenSize.height);
+    if(currentWidthRatio > desiredWidthRatio)
+    {
+      return Size(screenSize.width * desiredWidthRatio, screenSize.height);
+    }
+    else
+    {
+      return Size(screenSize.width, screenSize.height * desiredWidthRatio);
+    }
+
+  }
+
+
 }
 
 
@@ -119,15 +150,19 @@ class UtterPainter extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = imageRect;
+    var dstRect = shrinkImageToFitSize(image, size);
     var scaleFactor = 0.8;
 
-    //canvas.rotate(-0.2);
+    //
+    dstRect = imageRect;
     canvas.translate(10, 35);
     rotateAroundCenter(canvas, 2 * math.pi * -0.02);
-    scaleAroundCenter(canvas, 0.8);
+    scaleAroundCenter(canvas, scaleFactor);
+    //
+
     canvas.drawImageRect(image, imageRect, dstRect, Paint());
   }
+
 
 }
 
@@ -139,11 +174,15 @@ class BullPainter extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = imageRect;
+    var dstRect = shrinkImageToFitSize(image, size);
     var scaleFactor = 0.8;
 
+    //
+    dstRect = imageRect;
     canvas.translate(100, 100);
     scaleAroundCenter(canvas, scaleFactor);
+    //
+
     canvas.drawImageRect(image, imageRect, dstRect, Paint());
   }
 
@@ -157,13 +196,15 @@ class BullImagePainter extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = imageRect;
+    var dstRect = shrinkImageToFitSize(image, size);
     var scaleFactor = 0.6;
 
-    //print(_fraction);
-
+    //
+    dstRect = imageRect;
     canvas.translate(0, 75);
     scale(canvas, scaleFactor);
+    //
+
     canvas.drawImageRect(image, imageRect, dstRect, Paint());
   }
 
@@ -177,11 +218,14 @@ class SpinyPainter1 extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
     
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = imageRect;
+    var dstRect = shrinkImageToFitSize(image, size);
     var scaleFactor = 0.45;
 
+    //
+    dstRect = imageRect;
     scale(canvas, scaleFactor);
     rotateAroundCenter(canvas, _fraction * 2 * math.pi);
+    //
 
     canvas.drawImageRect(image, imageRect, dstRect, Paint()
     ..colorFilter = ColorFilter.mode(ui.Color.fromARGB(255, 255, 255, 255), ui.BlendMode.srcATop));
@@ -197,12 +241,15 @@ class SpinyPainter2 extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = imageRect;
+    var dstRect = shrinkImageToFitSize(image, size);
     var scaleFactor = 0.475;
 
+    //
+    dstRect = imageRect;
     scale(canvas, scaleFactor);
     rotateAroundCenter(canvas, _fraction * 2 * math.pi * 0.5);
-    var colorVal = 179;
+    //
+
     canvas.drawImageRect(image, imageRect, dstRect, Paint()
       ..colorFilter = ColorFilter.mode(ui.Color.fromARGB(255, 230, 230, 0), ui.BlendMode.srcATop));
   }

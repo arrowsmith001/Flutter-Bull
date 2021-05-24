@@ -1,5 +1,6 @@
 import 'package:flutter/src/widgets/image.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
 import 'package:flutter_bull/pages/1MainMenu/_bloc.dart';
 
 class MainMenuState{
@@ -39,11 +40,11 @@ class MenuState extends MainMenuState{
   const MenuState(MainMenuModel model) : super(model);
 }
 
-class ProfileImageChangedState extends MainMenuState{
-  const ProfileImageChangedState(MainMenuModel model) : super(model);
+class UserProfileImageChangedState extends MainMenuState{
+  const UserProfileImageChangedState(MainMenuModel model) : super(model);
 }
-class NameChangedState extends MainMenuState{
-  const NameChangedState(MainMenuModel model) : super(model);
+class UserNameChangedState extends MainMenuState{
+  const UserNameChangedState(MainMenuModel model) : super(model);
 }
 
 class GoToGameRoomState extends MainMenuState{

@@ -43,18 +43,19 @@ class MainMenuButton extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget{
-  Avatar(this.image, {this.borderFlashValue = 0, this.borderWidth = 5});
+  Avatar(this.image, {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false, this.defaultImage});
   final double borderFlashValue;
   final double borderWidth;
-  final bool loading = false;
+  final bool loading;
   final Image? image;
-  final ImageProvider defaultImage = Assets.images.shutter;
+  final ImageProvider? defaultImage;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
 
+        Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: MyLoadingIndicator()),
         Container(
             decoration: BoxDecoration(
               //color: Color.fromARGB(101, 229, 220, 220),
@@ -62,14 +63,13 @@ class Avatar extends StatelessWidget{
                 border: Border.all(
                     color: Color.lerp(Colors.blueAccent, Colors.white, borderFlashValue)!,
                     width: borderWidth),
-                image: DecorationImage(
+                image: image == null && defaultImage == null ? null : DecorationImage(
                   colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
                   fit: BoxFit.cover,
-                  image: image == null ? defaultImage : image!.image,
+                  image: image == null ? defaultImage! : image!.image,
                 ))
         ),
 
-        loading ? MyLoadingIndicator() : EmptyWidget()
 
       ],
     );

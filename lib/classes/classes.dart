@@ -31,6 +31,30 @@ abstract class SingleImageCustomPainterAlwaysRepaint extends CustomPainter {
     canvasActionAboutCenter(canvas, canvas.rotate, angle, offset);
   }
 
+  Rect shrinkImageToFitSize(ui.Image image, Size size) {
+    if(image.height <= size.height && image.width <= size.width)
+      return Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
+
+    double heightRatio = size.height / image.height;
+    double widthRatio = size.width / image.width;
+
+    double w, h;
+    if(heightRatio < widthRatio)
+      {
+        w = image.width.toDouble() * heightRatio;
+        h = image.height.toDouble() * heightRatio;
+      }
+    else
+      {
+        w = image.width.toDouble() * widthRatio;
+        h = image.height.toDouble() * widthRatio;
+      }
+
+      double dw = size.width - w;
+      double dh = size.height - h;
+      return Rect.fromLTWH(dw/2, dh/2, w, h);
+  }
+
 }
 
 class MyBorderRadii {

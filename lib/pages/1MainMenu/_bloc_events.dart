@@ -1,5 +1,6 @@
 import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc_states.dart';
 import 'package:flutter_bull/pages/1MainMenu/_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -7,17 +8,9 @@ class MainMenuEvent{}
 
 class PrivateMainMenuEvent extends MainMenuEvent {}
 
-class OnUserIdStreamEvent extends PrivateMainMenuEvent {
-  OnUserIdStreamEvent(this.userId);
-  String? userId;
-}
-class OnPlayerStreamEvent extends PrivateMainMenuEvent {
-  OnPlayerStreamEvent(this.player);
-  Player player;
-}
-class OnPlayerChangeStreamEvent extends PrivateMainMenuEvent {
-  OnPlayerChangeStreamEvent(this.changes);
-  Map changes;
+class FirebaseStateEvent extends PrivateMainMenuEvent {
+  FirebaseStateEvent(this.state);
+  FirebaseState state;
 }
 
 

@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/pages/widgets.dart';
-import 'package:flutter_bull/utilities/firebase.dart';
+import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -56,11 +58,29 @@ class _GameRoomState extends State<GameRoom> {
     _bloc.add(SetupEvent());
 
   }
+  ScrollController _scrollController = new ScrollController();
+  GlobalKey<AnimatedListState> _listKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state){
+
+        if(state is NewRoomState)
+        {
+          print('NEW ROOM');
+          setState(() {
+            _listKey = new GlobalKey();
+          });
+        }
+
+        if(state is RoomPlayerRemovedState)
+          if(_listKey.currentState != null)  _listKey.currentState!.removeItem(state.index, (context, animation) =>
+               _buildAvatar(state.model, state.index, animation));
+
+        if(state is RoomPlayerAddedState)
+          if(_listKey.currentState != null) _listKey.currentState!.insertItem(state.index);
 
       },
       builder: (context, state) {
@@ -69,55 +89,53 @@ class _GameRoomState extends State<GameRoom> {
         Room? room = model == null ? null : model.room;
 
         if(room == null || model == null) return Center(child:  CircularProgressIndicator(),);
+        print(model.room!.toJson().toString());
 
-        return SafeArea(
+        Widget WaitingRoom = SafeArea(
           child: Scaffold(
-            backgroundColor: AppColors.MainColor,
+            backgroundColor: Color.fromARGB(255, 4, 26, 88),
             body: Center(
               child: Column(
                 mainAxisSize:  MainAxisSize.max,
                 children: [
 
-                  Container(
-                      child: room == null || room.code == null ? EmptyWidget()
-                          : Text('Lets play: ' + room.code!, style: TextStyle(fontSize: 50))
-                  ),
+                  //
+                  // Column(
+                  //   children: [
+                  //     Center(
+                  //       child: ListView.builder(
+                  //         itemCount: model.playerCount,
+                  //         itemBuilder: (BuildContext context, int i) {
+                  //
+                  //           return _buildAvatar(model, i, null);
+                  //
+                  //           ;
+                  //         },
+                  //
+                  //       ),
+                  //     ).ExpandedExt(),
+                  //   ],
+                  // ).ExpandedExt(),
+
 
                   Column(
                     children: [
-                      Center(
-                        child: SingleChildScrollView(
-                          child: Wrap(
-                            children:
-                            List.generate(model.playerCount, (i) {
-                              Player? player = model.getPlayer(i);
-                              Image? image = player == null ? null : player.profileImage;
+                      AnimatedList(
+                        key: _listKey,
+                        initialItemCount: model.roomPlayerCount,
+                        itemBuilder: (BuildContext context, int i, Animation<double> animation)
+                        {
+                          //if(model.getRoomMember(i) == null) return Text(i.toString());
+                          return _buildAvatar(model, i, animation);
+                        },
 
-                              double dim = MediaQuery.of(context).size.width/2;
-                              double spacing = 10;
-                              dim = dim - 2*spacing;
-
-                              return Avatar(image).SizedBoxExt(height: dim, width: dim).PaddingExt(EdgeInsets.all(spacing));
-
-                              return ListTile(
-                                  leading: player == null ? null
-                                      : Container(width: dim, height: dim,
-                                    decoration: BoxDecoration(
-                                        image: image == null ? null : DecorationImage(image: image.image)),),
-                                  title: Text(player == null ? '' : player.name??'<unknown>')
-                              );
-                            })
-                            ,
-                          ),
-                        ),
                       ).ExpandedExt(),
                     ],
-                  ).ExpandedExt(),
+                  ).PaddingExt(EdgeInsets.all(20)).ExpandedExt(),
 
                   Container(
-
                       child: room == null || room.code == null ? EmptyWidget()
-                          : Text('Lets play: ' + room.code!, style: TextStyle(fontSize: 50))
+                          : Text('Lets play: ' + room.code!, style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
                   ),
 
 
@@ -126,7 +144,48 @@ class _GameRoomState extends State<GameRoom> {
             ),
           ),
         );
+
+        return WaitingRoom;
       },
+    );
+  }
+
+  Widget _buildAvatar(GameRoomModel model, int i, Animation? animation) {
+    if(animation != null) animation.addListener(() {setState(() {
+
+    });});
+
+    Player? player = model.getRoomMember(i);
+    Image? image = player == null ? null : player.profileImage;
+
+    double dim = MediaQuery.of(context).size.width/3;
+    double spacing = 10;
+    dim = dim - 2*spacing;
+    dim = min(dim, MediaQuery.of(context).size.height/model.roomPlayerCount);
+
+    var avatar = Avatar(image,
+        loading: image == null,
+        defaultImage: null)
+        .SizedBoxExt(height: dim, width: dim)
+        .PaddingExt(EdgeInsets.all(spacing)).ScaleExt(animation == null ? 1 : animation.value);
+
+    var name = AutoSizeText(player == null || player.name == null ? '' : player.name!,
+      maxLines: 1,
+      style: TextStyle(fontSize: 64, color: Colors.white, fontFamily: FontFamily.lapsusProBold),);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        avatar,
+
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            name,
+            Text('0', style: TextStyle(color: Colors.amberAccent, fontSize: 20), textAlign: TextAlign.start,)
+          ],
+        ).FlexibleExt()
+      ],
     );
   }
 }

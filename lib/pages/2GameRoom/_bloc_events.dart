@@ -1,9 +1,17 @@
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc_states.dart';
 
 class GameRoomEvent {}
 
 
 class PrivateGameRoomEvent extends GameRoomEvent {}
+
+class FirebaseStateEvent extends GameRoomEvent{
+  FirebaseStateEvent(this.state);
+  FirebaseState state;
+}
+
+
 
 class OnUserIdStreamEvent extends PrivateGameRoomEvent {
   OnUserIdStreamEvent(this.userId);
@@ -12,7 +20,7 @@ class OnUserIdStreamEvent extends PrivateGameRoomEvent {
 class OnPlayerStreamEvent extends PrivateGameRoomEvent {
   OnPlayerStreamEvent(this.userId, this.player);
   String userId;
-  Player player;
+  Player? player;
 }
 class OnPlayerChangeStreamEvent extends PrivateGameRoomEvent {
   OnPlayerChangeStreamEvent(this.userId, this.changes);

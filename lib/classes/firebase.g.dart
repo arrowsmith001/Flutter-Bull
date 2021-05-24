@@ -36,7 +36,7 @@ Room _$RoomFromJson(Map json) {
   return Room()
     ..code = json['code'] as String?
     ..playerIds =
-        (json['playerIds'] as List<dynamic>).map((e) => e as String).toList();
+        (json['playerIds'] as List<dynamic>?)?.map((e) => e as String).toList();
 }
 
 Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{

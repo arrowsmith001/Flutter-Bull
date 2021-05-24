@@ -6,7 +6,10 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bull/classes/firebase.dart';
-import 'package:flutter_bull/utilities/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
+import 'package:flutter_bull/firebase/_bloc_states.dart' as fbStates;
+import 'package:flutter_bull/firebase/_bloc_events.dart' as fbEvents;
+import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/repository.dart';
@@ -18,48 +21,28 @@ import '_bloc_events.dart';
 import '_bloc_states.dart';
 
 class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
-  MainMenuBloc({required this.repo}) : super(InitialState(new MainMenuModel())){
+  FirebaseBloc firebaseBloc;
 
-    // subscriptions.add(repo.streamCurrentPlayerImage().listen((event)
-    // {
-    //   if(event != null) _model.setImage(event);
-    // }));
-    //
-    // subscriptions.add(repo.streamCurrentPlayer().listen((event)
-    // {
-    //   _model.player = event;
-    //   if(_model.player != null && _model.player!.occupiedRoomCode != null)
-    //     {
-    //       add(GoToGameRoomEvent());
-    //     }
-    // }));
-    //
-    // repo.subscribeToCurrentPlayer().listen((event) {
-    //   print(event.snapshot.key.toString() + ' : ' + event.snapshot.value.toString());
-    // });
-    //
-    // _model.addListener(() { add(ProfileImageChangedEvent());  });
+  MainMenuBloc(this.model, {required this.firebaseBloc}) : super(InitialState(model)){
+
+
+    this.firebaseBloc.bs.listen((state) {
+      add(FirebaseStateEvent(state));
+    });
 
     refreshPrefs();
   }
 
   void refreshPrefs(){
-    _model.privacyPolicyAccepted = _prefs.getBool(AppStrings.PRIVACY_POLICY_ACCEPTED)??false;
-    _model.profileSetUp = _prefs.getBool(AppStrings.PREFS_FIRST_TIME_PROFILE_SETUP)??false;
-    _model.tutorialSetUp = _prefs.getBool(AppStrings.PREFS_TUTORIAL_MODE_ON)??false;
+    model.privacyPolicyAccepted = _prefs.getBool(AppStrings.PRIVACY_POLICY_ACCEPTED)??false;
+    model.profileSetUp = _prefs.getBool(AppStrings.PREFS_FIRST_TIME_PROFILE_SETUP)??false;
+    model.tutorialSetUp = _prefs.getBool(AppStrings.PREFS_TUTORIAL_MODE_ON)??false;
     add(new PrefsUpdated());
   }
 
 
-  MainMenuModel _model = new MainMenuModel();
-
-  Repository repo;
   PrefsManager get _prefs => PrefsManager();
 
-  List<StreamSubscription> subscriptions = [];
-  StreamSubscription<String?>? userIdSub;
-  StreamSubscription<Player?>? playerSub;
-  StreamSubscription<Map>? playerChangesSub;
 
   @override
   void onEvent(MainMenuEvent event) {
@@ -67,105 +50,70 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
     print('Event received: ' + event.runtimeType.toString() + " at " + DateTime.now().toString());
   }
 
+
+  MainMenuModel model;
+
+
   @override
   Stream<MainMenuState> mapEventToState(MainMenuEvent event) async* {
 
-    if(event is SetupEvent){
+    if(event is FirebaseStateEvent)
+      {
+        fbStates.FirebaseState state = event.state;
+        model.dataModel = state.model;
 
-      if(userIdSub != null) await userIdSub!.cancel();
-      userIdSub = repo.streamCurrentUserId().listen((userId) {
-        if(userId != null)
+        if(state is fbStates.ProfileImageUpdatedState)
         {
-          add(OnUserIdStreamEvent(userId));
+          if(state.model.isUser(state.userId))
+          {
+            yield UserProfileImageChangedState(model);
+          }
         }
-      });
-    }
 
-    if(event is OnUserIdStreamEvent)
-    {
-      _model.uid = event.userId;
-
-      // This is just to initialize the player
-      await repo.setPlayerField(_model.uid!, Player.ID, _model.uid);
-
-      if(playerSub != null) await playerSub!.cancel();
-      if(playerChangesSub != null) await playerChangesSub!.cancel();
-
-      playerSub = repo.streamPlayer(_model.uid!).listen((player) {
-        if (player != null) {
-          //print('streamPlayer: ${player.toJson().toString()}' + DateTime.now().toString());
-          add(OnPlayerStreamEvent(player));
-        }
-      });
-
-      playerChangesSub = repo.streamPlayerChanges(_model.uid!).listen((changes) {
-            if (changes != null) {
-              //print('streamPlayerChanges: ${changes.toString()}' + DateTime.now().toString());
-              add(OnPlayerChangeStreamEvent(changes));
-            }
-          });
-    }
-
-
-    if(event is OnPlayerStreamEvent)
-    {
-      Player player = event.player;
-
-      if(_model.player == null || _model.player!.profileImage == null)
+        if(state is fbStates.NameChangedState)
         {
-          print('event is OnPlayerStreamEvent : Initializing player image');
-
-          _model.syncingImage = true;
-          yield MainMenuState(_model);
-
-          Image? newProfileImage = await repo.getProfileImage(player.profileId);
-          player.profileImage = newProfileImage;
-
-          _model.syncingImage = false;
+          if(state.model.isUser(state.userId))
+          {
+            yield UserNameChangedState(model);
+          }
         }
 
-      _model.setPlayer(player);
-      yield PlayerUpdatedState(_model);
-    }
+        if(state is fbStates.PrivacyPolicyStringRetrievedState)
+        {
+          model.privacyPolicyString = state.privacyPolicy;
+          yield PrivacyPolicyState(model);
+        }
 
-    if(event is OnPlayerChangeStreamEvent)
-    {
-        if(event.changes.containsKey(Player.PROFILE_ID))
-          {
-            print('OnPlayerChangeStreamEvent: Profile Id Changed');
-            String profileId = event.changes[Player.PROFILE_ID];
+        if(state is fbStates.GameCreatedState)
+        {
+          if(state.roomCode != null) yield GoToGameRoomState(model);
+          else print('Game creation unsuccessful');
 
-            _model.syncingImage = true;
-            yield MainMenuState(_model);
+        }
+        if(state is fbStates.GameJoinedState)
+        {
+          if(state.success) yield GoToGameRoomState(model);
+          else print('Room join unsuccessful');
+        }
 
-            _model.player!.profileImage = await repo.getProfileImage(profileId);
-
-            _model.syncingImage = false;
-            yield ProfileImageChangedState(_model);
-          }
-        if(event.changes.containsKey(Player.NAME))
-          {
-            yield NameChangedState(_model);
-          }
-    }
-
+        yield MainMenuState(model);
+      }
 
     if(event is PrefsUpdated)
     {
-        if(_model.privacyPolicyAccepted == false)
+        if(model.privacyPolicyAccepted == false)
           {
-            _model.privacyPolicyString = await repo.getPrivacyPolicyString();
-            yield PrivacyPolicyState(_model);
+            firebaseBloc.add(fbEvents.PrivacyPolicyStringRequestedEvent());
           }
-        else if(_model.profileSetUp == false)
+        else if(model.profileSetUp == false)
           {
-            yield ProfileSetupState(_model);
+            yield ProfileSetupState(model);
           }
-        else if(_model.tutorialSetUp == false)
+        else if(model.tutorialSetUp == false)
           {
-            yield TutorialSetupState(_model);
+            yield TutorialSetupState(model);
           }
-        else yield MenuState(_model);
+        else yield MenuState(model);
       }
 
     if(event is PrivacyPolicyPressed)
@@ -177,8 +125,8 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
     if(event is ProfileSetupPressed)
     {
-      if(event.text.isNullOrEmpty() && (_model.player == null || _model.player!.name.isNullOrEmpty())) return;
-      await repo.setPlayerField(_model.uid!, Player.NAME, event.text);
+      if(event.text.isNullOrEmpty() && (model.user == null || model.user!.name.isNullOrEmpty())) return;
+      if(!event.text.isNullOrEmpty()) firebaseBloc.add(fbEvents.ChangeUsernameEvent(event.text!));
       await _prefs.setBool(AppStrings.PREFS_FIRST_TIME_PROFILE_SETUP, true);
       refreshPrefs();
     }
@@ -197,14 +145,13 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
         if(pickedFile == null) return;
 
         File file = new File(pickedFile.path);
-        String? fileExt = await repo.uploadProfileImage(file);
-        await repo.setPlayerField(_model.uid!, Player.PROFILE_ID, fileExt);
+        firebaseBloc.add(fbEvents.ImagePicked(file));
       }
 
     if(event is NewNameSubmittedEvent)
       {
         if(event.name.isNullOrEmpty()) return;
-        await repo.setPlayerField(_model.uid!, Player.NAME, event.name);
+        firebaseBloc.add(fbEvents.ChangeUsernameEvent(event.name));
       }
 
     if(event is DebugEvent)
@@ -218,13 +165,17 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
     if(event is GoToGameRoomEvent)
       {
-        yield GoToGameRoomState(_model);
+        yield GoToGameRoomState(model);
       }
 
     if(event is CreateGameEvent)
     {
-      String? roomCode = await repo.createGame(_model.uid!);
-      if(roomCode != null) yield GoToGameRoomState(_model);
+      firebaseBloc.add(fbEvents.CreateGameRequested());
+    }
+
+    if(event is JoinGameEvent)
+    {
+      firebaseBloc.add(fbEvents.JoinGameRequested(event.code));
     }
 
     // if(event is RoomC)
@@ -235,52 +186,24 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
   }
 
-  @override
-  Future<void> close() {
-    for(var s in subscriptions) s.cancel();
-    _model.dispose();
-    return super.close();
-  }
 
 
 
 
 }
 
+class MainMenuModel {
+  MainMenuModel(this.dataModel);
+  DataModel dataModel;
 
-
-
-
-class MainMenuModel extends ChangeNotifier {
-
-  String? uid; // Null or not determines logged-in/logged-out state
-
-  Player? player;
-  bool syncingImage = false;
-
+  // Variables
   bool privacyPolicyAccepted = false;
   bool profileSetUp = false;
   bool tutorialSetUp = false;
-
-  setImage(Image newImage){
-    bool notify = (newImage != player!.profileImage);
-    player!.profileImage = newImage;
-    if(notify) notifyListeners();
-  }
-
   String? privacyPolicyString;
 
-  void setUserId(String? userId) {
-    this.uid = userId;
-  }
+  Player? get user  => dataModel.user;
 
-  void setPlayer(Player player) {
-    if(this.player != null)
-    {
-      player.profileImage = this.player!.profileImage;
-    }
 
-    this.player = player;
-  }
 }
 

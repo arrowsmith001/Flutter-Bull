@@ -43,16 +43,19 @@ class Profile{
 @JsonSerializable()
 class Room {
 
+
+
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
   Map<String, dynamic> toJson() => _$RoomToJson(this);
 
   Room();
 
   static const String CODE = 'code';
+  static String PLAYER_IDS = 'playerIds';
 
   String? code;
-  List<String> playerIds = [];
+  List<String>? playerIds = [];
 
   @JsonKey(ignore: true)
-  List<Player> players = [];
+  List<Player?> players = [];
 }

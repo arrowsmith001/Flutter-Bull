@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/pages/0Loading/_bloc.dart';
 import 'package:flutter_bull/pages/0Loading/_page.dart';
@@ -19,7 +20,7 @@ import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
 import 'package:flutter_bull/particles.dart';
 import 'package:flutter_bull/utilities/_center.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
-import 'package:flutter_bull/utilities/firebase.dart';
+import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
@@ -40,17 +41,30 @@ class MyApp extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
+      return _buildApp();
+  }
 
+  Widget _buildApp(){
       return RepositoryProvider(
         lazy: true,
         create: (_) => Repository(),
         child: MultiBlocProvider(
             providers: [
               BlocProvider<LoadingBloc>(lazy: true, create: (_) => LoadingBloc()),
-              BlocProvider<MainMenuBloc>(lazy: true, create: (_) =>
-                  MainMenuBloc(repo: RepositoryProvider.of<Repository>(_))),
-              BlocProvider<GameRoomBloc>(lazy: true, create: (_) =>
-                  GameRoomBloc(repo: RepositoryProvider.of<Repository>(_))),
+
+              BlocProvider<FirebaseBloc>(lazy: true, create: (_) => FirebaseBloc(repo: RepositoryProvider.of<Repository>(_))),
+
+              BlocProvider<MainMenuBloc>(lazy: true, create: (_)
+              {
+                var firebaseBloc = BlocProvider.of<FirebaseBloc>(_);
+                return MainMenuBloc(new MainMenuModel(firebaseBloc.model), firebaseBloc: firebaseBloc);
+              }),
+
+              BlocProvider<GameRoomBloc>(lazy: true, create: (_)
+              {
+                var firebaseBloc = BlocProvider.of<FirebaseBloc>(_);
+                return GameRoomBloc(new GameRoomModel(firebaseBloc.model), firebaseBloc: firebaseBloc);
+              }),
             ],
             child: CupertinoApp(
                 title: 'Utter Bull',
@@ -61,7 +75,6 @@ class MyApp extends StatelessWidget {
                 home: Loading()
             )),
       );
-
   }
 }
 
