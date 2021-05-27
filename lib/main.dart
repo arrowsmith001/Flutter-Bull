@@ -18,7 +18,6 @@ import 'package:flutter_bull/pages/1MainMenu/_bloc.dart';
 import 'package:flutter_bull/pages/1MainMenu/_page.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
 import 'package:flutter_bull/particles.dart';
-import 'package:flutter_bull/utilities/_center.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/repository.dart';
@@ -72,7 +71,10 @@ class MyApp extends StatelessWidget {
                     scaffoldBackgroundColor: AppColors.MainColor,
                     primaryColor: AppColors.MainColor
                 ),
-                home: Loading()
+                home: Loading(),
+              onGenerateRoute: (settings) {
+
+              },
             )),
       );
   }

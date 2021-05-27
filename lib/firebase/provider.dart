@@ -11,7 +11,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/classes/firebase.dart';
-import 'package:flutter_bull/utilities/_center.dart';
 import 'package:flutter_bull/utilities/profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -103,7 +102,11 @@ class FirebaseProvider {
 
     Room room = new Room()
       ..code = roomCode
-      ..playerIds = [ userId ];
+      ..playerIds = [ userId ]
+      ..playerScores = { userId : 0 }
+      ..host = userId
+      ..page = RoomPages.LOBBY
+      ..turn = 0;
 
     await rtd.setRoom(room);
     await rtd.setRoomOccupancy(userId, roomCode);
@@ -131,6 +134,26 @@ class FirebaseProvider {
     return rtd.streamPlayerField<T>(userId, fieldName);
   }
 
+  Future<bool> setRoomLockedStatus(String roomCode, bool locked) async {
+    return await fs.setFieldsInDocumentInCollection({'locked' : locked}, roomCode, 'rooms');
+  }
+
+  Future<void> updateRoom(Room room) async {
+    return rtd.updateRoom(room);
+  }
+
+  Future<bool> setRoomField(String roomCode, List<String> path, dynamic value) async {
+    return await rtd.setRoomField(roomCode, path, value);
+  }
+
+  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes) async {
+    return await rtd.setRoomFields(roomCode, changes);
+  }
+
+  Future<bool> pushVote(String userId, String roomCode, Vote vote, int turn) async {
+    return await rtd.pushVote(userId, roomCode, vote, turn);
+  }
+
 }
 
 class FirebaseDatabaseProvider {
@@ -140,9 +163,6 @@ class FirebaseDatabaseProvider {
 
   static const String DB_PLAYERS = 'players';
   static const String DB_ROOMS = 'rooms';
-
-  static const String DB_PLAYER_PROFILEID = 'profileId';
-  static const String DB_OCCUPIED_ROOM_CODE = 'occupiedRoomCode';
 
 
   Stream<Player?> streamPlayer(String? userId) {
@@ -180,6 +200,10 @@ class FirebaseDatabaseProvider {
     await _dbRef.child('rooms').child(room.code).set(room.toJson());
   }
 
+  Future<void> updateRoom(Room room) async {
+    await _dbRef.child('rooms').child(room.code).update(room.toJson());
+  }
+
 
   Stream<T> streamPlayerField<T>(String userId, String fieldName) {
     return _dbRef.child(DB_PLAYERS).child(userId).child(fieldName).onValue
@@ -192,35 +216,49 @@ class FirebaseDatabaseProvider {
     bool success = false;
     bool playerAddedToRoom = false;
 
+    int attempts = 0;
+    const int MAX_ATTEMPTS = 10;
+
     do {
       try{
-        transactionResult = await _dbRef.child('rooms').child(roomCode).child(Room.PLAYER_IDS).runTransaction((data) async {
-          var list = List.from(data.value as List);
-          print(list.toString());
-          if(!list.contains(userId))
+        transactionResult = await _dbRef.child('rooms').child(roomCode).runTransaction((data) async {
+
+          Room room = Room.fromJson(Map.from(data.value));
+          List<String>? ids = room.playerIds;
+          Map<String, int>? scores = room.playerScores;
+
+          if(ids == null) room.playerIds = [userId];
+          if(scores == null) room.playerScores = {userId : 0};
+
+          if(!room.playerIds!.contains(userId))
           {
-            list.add(userId);
+            room.playerIds!.add(userId);
+            room.playerScores!.addAll({userId : 0});
             playerAddedToRoom = true;
           }
-          data.value = list;
+          data.value = room.toJson();
           return data;
         });
         success = (transactionResult.committed);
       }
       catch(e)
       {
+        print('Join room error: ' + e.toString());
         playerAddedToRoom = false;
       }
+
+      attempts++;
     }
-    while(success == false);
+    while(success == false && attempts < MAX_ATTEMPTS);
+
+    if(success == false) return false;
 
     await setRoomOccupancy(userId, roomCode);
-    print('playerAddedToRoom: ' + playerAddedToRoom.toString());
     return true;
   }
 
   Stream<String> streamProfileExt(String userId) {
-    return _dbRef.child(DB_PLAYERS).child(userId).child(DB_PLAYER_PROFILEID).onValue
+    return _dbRef.child(DB_PLAYERS).child(userId).child(Player.PROFILE_ID).onValue
         .map((event) {
       return event.snapshot.value;
     });
@@ -241,11 +279,11 @@ class FirebaseDatabaseProvider {
   }
 
   Future<void> setRoomOccupancy(String userId, String roomCode) {
-    return _dbRef.child(DB_PLAYERS).child(userId).child(DB_OCCUPIED_ROOM_CODE).set(roomCode);
+    return _dbRef.child(DB_PLAYERS).child(userId).child(Player.OCCUPIED_ROOM_CODE).set(roomCode);
   }
 
   Stream<String?> streamUserRoomCode(String? userId) {
-    return _dbRef.child(DB_PLAYERS).child(userId).child(DB_OCCUPIED_ROOM_CODE).onValue
+    return _dbRef.child(DB_PLAYERS).child(userId).child(Player.OCCUPIED_ROOM_CODE).onValue
         .map((event) {
       return event.snapshot.value;
     });
@@ -255,6 +293,55 @@ class FirebaseDatabaseProvider {
     return _dbRef.child(DB_ROOMS).child(roomCode).onValue
         .map((event) => event.snapshot.value == null ? null : Room.fromJson(Map.from(event.snapshot.value))
     );
+  }
+
+  Future<bool> setRoomField(String roomCode, List<String> path, dynamic value) async {
+    DatabaseReference ref = _dbRef.child('rooms').child(roomCode);
+    for(String s in path) ref = ref.child(s);
+    await ref.set(value);
+    return true;
+  }
+
+  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes) async {
+    await _dbRef.child('rooms').child(roomCode).update(changes);
+    return true;
+  }
+
+  Future<bool> pushVote(String userId, String roomCode, Vote vote, int turn) async {
+    TransactionResult result;
+    bool success = false;
+    const int MAX_ATTEMPTS = 10;
+    int attempts = 0;
+
+    do{
+      try{
+        result = await _dbRef.child('rooms').child(roomCode).child(Room.PLAYER_VOTES).child(userId)
+            .runTransaction((data) async
+        {
+
+          List votes;
+          if(data.value == null) votes = [vote.toJson()];
+          else
+            {
+              votes = List.from(data.value as List);
+              assert(votes.length == turn);
+              votes.add(vote.toJson());
+            }
+          data.value = votes;
+          return data;
+
+        });
+        success = (result.committed);
+      }catch(e)
+      {
+        print(e.toString());
+        success = false;
+      }
+      attempts++;
+    }while(attempts < MAX_ATTEMPTS && success == false);
+
+    return success;
+
   }
 
 
@@ -284,7 +371,7 @@ class FirebaseFirestoreProvider {
     return code;
   }
 
-  createNewRoom(String roomCode) async {
+  Future<void> createNewRoom(String roomCode) async {
     await _firestore.collection('rooms').doc(roomCode).set({
     'date_created' : DateTime.now()
     });
@@ -297,10 +384,16 @@ class FirebaseFirestoreProvider {
     return data[field];
   }
 
+  Future<bool> setFieldsInDocumentInCollection(Map<String, dynamic> values, String document, String collection) async {
+    await _firestore.collection(collection).doc(document).set(values, SetOptions(merge: true));
+    return true;
+  }
+
   Future<bool> doesRoomExist(String roomCode) async {
     var task = await _firestore.collection('rooms').doc(roomCode).get();
     return task.exists;
   }
+
 
 }
 class FirebaseCloudProvider {

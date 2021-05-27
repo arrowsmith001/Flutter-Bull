@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bubble/bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
@@ -8,13 +9,15 @@ import '../widgets.dart';
 
 class MainMenuButton extends StatelessWidget {
 
-  MainMenuButton(this.text, this.image, this.onPressed, {this.fontSize = 16, this.minFontSize = 16, this.imageSize = 16});
+  MainMenuButton(this.text, this.image, this.onPressed, {this.fontSize = 16, this.minFontSize = 16, this.imageSize = 16, this.fontColor = Colors.white});
 
   String text;
   Widget image;
   double fontSize;
   double minFontSize;
   double imageSize;
+  Color fontColor;
+  Widget? secondChild;
 
   dynamic Function() onPressed;
 
@@ -32,7 +35,7 @@ class MainMenuButton extends StatelessWidget {
                   stops: [0.1, 0.3, 0.65, 0.85],
                   colors: [Colors.white, Colors.white,Colors.white, Colors.grey]).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 
-              child: AutoSizeText(text, minFontSize: minFontSize, maxLines: 2, textAlign: TextAlign.end, style: AppStyles.MainMenuButtonTextStyle(fontSize)))
+              child: AutoSizeText(text, minFontSize: minFontSize, maxLines: 1, textAlign: TextAlign.end, style: AppStyles.MainMenuButtonTextStyle(fontSize, fontColor)))
                 .FlexibleExt(),
 
           image.SizedBoxExt(height: imageSize, width: imageSize).PaddingExt(new EdgeInsets.fromLTRB(15,3,15,3)).FlexibleExt()
@@ -43,23 +46,36 @@ class MainMenuButton extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget{
-  Avatar(this.image, {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false, this.defaultImage});
+  Avatar(this.image, 
+      {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false, 
+        this.defaultImage, this.size, this.shape = BoxShape.circle, this.borderRadius = 8.0});
   final double borderFlashValue;
   final double borderWidth;
   final bool loading;
   final Image? image;
   final ImageProvider? defaultImage;
+  final Size? size;
+  final BoxShape shape;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
+
+    Widget loadingIndicator = MyLoadingIndicator(size);
+    loadingIndicator = Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: loadingIndicator);
+    if(size != null) loadingIndicator = loadingIndicator.SizedBoxExt(height: size!.height, width: size!.width);
+
     return Stack(
       children: [
 
-        Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: MyLoadingIndicator()),
+        loadingIndicator,
         Container(
+          height: size == null ? null : size!.height,
+            width: size == null ? null : size!.width,
             decoration: BoxDecoration(
               //color: Color.fromARGB(101, 229, 220, 220),
-                shape: BoxShape.circle,
+                shape: shape,
+                borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
                 border: Border.all(
                     color: Color.lerp(Colors.blueAccent, Colors.white, borderFlashValue)!,
                     width: borderWidth),
@@ -72,6 +88,38 @@ class Avatar extends StatelessWidget{
 
 
       ],
+    );
+  }
+}
+
+class MyBubble extends StatelessWidget {
+  const MyBubble(this.text, {this.size});
+  final String text;
+  final Size? size;
+
+  static const double DEFAULT_SIZE = 24;
+
+  @override
+  Widget build(BuildContext context) {
+    return Bubble(
+        nipOffset: 75,
+        nipWidth: 15,
+        nipHeight: 20,
+        padding: BubbleEdges.all(4),
+        margin: BubbleEdges.all(4),
+        elevation: 0,
+        nip: BubbleNip.leftTop,
+        child: Container(
+          height: size == null ? DEFAULT_SIZE : size!.height,
+          child: Center(
+            child: AutoSizeText(text,
+                minFontSize: 16,
+                textAlign:
+                TextAlign.center,
+                style: AppStyles.DebugStyle(32)),
+          )
+              .PaddingExt(EdgeInsets.all(8)),
+        )
     );
   }
 }

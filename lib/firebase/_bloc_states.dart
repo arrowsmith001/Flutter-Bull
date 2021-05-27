@@ -94,6 +94,30 @@ class RoomPlayerRemovedState extends FirebaseState {
   final String userId;
 }
 
-class RoomCodeChangedState extends FirebaseState {
-  const RoomCodeChangedState(DataModel model) : super(model);
+class NewRoomState extends FirebaseState {
+  const NewRoomState(DataModel model) : super(model);
 }
+
+class RoomPageChangedState extends FirebaseState {
+  const RoomPageChangedState(DataModel model, this.newPage) : super(model);
+  final String newPage;
+}
+
+
+// Game
+
+class TextEntryOutcomeState extends FirebaseState {
+  const TextEntryOutcomeState(this.success, DataModel model) : super(model);
+  final bool success;
+}
+
+class PlayerPhasesChangeState extends FirebaseState {
+  const PlayerPhasesChangeState(this.changes, DataModel model) : super(model);
+  final Map<String, String> changes;
+}
+
+class AllPlayersAtSamePhaseState extends FirebaseState {
+  const AllPlayersAtSamePhaseState(this.phase, DataModel model) : super(model);
+  final String phase;
+}
+

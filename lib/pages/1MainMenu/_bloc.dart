@@ -86,15 +86,23 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
         if(state is fbStates.GameCreatedState)
         {
-          if(state.roomCode != null) yield GoToGameRoomState(model);
-          else print('Game creation unsuccessful');
-
+          // if(state.roomCode != null) yield GoToGameRoomState(model);
+          // else print('Game creation unsuccessful');
+          print(state.roomCode != null ? 'Game creation successful' : 'Game creation unsuccessful');
         }
+
         if(state is fbStates.GameJoinedState)
         {
-          if(state.success) yield GoToGameRoomState(model);
-          else print('Room join unsuccessful');
+          // if(state.success) yield GoToGameRoomState(model);
+          // else print('Room join unsuccessful');
+          print(state.success ? 'Room join successful' : 'Room join unsuccessful');
         }
+
+        if(state is fbStates.NewRoomState)
+          {
+            yield NewRoomState(model);
+          }
+
 
         yield MainMenuState(model);
       }
@@ -165,7 +173,7 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
     if(event is GoToGameRoomEvent)
       {
-        yield GoToGameRoomState(model);
+        yield NewRoomState(model);
       }
 
     if(event is CreateGameEvent)

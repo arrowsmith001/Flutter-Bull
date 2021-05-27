@@ -44,18 +44,75 @@ class Profile{
 class Room {
 
 
-
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
   Map<String, dynamic> toJson() => _$RoomToJson(this);
 
   Room();
 
   static const String CODE = 'code';
-  static String PLAYER_IDS = 'playerIds';
+  static const String PAGE = 'page';
+  static const String HOST = 'host';
+  static const String TURN = 'turn';
+
+  static const String PLAYER_IDS = 'playerIds';
+  static const String PLAYER_ORDER = 'playerOrder';
+  static const String PLAYER_TRUTHS = 'playerTruths';
+  static const String PLAYER_TARGETS = 'playerTargets';
+  static const String PLAYER_TEXTS = 'playerTexts';
+  static const String PLAYER_PHASES = 'playerPhases';
+  static const String PLAYER_VOTES = 'playerVotes';
 
   String? code;
-  List<String>? playerIds = [];
+  String? host;
 
-  @JsonKey(ignore: true)
-  List<Player?> players = [];
+  String? page;
+  int? turn = 0;
+  int? revealed = 0;
+
+  List<String>? playerIds = [];
+  Map<String, int>? playerScores = {};
+
+  List<String>? playerOrder;
+  Map<String, String>? playerTargets;
+  Map<String, bool>? playerTruths;
+  Map<String, String>? playerTexts;
+  Map<String, String>? playerPhases;
+  Map<String, List<Vote>>? playerVotes;
+
+}
+
+@JsonSerializable()
+class Vote {
+
+  factory Vote.fromJson(Map<String, dynamic> json) => _$VoteFromJson(json);
+  Map<String, dynamic> toJson() => _$VoteToJson(this);
+
+  static const String VOTED_TRUE = 'votedTrue';
+  static const String TIME = 'time';
+  static const String TYPE = 'type';
+
+  static const String VOTE_TYPE_VOTER = 'v';
+  static const String VOTE_TYPE_READER = 'r';
+  static const String VOTE_TYPE_SABOTEUR = 's';
+
+  Vote();
+
+  String? type;
+  bool? votedTrue; // null for Reader
+  int? time; // null for Reader
+}
+
+class RoomPages {
+  static const String LOBBY = 'lobby';
+  static const String WRITE = 'write';
+  static const String CHOOSE = 'choose';
+  static const String PLAY = 'play';
+  static const String REVEALS = 'reveals';
+}
+
+class PlayerPhases {
+  static const String TEXT_ENTRY_CONFIRMED = 'textEntryConfirmed';
+  static const String CHOOSE = 'choose';
+  static const String PLAY = 'play';
+
 }

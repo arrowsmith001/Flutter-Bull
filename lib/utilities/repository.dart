@@ -113,6 +113,10 @@ class Repository {
     await _firebaseProvider.setPlayerField(userId, childId, value);
   }
 
+  Future<void> updateRoom(Room room) async {
+    await _firebaseProvider.updateRoom(room);
+  }
+
 
   Stream<Map<String,dynamic>> streamChildChanges(List<String> path) {
     return _firebaseProvider.streamChildChanges(path);
@@ -157,6 +161,23 @@ class Repository {
 
   Future<bool> joinGame(String userId, String roomCode) async {
     return await _firebaseProvider.joinGame(userId, roomCode);
+  }
+
+  Future<bool> setRoomLockedStatus(String roomCode, bool locked) async {
+    return await _firebaseProvider.setRoomLockedStatus(roomCode, locked);
+  }
+
+  Future<bool> setRoomField(String roomCode, List<String> path, dynamic value) async {
+    return await _firebaseProvider.setRoomField(roomCode, path, value);
+  }
+
+  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes) async {
+    return await _firebaseProvider.setRoomFields(roomCode, changes);
+
+  }
+
+  Future<bool> pushVote(String userId, String roomCode, Vote vote, int turn) async {
+    return await _firebaseProvider.pushVote(userId, roomCode, vote, turn);
   }
 
   // Stream<Image?> streamPlayerImage(String id) {

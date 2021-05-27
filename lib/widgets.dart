@@ -5,12 +5,20 @@ import 'classes/classes.dart';
 import 'extensions.dart';
 
 class MyLoadingIndicator extends StatelessWidget {
+  MyLoadingIndicator([this.size]);
+
+  Size? size;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+
+    Widget loading = Center(
       child: CircularProgressIndicator(),
     );
+
+    if(size != null) loading = loading.SizedBoxExt(height: size!.height, width: size!.width);
+
+    return loading;
   }
 }
 

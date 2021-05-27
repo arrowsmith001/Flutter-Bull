@@ -3,6 +3,10 @@ import 'dart:math';
 // Class for interpolating values for animations. They should expect values of t between 0 and 1.
 abstract class Interpolator{
   double getValue(double t);
+
+  static double clamp01(double d) {
+    return d < 0.0 ? 0.0 : d > 1.0 ? 1.0 : d;
+  }
 }
 
 // For animations that go slightly beyond the final threshold, then back

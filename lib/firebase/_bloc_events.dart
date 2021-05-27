@@ -42,10 +42,6 @@ class JoinGameRequested extends FirebaseEvent {
 }
 
 
-
-
-
-
 class OnRoomCodeStreamEvent extends FirebaseEvent {
   OnRoomCodeStreamEvent(this.roomCode);
   String? roomCode;
@@ -66,4 +62,35 @@ class RoomPlayerAddedEvent extends FirebaseEvent {
 class RoomPlayerRemovedEvent extends FirebaseEvent {
   RoomPlayerRemovedEvent(this.changes);
   Map changes;
+}
+
+
+
+class SetCurrentRoomFieldEvent extends FirebaseEvent {
+  SetCurrentRoomFieldEvent(this.path, this.value);
+  List<String> path;
+  dynamic value;
+}
+
+
+
+class StartGameEvent extends FirebaseEvent {}
+
+class PushNewVoteEvent extends FirebaseEvent {
+  PushNewVoteEvent(this.vote);
+  Vote vote;
+}
+
+class TextEntrySubmittedEvent extends FirebaseEvent {
+  TextEntrySubmittedEvent(this.text, this.targetId);
+  String text;
+  String targetId;
+}
+
+
+class SetPageOrTurnEvent extends FirebaseEvent{
+  SetPageOrTurnEvent([this.page, this.turn]);
+  String? page;
+  int? turn;
+
 }

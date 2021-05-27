@@ -12,6 +12,7 @@ class FirebaseStateEvent extends GameRoomEvent{
 }
 
 
+// Players
 
 class OnUserIdStreamEvent extends PrivateGameRoomEvent {
   OnUserIdStreamEvent(this.userId);
@@ -27,6 +28,9 @@ class OnPlayerChangeStreamEvent extends PrivateGameRoomEvent {
   String userId;
   Map changes;
 }
+
+
+// Rooms
 
 class OnRoomCodeStreamEvent extends GameRoomEvent {
   OnRoomCodeStreamEvent(this.roomCode);
@@ -50,5 +54,29 @@ class RoomPlayerRemovedEvent extends GameRoomEvent {
   Map changes;
 }
 
-class SetupEvent extends GameRoomEvent {}
+
+// Game
+
+class StartGameRequestedEvent extends GameRoomEvent {}
+
+class TextEntrySubmittedEvent extends GameRoomEvent {
+  TextEntrySubmittedEvent(this.text, this.targetId);
+  String text;
+  String targetId;
+}
+
+class VoteEvent extends GameRoomEvent{
+  VoteEvent(this.votedTrue, this.t);
+  bool? votedTrue;
+  int t;
+}
+
+class NextTurnRequestedEvent extends GameRoomEvent{}
+
+class SetPageOrTurnEvent extends GameRoomEvent{
+  SetPageOrTurnEvent({this.page, this.turn});
+  String? page;
+  int? turn;
+}
+
 

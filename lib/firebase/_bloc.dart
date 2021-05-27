@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter_bull/classes/classes.dart';
+import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -96,8 +98,6 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
   Future<void> _subscribeRoom(String roomCode) async
   {
-    if(model.isRoom(roomCode)) return;
-
     if(roomSub != null) await roomSub!.cancel();
     if(roomChangesSub != null) await roomChangesSub!.cancel();
     if(roomPlayerAdditionsSub != null) await roomPlayerAdditionsSub!.cancel();
@@ -177,7 +177,6 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
                   if(!model.isRoom(roomCode))
                     {
                       await _subscribeRoom(roomCode);
-                      yield RoomCodeChangedState(model);
                     }
                 }
             }
@@ -231,13 +230,6 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     }
 
 
-
-
-
-
-
-
-
     if(event is ImagePicked)
     {
       String? fileExt = await repo.uploadProfileImage(event.file);
@@ -282,15 +274,24 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       }
 
       bool hasChanged = model.setRoom(room);
-      print('hasChanged: ' + hasChanged.toString());
-
-      if(hasChanged) yield RoomCodeChangedState(model);
+      if(hasChanged) yield NewRoomState(model);
       else yield RoomChangeState(model);
     }
 
     if(event is OnRoomChildChangesEvent)
     {
       print('OnRoomChildChangesEvent: ' + event.changes.toString());
+      if(event.changes.containsKey(Room.PAGE))
+        {
+          print("Room page changed: " + event.changes[Room.PAGE]);
+          yield RoomPageChangedState(model, event.changes[Room.PAGE]);
+        }
+
+      if(event.changes.containsKey(Room.PLAYER_PHASES))
+      {
+        Map<String, String> phases = Map.from(event.changes[Room.PLAYER_PHASES]);
+        yield PlayerPhasesChangeState(phases, model);
+      }
     }
 
     if(event is RoomPlayerAddedEvent)
@@ -313,8 +314,76 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         await _unsubscribePlayer(userId);
         yield RoomPlayerRemovedState(model, int.parse(index), userId);
       }
-
     }
+
+
+    // TODO: (potentially) refactor game logic out of firebase bloc (???)
+
+    if(event is StartGameEvent)
+      {
+        // TODO unjustified !s
+        Room room = model.room!;
+        String roomCode = room.code!;
+
+        await repo.setRoomLockedStatus(roomCode, true);
+        List<String> playerIds = room.playerIds!; // TODO unjustified !
+
+        RoleAssigner ra = new RoleAssigner(playerIds);
+        ra.assignRoles();
+
+        List<String> shuffledPlayers = List.from(playerIds);
+        shuffledPlayers.shuffle();
+
+        room.playerTargets = ra.playerTargets!;
+        room.playerTruths = ra.playerTruths!;
+        room.playerOrder = shuffledPlayers;
+        room.page = RoomPages.WRITE;
+
+        await repo.updateRoom(room);
+      }
+
+    if(event is TextEntrySubmittedEvent)
+    {
+      if(model.room != null && model.room!.code != null)
+      {
+        bool success = await repo.setRoomField(model.room!.code!, [Room.PLAYER_TEXTS, event.targetId], event.text);
+        if(success) success = await repo.setRoomField(model.room!.code!, [Room.PLAYER_PHASES, model.userId!], PlayerPhases.TEXT_ENTRY_CONFIRMED);
+        yield TextEntryOutcomeState(success, model);
+      }
+    }
+
+    if(event is PushNewVoteEvent)
+      {
+        Vote vote = event.vote;
+        await repo.pushVote(model.userId!, model.room!.code!, vote, model.room!.turn!);
+      }
+
+    if(event is SetCurrentRoomFieldEvent)
+    {
+      if(model.room != null && model.room!.code != null)
+      {
+        bool success = await repo.setRoomField(model.room!.code!, event.path, event.value);
+      }
+    }
+
+    if(event is SetPageOrTurnEvent)
+    {
+      if(model.room != null && model.room!.code != null)
+      {
+        Map<String, dynamic> changes = {};
+        if(event.page != null) changes.addAll({ Room.PAGE: event.page});
+        if(event.turn != null) changes.addAll({ Room.TURN : event.turn});
+        bool success = await repo.setRoomFields(model.room!.code!, changes);
+      }
+    }
+
+    // if(event is TextEntryWithdrawnEvent)
+    // {
+    //   if(model.room != null && model.room!.code != null)
+    //   {
+    //     bool success = await repo.setRoomField(model.room!.code!, [Room.PLAYER_PHASES, model.userId!], PlayerPhases.?);
+    //   }
+    // }
 
 
 
@@ -327,11 +396,15 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
 
 
-
 class DataModel {
 
   // Id of the logged-in user
   String? userId;
+
+  bool get amIHost => isHost(userId);
+
+
+
   void setUserId(String? userId) {this.userId = userId;}
 
   // Room
@@ -340,6 +413,9 @@ class DataModel {
     if(room == null) return false;
     return (room!.code == roomCode);
   }
+  bool isHost(String? userId) => userId != null && room != null && room!.host == userId;
+  int? getHostIndex() => room != null && room!.host != null && room!.playerIds != null && room!.playerIds!.contains(room!.host) ? room!.playerIds!.indexOf(room!.host!) : null;
+  Player? getHost() => room != null && room!.host != null && room!.playerIds != null && room!.playerIds!.contains(room!.host) ? getPlayer(room!.host!) : null;
   int get roomPlayerCount => room == null || room!.playerIds == null ? 0 : room!.playerIds!.length;
   Player? getRoomMember(int i) {
     return room == null || room!.playerIds == null || i >= roomPlayerCount
@@ -358,7 +434,7 @@ class DataModel {
   // Players
   Player? get user => userId == null ? null : playerMap[userId];
   Map<String, Player?> playerMap = {};
-  Player? getPlayer(String userId) => playerMap.containsKey(userId) ? playerMap[userId] : null;
+  Player? getPlayer(String? userId) => userId == null || !playerMap.containsKey(userId) ? null : playerMap[userId];
   void setPlayer(String userId, Player? player) {
 
     if(player != null)
@@ -396,8 +472,153 @@ class DataModel {
       }
   }
 
+  Player? getMyTarget() {
+    if(userId == null) return null;
+    if(room == null) return null;
+    if(room!.playerTargets == null) return null;
+    if(!room!.playerTargets!.containsKey(userId)) return null;
+    String? targetId = room!.playerTargets![userId];
+    return getPlayer(targetId);
+  }
 
+  bool? getTruth(arg) {
+    if(arg == null) return null;
+    if(room == null) return null;
+    if(room!.playerTruths == null) return null;
+    String playerId;
+    if(arg is String) {playerId = arg;}
+    else if(arg is Player) {playerId = arg.id!;}
+    else return null;
+    if(!room!.playerTruths!.containsKey(playerId)) return null;
+    return room!.playerTruths![playerId];
+  }
 
+  Player? getPlayerWhoseTurn() {
+    if(room == null) return null;
+    if(room!.playerOrder == null) return null;
+    if(room!.turn == null) return null;
+    if(room!.playerOrder!.length <= room!.turn!) return null;
+    return getPlayer(room!.playerOrder![room!.turn!]);
+  }
+
+  String? getPlayerText(String? id) {
+    if(id == null) return null;
+    if(room == null) return null;
+    if(room!.playerTexts == null) return null;
+    if(!room!.playerTexts!.containsKey(id)) return null;
+    return room!.playerTexts![id];
+  }
+
+  bool? get isItMyTurn {
+    if(userId == null) return null;
+    if(room == null) return null;
+    if(room!.playerOrder == null) return null;
+    if(room!.turn == null) return null;
+    if(room!.playerOrder!.length <= room!.turn!) return null;
+    return room!.playerOrder![room!.turn!] == userId;
+
+  }
+
+  List<Vote>? getMyVotes() {
+    if(userId == null) return null;
+    if(room == null) return null;
+    if(room!.playerVotes == null) return null;
+    if(!room!.playerVotes!.containsKey(userId)) return null;
+    return room!.playerVotes![userId];
+  }
+
+  bool get isThereEnoughInfoForResults {
+    try
+    {
+      assert(room != null);
+      assert(room!.playerVotes != null);
+      assert(room!.playerTargets != null);
+      assert(room!.playerTruths != null);
+      assert(room!.playerOrder != null);
+      assert(room!.playerScores != null);
+      assert(room!.playerIds != null);
+      assert(room!.playerVotes!.values.every((list) => list.length == room!.playerIds!.length));
+      return true;
+    }
+        catch(e)
+    {
+      print('isThereEnoughInfoForResults ERROR: ' + e.toString());
+      return false;
+    }
+  }
+
+  Player? getPlayerFromOrder(int i) {
+    try
+    {
+      assert(room != null);
+      assert(room!.playerOrder != null);
+      assert(i < room!.playerOrder!.length);
+      String playerId = room!.playerOrder![i];
+      return getPlayer(playerId);
+    }
+    catch(e)
+    {
+      print('getPlayerFromOrder ERROR: ' + e.toString());
+      return null;
+    }
+  }
+
+  bool? getPlayerTruth(String? id) {
+    try
+    {
+      assert(id != null);
+      assert(room != null);
+      assert(room!.playerTruths != null);
+      assert(room!.playerTruths!.containsKey(id));
+      return room!.playerTruths![id];
+    }
+    catch(e)
+    {
+      print('getPlayerTruth ERROR: ' + e.toString());
+      return null;
+    }
+  }
+
+  int? whichTurnWasThisPlayer(String id) {
+    try{
+      assert(id != null);
+      assert(room != null);
+      assert(room!.playerOrder != null);
+      assert(room!.playerOrder!.contains(id));
+      return room!.playerOrder!.indexOf(id);
+    }catch(e)
+    {
+      print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+    }
+  }
+
+  List<Player> getPlayersWhoVoted(bool votedTrue, int turn) {
+    try{
+      assert(room != null);
+      assert(room!.playerVotes != null);
+      List<Player> list = room!.playerVotes!.keys
+          .where((id) => room!.playerVotes![id]![turn].votedTrue == votedTrue)
+          .map((userId) => getPlayer(userId)!).toList();
+      return list;
+    }catch(e)
+    {
+      print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+      return [];
+    }
+  }
+
+  getVoteTimes(List<Player> players, int turn) {
+    try{
+      assert(room != null);
+      assert(room!.playerVotes != null);
+      List<int> list = players.map((p) => room!.playerVotes![p.id]![turn].time!).toList();
+      return list;
+    }catch(e)
+    {
+      print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+      return [];
+    }
+  }
 
 
 }

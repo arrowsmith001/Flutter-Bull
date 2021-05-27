@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:ui' as ui;
 
+class GameParams {
+  static const int MINIMUM_PLAYERS_FOR_GAME = 3;
+}
+
 abstract class SingleImageCustomPainterAlwaysRepaint extends CustomPainter {
 
   SingleImageCustomPainterAlwaysRepaint(this.image);

@@ -43,12 +43,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
   MainMenuBloc get _bloc => BlocProvider.of<MainMenuBloc>(context, listen: false);
 
-  late AnimationController _animController, _animController2, _animController3;
+  late AnimationController _animController, _animController2, _animController3, _animController4;
   late Animation<double> dialogPopAnim, anim1_1, anim1_2, anim1_3, anim1_4, anim1_5, anim1_6, anim1_7, anim1_8, anim1_Quick; // _animController1
   late Animation<double> anim2_1; // _animController2
   final Interpolator overshootInterp = OvershootInterpolator();
   final Interpolator hardOvershootInterp = OvershootInterpolator(5);
   final Interpolator decelInterp = DecelerateInterpolator(5);
+  final Interpolator antiOverInterp = AnticipateOvershootInterpolator(3);
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _animController.duration = Duration(milliseconds: 5000);
     dialogPopAnim = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(0, 0.1)));
 
+    // Profile pop
     _animController2 = new AnimationController(vsync: this);
     _animController2.addListener(() {setState(() { });});
     _animController2.duration = Duration(milliseconds: 500);
@@ -72,6 +74,11 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _animController3.addListener(() {setState(() { });});
     _animController3.duration = Duration(milliseconds: 3000);
     _animController3.repeat(reverse: true);
+
+    // Button panel
+    _animController4 = new AnimationController(vsync: this);
+    _animController4.addListener(() {setState(() { });});
+    _animController4.duration = Duration(milliseconds: 750);
 
     double intervalValue = 0.1, staggerValue = 0.01;
     anim1_Quick = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(0, 0.01)));
@@ -93,6 +100,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _animController.dispose();
     _animController2.dispose();
     _animController3.dispose();
+    _animController4.dispose();
     _profileSetupNameController.dispose();
     _nameTextController.dispose();
     _roomCodeTextController.dispose();
@@ -117,6 +125,9 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
 
   void onCreateGame() async {
+    setState(() {
+      creatingGame = true;
+    });
     _bloc.add(CreateGameEvent());
   }
 
@@ -132,15 +143,30 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   void onRoomCodeSubmitted(String code) async {
     setState(() {
       enteringRoomCode = false;
+      joiningGame = true;
     });
     _bloc.add(JoinGameEvent(code));
   }
 
+  void onResumeGame() {
+    resumingGame = true;
+    goToGameRoom();
+  }
 
   bool goingToGameRoom = false;
-  Future<void> goToGameRoom() async{
+  bool creatingGame = false;
+  bool joiningGame = false;
+  bool resumingGame = false;
+
+  Future<void> goToGameRoom() async {
+    if(!_animController4.isCompleted) _animController4.forward(from: 0);
     if(goingToGameRoom) return;
-    goingToGameRoom = true;
+    if(!creatingGame && !joiningGame && !resumingGame) return;
+    setState(() {
+      goingToGameRoom = true;
+      creatingGame = false;
+      joiningGame = false;
+    });
     await Navigator.of(context).push(Routes.MainMenu_To_GameRoom(context));
     goingToGameRoom = false;
   }
@@ -627,6 +653,33 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     Widget joinGameButton = MainMenuButton("JOIN GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onJoinGame(); },
         fontSize: fontSize+10, minFontSize: minFontSize, imageSize: buttonIconSize+10);
 
+    Widget resumeGameButton = MainMenuButton("RESUME", Assets.images.arrowsGlowBrownEdit.image(), () async { onResumeGame(); },
+        fontSize: fontSize+16, minFontSize: minFontSize, fontColor: Colors.lightGreenAccent, imageSize: buttonIconSize+10);
+
+    Widget leaveGameButton = MainMenuButton("LEAVE GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onResumeGame(); },
+        fontSize: fontSize, minFontSize: minFontSize, fontColor: Colors.white, imageSize: buttonIconSize+10);
+
+    Widget buttonPanel1 = Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+
+        createGameButton,
+
+        joinGameButton,
+
+      ],
+    );
+
+    Widget buttonPanel2 = Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+
+        leaveGameButton,
+
+        resumeGameButton,
+
+      ],
+    );
 
     const int USER_BAR_FLEX = 0;
     const int TITLE_FLEX = 4;
@@ -649,13 +702,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   listener: (context, s){
                     if(s is DialogState || s is MenuState) _animController.forward(from: 0);
                     if(s is UserProfileImageChangedState) {_animController2.forward(from: 0);}
-                    if(s is GoToGameRoomState) goToGameRoom();
-
+                    if(s is NewRoomState) goToGameRoom();
                   },
                   builder: (context, state){
 
                     Player? player = state.model.user;
                     Image? playerImage = player == null ? null : player.profileImage;
+                    bool currentlyOccupyingRoom = player != null && player.occupiedRoomCode != null;
 
                     if(state is InitialState) return EmptyWidget();
 
@@ -700,15 +753,18 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                             ).ExpandedExt(),
 
                             // Join/Create Game Buttons
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-
-                                createGameButton,
-
-                                joinGameButton,
-
-                              ],
+                            AnimatedBuilder(
+                              child: _animController4.value < 0.5 ? buttonPanel1 : buttonPanel2,
+                              animation: _animController4,
+                              builder: (BuildContext context, Widget? child) {
+                                double val = antiOverInterp.getValue(math.sin(math.pi*_animController4.value));
+                                return Transform.translate(
+                                  child: Opacity(
+                                    child: child,
+                                    opacity: Interpolator.clamp01(1 - val),
+                                  ),
+                                    offset: Offset(0, 50*val));
+                              },
                             ).PaddingExt(new EdgeInsets.fromLTRB(0,0,0,20)).FlexibleExt(BUTTONS_FLEX)
 
                           ],
@@ -767,8 +823,6 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     );
 
   }
-
-
 
 
 

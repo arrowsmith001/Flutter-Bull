@@ -1,13 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
+import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
+import 'package:flutter_bull/pages/2GameRoom/_bloc_events.dart';
+import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
+import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
+import 'package:flutter_bull/pages/2x2Write/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
-import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -38,36 +44,36 @@ import '../../extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
-import '_bloc.dart';
 
-import '_bloc.dart';
-import '_bloc_events.dart';
-import '_bloc_states.dart';
 
-class GameRoom extends StatefulWidget {
+class Write extends StatefulWidget {
 
   @override
-  _GameRoomState createState() => _GameRoomState();
+  _WriteState createState() => _WriteState();
 }
 
-class _GameRoomState extends State<GameRoom> {
+class _WriteState extends State<Write> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
   final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
+  final String thisPageName = RoomPages.WRITE;
+
   @override
   void initState() {
-    if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
-    print('Initial route: ' + initialRoute);
+    // if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
+    // print('Initial route: ' + initialRoute);
   }
 
-  String initialRoute = '/';
+  String initialRoute = WritePages.INTRO;
 
   @override
   Widget build(BuildContext context) {
 
-    return BlocBuilder<GameRoomBloc, GameRoomState>(
-      buildWhen: (s1, s2) => s2 is NewRoomState,
+    return BlocConsumer<GameRoomBloc, GameRoomState>(
+      listener: (context, state) {
+        GameRoomRoutes.pageListener(context, state, thisPageName);
+      },
       builder: (context, state) {
         return Navigator(
           observers: [
@@ -75,7 +81,7 @@ class _GameRoomState extends State<GameRoom> {
           ],
           key: navigationKey,
           initialRoute: initialRoute,
-          onGenerateRoute: (settings) => GameRoomRoutes.generate(settings),
+          onGenerateRoute: (settings) => WriteRoutes.generate(settings),
         );
       },
     );
@@ -83,10 +89,6 @@ class _GameRoomState extends State<GameRoom> {
 
   }
 }
-
-
-
-
 
 
 

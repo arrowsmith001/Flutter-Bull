@@ -88,7 +88,7 @@ extension WidgetModifier on Widget {
   // Renders the widget invisible and nullifies all interactivity
   Widget InvisibleIgnoreExt() {
     return Visibility(
-      visible: false,
+        visible: false,
         maintainSize: true,
         maintainAnimation: true,
         maintainState: true,
@@ -96,5 +96,28 @@ extension WidgetModifier on Widget {
             child: this));
   }
 
+  // Renders the widget invisible and nullifies all interactivity
+  Widget HeroExt(Object tag) {
+    return Hero(
+      child: this,
+      tag: tag
+    );
+  }
+
+
+}
+
+extension WidgetListModifier on List<Widget> {
+
+  Widget ColumnExt({bool expand = false}){
+
+    Widget out = Column(
+      children: this,
+    );
+
+    if(expand) out = out.ExpandedExt();
+
+    return out;
+  }
 
 }

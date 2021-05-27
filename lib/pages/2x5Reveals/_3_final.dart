@@ -1,13 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
+import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
+import 'package:flutter_bull/pages/2GameRoom/_bloc_events.dart';
+import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
+import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
+import 'package:flutter_bull/pages/2x2Write/routes.dart';
+import 'package:flutter_bull/pages/2x5Reveals/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
-import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -38,55 +45,52 @@ import '../../extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
-import '_bloc.dart';
 
-import '_bloc.dart';
-import '_bloc_events.dart';
-import '_bloc_states.dart';
 
-class GameRoom extends StatefulWidget {
+class RevealsFinal extends StatefulWidget {
 
   @override
-  _GameRoomState createState() => _GameRoomState();
+  _RevealsFinalState createState() => _RevealsFinalState();
 }
 
-class _GameRoomState extends State<GameRoom> {
+class _RevealsFinalState extends State<RevealsFinal> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
-  final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
+
+  final String thisPageName = RoomPages.REVEALS;
+  final String thisSubPageName = RevealsPages.FINAL;
 
   @override
   void initState() {
-    if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
-    print('Initial route: ' + initialRoute);
+    super.initState();
   }
-
-  String initialRoute = '/';
 
   @override
   Widget build(BuildContext context) {
 
-    return BlocBuilder<GameRoomBloc, GameRoomState>(
-      buildWhen: (s1, s2) => s2 is NewRoomState,
-      builder: (context, state) {
-        return Navigator(
-          observers: [
-            HeroController()
-          ],
-          key: navigationKey,
-          initialRoute: initialRoute,
-          onGenerateRoute: (settings) => GameRoomRoutes.generate(settings),
-        );
-      },
-    );
+    return BlocConsumer<GameRoomBloc, GameRoomState>(
+        builder: (context, state) {
 
+          return SafeArea(
+              child: Scaffold(
+                  backgroundColor: AppColors.revealsScaffoldBackgroundColor,
+                  appBar: CupertinoNavigationBar(
+                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
+                  ),
+                  body: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(thisSubPageName, style: AppStyles.DebugStyle(42))
+                    ],
+                  ).PaddingExt(EdgeInsets.all(20))
 
+              ));
+        },
+        listener: (context, state) {
+
+        });
   }
+
+
+
 }
-
-
-
-
-
-
-

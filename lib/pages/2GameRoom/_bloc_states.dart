@@ -28,3 +28,26 @@ class RoomPlayerRemovedState extends GameRoomState {
 class NewRoomState extends GameRoomState {
   const NewRoomState(GameRoomModel model) : super(model);
 }
+
+class RoomPageChangedState extends GameRoomState {
+  const RoomPageChangedState(GameRoomModel model, this.newPage) : super(model);
+  final String newPage;
+}
+
+class PlayerPhaseChangedState extends GameRoomState {
+  const PlayerPhaseChangedState(GameRoomModel model, this.newPhase) : super(model);
+  final String newPhase;
+}
+
+
+// Game
+
+class StartGameRequestOutcome extends GameRoomState {
+  const StartGameRequestOutcome(this.message, GameRoomModel model) : super(model);
+  final String? message;
+}
+
+class TextEntrySuccessfullySubmittedState extends GameRoomState {
+  const TextEntrySuccessfullySubmittedState(GameRoomModel model) : super(model);
+
+}

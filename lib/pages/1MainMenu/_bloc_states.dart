@@ -47,6 +47,6 @@ class UserNameChangedState extends MainMenuState{
   const UserNameChangedState(MainMenuModel model) : super(model);
 }
 
-class GoToGameRoomState extends MainMenuState{
-  const GoToGameRoomState(MainMenuModel model) : super(model);
+class NewRoomState extends MainMenuState{
+  const NewRoomState(MainMenuModel model) : super(model);
 }
