@@ -1,8 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:ui' as ui;
 
+import 'firebase.dart';
+
 class GameParams {
+  static const bool DEV_MODE = true;
   static const int MINIMUM_PLAYERS_FOR_GAME = 3;
+  static const int UNIX_OFFSET = 1622213681765;
+
+  static Map<String, dynamic> DEFAULT_GAME_SETTINGS = {
+    Room.SETTINGS_ALL_TRUTHS_POSSIBLE : true,
+    Room.SETTINGS_LEWD_HINTS_ENABLED : false,
+    Room.SETTINGS_ROUND_TIMER: 3
+  };
+
+  static int getTrueUnixFromDownloaded(int unix) => unix + UNIX_OFFSET;
+  static int convertUnixForUpload(int unix) => unix - UNIX_OFFSET;
 }
 
 abstract class SingleImageCustomPainterAlwaysRepaint extends CustomPainter {

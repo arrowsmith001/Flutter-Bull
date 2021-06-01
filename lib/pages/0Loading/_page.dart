@@ -32,6 +32,7 @@ class _LoadingState extends State<Loading> {
 
   bool goingToMainMenu = false;
   void goToMainMenu() {
+    print('goToMainMenu');
     if(goingToMainMenu) return;
     goingToMainMenu = true;
     Navigator.of(context).push(Routes.Loading_To_MainMenu(context));
@@ -42,6 +43,8 @@ class _LoadingState extends State<Loading> {
 
     return BlocConsumer<LoadingBloc, LoadingState>(
       builder: (context, state) {
+
+        if(state is LoadingError) print(state.message);
 
         bool loading = false;
         String message = '';

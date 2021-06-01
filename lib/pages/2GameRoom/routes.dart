@@ -41,5 +41,6 @@ class GameRoomRoutes {
       {
         Navigator.of(context).pushNamedAndRemoveUntil(state.newPage, (route) => false);
       }
+
   }
 }

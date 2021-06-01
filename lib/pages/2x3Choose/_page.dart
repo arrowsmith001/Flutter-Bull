@@ -63,7 +63,7 @@ class _ChooseState extends State<Choose> {
 
 
   void goToPlay() {
-    _bloc.add(SetPageOrTurnEvent(page: RoomPages.PLAY));
+    _bloc.add(StartRoundEvent());
   }
 
   @override

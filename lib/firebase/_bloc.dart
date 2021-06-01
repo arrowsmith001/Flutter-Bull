@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bull/classes/classes.dart';
@@ -48,7 +49,15 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     if(roomChangesSub != null) futures.add(roomChangesSub!.cancel());
     if(roomPlayerAdditionsSub != null) futures.add(roomPlayerAdditionsSub!.cancel());
     if(roomPlayerRemovalsSub != null) futures.add(roomPlayerRemovalsSub!.cancel());
-    for(String userId in model.playerMap.keys) {futures.add(_unsubscribePlayer(userId));}
+    //if(roomPlayerVotesChildChangesSub != null) futures.add(roomPlayerVotesChildChangesSub!.cancel());
+    for(String userId in playerSubs.keys) { futures.add(_unsubscribePlayer(userId)); }
+    for(String roomCode in roomPlayerVotesChildAdditionsSub.keys)
+      {
+        for(String userId in roomPlayerVotesChildAdditionsSub[roomCode]!.keys)
+          {
+            futures.add(_unsubscribePlayerVotes(userId, roomCode));
+          }
+      }
     await Future.wait(futures);
   }
 
@@ -60,6 +69,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
   Map<String, StreamSubscription<Player?>> playerSubs = {};
   Map<String, StreamSubscription<Map>> playerChangeSubs = {};
+  Map<String, Map<String, StreamSubscription<Map>>> roomPlayerVotesChildAdditionsSub = {};
 
   Future<void> _subscribePlayer(String userId) async {
 
@@ -96,12 +106,53 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     playerChangeSubs.remove(userId);
   }
 
-  Future<void> _subscribeRoom(String roomCode) async
-  {
+  Future<void> _subscribePlayerVotes(String userId, String roomCode) async {
+
+    StreamSubscription<Map>? votesSub;
+
+    if(roomPlayerVotesChildAdditionsSub.containsKey(roomCode)) {
+      if(roomPlayerVotesChildAdditionsSub[roomCode]!.containsKey(userId))
+      {
+        return;
+      }
+    }
+
+    if(votesSub != null) await votesSub.cancel();
+    votesSub = repo.streamChildAdditions(['rooms', roomCode, Room.PLAYER_VOTES, userId]).listen((map) {
+      add(OnVoteAddedEvent(roomCode, map));
+    });
+
+    var newPair = {userId : votesSub};
+
+    if(!roomPlayerVotesChildAdditionsSub.containsKey(roomCode)) roomPlayerVotesChildAdditionsSub.addAll({roomCode : newPair});
+    else roomPlayerVotesChildAdditionsSub[roomCode]!.addAll(newPair);
+  }
+
+  Future<void> _unsubscribePlayerVotes(String userId, String roomCode) async {
+
+    StreamSubscription<Map>? votesSub;
+
+    if(roomPlayerVotesChildAdditionsSub.containsKey(roomCode)) {
+      if(roomPlayerVotesChildAdditionsSub[roomCode]!.containsKey(userId))
+      {
+        votesSub = roomPlayerVotesChildAdditionsSub[roomCode]![userId];
+      }
+    }
+
+    if(votesSub != null) await votesSub.cancel();
+
+    if(roomPlayerVotesChildAdditionsSub.containsKey(roomCode)) {
+      roomPlayerVotesChildAdditionsSub[roomCode]!.remove(userId);
+    }
+  }
+
+  Future<void> _subscribeRoom(String roomCode) async {
+    // TODO await concurrently
     if(roomSub != null) await roomSub!.cancel();
     if(roomChangesSub != null) await roomChangesSub!.cancel();
     if(roomPlayerAdditionsSub != null) await roomPlayerAdditionsSub!.cancel();
     if(roomPlayerRemovalsSub != null) await roomPlayerRemovalsSub!.cancel();
+    //if(roomPlayerVotesChildChangesSub != null) await roomPlayerVotesChildChangesSub!.cancel();
 
     roomSub = repo.streamRoom(roomCode).listen((room) {
       add(OnRoomStreamEvent(room));
@@ -120,8 +171,14 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         .listen((changes) {
       add(RoomPlayerRemovedEvent(changes));
     });
+
+    // roomPlayerVotesChildChangesSub = repo.streamChildChanges(['rooms', roomCode, Room.PLAYER_VOTES])
+    //   .listen((child) {
+    //   add(RoomPlayerVoteEvent(child));
+    // });
   }
 
+  // TODO: Unsubscribe room
 
   @override
   Stream<FirebaseState> mapEventToState(FirebaseEvent event) async* {
@@ -259,6 +316,13 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       yield GameJoinedState(success, model);
     }
 
+    if(event is LeaveGameRequested)
+    {
+      await _unsubFromAll();
+      bool success = await repo.leaveGame(model.userId!, model.room!.code!); // TODO Unjustified ! ?
+      yield GameLeftState(success, model);
+    }
+
 
     if(event is OnRoomStreamEvent)
     {
@@ -270,6 +334,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         for(String userId in room.playerIds!)
         {
           await _subscribePlayer(userId);
+          await _subscribePlayerVotes(userId, room.code!); // TODO Unjustified !
         }
       }
 
@@ -292,6 +357,16 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         Map<String, String> phases = Map.from(event.changes[Room.PLAYER_PHASES]);
         yield PlayerPhasesChangeState(phases, model);
       }
+
+      // if(event.changes.containsKey(Room.PLAYER_VOTES))
+      // {
+      //   Map<String, List> map = Map.from(event.changes[Room.PLAYER_VOTES]);
+      //   Map<String, List<Vote>> changes = map
+      //       .map((id, list) => MapEntry(id, list
+      //       .map((json) => Vote.fromJson(Map<String, dynamic>.from(json))).toList()));
+      //
+      //   yield PlayerVotesChangeState(changes, model);
+      // }
     }
 
     if(event is RoomPlayerAddedEvent)
@@ -301,6 +376,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       {
         String userId = event.changes[index];
         await _subscribePlayer(userId);
+        if(model.room != null) await _subscribePlayerVotes(userId, model.room!.code!); // TODO Unjustified !
         yield RoomPlayerAddedState(model, int.parse(index), userId);
       }
     }
@@ -312,9 +388,39 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       {
         String userId = event.changes[index];
         await _unsubscribePlayer(userId);
+        if(model.room != null) await _unsubscribePlayerVotes(userId, model.room!.code!); // TODO Unjustified !
         yield RoomPlayerRemovedState(model, int.parse(index), userId);
       }
     }
+
+    if(event is OnVoteAddedEvent)
+      {
+        print('VOTE ADDED: ' + event.changes.toString());
+        String roomCode = event.roomCode;
+        for(String voterId in event.changes.keys)
+          {
+            Vote vote = event.changes[voterId];
+            if(model.isRoom(roomCode)) yield NewVoteState(voterId, model.getPlayer(voterId), vote, model);
+          }
+      }
+
+    // if(event is RoomPlayerVoteEvent)
+    //   {
+    //     print('RoomPlayerVoteEvent: ' + event.child.toString());
+    //     Map<String, List<Vote>> map = Map<String, List<Vote>>.from(event.child);
+    //     int turn = model.room!.turn!; // TODO Unjustified !
+    //     for(String voterId in map.keys)
+    //       {
+    //         List<Vote> votes = map[voterId]!;
+    //         if(votes.length == turn + 1)
+    //           {
+    //             // New vote has been added
+    //             Vote newVote = votes.last;
+    //             yield NewVoteState(voterId, newVote, model);
+    //           }
+    //
+    //       }
+    //   }
 
 
     // TODO: (potentially) refactor game logic out of firebase bloc (???)
@@ -376,6 +482,16 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         bool success = await repo.setRoomFields(model.room!.code!, changes);
       }
     }
+    
+    if(event is StartRoundEvent)
+      {
+        await repo.setRoomField(model.room!.code!, [Room.ROUND_START_UNIX], GameParams.convertUnixForUpload(DateTime.now().millisecondsSinceEpoch));
+        await repo.setRoomField(model.room!.code!, [Room.PAGE], RoomPages.PLAY);
+        add(new PushNewVoteEvent(
+            new Vote()
+              ..type = Vote.VOTE_TYPE_READER
+              ..time = 0));
+      }
 
     // if(event is TextEntryWithdrawnEvent)
     // {
@@ -589,21 +705,52 @@ class DataModel {
     }catch(e)
     {
       print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+      return null;
     }
   }
 
-  List<Player> getPlayersWhoVoted(bool votedTrue, int turn) {
+  // 'votedTrue == null' indicates to get all voters
+  List<Player> getPlayersWhoVoted(int turn, [bool? votedTrue]) {
     try{
       assert(room != null);
       assert(room!.playerVotes != null);
       List<Player> list = room!.playerVotes!.keys
-          .where((id) => room!.playerVotes![id]![turn].votedTrue == votedTrue)
+          .where((id) =>
+
+        room!.playerVotes![id]!.length > turn
+          &&
+        room!.playerVotes![id]![turn].type != Vote.VOTE_TYPE_READER
+          &&
+        (votedTrue == null || room!.playerVotes![id]![turn].votedTrue == votedTrue))
+
           .map((userId) => getPlayer(userId)!).toList();
       return list;
     }catch(e)
     {
-      print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+      print('getPlayersWhoVoted ERROR: ' + e.toString());
       return [];
+    }
+  }
+
+  int? getNumberWhoVoted(int turn, [bool? votedTrue]) { // TODO implement votedTrue
+    try{
+      assert(room != null);
+      assert(room!.playerVotes != null);
+      int count = room!.playerVotes!.keys
+          .where((id) =>
+
+            room!.playerVotes![id]!.length > turn
+          &&
+            room!.playerVotes![id]![turn].type != Vote.VOTE_TYPE_READER
+          &&
+            (votedTrue == null || room!.playerVotes![id]![turn].votedTrue == votedTrue))
+
+          .length;
+      return count;
+    }catch(e)
+    {
+      print('getNumberWhoVoted ERROR: ' + e.toString());
+      return null;
     }
   }
 

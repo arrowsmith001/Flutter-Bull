@@ -24,26 +24,51 @@ import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/profile.dart';
+import 'package:flutter_bull/widgets.dart';
 import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
+import 'classes/classes.dart';
 import 'classes/firebase.dart';
+import 'developer.dart';
 import 'extensions.dart';
 import 'dart:ui' as ui;
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+    WidgetsFlutterBinding.ensureInitialized();
+    runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
 
     @override
     Widget build(BuildContext context) {
       return _buildApp();
   }
 
+  bool inserted = false;
+
   Widget _buildApp(){
+
+      bool devMode = GameParams.DEV_MODE;
+
+      Widget app = CupertinoApp(
+        title: 'Utter Bull',
+        theme: CupertinoThemeData(
+            scaffoldBackgroundColor: AppColors.MainColor,
+            primaryColor: AppColors.MainColor
+        ),
+        home: LayoutBuilder(
+          builder: (context, constraints) {
+            if(devMode && !inserted) WidgetsBinding.instance!.addPostFrameCallback((_) => _insertOverlay(context));
+            return Loading();
+          }
+        ),
+      );
+
+
+
       return RepositoryProvider(
         lazy: true,
         create: (_) => Repository(),
@@ -65,19 +90,22 @@ class MyApp extends StatelessWidget {
                 return GameRoomBloc(new GameRoomModel(firebaseBloc.model), firebaseBloc: firebaseBloc);
               }),
             ],
-            child: CupertinoApp(
-                title: 'Utter Bull',
-                theme: CupertinoThemeData(
-                    scaffoldBackgroundColor: AppColors.MainColor,
-                    primaryColor: AppColors.MainColor
-                ),
-                home: Loading(),
-              onGenerateRoute: (settings) {
-
-              },
-            )),
+            child: app),
       );
   }
+
+
+    // TODO Remove all this shit before release
+    void _insertOverlay(BuildContext context) {
+      inserted = true;
+      return Overlay.of(context)!.insert(
+        OverlayEntry(builder: (context) {
+          final size = MediaQuery.of(context).size;
+          return DeveloperPanel(context);
+        }),
+      );
+    }
+
 }
 
 

@@ -153,10 +153,16 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     goToGameRoom();
   }
 
+  void onLeaveGame() {
+    leavingGame = true;
+    _bloc.add(LeaveGameEvent());
+  }
+
   bool goingToGameRoom = false;
   bool creatingGame = false;
   bool joiningGame = false;
   bool resumingGame = false;
+  bool leavingGame = false;
 
   Future<void> goToGameRoom() async {
     if(!_animController4.isCompleted) _animController4.forward(from: 0);
@@ -656,7 +662,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     Widget resumeGameButton = MainMenuButton("RESUME", Assets.images.arrowsGlowBrownEdit.image(), () async { onResumeGame(); },
         fontSize: fontSize+16, minFontSize: minFontSize, fontColor: Colors.lightGreenAccent, imageSize: buttonIconSize+10);
 
-    Widget leaveGameButton = MainMenuButton("LEAVE GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onResumeGame(); },
+    Widget leaveGameButton = MainMenuButton("LEAVE GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onLeaveGame(); },
         fontSize: fontSize, minFontSize: minFontSize, fontColor: Colors.white, imageSize: buttonIconSize+10);
 
     Widget buttonPanel1 = Column(
@@ -703,6 +709,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                     if(s is DialogState || s is MenuState) _animController.forward(from: 0);
                     if(s is UserProfileImageChangedState) {_animController2.forward(from: 0);}
                     if(s is NewRoomState) goToGameRoom();
+                    if(s is GameLeftState) _animController4.reverse(from: 1);
                   },
                   builder: (context, state){
 

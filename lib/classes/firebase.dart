@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'classes.dart';
 part 'firebase.g.dart';
 
 class FirebasePaths {
@@ -42,17 +44,32 @@ class Profile{
 
 @JsonSerializable()
 class Room {
-
+  static const String SETTINGS_ALL_TRUTHS_POSSIBLE = 'allTruthsPossible';
+  static const String SETTINGS_LEWD_HINTS_ENABLED = 'lewdHintsEnabled';
+  static const String SETTINGS_ROUND_TIMER = 'roundTimer';
 
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
   Map<String, dynamic> toJson() => _$RoomToJson(this);
 
   Room();
 
+  Room.created(String roomCode, String creatorId){
+    this
+      ..code = roomCode
+      ..playerIds = [ creatorId ]
+      ..playerScores = { creatorId : 0 }
+      ..settings = GameParams.DEFAULT_GAME_SETTINGS
+      ..host = creatorId
+      ..page = RoomPages.LOBBY
+      ..turn = 0;
+  }
+
   static const String CODE = 'code';
   static const String PAGE = 'page';
   static const String HOST = 'host';
   static const String TURN = 'turn';
+  static const String SETTINGS = 'settings';
+  static const String ROUND_START_UNIX = 'roundStartUnix';
 
   static const String PLAYER_IDS = 'playerIds';
   static const String PLAYER_ORDER = 'playerOrder';
@@ -64,8 +81,10 @@ class Room {
 
   String? code;
   String? host;
+  Map<String, dynamic> settings = GameParams.DEFAULT_GAME_SETTINGS;
 
   String? page;
+  int? roundStartUnix = 0;
   int? turn = 0;
   int? revealed = 0;
 
@@ -80,6 +99,24 @@ class Room {
   Map<String, List<Vote>>? playerVotes;
 
 }
+
+// @JsonSerializable()
+// class GameSettings {
+//   factory GameSettings.fromJson(Map<String, dynamic> json) => _$GameSettingsFromJson(json);
+//   Map<String, dynamic> toJson() => _$GameSettingsToJson(this);
+//   GameSettings();
+//
+//   static const int DEFAULT_ROUND_TIMER = 3;
+//
+//   static const String ROUND_TIMER = 'roundTimer';
+//   static const String ALL_TRUTHS_POSSIBLE = 'allTruthsPossible';
+//   static const String LEWD_HINTS_ENABLED = 'lewdHintsEnabled';
+//
+//   int? roundTimer = DEFAULT_ROUND_TIMER;
+//   bool? allTruthsPossible = true;
+//   bool? lewdHintsEnabled = false;
+// }
+
 
 @JsonSerializable()
 class Vote {
@@ -99,7 +136,9 @@ class Vote {
 
   String? type;
   bool? votedTrue; // null for Reader
-  int? time; // null for Reader
+  int? time;
+
+  bool isReader() => votedTrue == null || type == Vote.VOTE_TYPE_READER; // null for Reader
 }
 
 class RoomPages {

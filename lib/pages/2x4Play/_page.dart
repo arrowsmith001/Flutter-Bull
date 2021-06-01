@@ -56,13 +56,35 @@ class _PlayState extends State<Play> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
 
+
   @override
   void initState() {
     super.initState();
+
+    // TODO Do not do this shit in initState
+
+    int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER];
+
+    int unixRoundStart = GameParams.getTrueUnixFromDownloaded(_bloc.model.room!.roundStartUnix!);
+    int unixNow = DateTime.now().millisecondsSinceEpoch;
+    int elapsed = unixNow - unixRoundStart;
+
+    _createTimer(totalMinutes, elapsed);
+  }
+
+  void _createTimer(int totalMinutes, int msElapsed){
+    // TODO: Sync timer with actual unix timestamp
+    setState(() {
+      this.totalMinutes = totalMinutes;
+      t = max(0, getMsFromMins(totalMinutes) - msElapsed);
+    });
     _roundTimer = new Timer.periodic(
-      new Duration(milliseconds: 10),
-        (timer) {
-         _start -= 10;
+        new Duration(milliseconds: 10),
+            (timer) {
+          if(t <= 0) _roundTimer.cancel();
+          setState(() {
+            t -= 10;
+          });
           //print(_start.toString());
         }
     );
@@ -74,23 +96,42 @@ class _PlayState extends State<Play> {
     super.dispose();
   }
 
-  late Timer _roundTimer;
-  int _start = 3*60*100;
-  late int minutesLeft;
-  late int secondsLeft;
-  late int millisLeft;
+  int getMsFromMins(int mins) => mins*60*1000;
 
+  int getMinsFromMs(int ms) => max(0, (ms/(60*1000)).floor());
+  int getSecsOnMinFromMs(int ms) => max(0, (ms/(1000)).floor() - getMinsFromMs(ms)*60);
+  int getMsOnMinFromMs(int ms) => max(0, (ms - getMinsFromMs(ms)*60*1000) % 1000);
+
+  int t = 0;
+  int totalMinutes = 0;
+
+  late Timer _roundTimer;
+
+  Widget _buildTimerDisplay(){
+    int msFromMins = getMsFromMins(totalMinutes);
+    double frac = msFromMins > 0 ? (t / msFromMins) : 1;
+
+    int m = getMinsFromMs(t);
+    int s = getSecsOnMinFromMs(t);
+    int ms = max(0, (getMsOnMinFromMs(t) / 100)).floor();
+
+    return Text('${m} : ${s} : ${ms} (${(frac*1000).round()/1000})', style: AppStyles.DebugStyle(24),);
+  }
+
+  int getSecondsElapsed(int ms) => totalMinutes*60 - max(0, (ms/1000).floor());
   bool voting = false;
   void vote(bool? votedTrue) {
     setState(() {
       voting = true;
     });
-    _bloc.add(VoteEvent(votedTrue, 0));
+    _bloc.add(VoteEvent(votedTrue, getSecondsElapsed(t)));
   }
 
   void goToNextTurn(){
     _bloc.add(NextTurnRequestedEvent());
   }
+
+  GlobalKey<AnimatedListState> _animListKey = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +140,75 @@ class _PlayState extends State<Play> {
         builder: (context, state) {
 
           if(state.model.room == null) return MyLoadingIndicator();
+
           Player? player = state.model.getPlayerWhoseTurn();
           String? text = player == null ? null : state.model.getPlayerText(player.id);
           bool? isMyTurn = state.model.isItMyTurn;
+          int turn = state.model.room!.turn!;
 
           bool sufficientInfo = player != null && text != null && isMyTurn != null;
+
+          Widget playerWhoseTurnPanel = !sufficientInfo ? EmptyWidget() : Row(
+            children: [
+              Avatar(player.profileImage, size: Size(100, 100))
+                  .HeroExt(state.model.room!.turn!),
+
+              MyBubble(text, size: Size(100, 100)).ExpandedExt()
+            ],
+          );
+
+          List<Player> playersWhoVoted = state.model.getPlayersWhoVoted(turn);
+          int numberWhoVoted = playersWhoVoted.length;
+
+          Widget votedList = numberWhoVoted == 0 ? EmptyWidget()
+           : AnimatedList(
+            scrollDirection: Axis.horizontal,
+            key: _animListKey,
+              initialItemCount: 0,
+              itemBuilder: (context, i, animation) {
+              animation.addListener(() {setState(() {
+
+              });});
+
+                if(playersWhoVoted.length <= i) return EmptyWidget();
+                return Avatar(playersWhoVoted[i].profileImage!, size: Size(50, 50)).ScaleExt(animation.value);
+
+              });
+
+          // Widget votedList = numberWhoVoted <= 0 ? EmptyWidget()
+          //  : ListView.builder(
+          //   itemCount: numberWhoVoted,
+          //   scrollDirection: Axis.horizontal,
+          //     itemBuilder: (context, i) {
+          //
+          //   return Avatar(playersWhoVoted[i].profileImage!, size: Size(50, 50));
+          //
+          // });
+
+
+          Widget buttonPanel = Row(
+              children:
+              [
+
+                Column(
+                    children: [
+                      CupertinoButton(
+                          color: AppColors.trueColor,
+                          child: Text('TRUE'),
+                          onPressed: () => vote(true)).ExpandedExt()
+                    ]).ExpandedExt(),
+
+                Column(
+                    children: [
+                      CupertinoButton(
+                          color: AppColors.bullColor,
+                          child: Text('BULL'),
+                          onPressed: () => vote(false)).ExpandedExt()
+                    ]).ExpandedExt()
+
+              ]
+          );
+
 
           return SafeArea(
               child: Scaffold(
@@ -113,43 +218,48 @@ class _PlayState extends State<Play> {
                   ),
                   body: !sufficientInfo ? MyLoadingIndicator()
                       : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
 
-                      Hero(
-                          tag: state.model.room!.turn!,
-                          child: Avatar(player.profileImage, size: Size(100, 100))
-                      ).FlexibleExt(),
+                      playerWhoseTurnPanel.FlexibleExt(),
 
-                      Text(text, style: AppStyles.DebugStyle(20)),
-                      !isMyTurn ? EmptyWidget()
-                          : CupertinoButton(
-                          child: Text('Go to next turn'),
-                          onPressed: () => goToNextTurn()),
+                      votedList.FlexibleExt(),
 
-                      Row(
+                      Column(
                         children: [
-                          CupertinoButton(
-                              child: Text('TRUE'),
-                              onPressed: () => vote(true))
-                              ]
-                        ),
 
-                          Row(
-                            children: [
-                              CupertinoButton(
-                                  child: Text('BULL'),
-                                  onPressed: () => vote(false)),
+                          _buildTimerDisplay()
+
                         ],
-                      )
+                      ).ExpandedExt(),
+
+
+                      buttonPanel.ExpandedExt(),
 
                     ],
                   ).PaddingExt(EdgeInsets.all(20))
 
               ));
         },
-        listener: (context, state) =>
-            GameRoomRoutes.pageListener(context, state, thisPageName));
+        listener: (context, state) {
+
+          GameRoomRoutes.pageListener(context, state, thisPageName);
+
+          if(state is NewPlayerVotedState)
+            {
+              if(_animListKey.currentState != null) _animListKey.currentState!.insertItem(state.numberVotedSoFar);
+            }
+          // if(state is NewTimeElapsedState)
+          // {
+          //   setState(() {
+          //     t = getMsFromMins(state.model.room!.settings!.roundTimer!) - state.time * 1000;
+          //   });
+          // }
+
+        }
+
+
+        );
   }
 
 

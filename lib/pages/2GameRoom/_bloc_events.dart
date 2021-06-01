@@ -80,3 +80,8 @@ class SetPageOrTurnEvent extends GameRoomEvent{
 }
 
 
+// Play
+
+class StartRoundEvent extends GameRoomEvent {}
+
+

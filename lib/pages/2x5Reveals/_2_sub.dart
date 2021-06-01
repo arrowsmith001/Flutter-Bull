@@ -143,8 +143,8 @@ class _RevealsSubState extends State<RevealsSub> {
 
           int turn = state.model.whichTurnWasThisPlayer(player.id!)!;
 
-          List<Player> votedTrue = state.model.getPlayersWhoVoted(true, turn);
-          List<Player> votedBull = state.model.getPlayersWhoVoted(false, turn);
+          List<Player> votedTrue = state.model.getPlayersWhoVoted(turn, true);
+          List<Player> votedBull = state.model.getPlayersWhoVoted(turn, false);
           List<int> votedTrueTimes = state.model.getVoteTimes(votedTrue, turn);
           List<int> votedBullTimes = state.model.getVoteTimes(votedBull, turn);
 

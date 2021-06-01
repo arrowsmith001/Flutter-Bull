@@ -36,7 +36,9 @@ Room _$RoomFromJson(Map json) {
   return Room()
     ..code = json['code'] as String?
     ..host = json['host'] as String?
+    ..settings = Map<String, dynamic>.from(json['settings'] as Map)
     ..page = json['page'] as String?
+    ..roundStartUnix = json['roundStartUnix'] as int?
     ..turn = json['turn'] as int?
     ..revealed = json['revealed'] as int?
     ..playerIds =
@@ -71,7 +73,9 @@ Room _$RoomFromJson(Map json) {
 Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'code': instance.code,
       'host': instance.host,
+      'settings': instance.settings,
       'page': instance.page,
+      'roundStartUnix': instance.roundStartUnix,
       'turn': instance.turn,
       'revealed': instance.revealed,
       'playerIds': instance.playerIds,

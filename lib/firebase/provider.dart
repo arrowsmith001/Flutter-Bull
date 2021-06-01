@@ -11,10 +11,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/utilities/profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_bull/classes/classes.dart';
 
 import '../widgets.dart';
 
@@ -100,13 +102,7 @@ class FirebaseProvider {
 
     await fs.createNewRoom(roomCode);
 
-    Room room = new Room()
-      ..code = roomCode
-      ..playerIds = [ userId ]
-      ..playerScores = { userId : 0 }
-      ..host = userId
-      ..page = RoomPages.LOBBY
-      ..turn = 0;
+    Room room = new Room.created(roomCode, userId);
 
     await rtd.setRoom(room);
     await rtd.setRoomOccupancy(userId, roomCode);
@@ -154,6 +150,18 @@ class FirebaseProvider {
     return await rtd.pushVote(userId, roomCode, vote, turn);
   }
 
+  Future<bool> leaveGame(String userId, String roomCode) async {
+    // TODO Delete room in firestore and rtd
+    try {
+      await rtd.setPlayerField(userId, Player.OCCUPIED_ROOM_CODE, null);
+      return true;
+    }catch(e)
+    {
+      Utils.printError(this, 'leaveGame', e);
+      return false;
+    }
+  }
+
 }
 
 class FirebaseDatabaseProvider {
@@ -166,42 +174,44 @@ class FirebaseDatabaseProvider {
 
 
   Stream<Player?> streamPlayer(String? userId) {
-    return _dbRef.child(DB_PLAYERS).child(userId).onValue
-              .map((event) => event.snapshot.value == null ? null : Player.fromJson(Map.from(event.snapshot.value)));
-
+      return _dbRef.child(DB_PLAYERS).child(userId!).onValue.map((event) =>
+          event.snapshot.value == null
+              ? null
+              : Player.fromJson(Map.from(event.snapshot.value)));
   }
 
   Stream<Map<String,dynamic>> streamPlayerChanges(String userId) {
     return _dbRef.child(DB_PLAYERS).child(userId).onChildChanged
-        .map((event) => {event.snapshot.key : event.snapshot.value});
+        .map((event) => {event.snapshot.key! : event.snapshot.value});
   }
 
   Stream<Map<String,dynamic>> streamChildChanges(List<String> path) {
     DatabaseReference ref = _dbRef.reference();
     for(String s in path) ref = ref.child(s);
     return ref.onChildChanged
-        .map((event) => {event.snapshot.key : event.snapshot.value});
+        .map((event) => {event.snapshot.key! : event.snapshot.value});
   }
   Stream<Map<String,dynamic>> streamChildAdditions(List<String> path) {
     DatabaseReference ref = _dbRef.reference();
     for(String s in path) ref = ref.child(s);
     return ref.onChildAdded
-        .map((event) => {event.snapshot.key : event.snapshot.value});
+        .map((event) => {event.snapshot.key! : event.snapshot.value});
   }
   Stream<Map<String,dynamic>> streamChildRemovals(List<String> path) {
     DatabaseReference ref = _dbRef.reference();
     for(String s in path) ref = ref.child(s);
     return ref.onChildRemoved
-        .map((event) => {event.snapshot.key : event.snapshot.value});
+        .map((event) => {event.snapshot.key! : event.snapshot.value});
   }
 
 
   Future<void> setRoom(Room room) async {
-    await _dbRef.child('rooms').child(room.code).set(room.toJson());
+    print(room.toJson().toString());
+    await _dbRef.child('rooms').child(room.code!).set(room.toJson());
   }
 
   Future<void> updateRoom(Room room) async {
-    await _dbRef.child('rooms').child(room.code).update(room.toJson());
+    await _dbRef.child('rooms').child(room.code!).update(room.toJson());
   }
 
 
@@ -283,14 +293,14 @@ class FirebaseDatabaseProvider {
   }
 
   Stream<String?> streamUserRoomCode(String? userId) {
-    return _dbRef.child(DB_PLAYERS).child(userId).child(Player.OCCUPIED_ROOM_CODE).onValue
+    return _dbRef.child(DB_PLAYERS).child(userId!).child(Player.OCCUPIED_ROOM_CODE).onValue
         .map((event) {
       return event.snapshot.value;
     });
   }
 
   Stream<Room?> streamRoom(String? roomCode) {
-    return _dbRef.child(DB_ROOMS).child(roomCode).onValue
+    return _dbRef.child(DB_ROOMS).child(roomCode!).onValue
         .map((event) => event.snapshot.value == null ? null : Room.fromJson(Map.from(event.snapshot.value))
     );
   }

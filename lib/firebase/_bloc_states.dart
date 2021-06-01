@@ -71,10 +71,18 @@ class GameCreatedState extends FirebaseState {
   const GameCreatedState(this.roomCode, DataModel model) : super(model);
   final String? roomCode;
 }
+
 class GameJoinedState extends FirebaseState {
   const GameJoinedState(this.success, DataModel model) : super(model);
   final bool success;
 }
+
+class GameLeftState extends FirebaseState {
+  const GameLeftState(this.success, DataModel model) : super(model);
+  final bool success;
+}
+
+
 
 
 // Room
@@ -116,8 +124,20 @@ class PlayerPhasesChangeState extends FirebaseState {
   final Map<String, String> changes;
 }
 
+class PlayerVotesChangeState extends FirebaseState {
+  const PlayerVotesChangeState(this.changes, DataModel model) : super(model);
+  final Map<String, List<Vote>> changes;
+}
+
 class AllPlayersAtSamePhaseState extends FirebaseState {
   const AllPlayersAtSamePhaseState(this.phase, DataModel model) : super(model);
   final String phase;
+}
+
+class NewVoteState extends FirebaseState {
+  const NewVoteState(this.voterId, this.player, this.vote, DataModel model) : super(model);
+  final Player? player;
+  final Vote vote;
+  final String voterId;
 }
 

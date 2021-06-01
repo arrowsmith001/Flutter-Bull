@@ -99,10 +99,14 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
         }
 
         if(state is fbStates.NewRoomState)
-          {
-            yield NewRoomState(model);
-          }
+        {
+          yield NewRoomState(model);
+        }
 
+        if(state is fbStates.GameLeftState)
+        {
+          yield GameLeftState(state.success, model);
+        }
 
         yield MainMenuState(model);
       }
@@ -185,6 +189,12 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
     {
       firebaseBloc.add(fbEvents.JoinGameRequested(event.code));
     }
+
+    if(event is LeaveGameEvent)
+      {
+        firebaseBloc.add(fbEvents.LeaveGameRequested());
+
+      }
 
     // if(event is RoomC)
     // {

@@ -1,3 +1,4 @@
+import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
 
 class GameRoomState {
@@ -40,6 +41,7 @@ class PlayerPhaseChangedState extends GameRoomState {
 }
 
 
+
 // Game
 
 class StartGameRequestOutcome extends GameRoomState {
@@ -49,5 +51,11 @@ class StartGameRequestOutcome extends GameRoomState {
 
 class TextEntrySuccessfullySubmittedState extends GameRoomState {
   const TextEntrySuccessfullySubmittedState(GameRoomModel model) : super(model);
+}
 
+class NewPlayerVotedState extends GameRoomState {
+  const NewPlayerVotedState(this.player, this.vote, this.numberVotedSoFar, GameRoomModel model,) : super(model);
+  final Player? player;
+  final Vote vote;
+  final int numberVotedSoFar;
 }

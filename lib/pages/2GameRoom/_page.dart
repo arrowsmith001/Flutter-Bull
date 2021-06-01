@@ -66,7 +66,7 @@ class _GameRoomState extends State<GameRoom> {
   @override
   Widget build(BuildContext context) {
 
-    return BlocBuilder<GameRoomBloc, GameRoomState>(
+    Widget main = BlocBuilder<GameRoomBloc, GameRoomState>(
       buildWhen: (s1, s2) => s2 is NewRoomState,
       builder: (context, state) {
         return Navigator(
@@ -79,6 +79,8 @@ class _GameRoomState extends State<GameRoom> {
         );
       },
     );
+
+    return main;
 
 
   }

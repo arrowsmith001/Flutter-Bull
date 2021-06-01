@@ -43,6 +43,10 @@ class TutorialSetupPressed extends MainMenuEvent {
 
 class CreateGameEvent extends MainMenuEvent {}
 
+class LeaveGameEvent extends MainMenuEvent {}
+
+
+
 class JoinGameEvent extends MainMenuEvent {
   JoinGameEvent(this.code);
   String code;

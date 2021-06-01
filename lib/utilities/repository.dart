@@ -180,6 +180,10 @@ class Repository {
     return await _firebaseProvider.pushVote(userId, roomCode, vote, turn);
   }
 
+  Future<bool> leaveGame(String userId, String roomCode) async {
+    return await _firebaseProvider.leaveGame(userId, roomCode);
+  }
+
   // Stream<Image?> streamPlayerImage(String id) {
   //   return _firebaseProvider.streamPlayerImage(id);
   // }

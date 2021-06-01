@@ -32,55 +32,101 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
 
 
     if(event is FirebaseStateEvent) {
-
       fbState.FirebaseState state = event.state;
-      model.dataModel = state.model;
 
-      if(state is fbState.RoomChangeState) {
+//       List<Map<Player, Vote>> statesToYield = [];
+//       if(state is fbState.PlayerVotesChangeState)
+//       {
+//         // Compare models for differences
+//         bool oldModelNull = model.room!.playerVotes == null;
+//
+//         for(String id in state.changes.keys)
+//           {
+//             List<Vote> newVotesList = state.changes[id]!;
+//             int newVotesListLength = newVotesList.length;
+// print(id);
+//             List<Vote>? oldVotesList;
+//             int oldVotesListLength = 0;
+//             if(oldModelNull == false && model.room!.playerVotes!.containsKey(id))
+//               {
+//                 oldVotesList = model.room!.playerVotes![id]!;
+//                 oldVotesListLength = oldVotesList.length;
+//               }
+//
+//             print(newVotesListLength.toString() + ' ' + oldVotesListLength.toString());
+//             if(newVotesListLength == oldVotesListLength + 1)
+//               {
+//                 Vote vote = newVotesList.last;
+//                 if(!vote.isReader()) statesToYield.add({state.model.getPlayer(id)! : newVotesList.last});
+//               }
+//           }
+//
+//       }
+
+
+      // MODEL SET FROM HERE
+      model.dataModel = state.model;
+      // MODEL SET FROM HERE
+
+      // for(var item in statesToYield)
+      //   {
+      //     yield NewPlayerVotedState(item.keys.first, item.values.first, model);
+      //   }
+
+      if (state is fbState.RoomChangeState) {
         yield RoomChangeState(model);
       }
 
-      if(state is fbState.NewRoomState)
-      {
+      if (state is fbState.NewRoomState) {
         yield NewRoomState(model);
       }
 
-      if(state is fbState.RoomPlayerAddedState) {
+      if (state is fbState.RoomPlayerAddedState) {
         yield RoomPlayerAddedState(model, state.index, state.userId);
       }
 
-      if(state is fbState.RoomPlayerRemovedState) {
+      if (state is fbState.RoomPlayerRemovedState) {
         yield RoomPlayerRemovedState(model, state.index, state.userId);
       }
 
-      if(state is fbState.RoomPageChangedState)
-        {
-          yield RoomPageChangedState(model, state.newPage);
-        }
+      if (state is fbState.RoomPageChangedState) {
+        yield RoomPageChangedState(model, state.newPage);
+      }
 
-      if(state is fbState.TextEntryOutcomeState)
-      {
-        if(state.success)
-        {
+      if (state is fbState.TextEntryOutcomeState) {
+        if (state.success) {
           yield TextEntrySuccessfullySubmittedState(model);
         }
-        else
-        {
+        else {
           // TODO Display some error
         }
       }
 
-      if(state is fbState.PlayerPhasesChangeState)
-        {
-          Map<String, String> changes = state.changes;
-          if(changes.length > 0 && changes.length == model.roomPlayerCount) // If all players show phase
-              {
-                if(changes.values.toSet().length == 1){
-                //yield AllPlayersAtSamePhaseState(phases.values.first, model); // TODO
-            }
+      if (state is fbState.PlayerPhasesChangeState) {
+        Map<String, String> changes = state.changes;
+        if (changes.length > 0 && changes.length ==
+            model.roomPlayerCount) // If all players show phase
+            {
+          if (changes.values.toSet().length == 1) {
+            String phase = changes.values.first;
+            String currentPage = model.room!.page!;
+             if(phase == PlayerPhases.TEXT_ENTRY_CONFIRMED && currentPage == RoomPages.WRITE)
+               firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: RoomPages.CHOOSE));// TODO
           }
         }
+      }
 
+      if (state is fbState.NewVoteState)
+        {
+          Player? player = state.player;
+          Vote vote = state.vote;
+          if(vote.type != Vote.VOTE_TYPE_READER)
+            {
+              print('GameRoomBloc: yielding NewPlayerVotedState (${state.voterId})');
+              int numberVotedSoFar = model.getNumberWhoVoted(model.room!.turn!)!; // TODO Unjustified !;
+              yield NewPlayerVotedState(player, vote, numberVotedSoFar, model); // TODO: Unjustified !
+            }
+        }
 
       yield GameRoomState(model);
     }
@@ -114,6 +160,11 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
     if(event is TextEntrySubmittedEvent)
       {
         firebaseBloc.add(fbEvent.TextEntrySubmittedEvent(event.text, event.targetId));
+      }
+
+    if(event is StartRoundEvent)
+      {
+        firebaseBloc.add(fbEvent.StartRoundEvent());
       }
 
     if(event is VoteEvent)
@@ -179,7 +230,7 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
 
     if(event is SetPageOrTurnEvent)
       {
-        firebaseBloc.add(fbEvent.SetPageOrTurnEvent(event.page, event.turn));
+        firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: event.page, turn: event.turn));
       }
 
 
@@ -201,6 +252,7 @@ class GameRoomModel {
   get roomPlayerCount => dataModel.roomPlayerCount;
   bool get amIHost => dataModel.amIHost;
   bool? get isItMyTurn => dataModel.isItMyTurn;
+
   Player? getRoomMember(int i) => dataModel.getRoomMember(i);
   bool isHost(String? id) => dataModel.isHost(id);
   Player? getHost() => dataModel.getHost();
@@ -220,7 +272,9 @@ class GameRoomModel {
 
   int? whichTurnWasThisPlayer(String id) => dataModel.whichTurnWasThisPlayer(id);
 
-  List<Player> getPlayersWhoVoted(bool votedTrue, int turn) => dataModel.getPlayersWhoVoted(votedTrue, turn);
+  int? getNumberWhoVoted(int turn) => dataModel.getNumberWhoVoted(turn);
+
+  List<Player> getPlayersWhoVoted(int turn, [bool? votedTrue]) => dataModel.getPlayersWhoVoted(turn, votedTrue);
 
   List<int> getVoteTimes(List<Player> players, int turn) => dataModel.getVoteTimes(players, turn);
 
