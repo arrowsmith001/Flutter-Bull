@@ -119,7 +119,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
     if(votesSub != null) await votesSub.cancel();
     votesSub = repo.streamChildAdditions(['rooms', roomCode, Room.PLAYER_VOTES, userId]).listen((map) {
-      add(OnVoteAddedEvent(roomCode, map));
+      add(OnVoteAddedEvent(roomCode, userId, map));
     });
 
     var newPair = {userId : votesSub};
@@ -358,6 +358,18 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         yield PlayerPhasesChangeState(phases, model);
       }
 
+      if(event.changes.containsKey(Room.REVEALED))
+        {
+          int newRevealedNumber = event.changes[Room.REVEALED] as int;
+          yield NewRevealedNumberState(newRevealedNumber, model);
+        }
+
+      if(event.changes.containsKey(Room.TURN))
+        {
+          int newTurn = event.changes[Room.TURN] as int;
+          yield NewTurnNumberState(newTurn, model);
+        }
+
       // if(event.changes.containsKey(Room.PLAYER_VOTES))
       // {
       //   Map<String, List> map = Map.from(event.changes[Room.PLAYER_VOTES]);
@@ -397,10 +409,10 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       {
         print('VOTE ADDED: ' + event.changes.toString());
         String roomCode = event.roomCode;
-        for(String voterId in event.changes.keys)
+        for(String voteNum in event.changes.keys)
           {
-            Vote vote = event.changes[voterId];
-            if(model.isRoom(roomCode)) yield NewVoteState(voterId, model.getPlayer(voterId), vote, model);
+            Vote vote = Vote.fromJson(Map.from(event.changes[voteNum]));
+            if(model.isRoom(roomCode) && model.room!.turn! == int.parse(voteNum)) yield NewVoteState(event.author, vote, model);
           }
       }
 
@@ -461,7 +473,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     if(event is PushNewVoteEvent)
       {
         Vote vote = event.vote;
-        await repo.pushVote(model.userId!, model.room!.code!, vote, model.room!.turn!);
+        await repo.pushVote(event.voterId, model.room!.code!, vote, model.room!.turn!);
       }
 
     if(event is SetCurrentRoomFieldEvent)
@@ -488,10 +500,25 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         await repo.setRoomField(model.room!.code!, [Room.ROUND_START_UNIX], GameParams.convertUnixForUpload(DateTime.now().millisecondsSinceEpoch));
         await repo.setRoomField(model.room!.code!, [Room.PAGE], RoomPages.PLAY);
         add(new PushNewVoteEvent(
-            new Vote()
-              ..type = Vote.VOTE_TYPE_READER
-              ..time = 0));
+            model.getPlayerWhoseTurn()!.id!,
+            new Vote.reader()));
       }
+
+    if(event is AdvanceRevealNumberEvent)
+      {
+        int? revealNumber = model.room!.revealed;
+        if(revealNumber != null) await repo.setRoomField(model.room!.code!, [Room.REVEALED], revealNumber + 1);
+      }
+
+    if(event is GoToNextRevealTurnEvent)
+    {
+      await repo.setRoomField(model.room!.code!, [Room.TURN], event.currentTurn + 1);
+    }
+
+    if(event is GoToResultsEvent)
+    {
+      await repo.setAllPlayerPhases(model.room!.code!, PlayerPhases.GO_TO_RESULTS);
+    }
 
     // if(event is TextEntryWithdrawnEvent)
     // {
@@ -630,7 +657,7 @@ class DataModel {
     if(room == null) return null;
     if(room!.playerOrder == null) return null;
     if(room!.turn == null) return null;
-    if(room!.playerOrder!.length <= room!.turn!) return null;
+    if(room!.playerOrder!.length <= room!.turn!) return false;
     return room!.playerOrder![room!.turn!] == userId;
 
   }
@@ -735,8 +762,8 @@ class DataModel {
   int? getNumberWhoVoted(int turn, [bool? votedTrue]) { // TODO implement votedTrue
     try{
       assert(room != null);
-      assert(room!.playerVotes != null);
-      int count = room!.playerVotes!.keys
+      if(room!.playerVotes == null) return 0;
+      return room!.playerVotes!.keys
           .where((id) =>
 
             room!.playerVotes![id]!.length > turn
@@ -746,7 +773,6 @@ class DataModel {
             (votedTrue == null || room!.playerVotes![id]![turn].votedTrue == votedTrue))
 
           .length;
-      return count;
     }catch(e)
     {
       print('getNumberWhoVoted ERROR: ' + e.toString());
@@ -763,6 +789,70 @@ class DataModel {
     }catch(e)
     {
       print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+      return [];
+    }
+  }
+
+  String? getPlayerTarget(String? id) {
+    try{
+      assert(id != null);
+      assert(room != null);
+      assert(room!.playerTargets != null);
+      assert(room!.playerTargets!.containsKey(id));
+      return room!.playerTargets![id];
+    }catch(e)
+    {
+      print('getPlayerTarget ERROR: ' + e.toString());
+      return null;
+    }
+  }
+
+  bool? haveTheyVoted(String? id) {
+    try{
+      assert(id != null);
+      assert(room != null);
+      assert(room!.turn != null);
+      if(room!.playerVotes == null) return false;
+      if(!room!.playerVotes!.containsKey(id)) return false;
+      List<Vote> myVotes = room!.playerVotes![id]!;
+      return (myVotes.length > room!.turn!);
+    }catch(e)
+    {
+      print('haveTheyVoted ERROR: ' + e.toString());
+      return null;
+    }
+
+  }
+
+  bool? isItTheirTurn(String? id) {
+    try{
+      assert(id != null);
+      assert(room != null);
+      assert(room!.turn != null);
+      assert(room!.playerOrder != null);
+      assert(room!.playerOrder!.contains(id));
+      return room!.playerOrder!.indexOf(id!) == room!.turn!;
+    }catch(e)
+    {
+      print('isItTheirTurn ERROR: ' + e.toString());
+      return null;
+    }
+  }
+
+  List<Player> getFullVoterList(int turn) {
+    try{
+      assert(room != null);
+      assert(room!.playerIds != null);
+      Player? playerWhoseTurn = getPlayerWhoseTurn();
+      assert(playerWhoseTurn != null);
+      List<Player> list = room!.playerIds!
+          .where((id) =>
+        id != playerWhoseTurn!.id
+      ).map((userId) => getPlayer(userId)!).toList();
+      return list;
+    }catch(e)
+    {
+      print('getPlayersWhoVoted ERROR: ' + e.toString());
       return [];
     }
   }

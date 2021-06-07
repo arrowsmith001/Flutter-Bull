@@ -1,5 +1,4 @@
 
-
 class Utils {
 
   static void printError(Object thisClass, String methodName, e) {

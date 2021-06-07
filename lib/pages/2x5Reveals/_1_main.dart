@@ -64,6 +64,11 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
   late AnimationController _entranceController;
   final ScrollController _scrollController = ScrollController();
 
+  void _onNavigatorPopped()
+  {
+    // TODO implement
+  }
+
   @override
   void initState() {
     _entranceController = AnimationController(vsync: this);
@@ -96,9 +101,7 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
 
           //Widget page = SizedBox(height: MediaQuery.of(context).size.height);
 
-          Widget focus = EmptyWidget();
-
-          try{
+          //try{
             Player playerWhoseTurn = state.model.getPlayerWhoseTurn()!;
             String text = state.model.getPlayerText(playerWhoseTurn.id)!;
             bool truth = state.model.getPlayerTruth(playerWhoseTurn.id)!;
@@ -115,8 +118,11 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
                 bubble = bubble.HeroExt(playerWhoseTurn.id! + 'bubble');
               }
 
-            focus = GestureDetector(
-              onTap: () => Navigator.pushNamed(context, RevealsPages.SUB, arguments: playerWhoseTurn.id!),
+            Widget focus = GestureDetector(
+              onTap: () async {
+                await Navigator.pushNamed(context, RevealsPages.SUB, arguments: playerWhoseTurn.id!);
+                _onNavigatorPopped();
+              },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -126,9 +132,9 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
               ),
             );
 
-          }catch(e){
-
-          }
+          //}catch(e){
+           // print('ERROR: ' + e.toString());
+          //}
 
           Widget list = ListView.builder(
               //controller: _scrollController,

@@ -11,6 +11,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
 import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/utilities/profile.dart';
 import 'package:http/http.dart' as http;
@@ -162,6 +163,10 @@ class FirebaseProvider {
     }
   }
 
+  Future<void> setAllPlayerPhases(String code, String phase) async {
+    await rtd.setAllChildValuesAt(['rooms', code, Room.PLAYER_PHASES], phase);
+  }
+
 }
 
 class FirebaseDatabaseProvider {
@@ -277,7 +282,7 @@ class FirebaseDatabaseProvider {
   Future<void> setProfileId(String uid, String fileExt) async {
   }
 
-  Future<void> setPlayerField(String userId, String fieldId, value) async {
+  Future<void> setPlayerField(String userId, [String fieldId = '', value]) async {
     await _dbRef.child(DB_PLAYERS).child(userId).child(fieldId).set(value);
   }
 
@@ -320,8 +325,10 @@ class FirebaseDatabaseProvider {
   Future<bool> pushVote(String userId, String roomCode, Vote vote, int turn) async {
     TransactionResult result;
     bool success = false;
-    const int MAX_ATTEMPTS = 10;
+    const int MAX_ATTEMPTS = 1;
     int attempts = 0;
+
+    int votesLength = 0;
 
     do{
       try{
@@ -334,7 +341,8 @@ class FirebaseDatabaseProvider {
           else
             {
               votes = List.from(data.value as List);
-              assert(votes.length == turn);
+              votesLength = votes.length;
+              assert(votesLength == turn);
               votes.add(vote.toJson());
             }
           data.value = votes;
@@ -345,6 +353,7 @@ class FirebaseDatabaseProvider {
       }catch(e)
       {
         print(e.toString());
+        //print('VL: ${votesLength.toString()} TURN: ${turn.toString()}');
         success = false;
       }
       attempts++;
@@ -352,6 +361,24 @@ class FirebaseDatabaseProvider {
 
     return success;
 
+  }
+
+  Future<bool> setAllChildValuesAt(List<String> list, value) async {
+    DatabaseReference ref = _dbRef.reference();
+    for(String s in list) ref = ref.child(s);
+    TransactionResult result;
+    bool success = false;
+    result = await ref.runTransaction((data) async {
+      Map map = Map<String, dynamic>.from(data.value as Map);
+      for(String key in map.keys)
+        {
+          map[key] = value;
+        }
+      data.value = map;
+      return await data;
+    });
+    success = result.committed;
+    return success;
   }
 
 

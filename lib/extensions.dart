@@ -1,8 +1,25 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:math' as math;
 
 extension StringModifier on String? {
   bool isNullOrEmpty() => this == null || this == '';
 }
+
+extension IterableModifier<T> on Iterable<T> {
+  T? getRandom() {
+    int length = this.length;
+    if(length == 0) return null;
+    int randomIndex = math.Random().nextInt(length);
+    return this.toList(growable: false)[randomIndex];
+  }
+
+  List<T> getRandomSublist(int length){
+    throw UnimplementedError();
+    if(this.length <= length) return this.toList();
+    if(length == 0) return [];
+  }
+}
+
 
 // Some modifiers for Widgets just to tidy up the code
 extension WidgetModifier on Widget {
@@ -73,6 +90,15 @@ extension WidgetModifier on Widget {
   Widget TranslateExt({double dx = 0, double dy = 0}) {
     return Transform.translate(
       offset: Offset(dx, dy),
+      child: this,
+    );
+  }
+
+  // Wraps widget in a Container widget with a Box Decoration
+  Widget RotateExt(double angle, [Offset origin = Offset.zero]) {
+    return Transform.rotate(
+      origin: origin,
+      angle: angle,
       child: this,
     );
   }

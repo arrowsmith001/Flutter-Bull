@@ -69,6 +69,7 @@ class Room {
   static const String HOST = 'host';
   static const String TURN = 'turn';
   static const String SETTINGS = 'settings';
+  static const String REVEALED = 'revealed';
   static const String ROUND_START_UNIX = 'roundStartUnix';
 
   static const String PLAYER_IDS = 'playerIds';
@@ -122,7 +123,25 @@ class Room {
 class Vote {
 
   factory Vote.fromJson(Map<String, dynamic> json) => _$VoteFromJson(json);
+
   Map<String, dynamic> toJson() => _$VoteToJson(this);
+
+  Vote.fromData(String voterId, bool? votedTrue, String whoseTurnId, String targetId, [int t = 0]){
+    this.votedTrue = votedTrue;
+    if(voterId == whoseTurnId) this.votedTrue = null;
+    if(this.votedTrue == null) type = Vote.VOTE_TYPE_READER;
+    else
+    {
+      if(whoseTurnId == targetId) type = Vote.VOTE_TYPE_SABOTEUR;
+      else type = Vote.VOTE_TYPE_VOTER;
+    }
+    this.time = t;
+  }
+
+  Vote.reader() {
+    type = VOTE_TYPE_READER;
+    time = 0;
+  }
 
   static const String VOTED_TRUE = 'votedTrue';
   static const String TIME = 'time';
@@ -153,5 +172,7 @@ class PlayerPhases {
   static const String TEXT_ENTRY_CONFIRMED = 'textEntryConfirmed';
   static const String CHOOSE = 'choose';
   static const String PLAY = 'play';
+  static const String GO_TO_NEXT_REVEAL = 'goToNextReveal';
+  static const String GO_TO_RESULTS = 'goToResults';
 
 }

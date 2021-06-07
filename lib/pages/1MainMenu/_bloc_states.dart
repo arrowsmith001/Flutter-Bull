@@ -55,3 +55,5 @@ class GameLeftState extends MainMenuState {
   const GameLeftState(bool success, MainMenuModel model) : super(model);
 }
 
+
+

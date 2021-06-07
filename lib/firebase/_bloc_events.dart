@@ -87,8 +87,9 @@ class StartGameEvent extends FirebaseEvent {}
 class StartRoundEvent extends FirebaseEvent {}
 
 class PushNewVoteEvent extends FirebaseEvent {
-  PushNewVoteEvent(this.vote);
+  PushNewVoteEvent(this.voterId, this.vote);
   Vote vote;
+  String voterId;
 }
 
 class TextEntrySubmittedEvent extends FirebaseEvent {
@@ -106,7 +107,17 @@ class SetPageOrTurnEvent extends FirebaseEvent{
 }
 
 class OnVoteAddedEvent extends FirebaseEvent {
-  OnVoteAddedEvent(this.roomCode, this.changes);
+  OnVoteAddedEvent(this.roomCode, this.author, this.changes);
   String roomCode;
+  String author;
   Map changes;
 }
+
+class AdvanceRevealNumberEvent extends FirebaseEvent {}
+
+class GoToNextRevealTurnEvent extends FirebaseEvent {
+  GoToNextRevealTurnEvent(this.currentTurn);
+  int currentTurn;
+}
+
+class GoToResultsEvent extends FirebaseEvent {}

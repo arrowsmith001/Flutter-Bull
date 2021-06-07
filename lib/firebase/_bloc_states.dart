@@ -135,9 +135,18 @@ class AllPlayersAtSamePhaseState extends FirebaseState {
 }
 
 class NewVoteState extends FirebaseState {
-  const NewVoteState(this.voterId, this.player, this.vote, DataModel model) : super(model);
-  final Player? player;
+  const NewVoteState(this.voterId, this.vote, DataModel model) : super(model);
   final Vote vote;
   final String voterId;
+}
+
+class NewRevealedNumberState extends FirebaseState {
+  const NewRevealedNumberState(this.newRevealedNumber, DataModel model) : super(model);
+  final int newRevealedNumber;
+}
+
+class NewTurnNumberState extends FirebaseState {
+  const NewTurnNumberState(this.newTurn, DataModel model) : super(model);
+  final int newTurn;
 }
 

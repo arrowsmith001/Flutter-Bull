@@ -70,6 +70,14 @@ class _RevealsSubState extends State<RevealsSub> {
     super.initState();
   }
 
+  void _advanceRevealNumber(){
+    _bloc.add(AdvanceRevealNumberEvent());
+  }
+
+  void _reveal(bool truth){
+
+  }
+
   static const int staggeredListAnimationLengthMilliseconds = 500;
 
   Widget _buildVoteGrid(List<Player> list, bool votedTrue, List<int> voteTimes) {
@@ -152,10 +160,12 @@ class _RevealsSubState extends State<RevealsSub> {
           Widget avatar = Avatar(player.profileImage, size: Size(dim, dim));
           String text = state.model.getPlayerText(player.id)!;
           bool truth = state.model.getPlayerTruth(player.id)!;
+          bool isMyTurn = state.model.isItMyTurn!;
+          bool hasBeenRevealed = turn < state.model.room!.revealed!;
 
           Widget bubble = MyBubble(text, size: Size(dim, dim));
 
-          Widget item = Row(
+          Widget mainAvatar = Row(
             children: [
 
               avatar.HeroExt(player.id! + 'image'),
@@ -190,7 +200,7 @@ class _RevealsSubState extends State<RevealsSub> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
 
-                      item,
+                      mainAvatar,
 
                       Column(
                         children: [
@@ -220,7 +230,17 @@ class _RevealsSubState extends State<RevealsSub> {
                         ],
                       ).PaddingExt(EdgeInsets.all(12)).ExpandedExt(),
 
-                      CupertinoButton(child: Text('Return'), onPressed: () => Navigator.of(context).pop(),)
+                      !hasBeenRevealed ? EmptyWidget()
+                          : GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                            child: Text(truth ? 'TRUE' : 'BULL',
+                            style: truth ? AppStyles.TruthStyle(fontSize: 64) : AppStyles.BullStyle(fontSize: 64)),
+                          ),
+
+                      !isMyTurn ? EmptyWidget()
+                          : CupertinoButton(child: Text('Reveal'), onPressed: () => _advanceRevealNumber(),)
                     ],
                   ).PaddingExt(EdgeInsets.all(20))
 
@@ -228,6 +248,24 @@ class _RevealsSubState extends State<RevealsSub> {
         },
         listener: (context, state) {
 
+          if(state is RevealState)
+            {
+              int newRevealNumber = state.newRevealedNumber;
+              if(newRevealNumber == state.model.room!.turn)
+                {
+                  _reveal(state.model.getPlayerTruth(state.model.getPlayerWhoseTurn()!.id)!);
+                }
+            }
+
+          if(state is GoToResultsState)
+          {
+            Navigator.of(context).pushNamed(RevealsPages.FINAL);
+          }
+
+          if(state is GoToNextRevealTurnState)
+          {
+            Navigator.of(context).pop();
+          }
         });
   }
 

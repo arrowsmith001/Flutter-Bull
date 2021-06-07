@@ -164,6 +164,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   bool resumingGame = false;
   bool leavingGame = false;
 
+  // TODO Either forbid popping scope to main menu, or reset variables to allow re-creating rooms
+
   Future<void> goToGameRoom() async {
     if(!_animController4.isCompleted) _animController4.forward(from: 0);
     if(goingToGameRoom) return;
@@ -176,6 +178,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     await Navigator.of(context).push(Routes.MainMenu_To_GameRoom(context));
     goingToGameRoom = false;
   }
+
+
 
   // IMAGE SELECTION
   TextEditingController _profileSetupNameController = new TextEditingController();

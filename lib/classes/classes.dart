@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'firebase.dart';
 
 class GameParams {
+
   static const bool DEV_MODE = true;
   static const int MINIMUM_PLAYERS_FOR_GAME = 3;
   static const int UNIX_OFFSET = 1622213681765;

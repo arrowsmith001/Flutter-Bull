@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/classes/firebase.dart';
+import 'package:flutter_bull/firebase/_bloc.dart';
 import 'package:flutter_bull/firebase/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -109,7 +110,7 @@ class Repository {
 
   }
 
-  Future<void> setPlayerField(String userId, String childId, dynamic value) async {
+  Future<void> setPlayerField(String userId, [String childId = '', dynamic value]) async {
     await _firebaseProvider.setPlayerField(userId, childId, value);
   }
 
@@ -184,12 +185,14 @@ class Repository {
     return await _firebaseProvider.leaveGame(userId, roomCode);
   }
 
+  Future<void> setAllPlayerPhases(String code, String phase) async {
+    return await _firebaseProvider.setAllPlayerPhases(code, phase);
+  }
+
+
   // Stream<Image?> streamPlayerImage(String id) {
   //   return _firebaseProvider.streamPlayerImage(id);
   // }
-
-
-
 
 
 }

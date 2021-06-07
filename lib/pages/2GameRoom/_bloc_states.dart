@@ -54,8 +54,23 @@ class TextEntrySuccessfullySubmittedState extends GameRoomState {
 }
 
 class NewPlayerVotedState extends GameRoomState {
-  const NewPlayerVotedState(this.player, this.vote, this.numberVotedSoFar, GameRoomModel model,) : super(model);
+  const NewPlayerVotedState(this.voterId, this.vote, this.player, this.numberVotedSoFar, GameRoomModel model) : super(model);
+  final String voterId;
   final Player? player;
   final Vote vote;
   final int numberVotedSoFar;
+}
+
+class RevealState extends GameRoomState {
+  const RevealState(this.newRevealedNumber, GameRoomModel model) : super(model);
+  final int newRevealedNumber;
+}
+
+class GoToNextRevealTurnState extends GameRoomState {
+  const GoToNextRevealTurnState(this.newTurn, GameRoomModel model) : super(model);
+  final int newTurn;
+}
+
+class GoToResultsState extends GameRoomState {
+  const GoToResultsState(GameRoomModel model) : super(model);
 }

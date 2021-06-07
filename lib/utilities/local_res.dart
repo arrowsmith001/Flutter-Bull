@@ -14,7 +14,7 @@ class AppColors{
   static const Color bullColor = const Color.fromARGB(255, 255, 28, 28);
 
   static const Color revealsScaffoldBackgroundColor = const Color.fromARGB(
-      255, 255, 195, 195);
+      255, 255, 220, 220);
 
 }
 
@@ -25,7 +25,7 @@ class AppStyles {
       fontFamily: FontFamily.lapsusProBold,
       fontSize: size);
 
-  static TextStyle DebugStyle(double fontSize) => TextStyle(color: Colors.black, fontSize: fontSize);
+  static TextStyle DebugStyle(double fontSize, {FontWeight weight = FontWeight.normal}) => TextStyle(color: Colors.black, fontSize: fontSize, fontWeight: weight);
 
   static TextStyle TruthStyle({double? fontSize}) =>
       TextStyle(

@@ -48,7 +48,7 @@ class MainMenuButton extends StatelessWidget {
 class Avatar extends StatelessWidget{
   Avatar(this.image, 
       {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false, 
-        this.defaultImage, this.size, this.shape = BoxShape.circle, this.borderRadius = 8.0});
+        this.defaultImage, this.size, this.shape = BoxShape.circle, this.borderRadius = 8.0, this.borderColor});
   final double borderFlashValue;
   final double borderWidth;
   final bool loading;
@@ -57,6 +57,7 @@ class Avatar extends StatelessWidget{
   final Size? size;
   final BoxShape shape;
   final double borderRadius;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +78,7 @@ class Avatar extends StatelessWidget{
                 shape: shape,
                 borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
                 border: Border.all(
-                    color: Color.lerp(Colors.blueAccent, Colors.white, borderFlashValue)!,
+                    color: Color.lerp(borderColor ?? Colors.blueAccent, Colors.white, borderFlashValue)!,
                     width: borderWidth),
                 image: image == null && defaultImage == null ? null : DecorationImage(
                   colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,

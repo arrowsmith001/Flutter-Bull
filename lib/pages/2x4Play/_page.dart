@@ -11,6 +11,7 @@ import 'package:flutter_bull/pages/2GameRoom/_bloc_events.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
 import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
+import 'package:flutter_bull/pages/2x4Play/widgets.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/widgets.dart';
@@ -38,6 +39,7 @@ import 'package:flutter_bull/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
+import 'package:reorderables/reorderables.dart';
 import '../../classes/classes.dart';
 import '../../extensions.dart';
 import 'dart:ui' as ui;
@@ -50,16 +52,23 @@ class Play extends StatefulWidget {
   _PlayState createState() => _PlayState();
 }
 
-class _PlayState extends State<Play> {
+class _PlayState extends State<Play> with TickerProviderStateMixin {
 
   final String thisPageName = RoomPages.PLAY;
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
 
+  late AnimationController _animController;
+  String? animatedVoterId;
 
   @override
   void initState() {
     super.initState();
+
+    _animController = new AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _animController.addListener(() {setState(() {
+
+    });});
 
     // TODO Do not do this shit in initState
 
@@ -69,8 +78,12 @@ class _PlayState extends State<Play> {
     int unixNow = DateTime.now().millisecondsSinceEpoch;
     int elapsed = unixNow - unixRoundStart;
 
+    initialItemCount = _bloc.model.getNumberWhoVoted(_bloc.model.room!.turn!)!;
+
     _createTimer(totalMinutes, elapsed);
   }
+
+  int initialItemCount = 0;
 
   void _createTimer(int totalMinutes, int msElapsed){
     // TODO: Sync timer with actual unix timestamp
@@ -93,6 +106,7 @@ class _PlayState extends State<Play> {
   @override
   void dispose(){
     _roundTimer.cancel();
+    _animController.dispose();
     super.dispose();
   }
 
@@ -128,10 +142,11 @@ class _PlayState extends State<Play> {
   }
 
   void goToNextTurn(){
-    _bloc.add(NextTurnRequestedEvent());
+    _bloc.add(NextTurnRequestedFromPlayEvent());
   }
 
-  GlobalKey<AnimatedListState> _animListKey = new GlobalKey();
+
+  //GlobalKey<AnimatedListState> _animListKey = new GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -158,24 +173,45 @@ class _PlayState extends State<Play> {
           );
 
           List<Player> playersWhoVoted = state.model.getPlayersWhoVoted(turn);
-          int numberWhoVoted = playersWhoVoted.length;
 
-          Widget votedList = numberWhoVoted == 0 ? EmptyWidget()
-           : AnimatedList(
-            scrollDirection: Axis.horizontal,
-            key: _animListKey,
-              initialItemCount: 0,
-              itemBuilder: (context, i, animation) {
-              animation.addListener(() {setState(() {
+          List<Player> playersWhoCanVote = state.model.getPlayersWhoCanVote(turn);
 
-              });});
+          Widget votedList = Wrap(
+            //onReorder: (int oldIndex, int newIndex) {  },
+            children: List.generate(playersWhoCanVote.length, (i) {
 
-                if(playersWhoVoted.length <= i) return EmptyWidget();
-                return Avatar(playersWhoVoted[i].profileImage!, size: Size(50, 50)).ScaleExt(animation.value);
+                Player p = playersWhoCanVote[i];
 
-              });
+                Widget avatar = Avatar(p.profileImage!,
+                    borderColor: playersWhoVoted.contains(p) ? Colors.lightGreen : null, size: Size(65, 65))
+                  .PaddingExt(EdgeInsets.all(8));
 
-          // Widget votedList = numberWhoVoted <= 0 ? EmptyWidget()
+                return AnimatedVoterAvatar(avatar,
+                    p.id == this.animatedVoterId ? _animController.value : 1
+                );
+
+              })
+            ,
+
+          );
+
+          // Widget votedList =
+          // //numberWhoVoted == 0 ? EmptyWidget() :
+          // AnimatedList(
+          //   scrollDirection: Axis.horizontal,
+          //   key: _animListKey,
+          //     initialItemCount: initialItemCount,
+          //     itemBuilder: (context, i, animation) {
+          //     animation.addListener(() {setState(() {
+          //
+          //     });});
+          //
+          //       //if(playersWhoVoted.length <= i) return EmptyWidget();
+          //       return Avatar(playersWhoVoted[i].profileImage!, size: Size(50, 50)).ScaleExt(animation.value);
+          //
+          //     });
+
+          // votedList = numberWhoVoted <= 0 ? EmptyWidget()
           //  : ListView.builder(
           //   itemCount: numberWhoVoted,
           //   scrollDirection: Axis.horizontal,
@@ -247,7 +283,12 @@ class _PlayState extends State<Play> {
 
           if(state is NewPlayerVotedState)
             {
-              if(_animListKey.currentState != null) _animListKey.currentState!.insertItem(state.numberVotedSoFar);
+              setState(() {
+                this.animatedVoterId = state.voterId;
+              });
+              _animController.forward(from: 0);
+              //print('Inserting voter (${state.numberVotedSoFar.toString()})');
+              //if(_animListKey.currentState != null) _animListKey.currentState!.insertItem(state.numberVotedSoFar - 1);
             }
           // if(state is NewTimeElapsedState)
           // {
@@ -261,6 +302,7 @@ class _PlayState extends State<Play> {
 
         );
   }
+
 
 
 }
