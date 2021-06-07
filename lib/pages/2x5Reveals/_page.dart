@@ -68,17 +68,21 @@ class _RevealsState extends State<Reveals> {
     try{
       int turn = _bloc.model.room!.turn!;
       int revealed = _bloc.model.room!.revealed!;
+      int playerCount = _bloc.model.roomPlayerCount;
       if(turn > 0 || revealed > 0)
         {
-          if(revealed > turn) // Go to sub page
+          if(revealed >= playerCount)
             {
-              initialRoute = RevealsPages.SUB;
-          }
+              initialRoute = RevealsPages.FINAL;
+            }
+          // else if(revealed > turn)
+          //   {
+          //     initialRoute = RevealsPages.SUB;
+          //   }
           else
             {
               initialRoute = RevealsPages.MAIN;
             }
-
         }
     }
     catch(e)

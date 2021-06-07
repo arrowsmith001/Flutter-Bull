@@ -63,7 +63,13 @@ class _RevealsIntroState extends State<RevealsIntro> {
   @override
   void initState() {
     super.initState();
+    _runRoutine();
   }
+
+  Future<void> _runRoutine() async {
+    await Future.delayed(Duration(seconds: 2));
+    Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +88,7 @@ class _RevealsIntroState extends State<RevealsIntro> {
                   body: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(thisSubPageName, style: AppStyles.DebugStyle(42)),
-                      CupertinoButton(
-                          child: Text('Go to reveals'),
-                          onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false))
+                      Text('It\'s time to REVEEEEEEEEEEEEEAL')
                     ],
                   ).PaddingExt(EdgeInsets.all(20))
 

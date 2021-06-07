@@ -193,14 +193,14 @@ class _RevealsSubState extends State<RevealsSub> {
           return SafeArea(
               child: Scaffold(
                   backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
                   body: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
 
-                      mainAvatar,
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                          child: mainAvatar),
+
 
                       Column(
                         children: [
@@ -228,7 +228,8 @@ class _RevealsSubState extends State<RevealsSub> {
                               .ExpandedExt()
 
                         ],
-                      ).PaddingExt(EdgeInsets.all(12)).ExpandedExt(),
+                      ).PaddingExt(EdgeInsets.all(12))
+                          .ExpandedExt(),
 
                       !hasBeenRevealed ? EmptyWidget()
                           : GestureDetector(
@@ -241,6 +242,8 @@ class _RevealsSubState extends State<RevealsSub> {
 
                       !isMyTurn ? EmptyWidget()
                           : CupertinoButton(child: Text('Reveal'), onPressed: () => _advanceRevealNumber(),)
+
+
                     ],
                   ).PaddingExt(EdgeInsets.all(20))
 
@@ -262,9 +265,12 @@ class _RevealsSubState extends State<RevealsSub> {
             Navigator.of(context).pushNamed(RevealsPages.FINAL);
           }
 
-          if(state is GoToNextRevealTurnState)
+          if(state is GoToNextRevealState)
           {
-            Navigator.of(context).pop();
+                bool iShouldAdvanceTurn = true; // TODO Change to vary upon whose turn it is
+
+                Navigator.of(context).pop<bool>(iShouldAdvanceTurn);
+
           }
         });
   }

@@ -163,10 +163,6 @@ class FirebaseProvider {
     }
   }
 
-  Future<void> setAllPlayerPhases(String code, String phase) async {
-    await rtd.setAllChildValuesAt(['rooms', code, Room.PLAYER_PHASES], phase);
-  }
-
 }
 
 class FirebaseDatabaseProvider {

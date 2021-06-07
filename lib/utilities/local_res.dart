@@ -41,6 +41,10 @@ class AppStyles {
           fontSize: fontSize ?? 24,
           fontFamily: FontFamily.lapsusProBold);
 
+  static TextStyle defaultStyle({double fontSize = 32}) {
+    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize);
+  }
+
 }
 
 class AppStrings{

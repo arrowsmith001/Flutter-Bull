@@ -119,8 +119,8 @@ class TextEntryOutcomeState extends FirebaseState {
   final bool success;
 }
 
-class PlayerPhasesChangeState extends FirebaseState {
-  const PlayerPhasesChangeState(this.changes, DataModel model) : super(model);
+class PlayerTextsChangeState extends FirebaseState {
+  const PlayerTextsChangeState(this.changes, DataModel model) : super(model);
   final Map<String, String> changes;
 }
 
@@ -138,6 +138,11 @@ class NewVoteState extends FirebaseState {
   const NewVoteState(this.voterId, this.vote, DataModel model) : super(model);
   final Vote vote;
   final String voterId;
+}
+
+class NewPhaseState extends FirebaseState {
+  const NewPhaseState(this.phase, DataModel model) : super(model);
+  final String phase;
 }
 
 class NewRevealedNumberState extends FirebaseState {

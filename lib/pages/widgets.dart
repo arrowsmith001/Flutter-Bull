@@ -94,22 +94,24 @@ class Avatar extends StatelessWidget{
 }
 
 class MyBubble extends StatelessWidget {
-  const MyBubble(this.text, {this.size});
+  const MyBubble(this.text, {this.size, this.nip = BubbleNip.leftTop});
   final String text;
   final Size? size;
+  final BubbleNip nip;
 
   static const double DEFAULT_SIZE = 24;
 
   @override
   Widget build(BuildContext context) {
     return Bubble(
+      color: Colors.white.withOpacity(0.7),
         nipOffset: 75,
         nipWidth: 15,
         nipHeight: 20,
         padding: BubbleEdges.all(4),
         margin: BubbleEdges.all(4),
         elevation: 0,
-        nip: BubbleNip.leftTop,
+        nip: nip,
         child: Container(
           height: size == null ? DEFAULT_SIZE : size!.height,
           child: Center(
@@ -117,7 +119,7 @@ class MyBubble extends StatelessWidget {
                 minFontSize: 16,
                 textAlign:
                 TextAlign.center,
-                style: AppStyles.DebugStyle(32)),
+                style: AppStyles.defaultStyle(fontSize: 32)),
           )
               .PaddingExt(EdgeInsets.all(8)),
         )

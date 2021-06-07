@@ -66,11 +66,15 @@ class RevealState extends GameRoomState {
   final int newRevealedNumber;
 }
 
-class GoToNextRevealTurnState extends GameRoomState {
-  const GoToNextRevealTurnState(this.newTurn, GameRoomModel model) : super(model);
-  final int newTurn;
+class GoToNextRevealState extends GameRoomState {
+  const GoToNextRevealState(GameRoomModel model) : super(model);
 }
 
 class GoToResultsState extends GameRoomState {
   const GoToResultsState(GameRoomModel model) : super(model);
+}
+
+class NewTurnState extends GameRoomState {
+  const NewTurnState(this.newTurn, GameRoomModel model) : super(model);
+  final int newTurn;
 }

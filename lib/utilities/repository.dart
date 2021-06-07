@@ -185,9 +185,6 @@ class Repository {
     return await _firebaseProvider.leaveGame(userId, roomCode);
   }
 
-  Future<void> setAllPlayerPhases(String code, String phase) async {
-    return await _firebaseProvider.setAllPlayerPhases(code, phase);
-  }
 
 
   // Stream<Image?> streamPlayerImage(String id) {

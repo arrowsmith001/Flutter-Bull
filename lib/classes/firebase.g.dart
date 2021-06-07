@@ -38,6 +38,7 @@ Room _$RoomFromJson(Map json) {
     ..host = json['host'] as String?
     ..settings = Map<String, dynamic>.from(json['settings'] as Map)
     ..page = json['page'] as String?
+    ..phase = json['phase'] as String?
     ..roundStartUnix = json['roundStartUnix'] as int?
     ..turn = json['turn'] as int?
     ..revealed = json['revealed'] as int?
@@ -58,9 +59,6 @@ Room _$RoomFromJson(Map json) {
     ..playerTexts = (json['playerTexts'] as Map?)?.map(
       (k, e) => MapEntry(k as String, e as String),
     )
-    ..playerPhases = (json['playerPhases'] as Map?)?.map(
-      (k, e) => MapEntry(k as String, e as String),
-    )
     ..playerVotes = (json['playerVotes'] as Map?)?.map(
       (k, e) => MapEntry(
           k as String,
@@ -75,6 +73,7 @@ Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'host': instance.host,
       'settings': instance.settings,
       'page': instance.page,
+      'phase': instance.phase,
       'roundStartUnix': instance.roundStartUnix,
       'turn': instance.turn,
       'revealed': instance.revealed,
@@ -84,7 +83,6 @@ Map<String, dynamic> _$RoomToJson(Room instance) => <String, dynamic>{
       'playerTargets': instance.playerTargets,
       'playerTruths': instance.playerTruths,
       'playerTexts': instance.playerTexts,
-      'playerPhases': instance.playerPhases,
       'playerVotes': instance.playerVotes,
     };
 

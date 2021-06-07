@@ -142,7 +142,6 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
               + ' written ' + (isTruth ? 'about myself': 'for ${model.getPlayer(target)!.name}');
 
           await _repo.setRoomField(roomCode, [Room.PLAYER_TEXTS, target], statement);
-          await _repo.setRoomField(roomCode, [Room.PLAYER_PHASES, userId], PlayerPhases.TEXT_ENTRY_CONFIRMED);
 
         }
         catch(e)

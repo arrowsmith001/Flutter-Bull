@@ -102,26 +102,13 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
         }
       }
 
-      if (state is fbState.PlayerPhasesChangeState) {
+      if (state is fbState.PlayerTextsChangeState) {
         Map<String, String> changes = state.changes;
         if (changes.length > 0 && changes.length ==
             model.roomPlayerCount) // If all players show phase
             {
-          if (changes.values.toSet().length == 1) {
-            String phase = changes.values.first;
-            String currentPage = model.room!.page!;
-            if(phase == PlayerPhases.TEXT_ENTRY_CONFIRMED && currentPage == RoomPages.WRITE)
-              firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: RoomPages.CHOOSE));// TODO
-
-            // if(phase == PlayerPhases.GO_TO_NEXT_REVEAL && currentPage == RoomPages.REVEALS)
-            // {
-            //   yield GoToNextRevealTurnState(model);
-            // }
-            //
-            if(phase == PlayerPhases.GO_TO_RESULTS && currentPage == RoomPages.REVEALS)
-            {
-              yield GoToResultsState(model);
-            }
+          {
+              firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: RoomPages.CHOOSE));// TODO ABSOLUTELY URGENT lock in texts somehow
           }
         }
       }
@@ -145,9 +132,24 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
 
       if(state is fbState.NewTurnNumberState)
         {
-          // TODO Do otherwise during PLAY
-          if(model.room!.page == RoomPages.REVEALS) yield GoToNextRevealTurnState(state.newTurn, model);
+          if(model.room!.page == RoomPages.REVEALS) yield NewTurnState(state.newTurn, model);
 
+        }
+
+      if(state is fbState.NewPhaseState)
+        {
+          // TODO Add currentpage info as condition?
+          String phase = state.phase;
+
+          if(phase == RoomPhases.GO_TO_NEXT_REVEAL)
+          {
+            yield GoToNextRevealState(model);
+          }
+
+          if(phase == RoomPhases.GO_TO_RESULTS)
+          {
+            yield GoToResultsState(model);
+          }
         }
 
       yield GameRoomState(model);
@@ -165,9 +167,6 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
             else
               {
                 yield StartGameRequestOutcome(null, model);
-
-
-
 
                 firebaseBloc.add(fbEvent.StartGameEvent());
               }

@@ -352,10 +352,10 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
           yield RoomPageChangedState(model, event.changes[Room.PAGE]);
         }
 
-      if(event.changes.containsKey(Room.PLAYER_PHASES))
+      if(event.changes.containsKey(Room.PLAYER_TEXTS))
       {
-        Map<String, String> phases = Map.from(event.changes[Room.PLAYER_PHASES]);
-        yield PlayerPhasesChangeState(phases, model);
+        Map<String, String> phases = Map.from(event.changes[Room.PLAYER_TEXTS]);
+        yield PlayerTextsChangeState(phases, model);
       }
 
       if(event.changes.containsKey(Room.REVEALED))
@@ -368,6 +368,12 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         {
           int newTurn = event.changes[Room.TURN] as int;
           yield NewTurnNumberState(newTurn, model);
+        }
+
+      if(event.changes.containsKey(Room.PHASE))
+        {
+          String phase = event.changes[Room.PHASE] as String;
+          yield NewPhaseState(phase, model);
         }
 
       // if(event.changes.containsKey(Room.PLAYER_VOTES))
@@ -465,7 +471,6 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       if(model.room != null && model.room!.code != null)
       {
         bool success = await repo.setRoomField(model.room!.code!, [Room.PLAYER_TEXTS, event.targetId], event.text);
-        if(success) success = await repo.setRoomField(model.room!.code!, [Room.PLAYER_PHASES, model.userId!], PlayerPhases.TEXT_ENTRY_CONFIRMED);
         yield TextEntryOutcomeState(success, model);
       }
     }
@@ -507,17 +512,25 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     if(event is AdvanceRevealNumberEvent)
       {
         int? revealNumber = model.room!.revealed;
-        if(revealNumber != null) await repo.setRoomField(model.room!.code!, [Room.REVEALED], revealNumber + 1);
+        if(revealNumber != null){
+
+          await repo.setRoomFields(model.room!.code!,
+              {
+                Room.PHASE : RoomPhases.JUST_REVEALED,
+                Room.REVEALED : revealNumber + 1
+              });
+        }
       }
 
     if(event is GoToNextRevealTurnEvent)
     {
-      await repo.setRoomField(model.room!.code!, [Room.TURN], event.currentTurn + 1);
+      //await repo.setRoomField(model.room!.code!, [Room.TURN], event.currentTurn + 1);
+      await repo.setRoomField(model.room!.code!, [Room.PHASE], RoomPhases.GO_TO_NEXT_REVEAL);
     }
 
     if(event is GoToResultsEvent)
     {
-      await repo.setAllPlayerPhases(model.room!.code!, PlayerPhases.GO_TO_RESULTS);
+      await repo.setRoomField(model.room!.code!, [Room.PHASE], RoomPhases.GO_TO_RESULTS);
     }
 
     // if(event is TextEntryWithdrawnEvent)

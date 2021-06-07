@@ -61,7 +61,8 @@ class Room {
       ..settings = GameParams.DEFAULT_GAME_SETTINGS
       ..host = creatorId
       ..page = RoomPages.LOBBY
-      ..turn = 0;
+      ..turn = 0
+      ..phase = RoomPhases.LOBBY;
   }
 
   static const String CODE = 'code';
@@ -70,6 +71,7 @@ class Room {
   static const String TURN = 'turn';
   static const String SETTINGS = 'settings';
   static const String REVEALED = 'revealed';
+  static const String PHASE = 'phase';
   static const String ROUND_START_UNIX = 'roundStartUnix';
 
   static const String PLAYER_IDS = 'playerIds';
@@ -77,7 +79,6 @@ class Room {
   static const String PLAYER_TRUTHS = 'playerTruths';
   static const String PLAYER_TARGETS = 'playerTargets';
   static const String PLAYER_TEXTS = 'playerTexts';
-  static const String PLAYER_PHASES = 'playerPhases';
   static const String PLAYER_VOTES = 'playerVotes';
 
   String? code;
@@ -85,6 +86,7 @@ class Room {
   Map<String, dynamic> settings = GameParams.DEFAULT_GAME_SETTINGS;
 
   String? page;
+  String? phase;
   int? roundStartUnix = 0;
   int? turn = 0;
   int? revealed = 0;
@@ -96,7 +98,6 @@ class Room {
   Map<String, String>? playerTargets;
   Map<String, bool>? playerTruths;
   Map<String, String>? playerTexts;
-  Map<String, String>? playerPhases;
   Map<String, List<Vote>>? playerVotes;
 
 }
@@ -168,11 +169,17 @@ class RoomPages {
   static const String REVEALS = 'reveals';
 }
 
-class PlayerPhases {
+class RoomPhases {
+
+  static const String LOBBY = 'lobby';
   static const String TEXT_ENTRY_CONFIRMED = 'textEntryConfirmed';
   static const String CHOOSE = 'choose';
   static const String PLAY = 'play';
+
   static const String GO_TO_NEXT_REVEAL = 'goToNextReveal';
   static const String GO_TO_RESULTS = 'goToResults';
+  static const String JUST_REVEALED = 'justRevealed';
+
+
 
 }
