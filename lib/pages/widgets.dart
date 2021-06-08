@@ -64,31 +64,41 @@ class Avatar extends StatelessWidget{
 
     Widget loadingIndicator = MyLoadingIndicator(size);
     loadingIndicator = Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: loadingIndicator);
-    if(size != null) loadingIndicator = loadingIndicator.SizedBoxExt(height: size!.height, width: size!.width);
+    if(size != null) loadingIndicator = Container(child: loadingIndicator, width: size!.width, height: size!.height);
 
-    return Stack(
-      children: [
+    //if(image == null) return EmptyWidget();
 
-        loadingIndicator,
-        Container(
-          height: size == null ? null : size!.height,
-            width: size == null ? null : size!.width,
-            decoration: BoxDecoration(
-              //color: Color.fromARGB(101, 229, 220, 220),
-                shape: shape,
-                borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
-                border: Border.all(
-                    color: Color.lerp(borderColor ?? Colors.blueAccent, Colors.white, borderFlashValue)!,
-                    width: borderWidth),
-                image: image == null && defaultImage == null ? null : DecorationImage(
-                  colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
-                  fit: BoxFit.cover,
-                  image: image == null ? defaultImage! : image!.image,
-                ))
-        ),
+    return SizedBox(
+      height: size?.height,
+      width: size?.width,
+      child: Stack(
+        children: [
+
+          Center(child: loadingIndicator),
+
+          image == null ? EmptyWidget() :
+          Center(
+            child: Container(
+              height: size == null ? null : size!.height,
+                width: size == null ? null : size!.width,
+                decoration: BoxDecoration(
+                  //color: Color.fromARGB(101, 229, 220, 220),
+                    shape: shape,
+                    borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
+                    border: Border.all(
+                        color: Color.lerp(borderColor ?? Colors.blueAccent, Colors.white, borderFlashValue)!,
+                        width: borderWidth),
+                    image: DecorationImage(
+                      colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
+                      fit: BoxFit.cover,
+                      image: image == null ? Assets.images.bullImgTransparent : image!.image,
+                    ))
+            ),
+          ),
 
 
-      ],
+        ],
+      ),
     );
   }
 }

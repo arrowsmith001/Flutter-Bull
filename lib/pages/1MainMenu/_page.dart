@@ -168,8 +168,14 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
   Future<void> goToGameRoom() async {
     if(!_animController4.isCompleted) _animController4.forward(from: 0);
-    if(goingToGameRoom) return;
-    if(!creatingGame && !joiningGame && !resumingGame) return;
+    if(goingToGameRoom) {
+      print('goToGameRoom denied: goingToGameRoom == true');
+      return;
+    }
+    if(!creatingGame && !joiningGame && !resumingGame)  {
+      print('goToGameRoom denied: creatingGame == ${creatingGame.toString()}, joiningGame == ${joiningGame.toString()}, resumingGame == ${resumingGame.toString()}, ');
+      return;
+    }
     setState(() {
       goingToGameRoom = true;
       creatingGame = false;

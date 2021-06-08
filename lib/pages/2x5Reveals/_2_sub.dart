@@ -137,6 +137,12 @@ class _RevealsSubState extends State<RevealsSub> {
     );
   }
 
+  void _goToMainPage(int newTurn) {
+    print('GOING TO MAIN PAGE: newTurn: ' + newTurn.toString());
+    Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false,
+        arguments: newTurn);
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -197,9 +203,7 @@ class _RevealsSubState extends State<RevealsSub> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
 
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                          child: mainAvatar),
+                      mainAvatar,
 
 
                       Column(
@@ -234,7 +238,7 @@ class _RevealsSubState extends State<RevealsSub> {
                       !hasBeenRevealed ? EmptyWidget()
                           : GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pop();
+
                         },
                             child: Text(truth ? 'TRUE' : 'BULL',
                             style: truth ? AppStyles.TruthStyle(fontSize: 64) : AppStyles.BullStyle(fontSize: 64)),
@@ -265,11 +269,11 @@ class _RevealsSubState extends State<RevealsSub> {
             Navigator.of(context).pushNamed(RevealsPages.FINAL);
           }
 
-          if(state is GoToNextRevealState)
+          if(state is NewTurnState)
           {
-                bool iShouldAdvanceTurn = true; // TODO Change to vary upon whose turn it is
+                //bool iShouldAdvanceTurn = true; // TODO Change to vary upon whose turn it is
 
-                Navigator.of(context).pop<bool>(iShouldAdvanceTurn);
+                _goToMainPage(state.newTurn);
 
           }
         });

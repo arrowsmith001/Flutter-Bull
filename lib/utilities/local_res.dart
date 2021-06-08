@@ -16,6 +16,8 @@ class AppColors{
   static const Color revealsScaffoldBackgroundColor = const Color.fromARGB(
       255, 255, 220, 220);
 
+  static const Color ScoreColor = const Color.fromARGB(255, 255, 221, 126);
+
 }
 
 class AppStyles {

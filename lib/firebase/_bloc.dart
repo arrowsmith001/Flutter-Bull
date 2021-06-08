@@ -94,6 +94,8 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
   Future<void> _unsubscribePlayer(String userId) async {
 
+    if(userId == model.userId) return; // Expressly forbid unsubscription from main player!
+
     if(!playerSubs.containsKey(userId) && !playerChangeSubs.containsKey(userId)) return;
 
     StreamSubscription<Player?>? playerSub = playerSubs.containsKey(userId) ? playerSubs[userId] : null;
@@ -147,6 +149,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
   }
 
   Future<void> _subscribeRoom(String roomCode) async {
+    print('_subscribeRoom: ' + roomCode);
     // TODO await concurrently
     if(roomSub != null) await roomSub!.cancel();
     if(roomChangesSub != null) await roomChangesSub!.cancel();
@@ -338,8 +341,29 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         }
       }
 
+      // TODO DELETE THIS TEMPORARY FIX TO DETECT REMOVED PLAYERS
+      List<RoomPlayerRemovedState> statesToYield = [];
+      if(model.room != null && model.room!.playerIds != null && room != null && room.playerIds != null)
+        {
+          model.room!.playerIds!.forEach((id) {
+            if(!room.playerIds!.contains(id))
+              {
+                statesToYield.add(RoomPlayerRemovedState(model, model.room!.playerIds!.indexOf(id), id));
+              }
+          });
+        }
+      /////////////////////////////////////////////////////////////
+
       bool hasChanged = model.setRoom(room);
-      if(hasChanged) yield NewRoomState(model);
+
+      // TODO ALSO DELETE
+      for(RoomPlayerRemovedState state in statesToYield) yield state;
+      /////////////////////////////////////////////////////////////
+
+      if(hasChanged) {
+        print('ROOM HAS CHANGED');
+        yield NewRoomState(model);
+      }
       else yield RoomChangeState(model);
     }
 
@@ -401,14 +425,16 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
     if(event is RoomPlayerRemovedEvent)
     {
-      print('RoomPlayerRemovedEvent: ' + event.changes.toString());
-      for(String index in event.changes.keys)
-      {
-        String userId = event.changes[index];
-        await _unsubscribePlayer(userId);
-        if(model.room != null) await _unsubscribePlayerVotes(userId, model.room!.code!); // TODO Unjustified !
-        yield RoomPlayerRemovedState(model, int.parse(index), userId);
-      }
+      // TODO Address onChildRemoved bug
+      // print('RoomPlayerRemovedEvent: ' + event.changes.toString());
+      // for(String index in event.changes.keys)
+      // {
+      //   String userId = event.changes[index];
+      //   int i = model.room!.playerIds!.indexOf(userId);
+      //   await _unsubscribePlayer(userId);
+      //   if(model.room != null) await _unsubscribePlayerVotes(userId, model.room!.code!); // TODO Unjustified !
+      //   yield RoomPlayerRemovedState(model, i, userId);
+      // }
     }
 
     if(event is OnVoteAddedEvent)
@@ -524,8 +550,8 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
     if(event is GoToNextRevealTurnEvent)
     {
-      //await repo.setRoomField(model.room!.code!, [Room.TURN], event.currentTurn + 1);
-      await repo.setRoomField(model.room!.code!, [Room.PHASE], RoomPhases.GO_TO_NEXT_REVEAL);
+      await repo.setRoomField(model.room!.code!, [Room.TURN], event.currentTurn + 1);
+      //await repo.setRoomField(model.room!.code!, [Room.PHASE], RoomPhases.GO_TO_NEXT_REVEAL);
     }
 
     if(event is GoToResultsEvent)
@@ -867,6 +893,20 @@ class DataModel {
     {
       print('getPlayersWhoVoted ERROR: ' + e.toString());
       return [];
+    }
+  }
+
+  int? getPlayerScore(String? id) {
+    try{
+      assert(id != null);
+      assert(room != null);
+      assert(room!.playerScores != null);
+      assert(room!.playerScores!.containsKey(id));
+      return room!.playerScores![id];
+    }catch(e)
+    {
+      print('getPlayerScore ERROR: ' + e.toString());
+      return null;
     }
   }
 

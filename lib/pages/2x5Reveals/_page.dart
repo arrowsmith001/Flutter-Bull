@@ -75,10 +75,10 @@ class _RevealsState extends State<Reveals> {
             {
               initialRoute = RevealsPages.FINAL;
             }
-          // else if(revealed > turn)
-          //   {
-          //     initialRoute = RevealsPages.SUB;
-          //   }
+          else if(revealed > turn)
+            {
+              initialRoute = RevealsPages.SUB;
+            }
           else
             {
               initialRoute = RevealsPages.MAIN;
@@ -107,7 +107,9 @@ class _RevealsState extends State<Reveals> {
           ],
           key: navigationKey,
           initialRoute: initialRoute,
-          onGenerateRoute: (settings) => RevealsRoutes.generate(settings),
+          onGenerateRoute: (settings) {
+            return RevealsRoutes.generate(settings);
+          },
         );
       },
     );

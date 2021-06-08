@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/firebase/_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
+import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -56,13 +58,20 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
   final String thisPageName = RoomPages.LOBBY;
   late AnimationController _animController;
 
+
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
-  int initialRoomCount = 0;
+
+  late List<String> playerIdsLocal;
+
+  static const double AVATAR_DIM = 125;
+  static const double AVATAR_PADDING = 8;
+  static const int PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS = 250;
 
   @override
   void initState() {
     super.initState();
-    initialRoomCount = _bloc.model.roomPlayerCount;
+
+    playerIdsLocal = List.from(_bloc.model.room!.playerIds!);
 
     _animController = new AnimationController(vsync: this);
     _animController.addListener(() {setState(() { });});
@@ -88,7 +97,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     double height = MediaQuery.of(context).size.height;
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
-      listener: (context, state){
+      listener: (context, state) async{
 
         GameRoomRoutes.pageListener(context, state, thisPageName);
 
@@ -101,19 +110,28 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
           });
         }
 
-        if(state is RoomPlayerRemovedState)
-          if(_listKey.currentState != null)  _listKey.currentState!.removeItem(state.index, (context, animation) =>
-              _buildAvatar(state.model.dataModel, state.index, animation, height));
+        if(state is RoomPlayerRemovedState) {
+          if (_listKey.currentState != null) {
 
-        if(state is RoomPlayerAddedState)
-          if(_listKey.currentState != null)
-            {
-              _listKey.currentState!.insertItem(state.index);
-              // TODO: Investigate and set correct scroll value for when a new item enters list
-              double val = _scrollController.position.viewportDimension;
-              _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Interval(0, 1));
-            }
+            _listKey.currentState!.removeItem(state.index,
+                    (context, animation) => _buildAvatar(state.model.dataModel, state.index, animation, height),
+                duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
 
+            playerIdsLocal.remove(state.userId);
+          }
+        }
+
+        if(state is RoomPlayerAddedState) {
+          if (_listKey.currentState != null) {
+
+            playerIdsLocal.add(state.userId);
+            _listKey.currentState!.insertItem(state.index, duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
+
+            await Future.delayed(Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS)); // TODO Ma
+            double val = _scrollController.position.maxScrollExtent;// + AVATAR_DIM + 2 * AVATAR_PADDING;
+            if(_scrollController.position.userScrollDirection == ScrollDirection.idle) _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Interval(0, 1));
+          }
+        }
       },
       builder: (context, state) {
 
@@ -151,17 +169,18 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
                 .PaddingExt(EdgeInsets.symmetric(horizontal: 15, vertical: 5))
 
         );
+        TopBit = EmptyWidget();
 
         Widget list = AnimatedList(
           physics: BouncingScrollPhysics(),
           controller: _scrollController,
-          reverse: true,
+          reverse: false,
           shrinkWrap: true,
           key: _listKey,
-          initialItemCount: initialRoomCount,
+          initialItemCount: playerIdsLocal.length,
           itemBuilder: (BuildContext context, int i, Animation<double> animation)
           {
-            if(model.getRoomMember(i) == null || model.isHost(model.getRoomMember(i)!.id)) return EmptyWidget();
+            if(model.dataModel.getPlayer(playerIdsLocal[i]) == null) return Avatar(null);
             return _buildAvatar(model.dataModel, i, animation, height);
           },
 
@@ -191,9 +210,9 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
                     mainAxisSize:  MainAxisSize.max,
                     children: [
 
-                      TopBit.FlexibleExt(1),
+                      //TopBit.FlexibleExt(1),
 
-                      list.FlexibleExt(2),
+                      list.ExpandedExt(),
 
                     ],
                   ),
@@ -213,13 +232,14 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
   Widget _buildAvatar(DataModel model, int i, Animation? animation, double height) {
     if(animation != null) animation.addListener(() {setState(() {});});
 
-    Player? player = model.getRoomMember(i);
-    Image? image = player == null ? null : player.profileImage;
+    final Player? player = i >= playerIdsLocal.length ? null : model.getPlayer(playerIdsLocal[i]);
+    final Image? image = player == null ? null : player.profileImage;
 
     double dim = MediaQuery.of(context).size.width/3;
     double spacing = 5;
     dim = dim - 2*spacing;
     //dim = min(dim, (height*(2/3) - spacing*2*(model.roomPlayerCount+1) - spacing)/model.roomPlayerCount);
+    dim = AVATAR_DIM;
 
     var avatar = Avatar(image,
         size: Size(dim,dim),
@@ -228,35 +248,71 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
         .SizedBoxExt(height: dim, width: dim);
         //.PaddingExt(EdgeInsets.all(spacing));
 
-    var name = AutoSizeText(player == null || player.name == null ? '' : player.name!,
-      maxLines: 1,
-      minFontSize: 10,
-      style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold),);
+    String playerName = player == null || player.name == null ? '' : player.name!;
+    var name = Container(
+      decoration: BoxDecoration(color: AppColors.MainColor),
+      child: Center(
+        child: AutoSizeText(playerName,
+            maxLines: 1,
+            minFontSize: 10,
+            style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
+            .PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+      ),
+    );
 
-    return SizedBox(
-      height: dim,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
+    int? scoreVal = player == null ? null : model.getPlayerScore(player.id!);
+    String scoreString = scoreVal == null ? '' : scoreVal.toString();
+    var score = Container(
+      decoration: BoxDecoration(color: AppColors.ScoreColor),
+      child: Center(
+        child: AutoSizeText(scoreString,
+            maxLines: 1,
+            minFontSize: 10,
+            style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
+            ,
+      ),
+    );
+
+    const double MINIMUM_NAME_TAG_WIDTH = 60;
+    const double MAXIMUM_NAME_TAG_WIDTH = 150;
+    double nameTagWidth = ui.lerpDouble(MINIMUM_NAME_TAG_WIDTH, MAXIMUM_NAME_TAG_WIDTH, Utils.howLongIsThisName(playerName))!;
+
+    // TODO Style waiting room page ////////////////////////////////////////////////////////
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
 
+          Positioned(
+            left: 0,
+            top: 25,
+            child: Container(height: 40, width: 50, color: AppColors.MainColor,),
+          ),
 
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              name.FlexibleExt(),
-              Text('0', style: TextStyle(color: Colors.amberAccent, fontSize: 20), textAlign: TextAlign.end,)
-            ],
-          ).FlexibleExt(),
+          Positioned(
+            right: 135,
+            top: 25,
+            child: name
+            //.RotateExt(0.3)
+                .SizedBoxExt(width: nameTagWidth, height: 40),
+          ),
 
-          avatar.PaddingExt(EdgeInsets.symmetric(horizontal: spacing)),
+
+          Positioned(
+            left: -45,
+              top: 65,
+              child: score
+                  .SizedBoxExt(width: 60, height: 40),),
+
+          avatar.PaddingExt(EdgeInsets.symmetric(horizontal: AVATAR_PADDING)),
+
         ],
-      ),
-    )
-        .PaddingExt(EdgeInsets.all(spacing))
-        .ScaleExt(animation == null ? 1 : interp.getValue(animation.value));
+      )
+          .PaddingExt(EdgeInsets.symmetric(vertical: AVATAR_PADDING))
+          .ScaleExt(animation == null ? 1 : interp.getValue(animation.value)),
+    );
   }
 
 

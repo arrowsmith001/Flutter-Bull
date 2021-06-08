@@ -154,8 +154,7 @@ class FirebaseProvider {
   Future<bool> leaveGame(String userId, String roomCode) async {
     // TODO Delete room in firestore and rtd
     try {
-      await rtd.setPlayerField(userId, Player.OCCUPIED_ROOM_CODE, null);
-      return true;
+      return await rtd.removePlayerFromRoom(userId, roomCode);
     }catch(e)
     {
       Utils.printError(this, 'leaveGame', e);
@@ -289,8 +288,8 @@ class FirebaseDatabaseProvider {
     await _dbRef.child(DB_PLAYERS).child(userId).child('name').set(name);
   }
 
-  Future<void> setRoomOccupancy(String userId, String roomCode) {
-    return _dbRef.child(DB_PLAYERS).child(userId).child(Player.OCCUPIED_ROOM_CODE).set(roomCode);
+  Future<void> setRoomOccupancy(String userId, String? roomCode) async {
+    return await _dbRef.child(DB_PLAYERS).child(userId).child(Player.OCCUPIED_ROOM_CODE).set(roomCode);
   }
 
   Stream<String?> streamUserRoomCode(String? userId) {
@@ -375,6 +374,49 @@ class FirebaseDatabaseProvider {
     });
     success = result.committed;
     return success;
+  }
+
+  Future<bool> removePlayerFromRoom(String userId, String roomCode) async {
+    TransactionResult transactionResult;
+    bool success = false;
+
+    int attempts = 0;
+    const int MAX_ATTEMPTS = 10;
+
+    do {
+      try{
+        transactionResult = await _dbRef.child('rooms').child(roomCode).runTransaction((data) async {
+
+          Room room = Room.fromJson(Map.from(data.value));
+          List<String>? ids = room.playerIds;
+          Map<String, int>? scores = room.playerScores;
+
+          // if(ids == null) room.playerIds = [userId];
+          // if(scores == null) room.playerScores = {userId : 0};
+
+          if(room.playerIds!.contains(userId))
+          {
+            room.playerIds!.remove(userId);
+            room.playerScores!.remove(userId);
+          }
+          data.value = room.toJson();
+          return data;
+        });
+        success = (transactionResult.committed);
+      }
+      catch(e)
+      {
+        print('Leave room error: ' + e.toString());
+      }
+
+      attempts++;
+    }
+    while(success == false && attempts < MAX_ATTEMPTS);
+
+    if(success == false) return false;
+
+    await setRoomOccupancy(userId, null);
+    return true;
   }
 
 

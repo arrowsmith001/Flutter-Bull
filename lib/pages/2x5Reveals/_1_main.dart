@@ -48,6 +48,12 @@ import '../../routes.dart';
 
 
 class RevealsMain extends StatefulWidget {
+
+  static const String ROUTE_ARGS_TURN = 'turn';
+
+  RevealsMain({required this.turn});
+  final int turn;
+
   @override
   _RevealsMainState createState() => _RevealsMainState();
 }
@@ -63,12 +69,11 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
   late AnimationController _focusEngagedController;
   late AnimationController _rotateAnimController;
   late AnimationController _scrollFocusChangedAnimController;
-  ScrollController _scrollController = ScrollController();
+  late ScrollController _scrollController;
 
-  void _onNavigatorPopped()
-  {
-    // TODO implement
-  }
+  static const int LINGER_DURATION_MILLISECONDS = 2000;
+  static const int SCROLL_ANIMATION_DURATION_MILLISECONDS = 500;
+  static const Curve SCROLL_ANIMATION_CURVE = Curves.easeInOutCirc;
 
   @override
   void initState() {
@@ -101,33 +106,58 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
     // _listVerticalityController.addListener(() {setState(() {});});
     // _listVerticalityController.repeat();
 
+    _scrollController = new ScrollController(initialScrollOffset: math.max(0, widget.turn - 1) * AVATAR_WIDTH);
     _scrollController.addListener(() {
+
+      // if(_scrollController.hasClients && !b)
+      //   {
+      //     print('Running routine...');
+      //     _runRoutineOnce();
+      //     b = true;
+      //   }
+
       _debugTextController.text = _scrollController.offset.toString();
       setState(() {
         _recalculateScrollFocus();
       });
     });
 
-    //_scrollController.jumpTo(_bloc.model.room!.turn! * AVATAR_WIDTH);
-
     _runRoutineOnce();
+    //_scrollController.jumpTo(_bloc.model.room!.turn! * AVATAR_WIDTH);
   }
 
-  Future<void> _runRoutineOnce([bool scrollToPlayer = false, int? turn]) async {
+  // bool b = false;
 
-    if(turn == null) turn = _bloc.model.room!.turn!;
-    if(scrollToPlayer){
-      await _scrollToFocusOn(turn);
+
+  Future<void> _runRoutineOnce() async {
+
+    print('Running routine: turn = ' + widget.turn.toString());
+
+    await Future.delayed(Duration(milliseconds: 500));
+
+    if(widget.turn == 0)
+    {
+      await Future.delayed(Duration(milliseconds: LINGER_DURATION_MILLISECONDS));
+      _goToSubPage();
+    }
+    else
+    {
+      _scrollToFocusOn(widget.turn);
     }
 
-      await Future.delayed(Duration(seconds: 2));
-      await _goToSubPage();
-
   }
 
-  _goToSubPage() => Navigator.pushNamed(context, RevealsPages.SUB, arguments: _bloc.model.getPlayerWhoseTurn()!.id!);
+  bool lock = false;
+  _goToSubPage() async {
+    if(!lock){
+      lock = true;
+      Navigator.pushNamedAndRemoveUntil(context, RevealsPages.SUB, (route) => false,
+          arguments: _bloc.model.getPlayerFromOrder(mostFocusedIndex)!.id);
+    }
+  }
 
-  late int mostFocusedIndex = _bloc.model.room!.turn!;
+
+  late int mostFocusedIndex = math.max(0, widget.turn - 1);
   double _getFocusRating(int index){
 
     double _scrollOffset = _scrollController.offset;
@@ -145,6 +175,7 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
     else if(_scrollOffset < left) return -1.0;
     else return 1.0;
   }
+  
   void _recalculateScrollFocus(){
     int provisionalMostFocusedIndex = (_scrollController.offset / AVATAR_WIDTH).round();
     if(provisionalMostFocusedIndex != mostFocusedIndex)
@@ -156,14 +187,17 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
       });
     }
   }
-  void _onScrollFocusChanged(){
+
+  Future<void> _onScrollFocusChanged() async {
     _scrollFocusChangedAnimController.forward(from: 0);
-    // TODO Trigger navigator from here ////////////////////////////////////////////////////////////
+    await Future.delayed(Duration(milliseconds: LINGER_DURATION_MILLISECONDS));
+    _goToSubPage();
   }
+
   Future<void> _scrollToFocusOn(int index) async{
     print('Scrolling to focus on ${index.toString()}');
     double offset = (index*AVATAR_WIDTH).clamp(0, _scrollController.position.maxScrollExtent);
-    await _scrollController.animateTo(offset, duration: Duration(milliseconds: 500), curve: Curves.easeInOutCirc);
+    await _scrollController.animateTo(offset, duration: Duration(milliseconds: SCROLL_ANIMATION_DURATION_MILLISECONDS), curve: SCROLL_ANIMATION_CURVE);
   }
 
   // Important layout values
@@ -379,11 +413,11 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
         },
         listener: (context, state) {
 
-          if(state is NewTurnState)
-            {
-              print('new turn: ' + state.model.room!.turn!.toString());
-              _scrollToFocusOn(state.newTurn);
-            }
+          // if(state is NewTurnState)
+          //   {
+          //     print('new turn: ' + state.model.room!.turn!.toString());
+          //     _scrollToFocusOn(state.newTurn);
+          //   }
 
         });
   }

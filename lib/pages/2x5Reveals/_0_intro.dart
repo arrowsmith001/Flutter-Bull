@@ -68,7 +68,8 @@ class _RevealsIntroState extends State<RevealsIntro> {
 
   Future<void> _runRoutine() async {
     await Future.delayed(Duration(seconds: 2));
-    Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false,
+      arguments: 0);
 }
 
   @override
@@ -88,7 +89,7 @@ class _RevealsIntroState extends State<RevealsIntro> {
                   body: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('It\'s time to REVEEEEEEEEEEEEEAL')
+                      Text('It\'s time to REVEEEEEAL')
                     ],
                   ).PaddingExt(EdgeInsets.all(20))
 

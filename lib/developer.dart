@@ -30,6 +30,8 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
   Repository get _repo => RepositoryProvider.of<Repository>(context);
 
   static const String CREATE_PLAYER_AND_ADD_TO_ROOM = 'Create player and add to room';
+  static const String REMOVE_RANDOM_NON_HOST_PLAYER = 'Remove random non host player';
+  static const String REMOVE_HOST_PLAYER = 'Remove host player';
   static const String SUBMIT_ALL_BOT_STATEMENTS = 'Submit all bot statements';
   static const String SUBMIT_ALL_STATEMENTS = 'Submit all statements';
   static const String BOTS_VOTE_STAGGERED = 'Bots vote staggered';
@@ -63,6 +65,20 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
         });
         await _repo.joinGame(uid, roomCode);
 
+        break;
+      case REMOVE_RANDOM_NON_HOST_PLAYER:
+        print('REMOVE_RANDOM_NON_HOST_PLAYER: ' + model.room!.playerIds!.toString());
+        String? userId = model.room!.playerIds!.where((id) => !model.isHost(id)).getRandom();
+        print('Removing ' + (userId == null ? 'null' : userId));
+        if(userId != null){
+          await _repo.leaveGame(userId, roomCode);
+          if(userId != model.userId){
+            _repo.setPlayerField(userId, '', null);
+          }
+        }
+        break;
+      case REMOVE_HOST_PLAYER:
+        await _repo.leaveGame(model.room!.host!, roomCode);
         break;
       case SUBMIT_ALL_BOT_STATEMENTS:
         for(String userId in model.playerMap.keys)
@@ -160,6 +176,8 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
 
     actions = [
       CREATE_PLAYER_AND_ADD_TO_ROOM,
+      REMOVE_RANDOM_NON_HOST_PLAYER,
+      REMOVE_HOST_PLAYER,
       SUBMIT_ALL_BOT_STATEMENTS,
       SUBMIT_ALL_STATEMENTS,
       BOTS_VOTE_STAGGERED,

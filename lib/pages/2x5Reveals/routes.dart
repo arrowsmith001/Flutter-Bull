@@ -27,7 +27,7 @@ class RevealsRoutes {
       {
         case RevealsPages.INTRO: return RevealsIntro();
 
-        case RevealsPages.MAIN: return RevealsMain();
+        case RevealsPages.MAIN: return RevealsMain(turn: settings.arguments as int);
 
         case RevealsPages.SUB: return RevealsSub(playerId: settings.arguments as String);
 
@@ -43,7 +43,7 @@ class RevealsRoutes {
   static pageListener(BuildContext context, GameRoomState state, String page) {
     if(state is PlayerPhaseChangedState)
       {
-        Navigator.of(context).pushNamed(state.newPhase);
+        //Navigator.of(context).pushNamed(state.newPhase);
       }
   }
 }

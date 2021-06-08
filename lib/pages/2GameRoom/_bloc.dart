@@ -143,7 +143,7 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
 
           if(phase == RoomPhases.GO_TO_NEXT_REVEAL)
           {
-            yield GoToNextRevealState(model);
+            // yield GoToNextRevealState(model);
           }
 
           if(phase == RoomPhases.GO_TO_RESULTS)
@@ -240,7 +240,7 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
     {
       int turn = model.room!.turn!;
       int playerCount = model.roomPlayerCount;
-      print(turn.toString() + ' ' + playerCount.toString());
+      print('turn: ' + turn.toString() + ', players: ' + playerCount.toString());
       if(turn + 1 < playerCount)
       {
         firebaseBloc.add(fbEvent.GoToNextRevealTurnEvent(turn));
