@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/animation.dart';
+
 // Class for interpolating values for animations. They should expect values of t between 0 and 1.
 abstract class Interpolator{
   double getValue(double t);
@@ -16,6 +18,17 @@ class OvershootInterpolator extends Interpolator{
 
   @override
   double getValue(double t) {
+    return (T+1) * pow(t-1,3) + T * pow(t-1,2) + 1;
+  }
+}
+
+class OvershootCurve extends Curve {
+
+  OvershootCurve([this.T = 1]);
+  final double T;
+
+  @override
+  double transformInternal(double t) {
     return (T+1) * pow(t-1,3) + T * pow(t-1,2) + 1;
   }
 }

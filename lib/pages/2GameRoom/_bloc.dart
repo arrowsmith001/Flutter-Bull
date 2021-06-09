@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/classes/classes.dart';
 import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/firebase/_bloc.dart';
@@ -311,6 +312,10 @@ class GameRoomModel {
   List<int> getVoteTimes(List<Player> players, int turn) => dataModel.getVoteTimes(players, turn);
 
   List<Player> getPlayersWhoCanVote(int turn) => dataModel.getFullVoterList(turn);
+
+  Player? getPlayer(String id) => dataModel.getPlayer(id);
+
+  int? getPlayerScore(String id) => dataModel.getPlayerScore(id);
 
 }
 

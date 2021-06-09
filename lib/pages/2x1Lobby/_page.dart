@@ -16,6 +16,8 @@ import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_circular_text/circular_text/model.dart';
+import 'package:flutter_circular_text/circular_text/widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:io';
@@ -55,11 +57,10 @@ class Lobby extends StatefulWidget {
 
 class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
+  GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
   final String thisPageName = RoomPages.LOBBY;
   late AnimationController _animController;
-
-
-  GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
+  OvershootInterpolator interp = new OvershootInterpolator(2);
 
   late List<String> playerIdsLocal;
 
@@ -91,10 +92,123 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
   GlobalKey<AnimatedListState> _listKey = GlobalKey();
   ScrollController _scrollController = new ScrollController();
+
+  void _onPlayerRemoved(int index, String userId, GameRoomModel model) async {
+
+    if (_listKey.currentState != null) {
+
+      _listKey.currentState!.removeItem(index,
+              (context, animation) => _buildListItem(context, index, animation, null),
+          duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
+
+      playerIdsLocal.remove(userId);
+    }
+
+  }
+
+  // void _onPlayerRemovedFinished(String userId){
+  //   print('_onPlayerRemovedFinished' + ' ' + userId);
+  //   playerListItemStateKeys.remove(userId);
+  //   playerIdsLocal.remove(userId);
+  //   setState(() {});
+  // }
+
+  void _onPlayerAdded(int index, String userId, GameRoomModel model) async {
+    if (_listKey.currentState != null) {
+
+      playerIdsLocal.add(userId);
+      _listKey.currentState!.insertItem(index, duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
+
+      await Future.delayed(Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS)); // TODO Make syncronous if possible
+      double val = _scrollController.position.maxScrollExtent;// + AVATAR_DIM + 2 * AVATAR_PADDING;
+      if(_scrollController.position.userScrollDirection == ScrollDirection.idle) _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Interval(0, 1));
+    }
+  }
+
+  Widget _buildListItem(BuildContext context, int i, Animation<double>? animation, GameRoomModel? model) {
+    Player? player = model != null && i < playerIdsLocal.length ? model.getPlayer(playerIdsLocal[i]) : null;
+    int playerScore = player == null || model == null ? 0 : model.getPlayerScore(player.id!) ?? 0;
+    Animation<double>? anim = animation == null ? null : CurvedAnimation(parent: animation, curve: OvershootCurve());
+    AnimatedListItem item =  AnimatedListItem(player: player, score: playerScore, index: i, animation: anim);
+    return item;
+  }
+
+  // Widget _buildAvatar(BuildContext context, Animation? animation, GameRoomModel? model, [double radialOffsetValue = 0]) {
+  //   if(animation != null) animation.addListener(() {setState(() {});});
+  //
+  //   final Player? player = widget.player;
+  //   final Image? image = player == null ? null : player.profileImage;
+  //
+  //   double screenHeight = MediaQuery.of(context).size.width;
+  //   double dim = AVATAR_DIM;
+  //
+  //   var avatar = Avatar(image,
+  //       size: Size(dim,dim),
+  //       loading: image == null,
+  //       defaultImage: null)
+  //       .SizedBoxExt(height: dim, width: dim);
+  //   //.PaddingExt(EdgeInsets.all(spacing));
+  //
+  //   String playerName = player == null || player.name == null ? '' : player.name!;
+  //   var name = Container(
+  //     decoration: BoxDecoration(color: AppColors.MainColor),
+  //     child: Center(
+  //       child: AutoSizeText(playerName,
+  //           maxLines: 1,
+  //           minFontSize: 10,
+  //           style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
+  //           .PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+  //     ),
+  //   );
+  //
+  //   String scoreString = widget.score.toString();
+  //   var score = Container(
+  //     decoration: BoxDecoration(color: AppColors.ScoreColor),
+  //     child: Center(
+  //       child: AutoSizeText(scoreString,
+  //           maxLines: 1,
+  //           minFontSize: 10,
+  //           style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
+  //       ,
+  //     ),
+  //   );
+  //
+  //   const double MINIMUM_NAME_TAG_WIDTH = 60;
+  //   const double MAXIMUM_NAME_TAG_WIDTH = 150;
+  //   double nameTagWidth = ui.lerpDouble(MINIMUM_NAME_TAG_WIDTH, MAXIMUM_NAME_TAG_WIDTH, Utils.howLongIsThisName(playerName))!;
+  //
+  //   // TODO Style waiting room page ////////////////////////////////////////////////////////
+  //   double radiusOffset = 20;
+  //   double totalDim = AVATAR_DIM + radiusOffset*2;
+  //   var circularText = CircularText(
+  //     radius: (AVATAR_DIM / 2) + radiusOffset,
+  //     children: [
+  //       TextItem(
+  //           startAngle: 270 + radialOffsetValue - Utils.howLongIsThisName(playerName) * 50,
+  //           space: 12,
+  //           text: Text(playerName, style: AppStyles.defaultStyle(fontSize: 24),))
+  //     ],);
+  //
+  //   var finalWidget = Stack(
+  //     children: [
+  //       Center(child: avatar.PaddingExt(EdgeInsets.all(radiusOffset))),
+  //       Center(child: circularText,)
+  //     ],
+  //   ).SizedBoxExt(height: totalDim, width: totalDim);
+  //
+  //   return finalWidget
+  //       .ScaleExt(animation.value);
+  //
+  // }
+
+  Widget _buildWrapOfLocalPlayers(GameRoomModel model) {
+    return Wrap(
+      children: List.generate(playerIdsLocal.length, (i) => _buildListItem(context, i, null, model)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    double height = MediaQuery.of(context).size.height;
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) async{
@@ -103,36 +217,20 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
         if(state is NewRoomState)
         {
-          print('NEW ROOM');
-          // TODO: Get this to work
           setState(() {
             _listKey = new GlobalKey();
           });
         }
 
         if(state is RoomPlayerRemovedState) {
-          if (_listKey.currentState != null) {
-
-            _listKey.currentState!.removeItem(state.index,
-                    (context, animation) => _buildAvatar(state.model.dataModel, state.index, animation, height),
-                duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
-
-            playerIdsLocal.remove(state.userId);
-          }
+          _onPlayerRemoved(state.index, state.userId, state.model);
         }
 
         if(state is RoomPlayerAddedState) {
-          if (_listKey.currentState != null) {
-
-            playerIdsLocal.add(state.userId);
-            _listKey.currentState!.insertItem(state.index, duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
-
-            await Future.delayed(Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS)); // TODO Ma
-            double val = _scrollController.position.maxScrollExtent;// + AVATAR_DIM + 2 * AVATAR_PADDING;
-            if(_scrollController.position.userScrollDirection == ScrollDirection.idle) _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Interval(0, 1));
-          }
+          _onPlayerAdded(state.index, state.userId, state.model);
         }
       },
+
       builder: (context, state) {
 
         GameRoomModel? model = state.model;
@@ -140,38 +238,39 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
         if(room == null || model == null) return Center(child:  MyLoadingIndicator(),);
 
-        Widget TopBit =
-        Container(
-            decoration: BoxDecoration(
-                gradient: RadialGradient(colors: [Color.fromARGB(255, 174, 187, 243), Colors.indigo], focal: Alignment.topLeft, radius: 2, stops: [0, 0.4])),
+        // Widget TopBit = Container(
+        //     decoration: BoxDecoration(
+        //         gradient: RadialGradient(colors: [Color.fromARGB(255, 174, 187, 243), Colors.indigo], focal: Alignment.topLeft, radius: 2, stops: [0, 0.4])),
+        //
+        //     child: room == null || room.code == null ? EmptyWidget()
+        //         : Column(
+        //       mainAxisAlignment: MainAxisAlignment.end,
+        //       children: [
+        //
+        //         model.getHostIndex() != null ? _buildAvatar(context, model.getHostIndex()!, null, model).FlexibleExt() : EmptyWidget(),
+        //
+        //         Text(model.roomPlayerCount.toString(), style: AppStyles.MainMenuButtonTextStyle(32, Colors.white)),
+        //
+        //         Align(
+        //           alignment: Alignment.bottomRight,
+        //           child: AutoSizeText(room.code!,
+        //               minFontSize: 24,
+        //               style: TextStyle(
+        //                   fontSize: 72,
+        //                   color: Colors.white,
+        //                   fontFamily: FontFamily.lapsusProBold)),
+        //         ).FlexibleExt(),
+        //
+        //       ],
+        //     )
+        //         .PaddingExt(EdgeInsets.symmetric(horizontal: 15, vertical: 5))
+        //
+        // );
+        Widget topBit = EmptyWidget();
 
-            child: room == null || room.code == null ? EmptyWidget()
-                : Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-
-                model.getHostIndex() != null ? _buildAvatar(model.dataModel, model.getHostIndex()!, null, 0).FlexibleExt() : EmptyWidget(),
-
-                Text(model.roomPlayerCount.toString(), style: AppStyles.MainMenuButtonTextStyle(32, Colors.white)),
-
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: AutoSizeText(room.code!,
-                      minFontSize: 24,
-                      style: TextStyle(
-                          fontSize: 72,
-                          color: Colors.white,
-                          fontFamily: FontFamily.lapsusProBold)),
-                ).FlexibleExt(),
-
-              ],
-            )
-                .PaddingExt(EdgeInsets.symmetric(horizontal: 15, vertical: 5))
-
-        );
-        TopBit = EmptyWidget();
-
+        // TODO Position list on right
         Widget list = AnimatedList(
+          scrollDirection: Axis.vertical,
           physics: BouncingScrollPhysics(),
           controller: _scrollController,
           reverse: false,
@@ -180,11 +279,11 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
           initialItemCount: playerIdsLocal.length,
           itemBuilder: (BuildContext context, int i, Animation<double> animation)
           {
-            if(model.dataModel.getPlayer(playerIdsLocal[i]) == null) return Avatar(null);
-            return _buildAvatar(model.dataModel, i, animation, height);
+            return _buildListItem(context, i, animation, model);
           },
-
         );
+
+        //list = _buildWrapOfLocalPlayers(model);
 
         Widget WaitingRoom =
         Scaffold(
@@ -206,16 +305,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 body: Center(
-                  child: Column(
-                    mainAxisSize:  MainAxisSize.max,
-                    children: [
-
-                      //TopBit.FlexibleExt(1),
-
-                      list.ExpandedExt(),
-
-                    ],
-                  ),
+                  child: list,
                 ),
               ),
             ),
@@ -227,26 +317,67 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     );
   }
 
-  OvershootInterpolator interp = new OvershootInterpolator(2);
 
-  Widget _buildAvatar(DataModel model, int i, Animation? animation, double height) {
-    if(animation != null) animation.addListener(() {setState(() {});});
 
-    final Player? player = i >= playerIdsLocal.length ? null : model.getPlayer(playerIdsLocal[i]);
+}
+
+class AnimatedListItem extends StatefulWidget {
+  AnimatedListItem({required this.player, required this.animation, required this.index, this.score = 0});
+  final Animation<double>? animation;
+  final Player? player;
+  final int score;
+  final int index;
+
+  @override
+  _AnimatedListItemState createState() => _AnimatedListItemState();
+}
+
+class _AnimatedListItemState extends State<AnimatedListItem> with TickerProviderStateMixin {
+  late AnimationController _animController;
+
+  // TODO Remove repeats
+  static const double AVATAR_DIM = 125;
+  static const double AVATAR_PADDING = 8;
+
+  @override
+  initState(){
+    super.initState();
+
+    _animController = new AnimationController(vsync: this);
+    _animController.duration = Duration(seconds: 40);
+    _animController.addListener(() {setState(() {
+      radialOffsetValue = 360*_animController.value;
+    });});
+    //animation = new CurvedAnimation(parent: _animController, curve: OvershootCurve());
+    _animController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  double radialOffsetValue = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    //if(animation != null) animation.addListener(() {setState(() {});});
+
+    double width = MediaQuery.of(context).size.width;
+
+    final Player? player = widget.player;
     final Image? image = player == null ? null : player.profileImage;
 
-    double dim = MediaQuery.of(context).size.width/3;
-    double spacing = 5;
-    dim = dim - 2*spacing;
-    //dim = min(dim, (height*(2/3) - spacing*2*(model.roomPlayerCount+1) - spacing)/model.roomPlayerCount);
-    dim = AVATAR_DIM;
+    double screenHeight = MediaQuery.of(context).size.width;
+    double dim = AVATAR_DIM;
 
     var avatar = Avatar(image,
         size: Size(dim,dim),
         loading: image == null,
         defaultImage: null)
         .SizedBoxExt(height: dim, width: dim);
-        //.PaddingExt(EdgeInsets.all(spacing));
+    //.PaddingExt(EdgeInsets.all(spacing));
 
     String playerName = player == null || player.name == null ? '' : player.name!;
     var name = Container(
@@ -260,8 +391,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
       ),
     );
 
-    int? scoreVal = player == null ? null : model.getPlayerScore(player.id!);
-    String scoreString = scoreVal == null ? '' : scoreVal.toString();
+    String scoreString = widget.score.toString();
     var score = Container(
       decoration: BoxDecoration(color: AppColors.ScoreColor),
       child: Center(
@@ -269,7 +399,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
             maxLines: 1,
             minFontSize: 10,
             style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
-            ,
+        ,
       ),
     );
 
@@ -278,42 +408,49 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     double nameTagWidth = ui.lerpDouble(MINIMUM_NAME_TAG_WIDTH, MAXIMUM_NAME_TAG_WIDTH, Utils.howLongIsThisName(playerName))!;
 
     // TODO Style waiting room page ////////////////////////////////////////////////////////
+    double radiusOffset = 30;
+    double totalDim = AVATAR_DIM + radiusOffset*2;
 
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
+    double nameLengthFactor = Utils.howLongIsThisName(playerName);
+    double squishFactor = 3;
 
-          Positioned(
-            left: 0,
-            top: 25,
-            child: Container(height: 40, width: 50, color: AppColors.MainColor,),
-          ),
+    var circularText = CircularText(
+      radius: (AVATAR_DIM / 2) + radiusOffset,
+      children: [
 
-          Positioned(
-            right: 135,
-            top: 25,
-            child: name
-            //.RotateExt(0.3)
-                .SizedBoxExt(width: nameTagWidth, height: 40),
-          ),
+        TextItem(
+            startAngle: 270 + radialOffsetValue - Utils.howLongIsThisName(playerName) * 50,
+            space: 12 - nameLengthFactor * squishFactor,
+            text: Text(playerName, style: AppStyles.defaultStyle(fontSize: 24),)),
 
+        TextItem(
+            startAngle: 90 + radialOffsetValue - Utils.howLongIsThisName(playerName) * 50,
+            space: 12 - nameLengthFactor * squishFactor,
+            text: Text(playerName, style: AppStyles.defaultStyle(fontSize: 24),))
+      ],);
 
-          Positioned(
-            left: -45,
-              top: 65,
-              child: score
-                  .SizedBoxExt(width: 60, height: 40),),
+    var finalWidget = Stack(
+      children: [
+        Center(child: avatar.PaddingExt(EdgeInsets.all(radiusOffset))),
+        Center(child: circularText,)
+      ],
+    ).SizedBoxExt(height: totalDim, width: totalDim);
 
-          avatar.PaddingExt(EdgeInsets.symmetric(horizontal: AVATAR_PADDING)),
+    // finalWidget = Row(children: [ finalWidget ])
+    //     .ScaleExt(widget.animation?.value??1);
 
-        ],
-      )
-          .PaddingExt(EdgeInsets.symmetric(vertical: AVATAR_PADDING))
-          .ScaleExt(animation == null ? 1 : interp.getValue(animation.value)),
-    );
+    finalWidget = finalWidget.ScaleExt(widget.animation?.value??1);
+
+    double dx, dy;
+    double a = (width - 2*totalDim) / 3;
+
+    if(widget.index % 2 == 0) dx = -((a/2) + totalDim/2);
+    else dx = (a/2) + totalDim/2;
+
+    dy = widget.index * totalDim/2;
+    dy = -dy;
+
+    // TODO Make animated list viewport work <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    return finalWidget.TranslateExt(dx: dx, dy: dy);
   }
-
-
 }
