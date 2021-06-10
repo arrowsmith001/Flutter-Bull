@@ -112,6 +112,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/stylish_add.PNG');
   AssetGenImage get stylishJoin =>
       const AssetGenImage('assets/images/stylish_join.PNG');
+  AssetGenImage get tickIconTrans =>
+      const AssetGenImage('assets/images/tick_icon_trans.png');
   AssetGenImage get titleBluescrn =>
       const AssetGenImage('assets/images/title_bluescrn.PNG');
   AssetGenImage get titleInitialsAndBull =>

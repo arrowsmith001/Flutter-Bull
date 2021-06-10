@@ -15,6 +15,9 @@ class GameParams {
     Room.SETTINGS_ROUND_TIMER: 3
   };
 
+  static const int MINIMUM_ROUND_TIMER = 1;
+  static const int MAXIMUM_ROUND_TIMER = 10;
+
   static int getTrueUnixFromDownloaded(int unix) => unix + UNIX_OFFSET;
   static int convertUnixForUpload(int unix) => unix - UNIX_OFFSET;
 }
@@ -95,6 +98,24 @@ class MyBorderRadii {
 
   static const BorderRadius BOTTOM_RIGHT_ONLY = BorderRadius.only(
       bottomRight: Radius.circular(DIALOG_BORDER_RADIUS));
+
+
+  static BorderRadius bottomOnly(double r) => BorderRadius.only(
+      bottomLeft: Radius.circular(r),
+      bottomRight: Radius.circular(r));
+
+  static BorderRadius topOnly(double r) => BorderRadius.only(
+      topLeft: Radius.circular(r),
+      topRight: Radius.circular(r));
+
+  static BorderRadius all(r) => BorderRadius.all(Radius.circular(r));
+
+  static BorderRadius bottomLeftOnly(double r) => BorderRadius.only(
+      bottomLeft: Radius.circular(r));
+
+  static BorderRadius bottomRightOnly(double r) => BorderRadius.only(
+      bottomRight: Radius.circular(r));
+
 }
 
 

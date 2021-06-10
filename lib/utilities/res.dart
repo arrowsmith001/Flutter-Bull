@@ -29,6 +29,11 @@ class ResourceManager{
     desiredUiImages.add(Assets.images.spiny1);
     desiredUiImages.add(Assets.images.spiny2);
     desiredUiImages.add(Assets.images.bubbleBg);
+    desiredUiImages.add(Assets.images.clock);
+    desiredUiImages.add(Assets.images.clockBg);
+    desiredUiImages.add(Assets.images.angel);
+    desiredUiImages.add(Assets.images.angels);
+    desiredUiImages.add(Assets.images.iconTick);
 
     List<Future<UiImageData>> futures = [];
     for(AssetGenImage img in desiredUiImages){

@@ -43,9 +43,16 @@ class AppStyles {
           fontSize: fontSize ?? 24,
           fontFamily: FontFamily.lapsusProBold);
 
-  static TextStyle defaultStyle({double fontSize = 32}) {
-    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize);
+  static TextStyle defaultStyle({double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {
+    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize, color: color, shadows: shadows);
   }
+
+  static Text MyText(String text, {double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {
+    return Text(text, textAlign: TextAlign.center, style: defaultStyle(fontSize: fontSize, color: color, shadows: shadows));
+  }
+
+  static const double DEFAULT_FONT_SIZE = 32;
+  static const Color DEFAULT_TEXT_COLOR = Colors.white;
 
 }
 

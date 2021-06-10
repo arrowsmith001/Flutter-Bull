@@ -54,6 +54,9 @@ class RoomPlayerRemovedEvent extends GameRoomEvent {
   Map changes;
 }
 
+class NewRoomSettingsEvent extends GameRoomEvent {
+
+}
 
 // Game
 

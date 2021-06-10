@@ -90,7 +90,7 @@ class MyCupertinoStyleButton extends StatelessWidget {
 
   BorderRadius borderRadius;
   Widget text;
-  dynamic Function() onPressed;
+  dynamic Function()? onPressed;
   Color color;
   double value;
   Alignment glowPosition;
@@ -122,7 +122,7 @@ class MyCupertinoStyleButton extends StatelessWidget {
             gradient: RadialGradient(
                 colors: [Colors.white, color],
                 stops: [0, 0.15],
-                radius: 2,
+                radius: 0,//2,
                 focal: glowPosition
             ),
             //boxShadow: [BoxShadow(color: Colors.white, blurRadius: 8*value)],
