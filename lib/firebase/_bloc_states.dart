@@ -106,10 +106,21 @@ class NewRoomState extends FirebaseState {
   const NewRoomState(DataModel model) : super(model);
 }
 
+
+// TODO Generalize at the fbBloc level
 class RoomPageChangedState extends FirebaseState {
   const RoomPageChangedState(DataModel model, this.newPage) : super(model);
   final String newPage;
 }
+
+// TODO Generalize at the fbBloc level
+class RoomSettingsChangedState extends FirebaseState {
+  const RoomSettingsChangedState(DataModel model, this.newSettings) : super(model);
+  final Map<String, dynamic> newSettings;
+}
+
+
+
 
 
 // Game

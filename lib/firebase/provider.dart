@@ -143,8 +143,8 @@ class FirebaseProvider {
     return await rtd.setRoomField(roomCode, path, value);
   }
 
-  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes) async {
-    return await rtd.setRoomFields(roomCode, changes);
+  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes, [List<String> path = const []]) async {
+    return await rtd.setRoomFields(roomCode, changes, path);
   }
 
   Future<bool> pushVote(String userId, String roomCode, Vote vote, int turn) async {
@@ -312,8 +312,10 @@ class FirebaseDatabaseProvider {
     return true;
   }
 
-  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes) async {
-    await _dbRef.child('rooms').child(roomCode).update(changes);
+  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes, [List<String> path = const []]) async {
+    DatabaseReference ref = _dbRef.child('rooms').child(roomCode);
+    for(String s in path) ref = ref.child(s);
+    await ref.update(changes);
     return true;
   }
 

@@ -103,13 +103,18 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
         }
       }
 
+      if (state is fbState.RoomSettingsChangedState) {
+        Map<String, dynamic> newSettings = state.newSettings;
+        yield RoomSettingsChangedState(model, newSettings);
+      }
+
       if (state is fbState.PlayerTextsChangeState) {
         Map<String, String> changes = state.changes;
         if (changes.length > 0 && changes.length ==
             model.roomPlayerCount) // If all players show phase
             {
           {
-              firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: RoomPages.CHOOSE));// TODO ABSOLUTELY URGENT lock in texts somehow
+            firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: RoomPages.CHOOSE));// TODO ABSOLUTELY URGENT lock in texts somehow
           }
         }
       }
@@ -156,6 +161,16 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
       yield GameRoomState(model);
     }
 
+
+    if(event is NewRoomSettingsEvent)
+    {
+      var settings = event.newSettings;
+      if(!settings.keys.every((k) => model.room!.settings[k] == settings[k]));
+      {
+        // Settings are different
+        firebaseBloc.add(fbEvent.NewRoomSettingsEvent(settings));
+      }
+    }
 
     if(event is StartGameRequestedEvent)
       {
@@ -267,6 +282,8 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
 
 
 
+
+
     }
 
   }
@@ -313,7 +330,7 @@ class GameRoomModel {
 
   List<Player> getPlayersWhoCanVote(int turn) => dataModel.getFullVoterList(turn);
 
-  Player? getPlayer(String id) => dataModel.getPlayer(id);
+  Player? getPlayer(String? id) => dataModel.getPlayer(id);
 
   int? getPlayerScore(String id) => dataModel.getPlayerScore(id);
 

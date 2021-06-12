@@ -172,8 +172,8 @@ class Repository {
     return await _firebaseProvider.setRoomField(roomCode, path, value);
   }
 
-  Future<bool> setRoomFields(String roomCode, Map<String, dynamic> changes) async {
-    return await _firebaseProvider.setRoomFields(roomCode, changes);
+  Future<bool> setRoomFields(String roomCode,  Map<String, dynamic> changes, {List<String> path = const []}) async {
+    return await _firebaseProvider.setRoomFields(roomCode, changes, path);
 
   }
 

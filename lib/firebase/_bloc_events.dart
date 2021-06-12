@@ -41,6 +41,11 @@ class JoinGameRequested extends FirebaseEvent {
   String roomCode;
 }
 
+class NewRoomSettingsEvent extends FirebaseEvent {
+  NewRoomSettingsEvent(this.newSettings);
+  Map<String, dynamic> newSettings;
+}
+
 class LeaveGameRequested extends FirebaseEvent {}
 
 

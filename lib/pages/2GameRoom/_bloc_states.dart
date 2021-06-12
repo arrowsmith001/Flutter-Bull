@@ -40,6 +40,11 @@ class PlayerPhaseChangedState extends GameRoomState {
   final String newPhase;
 }
 
+class RoomSettingsChangedState extends GameRoomState {
+  const RoomSettingsChangedState(GameRoomModel model, this.newSettings) : super(model);
+  final Map<String, dynamic> newSettings;
+}
+
 
 
 // Game

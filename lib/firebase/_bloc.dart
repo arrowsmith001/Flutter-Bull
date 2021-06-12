@@ -371,10 +371,16 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     {
       print('OnRoomChildChangesEvent: ' + event.changes.toString());
       if(event.changes.containsKey(Room.PAGE))
-        {
-          print("Room page changed: " + event.changes[Room.PAGE]);
-          yield RoomPageChangedState(model, event.changes[Room.PAGE]);
-        }
+      {
+        print("Room page changed: " + event.changes[Room.PAGE]);
+        yield RoomPageChangedState(model, event.changes[Room.PAGE]);
+      }
+
+      if(event.changes.containsKey(Room.SETTINGS))
+      {
+        print("Room settings changed: " + event.changes[Room.SETTINGS].toString());
+        yield RoomSettingsChangedState(model, Map.from(event.changes[Room.SETTINGS]));
+      }
 
       if(event.changes.containsKey(Room.PLAYER_TEXTS))
       {
@@ -466,6 +472,11 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     //       }
     //   }
 
+    if(event is NewRoomSettingsEvent)
+      {
+        var settings = event.newSettings;
+        await repo.setRoomFields(model.room!.code!, settings, path: [Room.SETTINGS]);
+      }
 
     // TODO: (potentially) refactor game logic out of firebase bloc (???)
 

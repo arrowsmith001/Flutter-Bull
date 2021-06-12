@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/animation.dart';
 
+// TODO Migrate to "Curves"
+
 // Class for interpolating values for animations. They should expect values of t between 0 and 1.
 abstract class Interpolator{
   double getValue(double t);

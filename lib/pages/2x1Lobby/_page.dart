@@ -43,12 +43,14 @@ import 'package:flutter_bull/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../classes/classes.dart';
 import '../../extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
+import 'misc.dart';
 
 
 const double AVATAR_DIM = 125;
@@ -86,6 +88,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     _animController.addListener(() {setState(() { });});
     _animController.duration = Duration(milliseconds: 10000);
     _animController.repeat();
+
   }
 
   @override
@@ -127,9 +130,11 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
       playerIdsLocal.add(userId);
       _listKey.currentState!.insertItem(index, duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
 
+      _showNotif(userId, NotifType.PlayerAdded);
+
       await Future.delayed(Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS)); // TODO Make syncronous if possible
       double val = _scrollController.position.maxScrollExtent;// + AVATAR_DIM + 2 * AVATAR_PADDING;
-      if(_scrollController.position.userScrollDirection == ScrollDirection.idle) _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Interval(0, 1));
+      if(_scrollController.position.userScrollDirection == ScrollDirection.idle) _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Curves.easeInExpo);
     }
   }
 
@@ -144,14 +149,267 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     return item;
   }
 
-  Widget _buildWrapOfLocalPlayers(GameRoomModel model) {
-    return Wrap(
-      children: List.generate(playerIdsLocal.length, (i) => _buildListItem(context, i, null, model)),
-    );
-  }
-
   PanelController _panelController = new PanelController();
   bool _panelIsOpen = false;
+
+
+  void _setLocalSetting(String roomSetting, dynamic arg) {
+    setState(() {
+      _settingsLocal[roomSetting] = arg;
+    });
+
+    _refreshSettings();
+
+  }
+
+  void _onNewSettings(Map<String, dynamic> newSettings) {
+    setState(() {
+      for(String k in _settings.keys) _settings[k] = newSettings[k];
+    });
+    _refreshSettings();
+  }
+
+  void _refreshSettings(){
+    setState(() {
+      localSettingsDifferentFromGlobalSettings = !_settingsLocal.keys.every((k) => _settingsLocal[k] == _settings[k]);
+    });
+  }
+
+  void _onDefaultSettings() {
+    // TODO Fix this, jumps to 9 for some reason, also sets all truths possible default wrong
+    Map<String, dynamic> defaultSettings = GameParams.DEFAULT_GAME_SETTINGS;
+    setState(() {
+      for(String k in _settingsLocal.keys) _settingsLocal[k] = defaultSettings[k];
+    });
+    _refreshSettings();
+  }
+
+  void _onSaveSettingsChanges() {
+    _bloc.add(NewRoomSettingsEvent(_settingsLocal));
+  }
+
+  late Map<String, dynamic> _settings = {
+    Room.SETTINGS_ROUND_TIMER : _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER],
+    Room.SETTINGS_ALL_TRUTHS_POSSIBLE : _bloc.model.room!.settings[Room.SETTINGS_ALL_TRUTHS_POSSIBLE],
+    Room.SETTINGS_LEWD_HINTS_ENABLED : _bloc.model.room!.settings[Room.SETTINGS_LEWD_HINTS_ENABLED],
+  };
+  late Map<String, dynamic> _settingsLocal = {
+    Room.SETTINGS_ROUND_TIMER : _settings[Room.SETTINGS_ROUND_TIMER],
+    Room.SETTINGS_ALL_TRUTHS_POSSIBLE : _settings[Room.SETTINGS_ALL_TRUTHS_POSSIBLE],
+    Room.SETTINGS_LEWD_HINTS_ENABLED : _settings[Room.SETTINGS_LEWD_HINTS_ENABLED],
+  };
+  late bool localSettingsDifferentFromGlobalSettings = false;
+  bool isUsingSlider = false;
+
+  Widget _buildGameSettingsList(ScrollController sc, GameRoomModel model) {
+
+    const double LIST_ITEM_PADDING = 32.0;
+
+    const Color TRACK_COLOR = const Color.fromARGB(178, 28, 28, 106);
+    const Color MARKER_COLOR = const Color.fromARGB(255, 68, 116, 220);
+
+    bool amIHost = model.amIHost; // TODO Differentiate host control
+    amIHost = true;
+
+    var outerDeco = BoxDecoration(border: Border.all(color: Colors.white.withOpacity(0.3), width: 3), borderRadius: MyBorderRadii.all(16.0));
+    var innerDeco = BoxDecoration(border: Border.all(color: Colors.white.withOpacity(0.8), width: 1), borderRadius: MyBorderRadii.all(8.0));
+
+    var roundTimerDoubleLocal = _settingsLocal[Room.SETTINGS_ROUND_TIMER].toDouble();
+    var allTruthsEnabledLocal = _settingsLocal[Room.SETTINGS_ALL_TRUTHS_POSSIBLE];
+    var lewdnessOnLocal = _settingsLocal[Room.SETTINGS_LEWD_HINTS_ENABLED];
+    var roundTimerDouble = _settings[Room.SETTINGS_ROUND_TIMER].toDouble();
+    var allTruthsEnabled = _settings[Room.SETTINGS_ALL_TRUTHS_POSSIBLE];
+    var lewdnessOn = _settings[Room.SETTINGS_LEWD_HINTS_ENABLED];
+    var settingsItem1 = Column(
+      children: [
+        Text('Round Timer', style: AppStyles.defaultStyle(color: Colors.white),),
+        AppStyles.MyText('The number of minutes of voting time', fontSize: 20),
+        Row(
+          children: [
+            SliderTheme(
+                data: SliderThemeData(
+                    activeTrackColor: TRACK_COLOR,
+                    activeTickMarkColor: MARKER_COLOR,
+                    inactiveTickMarkColor: MARKER_COLOR,
+                    disabledActiveTickMarkColor: MARKER_COLOR,
+                    disabledInactiveTickMarkColor: MARKER_COLOR,
+                    trackHeight: 20,
+                    trackShape: MySliderTrack(),
+                    thumbShape: RoundTimerSliderThumbShape(roundTimerDoubleLocal, enabledThumbRadius: 50)
+                ),
+                child: Slider(
+                  divisions: GameParams.MAXIMUM_ROUND_TIMER - GameParams.MINIMUM_ROUND_TIMER,
+                  onChangeStart: (value) {setState(() {isUsingSlider = true;});}, // TODO Make slider less janky i.e. not make the page scroll with it
+                  onChangeEnd: (value) {setState(() {isUsingSlider = false;});},
+                  min: GameParams.MINIMUM_ROUND_TIMER.toDouble(),
+                  max: GameParams.MAXIMUM_ROUND_TIMER.toDouble(),
+                  onChanged: (double value) {
+                    _setLocalSetting(Room.SETTINGS_ROUND_TIMER, value);
+                  },
+                  value: roundTimerDoubleLocal,
+
+                )).FlexibleExt(9)
+          ],
+        ),
+      ],
+    );
+    var settingsItem2 = Column(
+      children: [
+        Text('\"All truths\" possible?', style: AppStyles.defaultStyle(color: Colors.white),),
+        AppStyles.MyText('Include the possibility of every player being asked to write a truth?', fontSize: 20),
+        Row(
+          children: [
+
+            GestureDetector(
+              onTap: () => _setLocalSetting(Room.SETTINGS_ALL_TRUTHS_POSSIBLE, true),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: MyBorderRadii.all(16.0),
+                    border: Border.all(color: !allTruthsEnabledLocal ? Colors.transparent : Colors.white, width: 3),
+                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.lightBlueAccent, Colors.indigoAccent])),
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text('YES', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
+                      !allTruthsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                    ],),
+                    Assets.images.angels.image().PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                  ],
+                ),
+              )
+
+              ,
+            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).FlexibleExt(),
+
+            GestureDetector(
+              onTap: () => _setLocalSetting(Room.SETTINGS_ALL_TRUTHS_POSSIBLE, false),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: MyBorderRadii.all(16.0),
+                    border: Border.all(color: allTruthsEnabledLocal ? Colors.transparent : Colors.white, width: 3),
+                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.redAccent.shade200, Color.fromARGB(
+                        255, 198, 31, 31)])),
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text('NO', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
+                      allTruthsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                    ],),
+                    Assets.images.angel.image().PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                  ],
+                ),
+              )
+              ,
+            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                .FlexibleExt(),
+
+          ],
+        ),
+      ],
+    );
+    var settingsItem3 = Column(
+      children: [
+        Text('Include \"adult\" hints?', style: AppStyles.defaultStyle(color: Colors.white),),
+        AppStyles.MyText('When writing statements, you can get hints to use for inspiration. Should they be completely clean, or can they include naughty stuff?', fontSize: 20),
+        Row(
+          children: [
+
+            GestureDetector(
+              onTap: () => _setLocalSetting(Room.SETTINGS_LEWD_HINTS_ENABLED, false),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: MyBorderRadii.all(16.0),
+                    border: Border.all(color: lewdnessOnLocal ? Colors.transparent : Colors.white, width: 3),
+                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.fromARGB(255, 249, 139, 255), Color.fromARGB(
+                        255, 222, 47, 232)])),
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text('CLEAN', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
+                      lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                    ],),
+                    Assets.images.lewdnessOff.image(height: 65).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                  ],
+                ),
+              )
+
+              ,
+            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).FlexibleExt(),
+
+            GestureDetector(
+              onTap: () => _setLocalSetting(Room.SETTINGS_LEWD_HINTS_ENABLED, true),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: MyBorderRadii.all(16.0),
+                    border: Border.all(color: !lewdnessOnLocal ? Colors.transparent : Colors.white, width: 3),
+                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.fromARGB(
+                        255, 196, 37, 37), Color.fromARGB(
+                        255, 130, 7, 7)])),
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      AutoSizeText('ADULT', minFontSize: 10, maxLines: 1, style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
+                      !lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                    ],),
+                    Assets.images.lewdnessV2.image(height: 65).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                  ],
+                ),
+              )
+              ,
+            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                .FlexibleExt(),
+
+          ],
+        ),
+      ],
+    );
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            MyCupertinoStyleButton(
+                height: 60,
+                color: Colors.lightBlue.shade300,
+                text: AutoSizeText('Reset Defaults', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+                onPressed: () => _onDefaultSettings()
+            ).PaddingExt(EdgeInsets.symmetric(horizontal: 8)).FlexibleExt(),
+            MyCupertinoStyleButton(
+                height: 60,
+                color: localSettingsDifferentFromGlobalSettings && amIHost ? Colors.lightBlue.shade300 : Colors.grey,
+                text: AutoSizeText('Save Changes', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+                onPressed: localSettingsDifferentFromGlobalSettings && amIHost ? () => _onSaveSettingsChanges() : null
+            ).PaddingExt(EdgeInsets.symmetric(horizontal: 8)).FlexibleExt(),
+          ],
+        ),
+        SingleChildScrollView(
+          controller: sc,
+          child: Container(
+            decoration: outerDeco,
+            child: Container(
+              decoration: innerDeco,
+              child: Column(
+                children: [
+                  settingsItem1.PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING, left: 12, right: 12)),
+                  settingsItem2.PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING, left: 12, right: 12)),
+                  settingsItem3.PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING, bottom: LIST_ITEM_PADDING/2, left: 12, right: 12)),
+                ],
+              ),
+            ).PaddingExt(EdgeInsets.all(4)),
+          ).PaddingExt(EdgeInsets.symmetric(vertical: 16)),
+        ).ExpandedExt()
+      ],
+    ).PaddingExt(EdgeInsets.all(16));
+  }
+
+  BehaviorSubject<Notif> _notifStreamController = new BehaviorSubject();
+  void _showNotif(String userId, NotifType type) {
+    Notif newNotif = new Notif(userId: userId, notifType: type);
+    setState(() {
+      _notifStreamController.add(newNotif);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -160,8 +418,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
         GameRoomRoutes.pageListener(context, state, thisPageName);
 
-        if(state is NewRoomState)
-        {
+        if(state is NewRoomState) {
           setState(() {
             _listKey = new GlobalKey();
           });
@@ -174,6 +431,11 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
         if(state is RoomPlayerAddedState) {
           _onPlayerAdded(state.index, state.userId, state.model);
         }
+
+        if(state is RoomSettingsChangedState) {
+            Map<String, dynamic> newSettings = state.newSettings;
+            _onNewSettings(newSettings);
+          }
       },
 
       builder: (context, state) {
@@ -234,74 +496,91 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
           ),
         );
 
+        Widget notifDisplay = NotifCenter(this._notifStreamController.stream);
+        //notifDisplay = Container(color: AppColors.DebugColor,);
+
         Widget WaitingRoom =
           Scaffold(
             floatingActionButton: model.amIHost ? FloatingActionButton(onPressed: () => startGame()) : null,
-            body: SlidingUpPanel(
-              controller: _panelController,
-              isDraggable: true,//!isUsingSlider,
-              parallaxEnabled: true,
-              boxShadow: null,
-              minHeight: TOP_BIT_HEIGHT,
-              maxHeight: MediaQuery.of(context).size.height - 200,
-              color: Colors.transparent,
-              slideDirection: SlideDirection.UP,
-              body: body,
-              panelBuilder: (sc) {
+            body: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                SlidingUpPanel(
+                  onPanelOpened: () {
+                    _panelIsOpen = true;
+                  },
+                  onPanelClosed: () {
+                    _panelIsOpen = false;
+                  },
+                  controller: _panelController,
+                  isDraggable: true,//!isUsingSlider,
+                  parallaxEnabled: true,
+                  boxShadow: null,
+                  minHeight: TOP_BIT_HEIGHT,
+                  maxHeight: MediaQuery.of(context).size.height - 200,
+                  color: Colors.transparent,
+                  slideDirection: SlideDirection.UP,
+                  body: body,
+                  panelBuilder: (sc) {
 
-                return Container(
-                    decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 49, 49, 147),
-                        // gradient: RadialGradient(colors: [ Colors.indigo, Color.fromARGB(255, 174, 187, 243),], focal: Alignment.bottomCenter, radius: 5, stops: [0, 0.4]),
-                        borderRadius: MyBorderRadii.topOnly(30)
+                    return Container(
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 49, 49, 147),
+                            // gradient: RadialGradient(colors: [ Colors.indigo, Color.fromARGB(255, 174, 187, 243),], focal: Alignment.bottomCenter, radius: 5, stops: [0, 0.4]),
+                            borderRadius: MyBorderRadii.topOnly(30)
 
-                    ),
-
-                    child: room.code == null ? EmptyWidget()
-                        : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-
-                        GestureDetector(
-                          onTap: () {
-                            if(_panelIsOpen) _panelController.close();
-                            else _panelController.open();
-                            _panelIsOpen = !_panelIsOpen;
-                          },
-
-                          child: Column(
-                            children: [
-                              Container(
-                                height: SLIDE_HANDLE_HEIGHT,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.3),
-                                    borderRadius: MyBorderRadii.all(10.0)
-                                ),
-                              ).PaddingExt(EdgeInsets.symmetric(vertical: SLIDE_HANDLE_V_PADDING)),
-
-                              Container(
-                                alignment: Alignment.topCenter,
-                                height: TOP_BIT_ROOMCODE_HEIGHT,
-                                child: AutoSizeText(room.code!,
-                                    minFontSize: 24,
-                                    style: TextStyle(
-                                        fontSize: 72,
-                                        color: Colors.white,
-                                        fontFamily: FontFamily.lapsusProBold)),
-                              )
-                            ],
-                          ),
                         ),
 
-                        _buildGameSettingsList(sc, model).ExpandedExt()
+                        child: room.code == null ? EmptyWidget()
+                            : Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
 
-                      ],
-                    )
-                        .PaddingExt(EdgeInsets.symmetric(horizontal: 15, vertical: TOP_BIT_ROOMCODE_V_PADDING))
-                );
-              },
+                            GestureDetector(
+                              onTap: () {
+                                if(_panelIsOpen) _panelController.close();
+                                else _panelController.open();
+                                _panelIsOpen = !_panelIsOpen;
+                              },
 
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: SLIDE_HANDLE_HEIGHT,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.3),
+                                        borderRadius: MyBorderRadii.all(10.0)
+                                    ),
+                                  ).PaddingExt(EdgeInsets.symmetric(vertical: SLIDE_HANDLE_V_PADDING)),
+
+                                  Container(
+                                    alignment: Alignment.topCenter,
+                                    height: TOP_BIT_ROOMCODE_HEIGHT,
+                                    child: AutoSizeText(room.code!,
+                                        minFontSize: 24,
+                                        style: TextStyle(
+                                            fontSize: 72,
+                                            color: Colors.white,
+                                            fontFamily: FontFamily.lapsusProBold)),
+                                  )
+                                ],
+                              ),
+                            ),
+
+                            _buildGameSettingsList(sc, model).ExpandedExt()
+
+                          ],
+                        )
+                            .PaddingExt(EdgeInsets.symmetric(horizontal: 15, vertical: TOP_BIT_ROOMCODE_V_PADDING))
+                    );
+                  },
+
+                ),
+                SafeArea(
+                  child: notifDisplay,
+                )
+              ],
             ),
           );
 
@@ -310,331 +589,113 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     );
   }
 
+}
 
-  void _setLocalSetting(String roomSetting, dynamic arg) {
-    setState(() {
+enum NotifType {
+  PlayerAdded, PlayerRemoved, SettingsChanged, MessageOnly
+}
+class Notif {
+  Notif({this.userId, this.notifType = NotifType.MessageOnly, this.customMessage = 'This is a notification'});
+  final NotifType notifType;
+  final String? userId;
+  final String? customMessage;
+}
 
-      switch(roomSetting){
-        case Room.SETTINGS_ROUND_TIMER:
-          this._roundTimerSliderValueLocal = arg as double;
-          break;
-        case Room.SETTINGS_ALL_TRUTHS_POSSIBLE:
-          this._allTruthsPossibleLocal = arg as bool;
-          break;
-        case Room.SETTINGS_LEWD_HINTS_ENABLED:
-          this._lewdHintsEnabledLocal = arg as bool;
-          break;
-      }
+class NotifCenter extends StatefulWidget {
+  NotifCenter(this.notifStream);
+  final Stream<Notif> notifStream;
 
-      localSettingsDifferentFromGlobalSettings =
-          _roundTimerSliderValue != _roundTimerSliderValueLocal
-              || _allTruthsPossible != _allTruthsPossibleLocal
-              || _lewdHintsEnabled != _lewdHintsEnabledLocal;
+  @override
+  _NotifCenterState createState() => _NotifCenterState();
+}
+
+class _NotifCenterState extends State<NotifCenter> {
+
+  List<Widget> notifWidgets = [];
+  StreamSubscription? sub;
+  @override
+  void initState() {
+    // TODO: implement initState
+    sub = widget.notifStream.listen((notif) {
+      _onNewNotif(notif);
     });
   }
 
-  late double _roundTimerSliderValue = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER].toDouble();
-  late bool _allTruthsPossible = _bloc.model.room!.settings[Room.SETTINGS_ALL_TRUTHS_POSSIBLE];
-  late bool _lewdHintsEnabled = _bloc.model.room!.settings[Room.SETTINGS_LEWD_HINTS_ENABLED];
-  late double _roundTimerSliderValueLocal = _roundTimerSliderValue;
-  late bool _allTruthsPossibleLocal = _allTruthsPossible;
-  late bool _lewdHintsEnabledLocal = _lewdHintsEnabled;
-  late bool localSettingsDifferentFromGlobalSettings = false;
-  bool isUsingSlider = false;
+  void _onNewNotif(final Notif notif){
+    final String? userId = notif.userId;
+    Widget? notifWidget;
 
-  Widget _buildGameSettingsList(ScrollController sc, GameRoomModel model) {
+    switch(notif.notifType)
+    {
+      case NotifType.PlayerAdded:
+        Widget nameWidget = BlocBuilder<GameRoomBloc, GameRoomState>(
+            builder: (context, state){
+              Player? player = state.model.getPlayer(userId);
+              if(player == null) return EmptyWidget();
+              return Text(player.name! + ' joined the game!', style: AppStyles.defaultStyle(fontSize: 32));
+            }
+        );
+        Widget imageWidget = BlocBuilder<GameRoomBloc, GameRoomState>(
+            builder: (context, state){
+              Player? player = state.model.getPlayer(userId);
+              if(player == null) return EmptyWidget();
+              return player.profileImage!;
+            }
+        );
+        notifWidget = NotifWidget(nameWidget, imageWidget);
+        break;
+      case NotifType.PlayerRemoved:
+        // TODO: Handle this case.
+        break;
+      case NotifType.SettingsChanged:
+        // TODO: Handle this case.
+        break;
+      case NotifType.MessageOnly:
+        // TODO: Handle this case.
+        break;
+    }
 
-    const double LIST_ITEM_PADDING = 32.0;
-
-    const Color TRACK_COLOR = const Color.fromARGB(178, 28, 28, 106);
-    const Color MARKER_COLOR = const Color.fromARGB(255, 68, 116, 220);
-
-    bool amIHost = model.amIHost; // TODO Differentiate host control
-    amIHost = true;
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            MyCupertinoStyleButton(
-              height: 60,
-                color: Colors.lightBlue.shade300,
-                text: AutoSizeText('Reset Defaults', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
-                onPressed: () => _onDefaultSettings()
-            ).PaddingExt(EdgeInsets.symmetric(horizontal: 8)).FlexibleExt(),
-            MyCupertinoStyleButton(
-                height: 60,
-                color: localSettingsDifferentFromGlobalSettings && amIHost ? Colors.lightBlue.shade300 : Colors.grey,
-                text: AutoSizeText('Save Changes', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
-                onPressed: localSettingsDifferentFromGlobalSettings && amIHost ? () => _onSaveSettingsChanges() : null
-            ).PaddingExt(EdgeInsets.symmetric(horizontal: 8)).FlexibleExt(),
-          ],
-        ),
-        ListView.builder(
-            controller: sc,
-            itemCount: 3,
-            itemBuilder: (context, i){
-              switch(i)
-              {
-                case 0: return Column(
-                  children: [
-                    Text('Round Timer', style: AppStyles.defaultStyle(color: Colors.white),),
-                    AppStyles.MyText('The number of minutes of voting time', fontSize: 20),
-                    Row(
-                      children: [
-                        SliderTheme(
-                            data: SliderThemeData(
-                                activeTrackColor: TRACK_COLOR,
-                                inactiveTrackColor: TRACK_COLOR,
-                                disabledActiveTrackColor: TRACK_COLOR,
-                                disabledInactiveTrackColor: TRACK_COLOR,
-                                activeTickMarkColor: MARKER_COLOR,
-                                inactiveTickMarkColor: MARKER_COLOR,
-                              trackHeight: 20,
-                                trackShape: MySliderTrack(),
-                                thumbShape: RoundTimerSliderThumbShape(_roundTimerSliderValueLocal, enabledThumbRadius: 50)
-                            ),
-                            child: Slider(
-                              divisions: GameParams.MAXIMUM_ROUND_TIMER - GameParams.MINIMUM_ROUND_TIMER,
-                              onChangeStart: (value) {setState(() {isUsingSlider = true;});}, // TODO Make slider less janky i.e. not make the page scroll with it
-                              onChangeEnd: (value) {setState(() {isUsingSlider = false;});},
-                              min: GameParams.MINIMUM_ROUND_TIMER.toDouble(),
-                              max: GameParams.MAXIMUM_ROUND_TIMER.toDouble(),
-                              onChanged: (double value) {
-                                  _setLocalSetting(Room.SETTINGS_ROUND_TIMER, value);
-                              },
-                              value: _roundTimerSliderValueLocal,
-
-                            )).FlexibleExt(9)
-                      ],
-                    ).PaddingExt(EdgeInsets.symmetric(horizontal: 12)),
-                  ],
-                );
-                case 1: return Column(
-                  children: [
-                    Text('\"All truths\" possible?', style: AppStyles.defaultStyle(color: Colors.white),),
-                    AppStyles.MyText('Include the possibility of every player being asked to write a truth?', fontSize: 20),
-                    Row(
-                      children: [
-
-                        GestureDetector(
-                          onTap: () => _setLocalSetting(Room.SETTINGS_ALL_TRUTHS_POSSIBLE, true),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: MyBorderRadii.all(16.0),
-                                border: Border.all(color: !_allTruthsPossibleLocal ? Colors.transparent : Colors.white, width: 3),
-                                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.lightBlueAccent, Colors.indigoAccent])),
-                            child: Column(
-                              children: [
-                                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                  Text('YES', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                                  !_allTruthsPossible ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
-                                ],),
-                                Assets.images.angels.image().PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                              ],
-                            ),
-                          )
-
-                              ,
-                        ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).FlexibleExt(),
-
-                        GestureDetector(
-                          onTap: () => _setLocalSetting(Room.SETTINGS_ALL_TRUTHS_POSSIBLE, false),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: MyBorderRadii.all(16.0),
-                                border: Border.all(color: _allTruthsPossibleLocal ? Colors.transparent : Colors.white, width: 3),
-                                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.redAccent.shade200, Color.fromARGB(
-                                    255, 198, 31, 31)])),
-                            child: Column(
-                              children: [
-                                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                  Text('NO', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                                  _allTruthsPossible ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
-                                ],),
-                                Assets.images.angel.image().PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                              ],
-                            ),
-                          )
-                              ,
-                        ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                            .FlexibleExt(),
-
-                      ],
-                    ),
-                  ],
-                ).PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING));
-                case 2: return Column(
-                  children: [
-                    Text('Include \"adult\" hints?', style: AppStyles.defaultStyle(color: Colors.white),),
-                    AppStyles.MyText('When writing statements, you can get hints to use for inspiration. Should they be completely clean, or can they include naughty stuff?', fontSize: 20),
-                    Row(
-                      children: [
-
-                        GestureDetector(
-                          onTap: () => _setLocalSetting(Room.SETTINGS_LEWD_HINTS_ENABLED, true),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: MyBorderRadii.all(16.0),
-                                border: Border.all(color: !_lewdHintsEnabledLocal ? Colors.transparent : Colors.white, width: 3),
-                                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.fromARGB(255, 249, 139, 255), Color.fromARGB(
-                                    255, 222, 47, 232)])),
-                            child: Column(
-                              children: [
-                                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                  Text('CLEAN', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                                  _lewdHintsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
-                                ],),
-                                Assets.images.lewdnessOff.image(height: 65).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                              ],
-                            ),
-                          )
-
-                          ,
-                        ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).FlexibleExt(),
-
-                        GestureDetector(
-                          onTap: () => _setLocalSetting(Room.SETTINGS_LEWD_HINTS_ENABLED, false),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: MyBorderRadii.all(16.0),
-                                border: Border.all(color: _lewdHintsEnabledLocal ? Colors.transparent : Colors.white, width: 3),
-                                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.fromARGB(
-                                    255, 196, 37, 37), Color.fromARGB(
-                                    255, 130, 7, 7)])),
-                            child: Column(
-                              children: [
-                                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                  AutoSizeText('ADULT', minFontSize: 10, maxLines: 1, style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                                  !_lewdHintsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
-                                ],),
-                                Assets.images.lewdnessV2.image(height: 65).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                              ],
-                            ),
-                          )
-                          ,
-                        ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                            .FlexibleExt(),
-
-                      ],
-                    ),
-                  ],
-                ).PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING));
-                default: return EmptyWidget();
-              }
-            }).ExpandedExt()
-      ],
-    ).PaddingExt(EdgeInsets.all(16));
+    notifWidgets.add(notifWidget!);
   }
 
-  void _onDefaultSettings() {
-
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    if(sub != null) sub!.cancel();
+    super.dispose();
   }
 
-  void _onSaveSettingsChanges() {
-    _bloc.add(NewRoomSettingsEvent());
-  }
 
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Notif>(
+      stream: widget.notifStream,
+        builder: (context, snap)
+        {
+          if(!snap.hasData || snap.data == null) return EmptyWidget();
+
+          return ListView.builder(
+            itemCount: notifWidgets.length,
+              itemBuilder: (context, i) => notifWidgets[i]);
+        });
+  }
 }
 
-class MySliderTrack extends SliderTrackShape {
-  static const bool isEnabled = true;
-  static const bool isDiscrete = true;
+class NotifWidget extends StatelessWidget {
+  NotifWidget(this.title, this.image);
+  final Widget title;
+  final Widget? image;
   @override
-  Rect getPreferredRect({required RenderBox parentBox, Offset offset = Offset.zero, required SliderThemeData sliderTheme, bool isEnabled = isEnabled, bool isDiscrete = isDiscrete}) {
-    // TODO: implement getPreferredRect
-    return Rect.fromLTWH(0, 0, parentBox.size.width, parentBox.size.height);
-  }
-
-  @override
-  void paint(PaintingContext context, Offset offset, {required RenderBox parentBox, required SliderThemeData sliderTheme, required Animation<double> enableAnimation, required Offset thumbCenter, bool isEnabled = isEnabled, bool isDiscrete = isDiscrete, required TextDirection textDirection}) {
-    final Canvas canvas = context.canvas;
-    canvas.drawRect(getPreferredRect(parentBox: parentBox, sliderTheme: sliderTheme), new Paint()..color = Colors.pinkAccent.withOpacity(0.5));
-    // TODO Actually draw the points etc //////////////////////////////////////////////////////////////////////////////
-  }
-
-}
-
-class RoundTimerSliderThumbShape extends SliderComponentShape {
-
-  static const Color NUMBER_COLOR = Colors.blueAccent;
-
-  RoundTimerSliderThumbShape(this.sliderValue, {
-    this.enabledThumbRadius = 10.0,
-    this.disabledThumbRadius = 10.0,
-  });
-
-  double sliderValue;
-
-  late TextPainter _textPainter = new TextPainter(
-    text: TextSpan(
-        style: AppStyles.defaultStyle(fontSize: 54, color: NUMBER_COLOR, shadows: [BoxShadow(color: Colors.white, blurRadius: 15, spreadRadius: 45)]),
-        text: sliderValue.toInt().toString()),
-    textAlign: TextAlign.left,
-    textDirection: TextDirection.ltr,);
-
-  final double enabledThumbRadius;
-
-  final double disabledThumbRadius;
-  double get _disabledThumbRadius =>  disabledThumbRadius;
-
-  @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size.fromRadius(isEnabled == true ? enabledThumbRadius : _disabledThumbRadius);
-  }
-
-  @override
-  void paint(
-      PaintingContext context,
-      Offset center, {
-        required Animation<double> activationAnimation,
-        required Animation<double> enableAnimation,
-        required bool isDiscrete,
-        required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required TextDirection textDirection,
-        required double value,
-        required double textScaleFactor,
-        required Size sizeWithOverflow,
-      }) {
-    assert(context != null);
-    assert(center != null);
-    assert(enableAnimation != null);
-    assert(sliderTheme != null);
-    assert(sliderTheme.disabledThumbColor != null);
-    assert(sliderTheme.thumbColor != null);
-
-    final Canvas canvas = context.canvas;
-    final Tween<double> radiusTween = Tween<double>(
-      begin: _disabledThumbRadius,
-      end: enabledThumbRadius,
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.pinkAccent,
+      child: Row(
+        children: [
+          image  == null ? EmptyWidget() : image!.SizedBoxExt(height: 75, width: 75),
+          title.PaddingExt(EdgeInsets.all(8)).ExpandedExt()
+        ],
+      ),
     );
-    final ColorTween colorTween = ColorTween(
-      begin: sliderTheme.disabledThumbColor,
-      end: sliderTheme.thumbColor,
-    );
-    // canvas.drawCircle(
-    //   center,
-    //   radiusTween.evaluate(enableAnimation),
-    //   Paint()..color = colorTween.evaluate(enableAnimation)!,
-    // );
-    var rm = ResourceManager();
-    var image = rm.uiImageMap[Assets.images.clock.path];
-    var bg = rm.uiImageMap[Assets.images.clockBg.path];
-    if(image == null || bg == null) return;
-
-    var src = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
-    double f = image.width.toDouble() / image.height.toDouble();
-    double length = (enabledThumbRadius * 2) * 0.9;
-
-    var dest = Rect.fromCenter(center: center, width: length * f, height: length);
-
-    double dyOffset = 5.0;
-    canvas.drawImageRect(bg, src, dest, Paint());
-    canvas.drawImageRect(image, src, dest, Paint()..color = Colors.white);
-    _textPainter.layout();
-    _textPainter.paint(canvas, new Offset(center.dx - _textPainter.width/2, dyOffset + center.dy - _textPainter.height/2));
   }
 }
 
@@ -759,7 +820,6 @@ class _AnimatedListItemState extends State<AnimatedListItem> with TickerProvider
     {
       finalWidget = finalWidget.PaddingExt(EdgeInsets.only(bottom: AVATAR_TOTAL_DIM));
     }
-
 
     // finalWidget = Row(children: [ finalWidget ])
     //     .ScaleExt(widget.animation?.value??1);

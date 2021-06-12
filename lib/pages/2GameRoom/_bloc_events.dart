@@ -55,6 +55,8 @@ class RoomPlayerRemovedEvent extends GameRoomEvent {
 }
 
 class NewRoomSettingsEvent extends GameRoomEvent {
+  NewRoomSettingsEvent(this.newSettings);
+  Map<String, dynamic> newSettings;
 
 }
 
