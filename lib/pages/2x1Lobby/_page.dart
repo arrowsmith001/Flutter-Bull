@@ -410,6 +410,9 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
     });
   }
 
+  double _panelSlideValue = 0;
+  double _panelSlideProgress = 0;
+
   @override
   Widget build(BuildContext context) {
 
@@ -499,13 +502,27 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
         Widget notifDisplay = NotifCenter(this._notifStreamController.stream);
         //notifDisplay = Container(color: AppColors.DebugColor,);
 
+        double PANEL_MAX_HEIGHT = MediaQuery.of(context).size.height - 200;
+
+        Widget startGameButton = model.amIHost ?
+        Positioned(bottom: TOP_BIT_HEIGHT + _panelSlideValue + 16,
+          child: ElevatedButton(
+            onPressed: !_panelIsOpen ? () => startGame() : null,
+            child: Text('START GAME', style: AppStyles.defaultStyle(fontSize: 48),),).OpacityExt((1 - _panelSlideProgress)) ,  ): EmptyWidget();
+
         Widget WaitingRoom =
           Scaffold(
-            floatingActionButton: model.amIHost ? FloatingActionButton(onPressed: () => startGame()) : null,
+            //floatingActionButton: model.amIHost ? FloatingActionButton(onPressed: () => startGame()) : null,
             body: Stack(
               alignment: Alignment.topCenter,
               children: [
                 SlidingUpPanel(
+                  onPanelSlide: (d) {
+                    setState(() {
+                      _panelSlideValue = d * (PANEL_MAX_HEIGHT - TOP_BIT_HEIGHT);
+                      _panelSlideProgress = d;
+                    });
+                  },
                   onPanelOpened: () {
                     _panelIsOpen = true;
                   },
@@ -517,7 +534,7 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
                   parallaxEnabled: true,
                   boxShadow: null,
                   minHeight: TOP_BIT_HEIGHT,
-                  maxHeight: MediaQuery.of(context).size.height - 200,
+                  maxHeight: PANEL_MAX_HEIGHT,
                   color: Colors.transparent,
                   slideDirection: SlideDirection.UP,
                   body: body,
@@ -577,9 +594,8 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
                   },
 
                 ),
-                SafeArea(
-                  child: notifDisplay,
-                )
+                SafeArea(child: notifDisplay,),
+                startGameButton,
               ],
             ),
           );
@@ -601,6 +617,7 @@ class Notif {
   final String? customMessage;
 }
 
+// TODO Improve whole notif system
 class NotifCenter extends StatefulWidget {
   NotifCenter(this.notifStream);
   final Stream<Notif> notifStream;
@@ -610,6 +627,8 @@ class NotifCenter extends StatefulWidget {
 }
 
 class _NotifCenterState extends State<NotifCenter> {
+
+  static const int NOTIF_LIFETIME_MILLISECONDS = 3000;
 
   List<Widget> notifWidgets = [];
   StreamSubscription? sub;
@@ -621,7 +640,7 @@ class _NotifCenterState extends State<NotifCenter> {
     });
   }
 
-  void _onNewNotif(final Notif notif){
+  void _onNewNotif(final Notif notif) async {
     final String? userId = notif.userId;
     Widget? notifWidget;
 
@@ -656,11 +675,13 @@ class _NotifCenterState extends State<NotifCenter> {
     }
 
     notifWidgets.add(notifWidget!);
+    await Future.delayed(Duration(milliseconds: NOTIF_LIFETIME_MILLISECONDS));
+    notifWidgets.remove(notifWidget);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    // TODO: implement disposed
     if(sub != null) sub!.cancel();
     super.dispose();
   }
@@ -673,7 +694,6 @@ class _NotifCenterState extends State<NotifCenter> {
         builder: (context, snap)
         {
           if(!snap.hasData || snap.data == null) return EmptyWidget();
-
           return ListView.builder(
             itemCount: notifWidgets.length,
               itemBuilder: (context, i) => notifWidgets[i]);
@@ -681,21 +701,45 @@ class _NotifCenterState extends State<NotifCenter> {
   }
 }
 
-class NotifWidget extends StatelessWidget {
+class NotifWidget extends StatefulWidget {
   NotifWidget(this.title, this.image);
   final Widget title;
   final Widget? image;
+
+  @override
+  _NotifWidgetState createState() => _NotifWidgetState();
+}
+
+class _NotifWidgetState extends State<NotifWidget> with SingleTickerProviderStateMixin {
+  static const int ENTRANCE_DURATION_MILLISECONDS = 350;
+
+  late AnimationController _animController;
+  @override
+  void initState() {
+    super.initState();
+    _animController = new AnimationController(vsync: this);
+    _animController.duration = Duration(milliseconds: ENTRANCE_DURATION_MILLISECONDS);
+    _animController.forward(from: 0);
+  }
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
+    //double dx = (1-_animController.value)*MediaQuery.of(context).size.width;
     return Container(
+      height: 75,
       color: Colors.pinkAccent,
       child: Row(
         children: [
-          image  == null ? EmptyWidget() : image!.SizedBoxExt(height: 75, width: 75),
-          title.PaddingExt(EdgeInsets.all(8)).ExpandedExt()
+          widget.image  == null ? EmptyWidget() : widget.image!.SizedBoxExt(height: 75, width: 75),
+          widget.title.PaddingExt(EdgeInsets.all(8)).ExpandedExt()
         ],
       ),
-    );
+    )
+    ;
   }
 }
 

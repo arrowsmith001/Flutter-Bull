@@ -45,7 +45,7 @@ import 'dart:ui' as ui;
 
 import '../../routes.dart';
 
-
+// TODO Priority: Make game minimally viable ///////////////////////////////////////////////////////////
 class WriteIntro extends StatefulWidget {
 
   @override
