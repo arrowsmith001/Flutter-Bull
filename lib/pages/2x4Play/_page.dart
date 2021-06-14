@@ -74,8 +74,8 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
 
     int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER];
 
-    int unixRoundStart = GameParams.getTrueUnixFromDownloaded(_bloc.model.room!.roundStartUnix!);
-    int unixNow = DateTime.now().millisecondsSinceEpoch;
+    unixRoundStart = GameParams.getTrueUnixFromDownloaded(_bloc.model.room!.roundStartUnix!);
+    int unixNow = _unix;
     int elapsed = unixNow - unixRoundStart;
 
     initialItemCount = _bloc.model.getNumberWhoVoted(_bloc.model.room!.turn!)!;
@@ -84,6 +84,8 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
   }
 
   int initialItemCount = 0;
+  int unixRoundStart = 0;
+  int get _unix => DateTime.now().millisecondsSinceEpoch;
 
   void _createTimer(int totalMinutes, int msElapsed){
     // TODO: Sync timer with actual unix timestamp
@@ -96,7 +98,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
             (timer) {
           if(t <= 0) _roundTimer.cancel();
           setState(() {
-            t -= 10;
+            t = getMsFromMins(totalMinutes) - (_unix - unixRoundStart);
           });
           //print(_start.toString());
         }

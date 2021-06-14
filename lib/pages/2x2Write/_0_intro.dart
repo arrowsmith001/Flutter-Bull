@@ -58,17 +58,34 @@ class _WriteIntroState extends State<WriteIntro> {
 
   final String thisPageName = RoomPages.WRITE;
   final String thisSubPageName = WritePages.INTRO;
-  TextEditingController _textController = TextEditingController();
-
-  void onSubmittedStatement(String text, String targetId)
-  {
-    _bloc.add(TextEntrySubmittedEvent(text, targetId));
-  }
 
   @override
   void initState() {
     super.initState();
+
+    try{
+      me = _bloc.model.me!;
+      target = _bloc.model.dataModel.getMyTarget()!;
+      isTargetMyself = _bloc.model.dataModel.isUser(target.id!);
+      writeTruth = _bloc.model.dataModel.getTruth(target)!;
+
+      _beginRoutine();
+    }
+    catch(e)
+    {
+      // TODO HANDLE INITIALIZATION ERROR
+      print('Error initializing ' + thisPageName + ': ' + e.toString());
+    }
   }
+
+  _beginRoutine(){
+    String playerName = me.name!;
+  }
+
+  late Player me;
+  late Player target;
+  late bool isTargetMyself;
+  late bool writeTruth;
 
   bool readiedUp = false;
 
@@ -83,19 +100,40 @@ class _WriteIntroState extends State<WriteIntro> {
           bool? writeTruth = target == null ? null : state.model.dataModel.getTruth(target);
 
           bool sufficientInfo = target != null && isTargetMyself != null && writeTruth != null;
+          double fontSize = 32;
+          TextStyle style = AppStyles.defaultStyle(fontSize: fontSize, color: Colors.black);
+          TextStyle boldStyle = AppStyles.defaultStyle(fontSize: 48, color: Colors.black, fontWeight: FontWeight.w900);
+          TextStyle truthStyle =  AppStyles.TruthStyle(fontSize: fontSize);
+          TextStyle bullStyle =  AppStyles.BullStyle(fontSize: fontSize);
+
+          double dim = (MediaQuery.of(context).size.width / 3) - 20;
 
           return SafeArea(
               child: Scaffold(
                   backgroundColor: Color.fromARGB(255, 252, 225, 255),
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
                   body: !sufficientInfo ? MyLoadingIndicator()
                       : Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(thisSubPageName, style: AppStyles.DebugStyle(42)),
-                      CupertinoButton(child: Text('Go to Main'), onPressed: () => Navigator.of(context).pushNamed(WritePages.MAIN))
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Avatar(me.profileImage, size: Size(dim,dim), loading: me.profileImage == null, defaultImage: null).SizedBoxExt(height: dim, width: dim)
+                        ],
+                      ),
+                      RichText(
+                        textAlign: TextAlign.center,
+                          text: TextSpan(
+                        children: [
+                          TextSpan(text: 'Everyone will now write 1 statement each', style: style),
+                          TextSpan(text: '\n\nThis statement will either be a ', style: style), TextSpan(text: 'truth about themselves,', style: truthStyle),
+                          TextSpan(text: ' or a ', style: style), TextSpan(text: 'lie about another player', style: bullStyle),
+                          TextSpan(text: '\n\nYou must keep your role a secret from all other players', style: boldStyle),
+                        ]
+                      )),
+                      CupertinoButton(
+                        color: Colors.indigoAccent,
+                          child: AppStyles.MyText('Reveal your role and start writing',color: Colors.white,), onPressed: () => Navigator.of(context).pushNamed(WritePages.MAIN))
                     ],
                   ).PaddingExt(EdgeInsets.all(20))
 

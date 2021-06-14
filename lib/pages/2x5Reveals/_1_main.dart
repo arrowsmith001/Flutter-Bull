@@ -351,7 +351,7 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
               child: AutoSizeText(
                 focusText,
                 textAlign: TextAlign.center,
-                style: AppStyles.defaultStyle(fontSize: 100),
+                style: AppStyles.defaultStyle(fontSize: 100, color: Colors.black),
                 minFontSize: 10,
               ).PaddingExt(EdgeInsets.all(24)),
             ),

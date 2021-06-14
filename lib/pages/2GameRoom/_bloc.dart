@@ -302,6 +302,10 @@ class GameRoomModel {
   bool get amIHost => dataModel.amIHost;
   bool? get isItMyTurn => dataModel.isItMyTurn;
 
+  bool get haveISubmittedText => dataModel.haveISubmittedText;
+
+  Player? get me => dataModel.me;
+  bool hasPlayerSubmittedText(userId) => dataModel.hasPlayerSubmittedText(userId);
 
   Player? getRoomMember(int i) => dataModel.getRoomMember(i);
   bool isHost(String? id) => dataModel.isHost(id);

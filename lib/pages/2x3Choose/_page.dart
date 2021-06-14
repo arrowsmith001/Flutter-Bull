@@ -69,6 +69,8 @@ class _ChooseState extends State<Choose> {
   @override
   Widget build(BuildContext context) {
 
+    // TODO Make choose/play minimally viable <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     return BlocConsumer<GameRoomBloc, GameRoomState>(
         builder: (context, state) {
 
@@ -76,6 +78,7 @@ class _ChooseState extends State<Choose> {
           Player? player = state.model.getPlayerWhoseTurn();
           String? text = player == null ? null : state.model.getPlayerText(player.id);
           bool? isMyTurn = state.model.isItMyTurn;
+          isMyTurn = true; // TODO Remove
 
           bool sufficientInfo = player != null && text != null && isMyTurn != null;
 
@@ -95,8 +98,10 @@ class _ChooseState extends State<Choose> {
                       child: Avatar(player.profileImage, size: Size(300, 300))
                         ).FlexibleExt(),
 
-                      Text(text, style: AppStyles.DebugStyle(20)),
-                      !isMyTurn ? EmptyWidget() : CupertinoButton(child: Text('Go to play'), onPressed: () => goToPlay())
+                      Text(player.name! + ', read out your statement, and hit BEGIN', textAlign: TextAlign.center, style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
+
+                      !isMyTurn ? EmptyWidget() : Text(text, style: AppStyles.DebugStyle(20)),
+                      !isMyTurn ? EmptyWidget() : CupertinoButton(child: Text('BEGIN'), onPressed: () => goToPlay())
 
                     ],
                   ).PaddingExt(EdgeInsets.all(20))

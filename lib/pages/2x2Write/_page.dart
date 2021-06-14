@@ -61,8 +61,15 @@ class _WriteState extends State<Write> {
 
   @override
   void initState() {
-    // if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
-    // print('Initial route: ' + initialRoute);
+    try{
+      GameRoomModel model = _bloc.model;
+      bool hasSubmitted = model.haveISubmittedText;
+      initialRoute = hasSubmitted ? WritePages.AFTER : WritePages.INTRO;
+    }
+    catch(e)
+    {
+      print('Error initializing ' + thisPageName + ': ' + e.toString());
+    }
   }
 
   String initialRoute = WritePages.INTRO;

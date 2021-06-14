@@ -67,9 +67,22 @@ class _WriteMainState extends State<WriteMain> {
   @override
   void initState() {
     super.initState();
+
+    _textController.addListener(() {
+          setState(() {
+            submitButtonEnabled = _textController.value.text.trim() != '';
+          });
+    });
   }
 
-  bool readiedUp = false;
+  bool submitButtonEnabled = false;
+
+  bool hidden = false;
+  void _toggleHide() {
+    setState(() {
+      hidden = !hidden;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,24 +96,101 @@ class _WriteMainState extends State<WriteMain> {
 
           bool sufficientInfo = target != null && isTargetMyself != null && writeTruth != null;
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: Color.fromARGB(255, 252, 225, 255),
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
-                  body: !sufficientInfo ? MyLoadingIndicator()
-                      : Column(
+          Player me = state.model.me!;
+
+          double fontSize = 46;
+          TextStyle style = AppStyles.defaultStyle(fontSize: fontSize, color: Colors.black);
+          TextStyle smallStyle = AppStyles.defaultStyle(fontSize: fontSize - 5, color: Colors.black);
+          TextStyle boldStyle = AppStyles.defaultStyle(fontSize: 48, color: Colors.black, fontWeight: FontWeight.w900);
+          TextStyle truthStyle =  AppStyles.TruthStyle(fontSize: fontSize);
+          TextStyle bullStyle =  AppStyles.BullStyle(fontSize: fontSize);
+
+          Widget hideButton = GestureDetector(
+            onTap: () {
+              _toggleHide();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              height: 75,
+              width: 75,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(image: Assets.images.hide),
+                    )
+                ),
+              ),
+            ),);
+
+          return Scaffold(
+              backgroundColor: Color.fromARGB(255, 252, 225, 255),
+              body: !sufficientInfo ? MyLoadingIndicator()
+                  : Stack(
+                children: [
+
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Avatar(target.profileImage, size: Size(500, 500)).FlexibleExt(),
-                      Text('Write a ' + (writeTruth ? 'TRUTH' : 'LIE') + ' for ' + (isTargetMyself ? 'YOURSELF' : target.name!)),
-                      CupertinoTextField(controller: _textController, onSubmitted: (text) => onSubmittedStatement(text, target.id!),),
-                      readiedUp ? Text('READY', style: AppStyles.DebugStyle(32)) : EmptyWidget()
-                    ],
-                  ).PaddingExt(EdgeInsets.all(20))
+                      // TODO Use better hide image
+                      AnimatedSwitcher(
+                        transitionBuilder: (child, anim) {
+                          return child;
+                          return child.ScaleExt((1-anim.value));
+                        },
+                        child:  Container(
+                          key: Key(hidden ? '1' : '2'),
+                            child: Avatar(hidden ? Assets.images.whiteSquare.image() : target.profileImage, size: Size(500, 500))),
+                        duration: Duration(milliseconds: 200),
+                        reverseDuration: Duration(milliseconds: 200),
+                        switchInCurve: Curves.bounceInOut,
+                        switchOutCurve: Curves.easeOutCirc,
+                      ).FlexibleExt(),
 
-              ));
+                      RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                              children: [
+                                TextSpan(text: '${me.name!},', style: style),
+                                TextSpan(text: '\n write a ', style: style),
+                                hidden ? TextSpan(text: '****', style: style) : TextSpan(text: (writeTruth ? 'TRUTH' : 'LIE'), style: (writeTruth ? truthStyle : bullStyle)),
+                                TextSpan(text: ' about ', style: style),
+                                hidden ? TextSpan(text: '****', style: style) : TextSpan(text: (isTargetMyself ? 'yourself' : target.name!), style: style),
+                              ]
+                          )).FlexibleExt(),
+
+                      CupertinoTextField(
+                        style: AppStyles.defaultStyle(fontSize: 32, fontWeight: FontWeight.w200, color: Colors.black),
+                        maxLines: 3,
+                        minLines: 3,
+                        placeholder: 'Enter text here',
+                        padding: EdgeInsets.all(16),
+                        controller: _textController, onSubmitted: (text) => onSubmittedStatement(text, target.id!),)
+                          .FlexibleExt(),
+
+                      CupertinoButton(
+                          color: Color.fromARGB(255, 0, 0, 255),
+                          child: Text('SUBMIT', style: AppStyles.defaultStyle(fontSize: 32),),
+                          onPressed: !submitButtonEnabled ? null : () => onSubmittedStatement(_textController.text, target.id!))
+
+                    ],
+                  ),
+
+                  Positioned(
+                      right: 0, top: 0,
+                      child: SafeArea(
+                        child: hideButton,
+                      ))
+
+
+                ],
+              ).PaddingExt(EdgeInsets.all(20))
+
+          );
         },
         listener: (context, state) {
           //GameRoomRoutes.pageListener(context, state, thisPageName);

@@ -499,6 +499,10 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         room.playerTruths = ra.playerTruths!;
         room.playerOrder = shuffledPlayers;
         room.page = RoomPages.WRITE;
+        room.playerTexts = null;
+        room.playerVotes = null;
+        room.turn = 0;
+        room.revealed = 0;
 
         await repo.updateRoom(room);
       }
@@ -595,6 +599,11 @@ class DataModel {
   String? userId;
 
   bool get amIHost => isHost(userId);
+
+  bool get haveISubmittedText => hasPlayerSubmittedText(userId);
+
+  Player? get me => getPlayer(userId);
+  bool hasPlayerSubmittedText(String? userId) => getPlayerText(getPlayerTarget(userId)) != null;
 
 
 

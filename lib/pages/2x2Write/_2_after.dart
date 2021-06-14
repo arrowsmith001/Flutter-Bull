@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,12 +64,62 @@ class _WriteAfterState extends State<WriteAfter> {
     _bloc.add(TextEntrySubmittedEvent(text, targetId));
   }
 
+  static const double AVATAR_DIM = 100;
+  static const double AVATAR_PADDING_H = 6;
+  static const double AVATAR_PADDING_V = 8;
+  static const double WRAP_PADDING_H = 20;
+
+  // TODO Create fake animated wrap?
+  void _computeDxDy(BuildContext context, int count) {
+    double width = MediaQuery.of(context).size.width;
+    double maxH = width - AVATAR_DIM - 2*WRAP_PADDING_H;
+    double dx = 0;
+    double dy = 0;
+    double dim = AVATAR_DIM + 2*AVATAR_PADDING_H;
+
+    //int maxFit = (maxH / dim).floor();
+
+    _dx = List.generate(count, (index) => 0, growable: false);
+    _dy = List.generate(count, (index) => 0, growable: false);
+
+    for(int i = 0; i < count; i++) {
+      _dx[i] = dx;
+      _dy[i] = dy;
+
+      dx += dim;
+      if (dx > maxH) {
+        dx = 0;
+        dy += dim;
+      }
+    }
+  }
+
+  late List<double> _dx;
+  late List<double> _dy;
+
   @override
   void initState() {
     super.initState();
   }
 
   bool readiedUp = false;
+
+  Widget _buildFakeWrap(GameRoomState state, double dim){
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: state.model.roomPlayerCount,
+        itemBuilder: (context, i){
+
+          double dx = _dx[i];
+          double dy = _dy[i];
+
+          Player p = state.model.getPlayerFromOrder(i)!;
+          return Align(alignment: Alignment.topLeft,
+            child: Avatar(p.profileImage, size: Size(dim, dim)).TranslateExt(dx: dx, dy: dy),
+            heightFactor: double.minPositive, widthFactor: double.minPositive,
+          );
+        }).PaddingExt(EdgeInsets.all(WRAP_PADDING_H));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,19 +133,26 @@ class _WriteAfterState extends State<WriteAfter> {
 
           bool sufficientInfo = target != null && isTargetMyself != null && writeTruth != null;
 
+          double dim = AVATAR_DIM;
+          double screenWidth = MediaQuery.of(context).size.width;
+          double maxH = (screenWidth - dim);
+
+          _computeDxDy(context, state.model.roomPlayerCount);
+
           return SafeArea(
               child: Scaffold(
                   backgroundColor: Color.fromARGB(255, 252, 225, 255),
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
                   body: !sufficientInfo ? MyLoadingIndicator()
                       : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(thisSubPageName, style: AppStyles.DebugStyle(42))
+
+                      //_buildFakeWrap(state, dim).FlexibleExt(),
+
+                      Text('Waiting for players to submit statements...', style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
                     ],
-                  ).PaddingExt(EdgeInsets.all(20))
+                  )
+                      //.PaddingExt(EdgeInsets.all(20))
 
               ));
         },
@@ -104,6 +160,7 @@ class _WriteAfterState extends State<WriteAfter> {
           //WriteRoutes.pageListener(context, state, thisPageName);
         });
   }
+
 
 
 

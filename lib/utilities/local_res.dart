@@ -43,8 +43,8 @@ class AppStyles {
           fontSize: fontSize ?? 24,
           fontFamily: FontFamily.lapsusProBold);
 
-  static TextStyle defaultStyle({double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {
-    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize, color: color, shadows: shadows);
+  static TextStyle defaultStyle({double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows, FontWeight fontWeight = FontWeight.normal}) {
+    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize, color: color, shadows: shadows, fontWeight: fontWeight);
   }
 
   static Text MyText(String text, {double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {

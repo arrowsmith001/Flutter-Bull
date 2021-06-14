@@ -90,7 +90,7 @@ class Avatar extends StatelessWidget{
                         width: borderWidth),
                     image: DecorationImage(
                       colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                       image: image == null ? Assets.images.bullImgTransparent : image!.image,
                     ))
             ),
@@ -129,7 +129,7 @@ class MyBubble extends StatelessWidget {
                 minFontSize: 16,
                 textAlign:
                 TextAlign.center,
-                style: AppStyles.defaultStyle(fontSize: 32)),
+                style: AppStyles.defaultStyle(fontSize: 32, color: Colors.black)),
           )
               .PaddingExt(EdgeInsets.all(8)),
         )

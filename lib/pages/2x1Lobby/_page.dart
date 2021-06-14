@@ -67,11 +67,13 @@ class Lobby extends StatefulWidget {
   _LobbyState createState() => _LobbyState();
 }
 
-class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
+class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
   final String thisPageName = RoomPages.LOBBY;
   late AnimationController _animController;
+  late AnimationController _startButtonAnimController;
+  late Animation _flashAnim;
   OvershootInterpolator interp = new OvershootInterpolator(2);
 
   late List<String> playerIdsLocal;
@@ -86,15 +88,26 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
     _animController = new AnimationController(vsync: this);
     _animController.addListener(() {setState(() { });});
-    _animController.duration = Duration(milliseconds: 10000);
+    _animController.duration = Duration(milliseconds: 1500);
     _animController.repeat();
+    _flashAnim = CurvedAnimation(parent: _animController, curve: Curves.slowMiddle);
 
+    _startButtonAnimController = new AnimationController(vsync: this);
+    _startButtonAnimController.addListener(() {setState(() { });});
+    _startButtonAnimController.duration = Duration(milliseconds: 250);
+
+    _exposeStartGameButtonIfAppropriate(false);
   }
 
   @override
   void dispose(){
     _animController.dispose();
     super.dispose();
+  }
+
+  void _exposeStartGameButtonIfAppropriate(bool equalityOnly){
+    bool expose = equalityOnly ? playerIdsLocal.length == GameParams.MINIMUM_PLAYERS_FOR_GAME : playerIdsLocal.length >= GameParams.MINIMUM_PLAYERS_FOR_GAME;
+    if(expose) _startButtonAnimController.forward(from: 0);
   }
 
   void startGame() {
@@ -129,14 +142,18 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
 
       playerIdsLocal.add(userId);
       _listKey.currentState!.insertItem(index, duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
+      _exposeStartGameButtonIfAppropriate(true);
 
       _showNotif(userId, NotifType.PlayerAdded);
 
       await Future.delayed(Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS)); // TODO Make syncronous if possible
       double val = _scrollController.position.maxScrollExtent;// + AVATAR_DIM + 2 * AVATAR_PADDING;
       if(_scrollController.position.userScrollDirection == ScrollDirection.idle) _scrollController.animateTo(val, duration: Duration(milliseconds: 250), curve: Curves.easeInExpo);
+
     }
   }
+
+
 
   Widget _buildListItem(BuildContext context, int i, Animation<double>? animation, GameRoomModel? model, [bool animationListReversed = false]) {
     Player? player = model != null && i < playerIdsLocal.length ? model.getPlayer(playerIdsLocal[i]) : null;
@@ -503,12 +520,21 @@ class _LobbyState extends State<Lobby> with SingleTickerProviderStateMixin {
         //notifDisplay = Container(color: AppColors.DebugColor,);
 
         double PANEL_MAX_HEIGHT = MediaQuery.of(context).size.height - 200;
+        Color buttonColor = Color.fromARGB(255, 66, 151, 255);
+        double startButtonFlashValue = math.sin(_flashAnim.value * math.pi * 2);
+        bool enoughPlayersForAGame = _bloc.model.roomPlayerCount >= GameParams.MINIMUM_PLAYERS_FOR_GAME;
 
-        Widget startGameButton = model.amIHost ?
+        Widget startGameButton = model.amIHost && enoughPlayersForAGame ?
         Positioned(bottom: TOP_BIT_HEIGHT + _panelSlideValue + 16,
           child: ElevatedButton(
+            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color.lerp(buttonColor, Colors.white, 0.2*startButtonFlashValue))),
             onPressed: !_panelIsOpen ? () => startGame() : null,
-            child: Text('START GAME', style: AppStyles.defaultStyle(fontSize: 48),),).OpacityExt((1 - _panelSlideProgress)) ,  ): EmptyWidget();
+            child: Text('START GAME',
+              style: AppStyles.defaultStyle(fontSize: 48),),)
+              .OpacityExt((1 - _panelSlideProgress))
+              .TranslateExt(dy: 50 * (1-_startButtonAnimController.value))
+              .ScaleExt(_startButtonAnimController.value),  )
+              : EmptyWidget();
 
         Widget WaitingRoom =
           Scaffold(
@@ -885,7 +911,6 @@ class _AnimatedListItemState extends State<AnimatedListItem> with TickerProvider
     dy = widget.index * AVATAR_TOTAL_DIM/2;
     dy = -dy;
 
-    // TODO Make animated list viewport work <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     return Align(alignment: Alignment.topCenter, heightFactor: 0.5, child: finalWidget.TranslateExt(dx: dx2, dy: 0));
   }
 }

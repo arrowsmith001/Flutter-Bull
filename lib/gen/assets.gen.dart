@@ -60,6 +60,7 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/clock_bg.png');
   AssetGenImage get downTriangle =>
       const AssetGenImage('assets/images/down_triangle.png');
+  AssetGenImage get hide => const AssetGenImage('assets/images/hide.png');
   AssetGenImage get howToPlayBrown1 =>
       const AssetGenImage('assets/images/how_to_play_brown 1.png');
   AssetGenImage get howToPlayBrown =>
@@ -163,6 +164,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/utter_bluescrn.PNG');
   AssetGenImage get utterTransparent =>
       const AssetGenImage('assets/images/utter_transparent.png');
+  AssetGenImage get whiteSquare =>
+      const AssetGenImage('assets/images/white_square.png');
 }
 
 class Assets {
