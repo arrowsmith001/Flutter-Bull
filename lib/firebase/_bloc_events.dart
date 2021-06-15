@@ -104,9 +104,10 @@ class TextEntrySubmittedEvent extends FirebaseEvent {
 }
 
 
-class SetPageOrTurnEvent extends FirebaseEvent{
-  SetPageOrTurnEvent({this.page, this.turn});
+class SetPagePhaseOrTurnEvent extends FirebaseEvent{
+  SetPagePhaseOrTurnEvent({this.page, this.turn, this.phase});
   String? page;
+  String? phase;
   int? turn;
 
 }

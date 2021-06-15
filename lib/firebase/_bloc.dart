@@ -186,74 +186,9 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
   @override
   Stream<FirebaseState> mapEventToState(FirebaseEvent event) async* {
 
-    if(event is OnUserIdStreamEvent)
-    {
-      String? userId = event.userId;
+    if(event is OnUserIdStreamEvent) yield* _onUserIdStreamEvent(event);
 
-      if(userId == null)
-        {
-          print('OnUserIdStreamEvent: logged out');
-          await _unsubFromAll();
-          yield UserLoggedOutState(model);
-        }
-      else
-        {
-          print('OnUserIdStreamEvent: logged in ${userId}');
-
-          model.setUserId(userId);
-
-          // This is just to initialize the player if necessary
-          await repo.setPlayerField(userId, Player.ID, userId);
-          await _subscribePlayer(userId);
-
-          // if(roomCodeSub != null) await roomCodeSub!.cancel();
-          //
-          // roomCodeSub = repo.streamPlayerField<String?>(userId, Player.OCCUPIED_ROOM_CODE).listen((roomCode) {
-          //   add(OnRoomCodeStreamEvent(roomCode));
-          // });
-        }
-    }
-
-    if(event is OnPlayerStreamEvent) {
-      print('OnPlayerStreamEvent: ${event.userId} : ' + (event.player == null ? 'null' : event.player.toString()));
-      Player? streamedPlayer = event.player;
-      String userId = event.userId;
-
-      if(streamedPlayer != null)
-        {
-          // Establish image
-          if(streamedPlayer.profileId != null && !model.hasImage(streamedPlayer.profileId))
-            {
-                Image? newProfileImage = await repo.getProfileImage(streamedPlayer.profileId);
-                model.setProfileImage(streamedPlayer.profileId!, newProfileImage);
-            }
-
-          //If player is user
-          if(streamedPlayer.id == model.userId)
-            {
-              String? roomCode = streamedPlayer.occupiedRoomCode;
-              if(roomCode != null)
-                {
-                  if(!model.isRoom(roomCode))
-                    {
-                      await _subscribeRoom(roomCode);
-                    }
-                }
-            }
-
-        }
-
-      model.setPlayer(userId, streamedPlayer);
-      if(model.isUser(userId))
-      {
-        yield OnUserStreamState(userId, model);
-      }
-      else
-      {
-        yield OnPlayerStreamState(userId, model);
-      }
-
-    }
+    if(event is OnPlayerStreamEvent) yield* _onPlayerStreamEvent(event);
 
     if(event is OnPlayerChangeStreamEvent)
     {
@@ -530,17 +465,18 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       }
     }
 
-    if(event is SetPageOrTurnEvent)
+    if(event is SetPagePhaseOrTurnEvent)
     {
       if(model.room != null && model.room!.code != null)
       {
         Map<String, dynamic> changes = {};
         if(event.page != null) changes.addAll({ Room.PAGE: event.page});
         if(event.turn != null) changes.addAll({ Room.TURN : event.turn});
+        if(event.phase != null) changes.addAll({ Room.PHASE : event.phase});
         bool success = await repo.setRoomFields(model.room!.code!, changes);
       }
     }
-    
+
     if(event is StartRoundEvent)
       {
         await repo.setRoomField(model.room!.code!, [Room.ROUND_START_UNIX], GameParams.convertUnixForUpload(DateTime.now().millisecondsSinceEpoch));
@@ -584,6 +520,74 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
 
 
+  }
+
+  // TODO Extract methods
+  Stream<FirebaseState> _onUserIdStreamEvent(OnUserIdStreamEvent event) async* {
+    String? userId = event.userId;
+
+    if(userId == null)
+    {
+      print('OnUserIdStreamEvent: logged out');
+      await _unsubFromAll();
+      yield UserLoggedOutState(model);
+    }
+    else
+    {
+      print('OnUserIdStreamEvent: logged in ${userId}');
+
+      model.setUserId(userId);
+
+      // This is just to initialize the player if necessary
+      await repo.setPlayerField(userId, Player.ID, userId);
+      await _subscribePlayer(userId);
+
+      // if(roomCodeSub != null) await roomCodeSub!.cancel();
+      //
+      // roomCodeSub = repo.streamPlayerField<String?>(userId, Player.OCCUPIED_ROOM_CODE).listen((roomCode) {
+      //   add(OnRoomCodeStreamEvent(roomCode));
+      // });
+    }
+  }
+
+  Stream<FirebaseState> _onPlayerStreamEvent(OnPlayerStreamEvent event) async* {
+    print('OnPlayerStreamEvent: ${event.userId} : ' + (event.player == null ? 'null' : event.player.toString()));
+    Player? streamedPlayer = event.player;
+    String userId = event.userId;
+
+    if(streamedPlayer != null)
+    {
+      // Establish image
+      if(streamedPlayer.profileId != null && !model.hasImage(streamedPlayer.profileId))
+      {
+        Image? newProfileImage = await repo.getProfileImage(streamedPlayer.profileId);
+        model.setProfileImage(streamedPlayer.profileId!, newProfileImage);
+      }
+
+      //If player is user
+      if(streamedPlayer.id == model.userId)
+      {
+        String? roomCode = streamedPlayer.occupiedRoomCode;
+        if(roomCode != null)
+        {
+          if(!model.isRoom(roomCode))
+          {
+            await _subscribeRoom(roomCode);
+          }
+        }
+      }
+
+    }
+
+    model.setPlayer(userId, streamedPlayer);
+    if(model.isUser(userId))
+    {
+      yield OnUserStreamState(userId, model);
+    }
+    else
+    {
+      yield OnPlayerStreamState(userId, model);
+    }
   }
 
 

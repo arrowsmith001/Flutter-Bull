@@ -8,8 +8,8 @@ import 'package:flutter_bull/pages/2x2Write/_0_intro.dart';
 import 'package:flutter_bull/pages/2x2Write/_1_main.dart';
 import 'package:flutter_bull/pages/2x2Write/_2_after.dart';
 import 'package:flutter_bull/pages/2x2Write/_page.dart';
-import 'package:flutter_bull/pages/2x3Choose/_page.dart';
-import 'package:flutter_bull/pages/2x4Play/_page.dart';
+import 'package:flutter_bull/pages/2x3Choose/_1_main.dart';
+import 'package:flutter_bull/pages/2x4Play/_1_main.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_page.dart';
 
 class WriteRoutes {

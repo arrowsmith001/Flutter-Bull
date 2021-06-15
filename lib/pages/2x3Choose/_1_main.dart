@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
 
@@ -12,9 +11,7 @@ import 'package:flutter_bull/pages/2GameRoom/_bloc_events.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
 import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
-import 'package:flutter_bull/pages/2x2Write/routes.dart';
 import 'package:flutter_bull/pages/2x3Choose/routes.dart';
-import 'package:flutter_bull/pages/2x5Reveals/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/misc.dart';
@@ -49,61 +46,72 @@ import 'dart:ui' as ui;
 
 import '../../routes.dart';
 
-
-class Choose extends StatefulWidget {
+class ChooseMain extends StatefulWidget {
 
   @override
-  _ChooseState createState() => _ChooseState();
+  _ChooseMainState createState() => _ChooseMainState();
 }
 
-class _ChooseState extends State<Choose> {
+class _ChooseMainState extends State<ChooseMain> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
-  final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
-  final String thisPageName = RoomPages.CHOOSE;
+  final String thisPageName = ChoosePages.MAIN;
 
   @override
   void initState() {
-    // if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
-    // print('Initial route: ' + initialRoute);
-    try{
-      String phase = _bloc.model.room!.phase!;
-      if(phase == RoomPhases.CHOSEN)
-      {
-        initialRoute = ChoosePages.MAIN;
-      }
-    }
-    catch(e)
-    {
-      Utils.printInitializationError(e, thisPageName);
-    }
+    super.initState();
   }
 
-  String initialRoute = ChoosePages.INTRO;
+  void goToPlay() {
+    _bloc.add(StartRoundEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
 
+    // TODO Make choose/play minimally viable <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     return BlocConsumer<GameRoomBloc, GameRoomState>(
-      listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName);
-      },
-      builder: (context, state) {
-        return Navigator(
-          observers: [
-            HeroController()
-          ],
-          key: navigationKey,
-          initialRoute: initialRoute,
-          onGenerateRoute: (settings) {
-            return ChooseRoutes.generate(settings);
-          },
-        );
-      },
-    );
+        builder: (context, state) {
 
+          if(state.model.room == null) return MyLoadingIndicator();
+          Player? player = state.model.getPlayerWhoseTurn();
+          String? text = player == null ? null : state.model.getPlayerText(player.id);
+          bool? isMyTurn = state.model.isItMyTurn;
+          isMyTurn = true; // TODO Remove
 
+          bool sufficientInfo = player != null && text != null && isMyTurn != null;
+
+          return SafeArea(
+              child: Scaffold(
+                  backgroundColor: Color.fromARGB(255, 231, 255, 225),
+                  appBar: CupertinoNavigationBar(
+                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
+                  ),
+                  body: !sufficientInfo ? MyLoadingIndicator()
+                      : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+
+                      Hero(
+                      tag: state.model.room!.turn!,
+                      child: Avatar(player.profileImage, size: Size(300, 300))
+                        ).FlexibleExt(),
+
+                      Text(player.name! + ', read out your statement, and hit BEGIN', textAlign: TextAlign.center, style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
+
+                      !isMyTurn ? EmptyWidget() : Text(text, style: AppStyles.DebugStyle(20)),
+                      !isMyTurn ? EmptyWidget() : CupertinoButton(child: Text('BEGIN'), onPressed: () => goToPlay())
+
+                    ],
+                  ).PaddingExt(EdgeInsets.all(20))
+
+              ));
+        },
+        listener: (context, state) =>
+            GameRoomRoutes.pageListener(context, state, thisPageName));
   }
-}
 
+
+}

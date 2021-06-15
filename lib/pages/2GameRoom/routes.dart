@@ -5,8 +5,9 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/2x2Write/_page.dart';
+import 'package:flutter_bull/pages/2x3Choose/_1_main.dart';
 import 'package:flutter_bull/pages/2x3Choose/_page.dart';
-import 'package:flutter_bull/pages/2x4Play/_page.dart';
+import 'package:flutter_bull/pages/2x4Play/_1_main.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_page.dart';
 import 'package:flutter_bull/extensions.dart';
 

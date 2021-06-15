@@ -79,10 +79,11 @@ class VoteEvent extends GameRoomEvent{
 class NextTurnRequestedFromPlayEvent extends GameRoomEvent{}
 class NextTurnRequestedFromRevealsEvent extends GameRoomEvent{}
 
-class SetPageOrTurnEvent extends GameRoomEvent{
-  SetPageOrTurnEvent({this.page, this.turn});
+class SetPagePhaseOrTurnEvent extends GameRoomEvent{
+  SetPagePhaseOrTurnEvent({this.page, this.turn, this.phase});
   String? page;
   int? turn;
+  String? phase;
 }
 
 

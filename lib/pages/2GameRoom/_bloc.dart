@@ -110,11 +110,10 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
 
       if (state is fbState.PlayerTextsChangeState) {
         Map<String, String> changes = state.changes;
-        if (changes.length > 0 && changes.length ==
-            model.roomPlayerCount) // If all players show phase
+        if (changes.length > 0 && changes.length == model.roomPlayerCount)
             {
           {
-            firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: RoomPages.CHOOSE));// TODO ABSOLUTELY URGENT lock in texts somehow
+            firebaseBloc.add(fbEvent.SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE, phase: RoomPhases.CHOOSE));// TODO ABSOLUTELY URGENT lock in texts somehow
           }
         }
       }
@@ -244,11 +243,11 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
       print(turn.toString() + ' ' + playerCount.toString());
       if(turn + 1 < playerCount)
       {
-        add(SetPageOrTurnEvent(page: RoomPages.CHOOSE, turn: turn + 1));
+        add(SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE, turn: turn + 1));
       }
       else
       {
-        add(SetPageOrTurnEvent(page: RoomPages.REVEALS, turn: 0));
+        add(SetPagePhaseOrTurnEvent(page: RoomPages.REVEALS, turn: 0));
       }
     }
 
@@ -267,9 +266,9 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
       }
     }
 
-    if(event is SetPageOrTurnEvent)
+    if(event is SetPagePhaseOrTurnEvent)
       {
-        firebaseBloc.add(fbEvent.SetPageOrTurnEvent(page: event.page, turn: event.turn));
+        firebaseBloc.add(fbEvent.SetPagePhaseOrTurnEvent(page: event.page, turn: event.turn, phase: event.phase));
       }
 
     if(event is AdvanceRevealNumberEvent)

@@ -14,10 +14,9 @@ import 'package:flutter_bull/pages/2x5Reveals/_1_main.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_page.dart';
 
 import '_0_intro.dart';
-import '_2_sub.dart';
-import '_3_final.dart';
 
-class RevealsRoutes {
+
+class ChooseRoutes {
 
   static Route generate(RouteSettings settings) {
 
@@ -25,13 +24,9 @@ class RevealsRoutes {
 
       switch(settings.name)
       {
-        case RevealsPages.INTRO: return RevealsIntro();
+        case ChoosePages.INTRO: return ChooseIntro();
 
-        case RevealsPages.MAIN: return RevealsMain(turn: settings.arguments as int);
-
-        case RevealsPages.SUB: return RevealsSub(playerId: settings.arguments as String);
-
-        case RevealsPages.FINAL: return RevealsFinal();
+        case ChoosePages.MAIN: return ChooseMain();
       }
 
       return Container(color: Colors.white, child: Center(
@@ -42,15 +37,13 @@ class RevealsRoutes {
 
   static pageListener(BuildContext context, GameRoomState state, String page) {
     if(state is PlayerPhaseChangedState)
-      {
-        //Navigator.of(context).pushNamed(state.newPhase);
-      }
+    {
+      //Navigator.of(context).pushNamed(state.newPhase);
+    }
   }
 }
 
-class RevealsPages {
+class ChoosePages {
   static const String INTRO = 'intro';
   static const String MAIN = 'main';
-  static const String SUB = 'sub';
-  static const String FINAL = 'final';
 }

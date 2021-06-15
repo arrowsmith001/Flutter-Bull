@@ -14,4 +14,8 @@ class Utils {
     return (n - lowerBound).toDouble() / (upperBound - lowerBound);
   }
 
+  static void printInitializationError(Object e, String thisPageName) {
+    print('Error initializing ${thisPageName}: ' + e.toString());
+  }
+
 }

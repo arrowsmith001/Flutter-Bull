@@ -61,6 +61,7 @@ class MyApp extends StatelessWidget {
         ),
         home: LayoutBuilder(
           builder: (context, constraints) {
+            // TODO Remove this shit before release
             if(devMode && !inserted) WidgetsBinding.instance!.addPostFrameCallback((_) => _insertOverlay(context));
             return Loading();
           }

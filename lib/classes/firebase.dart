@@ -62,7 +62,7 @@ class Room {
       ..host = creatorId
       ..page = RoomPages.LOBBY
       ..turn = 0
-      ..phase = RoomPhases.LOBBY;
+      ..phase = RoomPhases.DEFAULT;
   }
 
   static const String CODE = 'code';
@@ -171,10 +171,13 @@ class RoomPages {
 
 class RoomPhases {
 
+  static const String DEFAULT = '';
   static const String LOBBY = 'lobby';
   static const String TEXT_ENTRY_CONFIRMED = 'textEntryConfirmed';
   static const String CHOOSE = 'choose';
+  static const String CHOSEN = 'chosen';
   static const String PLAY = 'play';
+  static const String END_OF_PLAY = 'endOfPlay';
 
   static const String GO_TO_NEXT_REVEAL = 'goToNextReveal';
   static const String GO_TO_RESULTS = 'goToResults';
