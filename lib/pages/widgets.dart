@@ -48,7 +48,7 @@ class MainMenuButton extends StatelessWidget {
 class Avatar extends StatelessWidget{
   Avatar(this.image, 
       {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false, 
-        this.defaultImage, this.size, this.shape = BoxShape.circle, this.borderRadius = 8.0, this.borderColor});
+        this.defaultImage, this.size, this.shape = BoxShape.circle, this.borderRadius = 8.0, this.borderColor, this.clippedRectRadius});
   final double borderFlashValue;
   final double borderWidth;
   final bool loading;
@@ -58,6 +58,9 @@ class Avatar extends StatelessWidget{
   final BoxShape shape;
   final double borderRadius;
   final Color? borderColor;
+  final double? clippedRectRadius;
+
+  static const Color DEFAULT_BORDER_COLOR = Colors.blueAccent;
 
   @override
   Widget build(BuildContext context) {
@@ -78,21 +81,28 @@ class Avatar extends StatelessWidget{
 
           image == null ? EmptyWidget() :
           Center(
-            child: Container(
-              height: size == null ? null : size!.height,
-                width: size == null ? null : size!.width,
-                decoration: BoxDecoration(
-                  //color: Color.fromARGB(101, 229, 220, 220),
-                    shape: shape,
-                    borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
-                    border: Border.all(
-                        color: Color.lerp(borderColor ?? Colors.blueAccent, Colors.white, borderFlashValue)!,
-                        width: borderWidth),
-                    image: DecorationImage(
-                      colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
-                      fit: BoxFit.contain,
-                      image: image == null ? Assets.images.bullImgTransparent : image!.image,
-                    ))
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(clippedRectRadius ?? 0),
+                clipBehavior: Clip.hardEdge,
+                child: Container(
+                  height: size == null ? null : size!.height,
+                    width: size == null ? null : size!.width,
+                    decoration: BoxDecoration(
+                      //color: Color.fromARGB(101, 229, 220, 220),
+                        shape: shape,
+                        borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
+                        border: Border.all(
+                            color: Color.lerp(borderColor ?? DEFAULT_BORDER_COLOR, Colors.white, borderFlashValue)!,
+                            width: borderWidth),
+                        image: DecorationImage(
+                          colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
+                          fit: BoxFit.contain,
+                          image: image == null ? Assets.images.bullImgTransparent : image!.image,
+                        ))
+                ),
+              ),
             ),
           ),
 

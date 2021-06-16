@@ -57,12 +57,6 @@ class _WriteAfterState extends State<WriteAfter> {
 
   final String thisPageName = RoomPages.WRITE;
   final String thisSubPageName = WritePages.AFTER;
-  TextEditingController _textController = TextEditingController();
-
-  void onSubmittedStatement(String text, String targetId)
-  {
-    _bloc.add(TextEntrySubmittedEvent(text, targetId));
-  }
 
   static const double AVATAR_DIM = 100;
   static const double AVATAR_PADDING_H = 6;
@@ -157,7 +151,7 @@ class _WriteAfterState extends State<WriteAfter> {
               ));
         },
         listener: (context, state) {
-          //WriteRoutes.pageListener(context, state, thisPageName);
+          WriteRoutes.pageListener(context, state, thisPageName);
         });
   }
 

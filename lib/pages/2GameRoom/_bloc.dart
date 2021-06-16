@@ -113,7 +113,7 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
         if (changes.length > 0 && changes.length == model.roomPlayerCount)
             {
           {
-            firebaseBloc.add(fbEvent.SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE, phase: RoomPhases.CHOOSE));// TODO ABSOLUTELY URGENT lock in texts somehow
+            firebaseBloc.add(fbEvent.SetPagePhaseOrTurnEvent(phase: RoomPhases.TEXT_ENTRY_CONFIRMED));// TODO ABSOLUTELY URGENT lock in texts somehow
           }
         }
       }
@@ -150,11 +150,12 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
           {
             // yield GoToNextRevealState(model);
           }
-
-          if(phase == RoomPhases.GO_TO_RESULTS)
+          else if(phase == RoomPhases.GO_TO_RESULTS)
           {
             yield GoToResultsState(model);
           }
+          else yield NewPhaseState(state.phase, model);
+
         }
 
       yield GameRoomState(model);
@@ -336,6 +337,8 @@ class GameRoomModel {
   Player? getPlayer(String? id) => dataModel.getPlayer(id);
 
   int? getPlayerScore(String id) => dataModel.getPlayerScore(id);
+
+  int? getRoundSpecificSeed() => dataModel.getRoundSpecificSeed();
 
 }
 

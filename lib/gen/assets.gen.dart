@@ -107,6 +107,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/sound_on.png');
   AssetGenImage get soundOnTrans =>
       const AssetGenImage('assets/images/sound_on_trans.png');
+  AssetGenImage get spinnerArrow =>
+      const AssetGenImage('assets/images/spinner_arrow.png');
   AssetGenImage get spiny1 => const AssetGenImage('assets/images/spiny1.png');
   AssetGenImage get spiny2 => const AssetGenImage('assets/images/spiny2.png');
   AssetGenImage get stylishAdd =>

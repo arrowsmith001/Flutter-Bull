@@ -702,16 +702,16 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     const int BUTTONS_FLEX = 0;
 
 
-    return SafeArea(
-      child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          backgroundColor: Colors.transparent,
-          body: Stack(
-            children: [
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
 
-              MainMenuBackgroundEffect(),
+            MainMenuBackgroundEffect(),
 
-              BlocConsumer<MainMenuBloc, MainMenuState>(
+            SafeArea(
+              child: BlocConsumer<MainMenuBloc, MainMenuState>(
                   buildWhen: (s1, s2) {
                     return s2 is DialogState || s2 is MenuState;
                   },
@@ -829,15 +829,15 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
                     // Main stack
 
-                  })
+                  }),
+            )
 
 
-            ],
-          )
+          ],
+        )
 
 
-      ).BoxDecorationContainerExt(getBackgroundDecoration()),
-    );
+    ).BoxDecorationContainerExt(getBackgroundDecoration());
 
   }
 

@@ -83,3 +83,8 @@ class NewTurnState extends GameRoomState {
   const NewTurnState(this.newTurn, GameRoomModel model) : super(model);
   final int newTurn;
 }
+
+class NewPhaseState extends GameRoomState {
+  const NewPhaseState(this.phase, GameRoomModel model) : super(model);
+  final String phase;
+}

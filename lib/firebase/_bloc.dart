@@ -803,7 +803,7 @@ class DataModel {
   List<Player> getPlayersWhoVoted(int turn, [bool? votedTrue]) {
     try{
       assert(room != null);
-      assert(room!.playerVotes != null);
+      if(room!.playerVotes != null) return [];
       List<Player> list = room!.playerVotes!.keys
           .where((id) =>
 
@@ -930,6 +930,21 @@ class DataModel {
     }catch(e)
     {
       print('getPlayerScore ERROR: ' + e.toString());
+      return null;
+    }
+  }
+
+  // Generate the integer for a seed that is specific to this round (sort of...most likely...)
+  int? getRoundSpecificSeed() {
+    try{
+      assert(room != null);
+      assert(room!.playerTexts != null);
+      int i = 0;
+      room!.playerTexts!.values.forEach((value) { i+=value.length; });
+      return i;
+    }catch(e)
+    {
+      print('getRoundSpecificSeed ERROR: ' + e.toString());
       return null;
     }
   }

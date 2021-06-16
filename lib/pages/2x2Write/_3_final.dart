@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,64 +45,57 @@ import 'dart:ui' as ui;
 import '../../routes.dart';
 
 
-class Write extends StatefulWidget {
+class WriteFinal extends StatefulWidget {
 
   @override
-  _WriteState createState() => _WriteState();
+  _WriteFinalState createState() => _WriteFinalState();
 }
 
-class _WriteState extends State<Write> {
+class _WriteFinalState extends State<WriteFinal> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
-  final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
   final String thisPageName = RoomPages.WRITE;
+  final String thisSubPageName = WritePages.FINAL;
 
   @override
   void initState() {
-    try{
-      GameRoomModel model = _bloc.model;
-      bool hasSubmitted = model.haveISubmittedText;
-      String phase = model.room!.phase!;
+    super.initState();
 
-      if(phase == RoomPhases.TEXT_ENTRY_CONFIRMED){
-        initialRoute = WritePages.FINAL;
-      }
-      else
-        {
-          initialRoute = hasSubmitted ? WritePages.AFTER : WritePages.INTRO;
-        }
-    }
-    catch(e)
-    {
-      print('Error initializing ' + thisPageName + ': ' + e.toString());
-    }
+    _beginRoutine();
   }
 
-  String initialRoute = WritePages.INTRO;
+  Future<void> _beginRoutine() async {
+    await Future.delayed(Duration(seconds: 3));
+    if(_bloc.model.room!.phase == RoomPhases.TEXT_ENTRY_CONFIRMED)
+      {
+        _bloc.add(SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE));
+      }
+  }
+
+  bool readiedUp = false;
 
   @override
   Widget build(BuildContext context) {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
-      listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName);
-      },
-      builder: (context, state) {
-        return Navigator(
-          observers: [
-            HeroController()
-          ],
-          key: navigationKey,
-          initialRoute: initialRoute,
-          onGenerateRoute: (settings) => WriteRoutes.generate(settings),
-        );
-      },
-    );
+        builder: (context, state) {
 
+          return SafeArea(
+              child: Scaffold(
+                  backgroundColor: Color.fromARGB(255, 252, 225, 255),
+                  body:
 
+                      Text('Its time to play!', style: AppStyles.defaultStyle(fontSize: 54, color: Colors.black)),
+
+              ));
+        },
+        listener: (context, state) {
+          //WriteRoutes.pageListener(context, state, thisPageName);
+        });
   }
+
+
+
+
 }
-
-
-

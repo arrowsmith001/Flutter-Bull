@@ -106,7 +106,7 @@ extension WidgetModifier on Widget {
   // Wraps widget in a Container widget with a Box Decoration
   Widget OpacityExt(double value) {
     return Opacity(
-      opacity: value,
+      opacity: value < 0.0 ? 0.0 : value > 1.0 ? 1.0 : value,
       child: this,
     );
   }

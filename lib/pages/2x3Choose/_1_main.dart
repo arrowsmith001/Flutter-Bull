@@ -94,10 +94,8 @@ class _ChooseMainState extends State<ChooseMain> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
 
-                      Hero(
-                      tag: state.model.room!.turn!,
-                      child: Avatar(player.profileImage, size: Size(300, 300))
-                        ).FlexibleExt(),
+                      Avatar(player.profileImage, size: Size(300, 300)
+                        ).HeroExt(player.id??'').FlexibleExt(),
 
                       Text(player.name! + ', read out your statement, and hit BEGIN', textAlign: TextAlign.center, style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
 

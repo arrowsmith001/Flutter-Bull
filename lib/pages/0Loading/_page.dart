@@ -35,7 +35,7 @@ class _LoadingState extends State<Loading> {
     print('goToMainMenu');
     if(goingToMainMenu) return;
     goingToMainMenu = true;
-    Navigator.of(context).push(Routes.Loading_To_MainMenu(context));
+    Navigator.of(context).pushAndRemoveUntil(Routes.Loading_To_MainMenu(context), (route) => false);
   }
 
   @override
