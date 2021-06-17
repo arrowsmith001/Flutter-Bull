@@ -69,7 +69,7 @@ class _ChooseState extends State<Choose> {
     // print('Initial route: ' + initialRoute);
     try{
       String phase = _bloc.model.room!.phase!;
-      if(phase == RoomPhases.CHOSEN)
+      if(phase == RoomPhases.CHOSEN || phase == RoomPhases.READING_OUT)
       {
         initialRoute = ChoosePages.MAIN;
       }

@@ -14,6 +14,7 @@ import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
+import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'package:flutter_bull/widgets.dart';

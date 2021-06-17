@@ -69,7 +69,7 @@ class _WriteFinalState extends State<WriteFinal> {
     await Future.delayed(Duration(seconds: 3));
     if(_bloc.model.room!.phase == RoomPhases.TEXT_ENTRY_CONFIRMED)
       {
-        _bloc.add(SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE));
+        _bloc.add(SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE, phase: RoomPhases.CHOOSE));
       }
   }
 

@@ -92,21 +92,27 @@ class _ChooseIntroState extends State<ChooseIntro> with TickerProviderStateMixin
     super.dispose();
   }
 
+  static const int SPINNER_ANIM_DURATION = 2000;
+  static const int SPINNER_REVS = 8;
+
   Future<void> _beginFakeChoose(GameRoomModel model) async {
 
-    // Do different stuff on the first occasion and final occasion
-    if(model.room!.turn == 0){
-      // Enter with explosion
-      TickerFuture tf = _explosionAnimController.reverse(from: 1);
-      await tf.whenComplete(() => null);
+    if(model.isLastTurn){
+      // TODO Do something different on last turn
     }
+
+    // Enter with explosion
+    TickerFuture tf = _explosionAnimController.reverse(from: 1);
+    await tf.whenComplete(() => null);
+
     _showSpinner = true;
-    TickerFuture tf = playerSelectorController.animateSpinnerTo(
+    tf = playerSelectorController.animateSpinnerTo(
         shuffledPlayerList.indexWhere((p) => model.getPlayerWhoseTurn()!.id == p!.id),
-        shuffledPlayerList.length, revs: 8, mils: 2000);
+        shuffledPlayerList.length, revs: SPINNER_REVS, mils: SPINNER_ANIM_DURATION);
 
     await tf.whenComplete(() => null);
     await Future.delayed(Duration(seconds: 1));
+    if(model.room!.phase! == RoomPhases.CHOOSE) _bloc.add(SetPagePhaseOrTurnEvent(phase: RoomPhases.CHOSEN));
     Navigator.of(context).pushNamedAndRemoveUntil(ChoosePages.MAIN, (route) => false);
   }
 
@@ -175,8 +181,11 @@ class _ChooseIntroState extends State<ChooseIntro> with TickerProviderStateMixin
 
           );
         },
-        listener: (context, state) =>
-            GameRoomRoutes.pageListener(context, state, thisPageName));
+        listener: (context, state) {
+
+          GameRoomRoutes.pageListener(context, state, thisPageName);
+
+        });
   }
 
   double _m = 0;
@@ -358,6 +367,13 @@ class _PlayerSelectorState extends State<PlayerSelector> with SingleTickerProvid
     center = new Offset(H_PADDING + halfWidth, halfWidth); // Center of ring
     r = (halfWidth - halfDim); // Placement distance from center
 
+    // Edge case: 1 player only
+    if(n == 1)
+      {
+        playerOffsets[0] = new Offset(center.dx - halfDim, center.dy - halfDim);
+        return;
+      }
+
     for(int i = 0; i < n; i++)
     {
       double frac = (i).toDouble()/n;
@@ -426,7 +442,9 @@ class _PlayerSelectorState extends State<PlayerSelector> with SingleTickerProvid
         Offset vec = new Offset(left + halfDim - center.dx, bottom + halfDim - center.dy);
 
         return Positioned(
-          child: Avatar(image, borderColor: playerIsSelected ? Colors.yellowAccent : Avatar.DEFAULT_BORDER_COLOR, size: Size(dim, dim)).OpacityExt((1-t)),
+          child: Avatar(image,
+              borderColor: playerIsSelected ? Colors.yellowAccent : Avatar.DEFAULT_BORDER_COLOR,
+              size: Size(dim, dim)).OpacityExt((1-t)),
           bottom: bottom + widget.explosionFactor*vec.dy,
           left: left + widget.explosionFactor*vec.dx,
         );
@@ -471,9 +489,11 @@ class _PlayerSelectorState extends State<PlayerSelector> with SingleTickerProvid
 
     //playerRing.addAll([debugPoint]); // Debug only TODO Remove
 
-      return Stack(
-        clipBehavior: Clip.none,
-        children: playerRing
+      return Container(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: playerRing
+        ),
       );
   }
 

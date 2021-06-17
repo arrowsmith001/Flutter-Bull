@@ -36,6 +36,7 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
   static const String SUBMIT_ALL_STATEMENTS = 'Submit all statements';
   static const String BOTS_VOTE_STAGGERED = 'Bots vote staggered';
   static const String RANDOM_VOTE = 'Random vote';
+  static const String ADVANCE_TIMER = 'Advance timer (10 secs)';
   static const String BEGIN_PLAY_FROM_CHOOSE = 'Begin play from choose';
   static const String BEGIN_CHOOSE_FROM_END_OF_PLAY = 'Begin choose from end of play';
   static const String REVEAL_NEXT = 'Reveal next';
@@ -112,6 +113,9 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
           }
 
         break;
+      case ADVANCE_TIMER:
+        _repo.setRoomField(model.room!.code!, [Room.ROUND_START_UNIX], model.room!.roundStartUnix! - 10*1000);
+        break;
       case BEGIN_PLAY_FROM_CHOOSE:
         _fbBloc.add(StartRoundEvent());
         break;
@@ -182,6 +186,7 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
       SUBMIT_ALL_STATEMENTS,
       BOTS_VOTE_STAGGERED,
       RANDOM_VOTE,
+      ADVANCE_TIMER,
       BEGIN_PLAY_FROM_CHOOSE,
       BEGIN_CHOOSE_FROM_END_OF_PLAY,
       REVEAL_NEXT,

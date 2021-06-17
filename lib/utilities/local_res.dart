@@ -10,7 +10,7 @@ class AppColors{
   static const Color MainColor = const Color.fromARGB(255, 255, 52, 52);
   static const Color DebugColor = const Color.fromARGB(255, 248, 0, 255);
 
-  static const Color trueColor = const Color.fromARGB(255, 110, 211, 222);
+  static const Color trueColor = const Color.fromARGB(255, 103, 203, 215);
   static const Color bullColor = const Color.fromARGB(255, 255, 28, 28);
 
   static const Color revealsScaffoldBackgroundColor = const Color.fromARGB(

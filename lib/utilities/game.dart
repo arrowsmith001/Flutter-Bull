@@ -2,6 +2,27 @@ import 'dart:math';
 
 import 'package:flutter_bull/classes/firebase.dart';
 
+class GameParams {
+
+  static const bool DEV_MODE = true;
+  static const int MINIMUM_PLAYERS_FOR_GAME = 3;
+  static const int UNIX_OFFSET = 1622213681765;
+
+  static Map<String, dynamic> DEFAULT_GAME_SETTINGS = {
+    Room.SETTINGS_ALL_TRUTHS_POSSIBLE : true,
+    Room.SETTINGS_LEWD_HINTS_ENABLED : false,
+    Room.SETTINGS_ROUND_TIMER: 3
+  };
+
+  static const int MINIMUM_ROUND_TIMER = 1;
+  static const int MAXIMUM_ROUND_TIMER = 10;
+
+  static const int READ_OUT_TIME_SECONDS = 3; // TODO Obviously change
+
+  static int getTrueUnixFromDownloaded(int unix) => unix + UNIX_OFFSET;
+  static int convertUnixForUpload(int unix) => unix - UNIX_OFFSET;
+}
+
 // TODO Apply game settings
 class RoleAssigner {
 

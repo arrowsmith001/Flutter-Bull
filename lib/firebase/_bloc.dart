@@ -336,10 +336,16 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         }
 
       if(event.changes.containsKey(Room.PHASE))
-        {
-          String phase = event.changes[Room.PHASE] as String;
-          yield NewPhaseState(phase, model);
-        }
+      {
+        String phase = event.changes[Room.PHASE] as String;
+        yield NewPhaseState(phase, model);
+      }
+
+      if(event.changes.containsKey(Room.ROUND_START_UNIX))
+      {
+        int newTime = event.changes[Room.ROUND_START_UNIX] as int;
+        yield NewUnixTimeState(newTime, model);
+      }
 
       // if(event.changes.containsKey(Room.PLAYER_VOTES))
       // {
@@ -607,6 +613,8 @@ class DataModel {
   bool get haveISubmittedText => hasPlayerSubmittedText(userId);
 
   Player? get me => getPlayer(userId);
+
+  bool get isLastTurn => roomPlayerCount == room!.turn! + 1;
   bool hasPlayerSubmittedText(String? userId) => getPlayerText(getPlayerTarget(userId)) != null;
 
 
@@ -799,11 +807,30 @@ class DataModel {
     }
   }
 
+
+  List<Player> getFullVoterList(int turn) {
+    try{
+      assert(room != null);
+      assert(room!.playerIds != null);
+      Player? playerWhoseTurn = getPlayerWhoseTurn();
+      assert(playerWhoseTurn != null);
+      List<Player> list = room!.playerIds!
+          .where((id) =>
+      id != playerWhoseTurn!.id
+      ).map((userId) => getPlayer(userId)!).toList();
+      return list;
+    }catch(e)
+    {
+      print('getFullVoterList ERROR: ' + e.toString());
+      return [];
+    }
+  }
+
   // 'votedTrue == null' indicates to get all voters
   List<Player> getPlayersWhoVoted(int turn, [bool? votedTrue]) {
     try{
       assert(room != null);
-      if(room!.playerVotes != null) return [];
+      if(room!.playerVotes == null) return [];
       List<Player> list = room!.playerVotes!.keys
           .where((id) =>
 
@@ -902,23 +929,6 @@ class DataModel {
     }
   }
 
-  List<Player> getFullVoterList(int turn) {
-    try{
-      assert(room != null);
-      assert(room!.playerIds != null);
-      Player? playerWhoseTurn = getPlayerWhoseTurn();
-      assert(playerWhoseTurn != null);
-      List<Player> list = room!.playerIds!
-          .where((id) =>
-        id != playerWhoseTurn!.id
-      ).map((userId) => getPlayer(userId)!).toList();
-      return list;
-    }catch(e)
-    {
-      print('getPlayersWhoVoted ERROR: ' + e.toString());
-      return [];
-    }
-  }
 
   int? getPlayerScore(String? id) {
     try{

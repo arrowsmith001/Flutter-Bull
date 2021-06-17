@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bull/utilities/game.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'classes.dart';
@@ -14,6 +15,7 @@ class Player {
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
 
+
   Player();
 
   static const String ID = 'id';
@@ -28,6 +30,7 @@ class Player {
 
   @JsonKey(ignore: true)
   Image? profileImage;
+
 }
 
 
@@ -176,12 +179,14 @@ class RoomPhases {
   static const String TEXT_ENTRY_CONFIRMED = 'textEntryConfirmed';
   static const String CHOOSE = 'choose';
   static const String CHOSEN = 'chosen';
+  static const String READING_OUT = 'readingOut';
   static const String PLAY = 'play';
   static const String END_OF_PLAY = 'endOfPlay';
 
   static const String GO_TO_NEXT_REVEAL = 'goToNextReveal';
   static const String GO_TO_RESULTS = 'goToResults';
   static const String JUST_REVEALED = 'justRevealed';
+
 
 
 

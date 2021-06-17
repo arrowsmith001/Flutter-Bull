@@ -14,6 +14,8 @@ import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/2x3Choose/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
+import 'package:flutter_bull/utilities/design.dart';
+import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
@@ -52,20 +54,79 @@ class ChooseMain extends StatefulWidget {
   _ChooseMainState createState() => _ChooseMainState();
 }
 
-class _ChooseMainState extends State<ChooseMain> {
+class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
 
   final String thisPageName = ChoosePages.MAIN;
 
+  late AnimationController _readOutTimerController = new AnimationController(vsync: this);
+  late AnimationController _gradientAnimController = new AnimationController(vsync: this);
+
+
   @override
   void initState() {
     super.initState();
+
+    _readOutTimerController.value = 1;
+    _readOutTimerController.duration = new Duration(milliseconds: 1000* GameParams.READ_OUT_TIME_SECONDS);
+    _readOutTimerController.addListener(() {
+      if(_readOutTimerController.value == 0.0){
+        _readOutTimerController.stop();
+        _onReadOutTimerComplete();
+      }
+      int newSecond = (_readOutTimerController.value * GameParams.READ_OUT_TIME_SECONDS).ceil();
+      if(newSecond != readOutTimeSeconds)
+        {
+          // Report change
+          setState(() {
+            readOutTimeSeconds = newSecond;
+          });
+        }
+    });
+
+    _gradientAnimController.duration = new Duration(milliseconds: 3000);
+    _gradientAnimController.addListener(() {setState(() {});});
+    _gradientAnimController.repeat();
+  }
+
+  @override
+  dispose(){
+    _readOutTimerController.dispose();
+    _gradientAnimController.dispose();
+    super.dispose();
+  }
+
+  bool statementRevealed = false;
+  void _revealStatement() {
+    _bloc.add(SetPagePhaseOrTurnEvent(phase: RoomPhases.READING_OUT));
+  }
+
+  int? readOutTimeSeconds;
+  void _onStatementRevealed(GameRoomModel model){
+    if(!(model.isItMyTurn??false)) return;
+
+    setState(() {
+      statementRevealed = true;
+    });
+
+    _readOutTimerController.reverse(from: 1);
+  }
+
+  void _onReadOutTimerComplete(){
+    goToPlay();
   }
 
   void goToPlay() {
     _bloc.add(StartRoundEvent());
   }
+
+  static const double DIM_MAX = 300;
+  static const double DIM_PADDING = 25;
+  static const double INNER_RRECT_RADIUS = 32;
+  static const double OUTER_RRECT_RADIUS = 38;
+
+  double m = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -78,38 +139,145 @@ class _ChooseMainState extends State<ChooseMain> {
           if(state.model.room == null) return MyLoadingIndicator();
           Player? player = state.model.getPlayerWhoseTurn();
           String? text = player == null ? null : state.model.getPlayerText(player.id);
-          bool? isMyTurn = state.model.isItMyTurn;
-          isMyTurn = true; // TODO Remove
+          bool isMyTurn = state.model.isItMyTurn!;
+          //isMyTurn = true; // TODO Edit <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+          //isMyTurn = !isMyTurn;
 
           bool sufficientInfo = player != null && text != null && isMyTurn != null;
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: Color.fromARGB(255, 231, 255, 225),
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
-                  body: !sufficientInfo ? MyLoadingIndicator()
-                      : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
+          // TODO Move out of build
+          MovingGradient gradient = new MovingGradient(
+              begin: Alignment.topLeft, end: Alignment.bottomRight,
+              colors: [Colors.blue, Colors.indigo, Colors.lightBlueAccent]);
+          double t = (m*5) % 1.0;
 
-                      Avatar(player.profileImage, size: Size(300, 300)
-                        ).HeroExt(player.id??'').FlexibleExt(),
+          double dim = MediaQuery.of(context).size.width - 2*DIM_PADDING;
+          dim = min(dim, DIM_MAX);
 
-                      Text(player.name! + ', read out your statement, and hit BEGIN', textAlign: TextAlign.center, style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
+          String primaryMessage = '';
+          if(isMyTurn) primaryMessage = player!.name! + ', click below to reveal your statement';
+          else primaryMessage = 'Waiting for ' + player!.name! + ' to read out their statement';
 
-                      !isMyTurn ? EmptyWidget() : Text(text, style: AppStyles.DebugStyle(20)),
-                      !isMyTurn ? EmptyWidget() : CupertinoButton(child: Text('BEGIN'), onPressed: () => goToPlay())
+          bool showSecondaryMessage = true;
+          String secondaryMessage = '';
+          if(!isMyTurn) secondaryMessage = 'Get ready to vote!'.toUpperCase();
+          else secondaryMessage = 'Get ready to read it out to the group!'.toUpperCase();
 
-                    ],
-                  ).PaddingExt(EdgeInsets.all(20))
+          Widget revealedWidget = Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AutoSizeText(text!, textAlign: TextAlign.center, style: AppStyles.defaultStyle(fontSize: 100))
+                  .PadAllExt(28)
+                  .FlexibleExt()
+            ],
+          );
 
-              ));
+          Widget preRevealWidget = Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+              Text(primaryMessage,
+                  textAlign: TextAlign.center,
+                  style: AppStyles.defaultStyle(fontSize: 36)),
+
+               Text(secondaryMessage,
+                  textAlign: TextAlign.center,
+                  style: AppStyles.defaultStyle(fontSize: 25))
+                   .PadSymExt(h: 35)
+                   .EmptyUnless(showSecondaryMessage),
+
+              // !isMyTurn ? EmptyWidget() : Text(text, style: AppStyles.DebugStyle(20)),
+              CupertinoButton(
+                  color: Colors.blue,
+                  child: AppStyles.MyText('BEGIN'), onPressed: () => _revealStatement()).EmptyUnless(isMyTurn),
+
+            ],
+          );
+
+          Widget avatar = Avatar(
+            player.profileImage,
+            size: Size(dim, dim),
+            clippedRectRadius: INNER_RRECT_RADIUS,
+            borderColor: Colors.transparent,
+          );
+
+          Widget mainColumn = Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
+              ClipRRect(
+                borderRadius: MyBorderRadii.all(OUTER_RRECT_RADIUS),
+                child: Container(
+                    alignment: Alignment.center,
+                    height: dim + DIM_PADDING,
+                    width: dim + DIM_PADDING,
+                    decoration: BoxDecoration(
+                        gradient: gradient.getGradient(_gradientAnimController.value)
+                    ),
+                    child: ClipRRect(
+                      borderRadius: MyBorderRadii.all(INNER_RRECT_RADIUS),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+
+                          avatar.HeroExt(player.id??''),
+
+                          Container(
+                              height: dim, width: dim,
+                              color: Colors.white.withOpacity(0.8),).EmptyUnless(statementRevealed),
+
+                          ClipPath(
+                              clipper: PieClipper(1 - _readOutTimerController.value),
+                              child: avatar).EmptyUnless(statementRevealed),
+
+                          AutoSizeText(
+                              readOutTimeSeconds.toString(),
+                            style: AppStyles.defaultStyle(
+                              fontSize: 96,
+                                color: Colors.white,
+                                shadows: [BoxShadow(color: Colors.black, spreadRadius: 50, blurRadius: 10)]),
+                          ).EmptyUnless(statementRevealed && readOutTimeSeconds != null),
+
+                        ],
+                      ),
+                    ))
+                ,
+              ).FlexibleExt(),
+
+              (statementRevealed ? revealedWidget : preRevealWidget).ExpandedExt()
+
+              // ,Slider(value: m, onChanged: (v) {
+              //   setState(() {
+              //     m = v;
+              //   });
+              // },)
+
+            ],
+          );
+
+
+          return Scaffold(
+              backgroundColor: Color.fromARGB(255, 36, 49, 153),
+              body: !sufficientInfo ? MyLoadingIndicator()
+                  : SafeArea(
+                    child: mainColumn.PadSymExt(h: 25, v: 15),
+                  )
+
+          );
         },
-        listener: (context, state) =>
-            GameRoomRoutes.pageListener(context, state, thisPageName));
+        listener: (context, state) {
+          GameRoomRoutes.pageListener(context, state, thisPageName);
+
+          if(state is NewPhaseState){
+            if(state.phase == RoomPhases.READING_OUT)
+              {
+                _onStatementRevealed(state.model);
+              }
+          }
+        }
+    );
   }
+
 
 
 }

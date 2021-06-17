@@ -14,6 +14,7 @@ import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/2x4Play/widgets.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
+import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -54,6 +55,8 @@ class Play extends StatefulWidget {
 
 class _PlayState extends State<Play> with TickerProviderStateMixin {
 
+  // TODO Make "PLAY" minimally viable <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
   final String thisPageName = RoomPages.PLAY;
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
@@ -66,11 +69,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
     super.initState();
 
     _animController = new AnimationController(vsync: this, duration: Duration(seconds: 1));
-    _animController.addListener(() {setState(() {
-
-    });});
-
-    // TODO Do not do this shit in initState
+    _animController.addListener(() {setState(() {});});
 
     int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER];
 
@@ -168,15 +167,16 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
           Widget playerWhoseTurnPanel = !sufficientInfo ? EmptyWidget() : Row(
             children: [
               Avatar(player.profileImage, size: Size(100, 100))
-                  .HeroExt(state.model.room!.turn!),
+                  .HeroExt(player.id??''),
 
               MyBubble(text, size: Size(100, 100)).ExpandedExt()
             ],
           );
 
           List<Player> playersWhoVoted = state.model.getPlayersWhoVoted(turn);
-
           List<Player> playersWhoCanVote = state.model.getPlayersWhoCanVote(turn);
+
+          //print('voted: ' + playersWhoVoted.toString() + ', canVote: ' + playersWhoCanVote.toString());
 
           Widget votedList = Wrap(
             //onReorder: (int oldIndex, int newIndex) {  },
@@ -228,60 +228,53 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
               children:
               [
 
-                Column(
-                    children: [
-                      CupertinoButton(
-                          color: AppColors.trueColor,
-                          child: Text('TRUE'),
-                          onPressed: () => vote(true)).ExpandedExt()
-                    ]).ExpandedExt(),
-
-                Column(
-                    children: [
-                      CupertinoButton(
-                          color: AppColors.bullColor,
-                          child: Text('BULL'),
-                          onPressed: () => vote(false)).ExpandedExt()
-                    ]).ExpandedExt()
+                _buildVoteButton(true).PadSymExt(h: 16).ExpandedExt(),
+                _buildVoteButton(false).PadSymExt(h: 16).ExpandedExt(),
 
               ]
           );
 
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: Color.fromARGB(255, 225, 226, 255),
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
-                  body: !sufficientInfo ? MyLoadingIndicator()
-                      : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+          return Scaffold(
+              backgroundColor: Color.fromARGB(255, 225, 226, 255),
+              body: !sufficientInfo ? MyLoadingIndicator()
+                  : SafeArea(
+                    child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
 
-                      playerWhoseTurnPanel.FlexibleExt(),
+                    playerWhoseTurnPanel.FlexibleExt(),
 
-                      votedList.FlexibleExt(),
+                    votedList.FlexibleExt(),
 
-                      Column(
-                        children: [
+                    Column(
+                      children: [
 
-                          _buildTimerDisplay()
+                        _buildTimerDisplay()
 
-                        ],
-                      ).ExpandedExt(),
+                      ],
+                    )
+                        //.ExpandedExt()
+                  ,
 
 
-                      buttonPanel.ExpandedExt(),
+                    buttonPanel.ExpandedExt(),
 
-                    ],
-                  ).PaddingExt(EdgeInsets.all(20))
+                ],
+              ).PaddingExt(EdgeInsets.all(20)),
+                  )
 
-              ));
+          );
         },
         listener: (context, state) {
 
           GameRoomRoutes.pageListener(context, state, thisPageName);
+
+          if(state is NewUnixTimeState){
+            setState(() {
+              unixRoundStart = GameParams.getTrueUnixFromDownloaded(state.newTime);
+            });
+          }
 
           if(state is NewPlayerVotedState)
             {
@@ -303,6 +296,26 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
 
 
         );
+  }
+
+  Widget _buildVoteButton(bool voteTrue) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 10)
+        ]
+      ),
+      child: Column(
+                    children: [
+                      CupertinoButton(
+                        padding: EdgeInsets.all(24),
+                          color: voteTrue ? AppColors.trueColor : AppColors.bullColor,
+                          child: AutoSizeText(voteTrue ? 'TRUE' : 'BULL', maxLines: 1, style: AppStyles.defaultStyle(fontSize: 100)),
+                          onPressed: () => vote(voteTrue)).ExpandedExt()
+                    ]),
+    );
   }
 
 

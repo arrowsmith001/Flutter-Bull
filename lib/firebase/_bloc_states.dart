@@ -166,3 +166,9 @@ class NewTurnNumberState extends FirebaseState {
   final int newTurn;
 }
 
+class NewUnixTimeState extends FirebaseState {
+  const NewUnixTimeState(this.newTime, DataModel model) : super(model);
+  final int newTime;
+}
+
+

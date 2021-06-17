@@ -88,3 +88,8 @@ class NewPhaseState extends GameRoomState {
   const NewPhaseState(this.phase, GameRoomModel model) : super(model);
   final String phase;
 }
+
+class NewUnixTimeState extends GameRoomState {
+  const NewUnixTimeState(this.newTime, GameRoomModel model) : super(model);
+  final int newTime;
+}

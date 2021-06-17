@@ -10,6 +10,7 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/firebase/_bloc.dart';
 import 'package:flutter_bull/firebase/_bloc_states.dart' as fbState;
 import 'package:flutter_bull/firebase/_bloc_events.dart' as fbEvent;
+import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/utilities/res.dart';
@@ -134,6 +135,12 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
       {
         yield RevealState(state.newRevealedNumber, model);
       }
+
+      if(state is fbState.NewUnixTimeState)
+      {
+        yield NewUnixTimeState(state.newTime, model);
+      }
+
 
       if(state is fbState.NewTurnNumberState)
         {
@@ -305,6 +312,8 @@ class GameRoomModel {
   bool get haveISubmittedText => dataModel.haveISubmittedText;
 
   Player? get me => dataModel.me;
+
+  bool get isLastTurn => dataModel.isLastTurn;
   bool hasPlayerSubmittedText(userId) => dataModel.hasPlayerSubmittedText(userId);
 
   Player? getRoomMember(int i) => dataModel.getRoomMember(i);
