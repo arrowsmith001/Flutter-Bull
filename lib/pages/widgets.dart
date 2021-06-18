@@ -36,9 +36,9 @@ class MainMenuButton extends StatelessWidget {
                   colors: [Colors.white, Colors.white,Colors.white, Colors.grey]).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 
               child: AutoSizeText(text, minFontSize: minFontSize, maxLines: 1, textAlign: TextAlign.end, style: AppStyles.MainMenuButtonTextStyle(fontSize, fontColor)))
-                .FlexibleExt(),
+                .xFlexible(),
 
-          image.SizedBoxExt(height: imageSize, width: imageSize).PaddingExt(new EdgeInsets.fromLTRB(15,3,15,3)).FlexibleExt()
+          image.xSizedBox(height: imageSize, width: imageSize).xPadding(new EdgeInsets.fromLTRB(15,3,15,3)).xFlexible()
         ],
       ),
     );

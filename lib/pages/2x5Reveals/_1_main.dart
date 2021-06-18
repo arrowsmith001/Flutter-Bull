@@ -255,7 +255,7 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
             bool hasBeenRevealed = turn < revealed;
             if(!hasBeenRevealed)
               {
-                avatar = avatar.HeroExt(playerWhoseTurn.id! + 'image');
+                avatar = avatar.xHero(playerWhoseTurn.id! + 'image');
                 //bubble = bubble.HeroExt(playerWhoseTurn.id! + 'bubble');
               }
 
@@ -312,9 +312,9 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
 
                 const double translateExtent = 40;
 
-                avatar = avatar.HeroExt(player.id! + 'image').OpacityExt(0.5 + 0.5*focusAbs);
-                avatar = avatar.ScaleExt(focusAbs + 1);
-                avatar = avatar.TranslateExt(dx: translateExtent * -focus);
+                avatar = avatar.xHero(player.id! + 'image').xOpacity(0.5 + 0.5*focusAbs);
+                avatar = avatar.xScale(focusAbs + 1);
+                avatar = avatar.xTranslate(dx: translateExtent * -focus);
                 //avatar = _entranceAnimatedAvatar(avatar);
                 //if(!hasBeenRevealed && !isTurn) bubble = bubble.InvisibleIgnoreExt();
 
@@ -327,7 +327,7 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
                   onTap: () {
                     _goToSubPage();
                   },
-                  child: Align(child: avatar, alignment: Alignment.bottomLeft).PaddingExt(EdgeInsets.all(AVATAR_V_PADDING)),
+                  child: Align(child: avatar, alignment: Alignment.bottomLeft).xPadding(EdgeInsets.all(AVATAR_V_PADDING)),
                 );
 
                 //item = item.ScaleExt(_entranceController.value);
@@ -353,13 +353,13 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
                 textAlign: TextAlign.center,
                 style: AppStyles.defaultStyle(fontSize: 100, color: Colors.black),
                 minFontSize: 10,
-              ).PaddingExt(EdgeInsets.all(24)),
+              ).xPadding(EdgeInsets.all(24)),
             ),
-          ).OpacityExt(_scrollFocusChangedAnimController.value)
-              .TranslateExt(dy: -10*(1-_scrollFocusChangedAnimController.value))
-              .PaddingExt(EdgeInsets.all(16));
+          ).xOpacity(_scrollFocusChangedAnimController.value)
+              .xTranslate(dy: -10*(1-_scrollFocusChangedAnimController.value))
+              .xPadding(EdgeInsets.all(16));
 
-          focusTextWidget = focusTextWidget.HeroExt(focusedPlayer.id! + 'bubble');
+          focusTextWidget = focusTextWidget.xHero(focusedPlayer.id! + 'bubble');
 
           return SafeArea(
               child: Scaffold(
@@ -372,12 +372,12 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
                         child: Image(
                           image: Assets.images.spiny1,
                           color: Colors.white,
-                        ).RotateExt(_rotateAnimController.value),
+                        ).xRotate(_rotateAnimController.value),
                       ),
 
                       Column(
                         children: [
-                          list.PaddingExt(EdgeInsets.all(50)).ExpandedExt(),
+                          list.xPadding(EdgeInsets.all(50)).xExpanded(),
                           Container(
                               child:
 
@@ -385,15 +385,15 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
                                     children: [
 
                                       focusTextWidget
-                                          .ExpandedExt(),
+                                          .xExpanded(),
 
-                                      EmptyWidget().ExpandedExt()
+                                      EmptyWidget().xExpanded()
 
                                     ],
                                   )
 
 
-                            ).ExpandedExt()
+                            ).xExpanded()
                         ],
                       ),
 

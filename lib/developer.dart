@@ -255,9 +255,9 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
                         selectedAction = i;
                         devOptionsOpen = false;
                       });},
-                        child: Text(actions[i], style: AppStyles.DebugStyle(24, weight: FontWeight.bold)).PaddingExt(EdgeInsets.symmetric(vertical: 12)));
+                        child: Text(actions[i], style: AppStyles.DebugStyle(24, weight: FontWeight.bold)).xPadding(EdgeInsets.symmetric(vertical: 12)));
                   }
-              ).PaddingExt(EdgeInsets.symmetric(vertical: 50, horizontal: 25))
+              ).xPadding(EdgeInsets.symmetric(vertical: 50, horizontal: 25))
               // TODO DEV OPTIONS TO SIMULATE EVERYTHING
           ),
         );

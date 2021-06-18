@@ -10,7 +10,7 @@ class AnimatedVoterAvatar extends StatefulWidget {
   final Widget avatar;
   final double v;
 
-  final OvershootInterpolator osInterp = new OvershootInterpolator(2);
+  final OvershootCurve osInterp = new OvershootCurve(2);
 
   @override
   _AnimatedVoterAvatarState createState() => _AnimatedVoterAvatarState();
@@ -32,8 +32,8 @@ class _AnimatedVoterAvatarState extends State<AnimatedVoterAvatar> {
     // TODO Make animation good
 
     return avatar
-        .ScaleExt(1 + widget.osInterp.getValue(t_scale))
-        .RotateExt(math.pi * 0.3 * t_rot, new Offset(0, 15))
-        .TranslateExt(dx: t_rot * 25);
+        .xScale(1 + widget.osInterp.transform(t_scale))
+        .xRotate(math.pi * 0.3 * t_rot, new Offset(0, 15))
+        .xTranslate(dx: t_rot * 25);
   }
 }

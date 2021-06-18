@@ -1,5 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bull/extensions.dart';
+//import 'package:flutter_bull/extensions.dart';
 import 'dart:math' as math;
 
 class MovingGradient {
@@ -53,8 +54,8 @@ class MovingGradient {
 
 class PieClipper extends CustomClipper<Path> {
 
-  PieClipper([this.t = 0]);
-  double t;
+  PieClipper([this.t = 0.0]);
+  final double t;
 
   @override
   getClip(Size size) {
@@ -70,11 +71,10 @@ class PieClipper extends CustomClipper<Path> {
     double x = center.dx + math.sin(angle)*r;
     double y = center.dy + math.cos(angle)*r;
 
-    Path path = Path()..moveTo(center.dx, center.dy);
     double xT = x.clamp(0, w);
     double yT = y.clamp(0, h);
 
-    // TODO: Is there a better way to do this?
+    Path path = Path()..moveTo(center.dx, center.dy);
     path.lineTo(xT, yT);
     if(t < 0.25) path.lineTo(w, 0);
     if(t < 0.5) path.lineTo(w, h);
@@ -83,19 +83,12 @@ class PieClipper extends CustomClipper<Path> {
     path.lineTo(w2, 0);
     path.lineTo(center.dx, center.dy);
 
-
-      // path
-      //   ..lineTo(0, h)
-      //   ..lineTo(0, 0)
-      //   ..lineTo(w2, 0)
-      //   ..lineTo(center.dx, center.dy);
-
     return path;
   }
 
   @override
   bool shouldReclip(covariant CustomClipper oldClipper) {
-    return true;
+    return (oldClipper as PieClipper).t != t;
   }
 
 }

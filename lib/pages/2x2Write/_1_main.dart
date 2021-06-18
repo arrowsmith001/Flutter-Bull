@@ -140,7 +140,7 @@ class _WriteMainState extends State<WriteMain> {
                       AnimatedSwitcher(
                         transitionBuilder: (child, anim) {
                           return child;
-                          return child.ScaleExt((1-anim.value));
+                          return child.xScale((1-anim.value));
                         },
                         child:  Container(
                           key: Key(hidden ? '1' : '2'),
@@ -149,7 +149,7 @@ class _WriteMainState extends State<WriteMain> {
                         reverseDuration: Duration(milliseconds: 200),
                         switchInCurve: Curves.bounceInOut,
                         switchOutCurve: Curves.easeOutCirc,
-                      ).FlexibleExt(),
+                      ).xFlexible(),
 
                       RichText(
                           textAlign: TextAlign.center,
@@ -161,7 +161,7 @@ class _WriteMainState extends State<WriteMain> {
                                 TextSpan(text: ' about ', style: style),
                                 hidden ? TextSpan(text: '****', style: style) : TextSpan(text: (isTargetMyself ? 'yourself' : target.name!), style: style),
                               ]
-                          )).FlexibleExt(),
+                          )).xFlexible(),
 
                       CupertinoTextField(
                         style: AppStyles.defaultStyle(fontSize: 32, fontWeight: FontWeight.w200, color: Colors.black),
@@ -170,7 +170,7 @@ class _WriteMainState extends State<WriteMain> {
                         placeholder: 'Enter text here',
                         padding: EdgeInsets.all(16),
                         controller: _textController, onSubmitted: (text) => onSubmittedStatement(text, target.id!),)
-                          .FlexibleExt(),
+                          .xFlexible(),
 
                       CupertinoButton(
                           color: Color.fromARGB(255, 0, 0, 255),
@@ -188,7 +188,7 @@ class _WriteMainState extends State<WriteMain> {
 
 
                 ],
-              ).PaddingExt(EdgeInsets.all(20))
+              ).xPadding(EdgeInsets.all(20))
 
           );
         },

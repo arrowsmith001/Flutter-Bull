@@ -98,7 +98,7 @@ class _RevealsState extends State<Reveals> {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName);
+        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
       },
       builder: (context, state) {
         return Navigator(

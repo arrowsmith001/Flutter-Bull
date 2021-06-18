@@ -128,11 +128,11 @@ class _RevealsSubState extends State<RevealsSub> {
                 AutoSizeText(player.name!, minFontSize: 8), // TODO Ensure can handle long text
                 AutoSizeText(voteTime.toString() + ' secs')
               ],
-            ).ExpandedExt(),
+            ).xExpanded(),
 
 
           ],
-        ).PaddingExt(EdgeInsets.all(8)),
+        ).xPadding(EdgeInsets.all(8)),
       ),
     );
   }
@@ -174,20 +174,20 @@ class _RevealsSubState extends State<RevealsSub> {
           Widget mainAvatar = Row(
             children: [
 
-              avatar.HeroExt(player.id! + 'image'),
+              avatar.xHero(player.id! + 'image'),
 
               Row(
                 children: [
 
-                  bubble.HeroExt(player.id! + 'bubble').ExpandedExt(),
+                  bubble.xHero(player.id! + 'bubble').xExpanded(),
 
                 ],
               )
-                  .PaddingExt(EdgeInsets.all(4))
-                  .FlexibleExt()
+                  .xPadding(EdgeInsets.all(4))
+                  .xFlexible()
 
             ],
-          ).PaddingExt(EdgeInsets.all(8));
+          ).xPadding(EdgeInsets.all(8));
 
           Widget trueList = _buildVoteList(votedTrue, true, votedTrueTimes);
           Widget bullList = _buildVoteList(votedBull, false, votedBullTimes);
@@ -216,24 +216,24 @@ class _RevealsSubState extends State<RevealsSub> {
                               [
                                 Text(votedTrue.length.toString(), style: AppStyles.TruthStyle(fontSize: 42),),
                                 Text('VOTED TRUE', style: AppStyles.TruthStyle(),),
-                                  trueList.ExpandedExt(),
+                                  trueList.xExpanded(),
                               ]
-                                  .ColumnExt(expand: true),
+                                  .xColumn().xExpanded(),
 
 
                               [
                                 Text(votedBull.length.toString(), style: AppStyles.BullStyle(fontSize: 42),),
                                   Text('VOTED BULL', style: AppStyles.BullStyle(),),
-                                  bullList.ExpandedExt(),
-                              ].ColumnExt(expand: true)
+                                  bullList.xExpanded(),
+                              ].xColumn().xExpanded()
 
                             ],
                           )
-                              .ExpandedExt()
+                              .xExpanded()
 
                         ],
-                      ).PaddingExt(EdgeInsets.all(12))
-                          .ExpandedExt(),
+                      ).xPadding(EdgeInsets.all(12))
+                          .xExpanded(),
 
                       !hasBeenRevealed ? EmptyWidget()
                           : GestureDetector(
@@ -249,7 +249,7 @@ class _RevealsSubState extends State<RevealsSub> {
 
 
                     ],
-                  ).PaddingExt(EdgeInsets.all(20))
+                  ).xPadding(EdgeInsets.all(20))
 
               ));
         },

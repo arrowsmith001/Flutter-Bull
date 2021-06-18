@@ -57,6 +57,8 @@ class _GameRoomState extends State<GameRoom> {
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
   final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
+  final HeroController _heroController = CupertinoApp.createCupertinoHeroController();
+
   @override
   void initState() {
     if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
@@ -71,13 +73,13 @@ class _GameRoomState extends State<GameRoom> {
     Widget main = BlocBuilder<GameRoomBloc, GameRoomState>(
       buildWhen: (s1, s2) => s2 is NewRoomState,
       builder: (context, state) {
-        return Navigator(
-          observers: [
-            HeroController()
-          ],
-          key: navigationKey,
-          initialRoute: initialRoute,
-          onGenerateRoute: (settings) => GameRoomRoutes.generate(settings),
+        return HeroControllerScope(
+          controller: _heroController,
+          child: Navigator(
+            key: navigationKey,
+            initialRoute: initialRoute,
+            onGenerateRoute: (settings) => GameRoomRoutes.generate(settings),
+          ),
         );
       },
     );

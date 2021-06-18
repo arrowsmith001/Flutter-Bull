@@ -109,10 +109,10 @@ class _WriteAfterState extends State<WriteAfter> {
 
           Player p = state.model.getPlayerFromOrder(i)!;
           return Align(alignment: Alignment.topLeft,
-            child: Avatar(p.profileImage, size: Size(dim, dim)).TranslateExt(dx: dx, dy: dy),
+            child: Avatar(p.profileImage, size: Size(dim, dim)).xTranslate(dx: dx, dy: dy),
             heightFactor: double.minPositive, widthFactor: double.minPositive,
           );
-        }).PaddingExt(EdgeInsets.all(WRAP_PADDING_H));
+        }).xPadding(EdgeInsets.all(WRAP_PADDING_H));
   }
 
   @override

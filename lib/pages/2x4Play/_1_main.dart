@@ -47,13 +47,13 @@ import 'dart:ui' as ui;
 
 import '../../routes.dart';
 
-class Play extends StatefulWidget {
+class PlayMain extends StatefulWidget {
 
   @override
-  _PlayState createState() => _PlayState();
+  _PlayMainState createState() => _PlayMainState();
 }
 
-class _PlayState extends State<Play> with TickerProviderStateMixin {
+class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
 
   // TODO Make "PLAY" minimally viable <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -71,33 +71,34 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
     _animController = new AnimationController(vsync: this, duration: Duration(seconds: 1));
     _animController.addListener(() {setState(() {});});
 
-    int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER];
-
     unixRoundStart = GameParams.getTrueUnixFromDownloaded(_bloc.model.room!.roundStartUnix!);
     int unixNow = _unix;
     int elapsed = unixNow - unixRoundStart;
 
     initialItemCount = _bloc.model.getNumberWhoVoted(_bloc.model.room!.turn!)!;
 
-    _createTimer(totalMinutes, elapsed);
+    _createTimer(elapsed);
   }
 
   int initialItemCount = 0;
   int unixRoundStart = 0;
   int get _unix => DateTime.now().millisecondsSinceEpoch;
 
-  void _createTimer(int totalMinutes, int msElapsed){
-    // TODO: Sync timer with actual unix timestamp
+  void _createTimer(int msElapsed){
     setState(() {
-      this.totalMinutes = totalMinutes;
       t = max(0, getMsFromMins(totalMinutes) - msElapsed);
     });
     _roundTimer = new Timer.periodic(
         new Duration(milliseconds: 10),
             (timer) {
-          if(t <= 0) _roundTimer.cancel();
-          setState(() {
-            t = getMsFromMins(totalMinutes) - (_unix - unixRoundStart);
+              setState(()
+              {
+                  if(t <= 0)
+                  {
+                    t = 0;
+                    _roundTimer.cancel();
+                  }
+                  else t = getMsFromMins(totalMinutes) - (_unix - unixRoundStart);
           });
           //print(_start.toString());
         }
@@ -111,26 +112,26 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  int getMsFromMins(int mins) => mins*60*1000;
+  late int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER]; // Total minutes
 
+  int t = 0; // Current time in milliseconds
+  int get getRoundTimerTotalInMs => getMsFromMins(totalMinutes); // Total round time in ms
+  double get timerFraction => (t / getRoundTimerTotalInMs).clamp(0.0, 1.0); // Fraction of timer [0, 1]
+
+  int getMsFromMins(int mins) => mins*60*1000;
   int getMinsFromMs(int ms) => max(0, (ms/(60*1000)).floor());
   int getSecsOnMinFromMs(int ms) => max(0, (ms/(1000)).floor() - getMinsFromMs(ms)*60);
   int getMsOnMinFromMs(int ms) => max(0, (ms - getMinsFromMs(ms)*60*1000) % 1000);
 
-  int t = 0;
-  int totalMinutes = 0;
-
   late Timer _roundTimer;
 
   Widget _buildTimerDisplay(){
-    int msFromMins = getMsFromMins(totalMinutes);
-    double frac = msFromMins > 0 ? (t / msFromMins) : 1;
 
     int m = getMinsFromMs(t);
     int s = getSecsOnMinFromMs(t);
-    int ms = max(0, (getMsOnMinFromMs(t) / 100)).floor();
+    int ms = (getMsOnMinFromMs(t) / 100).floor();
 
-    return Text('${m} : ${s} : ${ms} (${(frac*1000).round()/1000})', style: AppStyles.DebugStyle(24),);
+    return Text('${m} : ${s} : ${ms} (${(timerFraction*1000).round()/1000})', style: AppStyles.DebugStyle(24),);
   }
 
   int getSecondsElapsed(int ms) => totalMinutes*60 - max(0, (ms/1000).floor());
@@ -167,9 +168,9 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
           Widget playerWhoseTurnPanel = !sufficientInfo ? EmptyWidget() : Row(
             children: [
               Avatar(player.profileImage, size: Size(100, 100))
-                  .HeroExt(player.id??''),
+                  .xHero(player.id??''),
 
-              MyBubble(text, size: Size(100, 100)).ExpandedExt()
+              MyBubble(text, size: Size(100, 100)).xExpanded()
             ],
           );
 
@@ -186,7 +187,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
 
                 Widget avatar = Avatar(p.profileImage!,
                     borderColor: playersWhoVoted.contains(p) ? Colors.lightGreen : null, size: Size(65, 65))
-                  .PaddingExt(EdgeInsets.all(8));
+                  .xPadding(EdgeInsets.all(8));
 
                 return AnimatedVoterAvatar(avatar,
                     p.id == this.animatedVoterId ? _animController.value : 1
@@ -228,24 +229,24 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
               children:
               [
 
-                _buildVoteButton(true).PadSymExt(h: 16).ExpandedExt(),
-                _buildVoteButton(false).PadSymExt(h: 16).ExpandedExt(),
+                _buildVoteButton(true).xPadSym(h: 16).xExpanded(),
+                _buildVoteButton(false).xPadSym(h: 16).xExpanded(),
 
               ]
           );
 
 
           return Scaffold(
-              backgroundColor: Color.fromARGB(255, 225, 226, 255),
+              backgroundColor: Colors.transparent,
               body: !sufficientInfo ? MyLoadingIndicator()
                   : SafeArea(
                     child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
 
-                    playerWhoseTurnPanel.FlexibleExt(),
+                    playerWhoseTurnPanel.xFlexible(),
 
-                    votedList.FlexibleExt(),
+                    votedList.xFlexible(),
 
                     Column(
                       children: [
@@ -258,17 +259,23 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                   ,
 
 
-                    buttonPanel.ExpandedExt(),
+                    buttonPanel.xExpanded(),
 
                 ],
-              ).PaddingExt(EdgeInsets.all(20)),
+              ).xPadding(EdgeInsets.all(20)),
                   )
 
-          );
+          )
+              .xBoxDecorContainer(
+              BoxDecoration(
+                  gradient: RadialGradient(
+                      colors: [ Color.lerp(AppColors.MainColor, Colors.white, 0.5)!,AppColors.MainColor,],
+                      radius: 2,
+                      focal: Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.6))));
         },
         listener: (context, state) {
 
-          GameRoomRoutes.pageListener(context, state, thisPageName);
+          GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
           if(state is NewUnixTimeState){
             setState(() {
@@ -313,7 +320,7 @@ class _PlayState extends State<Play> with TickerProviderStateMixin {
                         padding: EdgeInsets.all(24),
                           color: voteTrue ? AppColors.trueColor : AppColors.bullColor,
                           child: AutoSizeText(voteTrue ? 'TRUE' : 'BULL', maxLines: 1, style: AppStyles.defaultStyle(fontSize: 100)),
-                          onPressed: () => vote(voteTrue)).ExpandedExt()
+                          onPressed: () => vote(voteTrue)).xExpanded()
                     ]),
     );
   }

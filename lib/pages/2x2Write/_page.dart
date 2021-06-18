@@ -56,6 +56,7 @@ class _WriteState extends State<Write> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
   final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
+  final HeroController _heroController = new HeroController();
 
   final String thisPageName = RoomPages.WRITE;
 
@@ -87,12 +88,12 @@ class _WriteState extends State<Write> {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName);
+        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
       },
       builder: (context, state) {
         return Navigator(
           observers: [
-            HeroController()
+            _heroController
           ],
           key: navigationKey,
           initialRoute: initialRoute,

@@ -118,7 +118,7 @@ class _WriteIntroState extends State<WriteIntro> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Avatar(me.profileImage, size: Size(dim,dim), loading: me.profileImage == null, defaultImage: null).SizedBoxExt(height: dim, width: dim)
+                          Avatar(me.profileImage, size: Size(dim,dim), loading: me.profileImage == null, defaultImage: null).xSizedBox(height: dim, width: dim)
                         ],
                       ),
                       RichText(
@@ -135,7 +135,7 @@ class _WriteIntroState extends State<WriteIntro> {
                         color: Colors.indigoAccent,
                           child: AppStyles.MyText('Reveal your role and start writing',color: Colors.white,), onPressed: () => Navigator.of(context).pushNamed(WritePages.MAIN))
                     ],
-                  ).PaddingExt(EdgeInsets.all(20))
+                  ).xPadding(EdgeInsets.all(20))
 
               ));
         },

@@ -75,7 +75,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
   late AnimationController _animController;
   late AnimationController _startButtonAnimController;
   late Animation _flashAnim;
-  OvershootInterpolator interp = new OvershootInterpolator(2);
+  OvershootCurve interp = new OvershootCurve(2);
 
   late List<String> playerIdsLocal;
 
@@ -266,7 +266,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                   },
                   value: roundTimerDoubleLocal,
 
-                )).FlexibleExt(9)
+                )).xFlexible(9)
           ],
         ),
       ],
@@ -288,16 +288,16 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('YES', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                      !allTruthsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                      Text('YES', style: AppStyles.defaultStyle(),).xPadding(EdgeInsets.only(left: 8)).xFlexible(),
+                      !allTruthsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).xPadding(EdgeInsets.only(right: 8))
                     ],),
-                    Assets.images.angels.image().PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                    Assets.images.angels.image().xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
                   ],
                 ),
               )
 
               ,
-            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).FlexibleExt(),
+            ).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).xFlexible(),
 
             GestureDetector(
               onTap: () => _setLocalSetting(Room.SETTINGS_ALL_TRUTHS_POSSIBLE, false),
@@ -310,16 +310,16 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('NO', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                      allTruthsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                      Text('NO', style: AppStyles.defaultStyle(),).xPadding(EdgeInsets.only(left: 8)).xFlexible(),
+                      allTruthsEnabled ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).xPadding(EdgeInsets.only(right: 8))
                     ],),
-                    Assets.images.angel.image().PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                    Assets.images.angel.image().xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
                   ],
                 ),
               )
               ,
-            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                .FlexibleExt(),
+            ).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                .xFlexible(),
 
           ],
         ),
@@ -343,16 +343,16 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('CLEAN', style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                      lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                      Text('CLEAN', style: AppStyles.defaultStyle(),).xPadding(EdgeInsets.only(left: 8)).xFlexible(),
+                      lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).xPadding(EdgeInsets.only(right: 8))
                     ],),
-                    Assets.images.lewdnessOff.image(height: 65).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                    Assets.images.lewdnessOff.image(height: 65).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
                   ],
                 ),
               )
 
               ,
-            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).FlexibleExt(),
+            ).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10)).xFlexible(),
 
             GestureDetector(
               onTap: () => _setLocalSetting(Room.SETTINGS_LEWD_HINTS_ENABLED, true),
@@ -366,16 +366,16 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      AutoSizeText('ADULT', minFontSize: 10, maxLines: 1, style: AppStyles.defaultStyle(),).PaddingExt(EdgeInsets.only(left: 8)).FlexibleExt(),
-                      !lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).PaddingExt(EdgeInsets.only(right: 8))
+                      AutoSizeText('ADULT', minFontSize: 10, maxLines: 1, style: AppStyles.defaultStyle(),).xPadding(EdgeInsets.only(left: 8)).xFlexible(),
+                      !lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).xPadding(EdgeInsets.only(right: 8))
                     ],),
-                    Assets.images.lewdnessV2.image(height: 65).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                    Assets.images.lewdnessV2.image(height: 65).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
                   ],
                 ),
               )
               ,
-            ).PaddingExt(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
-                .FlexibleExt(),
+            ).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
+                .xFlexible(),
 
           ],
         ),
@@ -389,15 +389,15 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
             MyCupertinoStyleButton(
                 height: 60,
                 color: Colors.lightBlue.shade300,
-                text: AutoSizeText('Reset Defaults', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+                text: AutoSizeText('Reset Defaults', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).xPadding(EdgeInsets.symmetric(horizontal: 8)),
                 onPressed: () => _onDefaultSettings()
-            ).PaddingExt(EdgeInsets.symmetric(horizontal: 8)).FlexibleExt(),
+            ).xPadding(EdgeInsets.symmetric(horizontal: 8)).xFlexible(),
             MyCupertinoStyleButton(
                 height: 60,
                 color: localSettingsDifferentFromGlobalSettings && amIHost ? Colors.lightBlue.shade300 : Colors.grey,
-                text: AutoSizeText('Save Changes', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+                text: AutoSizeText('Save Changes', minFontSize: 12, style: AppStyles.defaultStyle(fontSize: 54),).xPadding(EdgeInsets.symmetric(horizontal: 8)),
                 onPressed: localSettingsDifferentFromGlobalSettings && amIHost ? () => _onSaveSettingsChanges() : null
-            ).PaddingExt(EdgeInsets.symmetric(horizontal: 8)).FlexibleExt(),
+            ).xPadding(EdgeInsets.symmetric(horizontal: 8)).xFlexible(),
           ],
         ),
         SingleChildScrollView(
@@ -408,16 +408,16 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
               decoration: innerDeco,
               child: Column(
                 children: [
-                  settingsItem1.PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING, left: 12, right: 12)),
-                  settingsItem2.PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING, left: 12, right: 12)),
-                  settingsItem3.PaddingExt(EdgeInsets.only(top: LIST_ITEM_PADDING, bottom: LIST_ITEM_PADDING/2, left: 12, right: 12)),
+                  settingsItem1.xPadding(EdgeInsets.only(top: LIST_ITEM_PADDING, left: 12, right: 12)),
+                  settingsItem2.xPadding(EdgeInsets.only(top: LIST_ITEM_PADDING, left: 12, right: 12)),
+                  settingsItem3.xPadding(EdgeInsets.only(top: LIST_ITEM_PADDING, bottom: LIST_ITEM_PADDING/2, left: 12, right: 12)),
                 ],
               ),
-            ).PaddingExt(EdgeInsets.all(4)),
-          ).PaddingExt(EdgeInsets.symmetric(vertical: 16)),
-        ).ExpandedExt()
+            ).xPadding(EdgeInsets.all(4)),
+          ).xPadding(EdgeInsets.symmetric(vertical: 16)),
+        ).xExpanded()
       ],
-    ).PaddingExt(EdgeInsets.all(16));
+    ).xPadding(EdgeInsets.all(16));
   }
 
   BehaviorSubject<Notif> _notifStreamController = new BehaviorSubject();
@@ -437,7 +437,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) async{
 
-        GameRoomRoutes.pageListener(context, state, thisPageName);
+        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
         if(state is NewRoomState) {
           setState(() {
@@ -509,11 +509,11 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  list.ExpandedExt(),
+                  list.xExpanded(),
                   //panel,
                 ],
               ),
-            ).PaddingExt(EdgeInsets.only(bottom: TOP_BIT_HEIGHT)),
+            ).xPadding(EdgeInsets.only(bottom: TOP_BIT_HEIGHT)),
           ),
         );
 
@@ -532,9 +532,9 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
             onPressed: !_panelIsOpen ? () => startGame() : null,
             child: Text('START GAME',
               style: AppStyles.defaultStyle(fontSize: 48),),)
-              .OpacityExt((1 - _panelSlideProgress))
-              .TranslateExt(dy: 50 * (1-_startButtonAnimController.value))
-              .ScaleExt(_startButtonAnimController.value),  )
+              .xOpacity((1 - _panelSlideProgress))
+              .xTranslate(dy: 50 * (1-_startButtonAnimController.value))
+              .xScale(_startButtonAnimController.value),  )
               : EmptyWidget();
 
         Widget WaitingRoom =
@@ -596,7 +596,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                                         color: Colors.white.withOpacity(0.3),
                                         borderRadius: MyBorderRadii.all(10.0)
                                     ),
-                                  ).PaddingExt(EdgeInsets.symmetric(vertical: SLIDE_HANDLE_V_PADDING)),
+                                  ).xPadding(EdgeInsets.symmetric(vertical: SLIDE_HANDLE_V_PADDING)),
 
                                   Container(
                                     alignment: Alignment.topCenter,
@@ -612,11 +612,11 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                               ),
                             ),
 
-                            _buildGameSettingsList(sc, model).ExpandedExt()
+                            _buildGameSettingsList(sc, model).xExpanded()
 
                           ],
                         )
-                            .PaddingExt(EdgeInsets.symmetric(horizontal: 15, vertical: TOP_BIT_ROOMCODE_V_PADDING))
+                            .xPadding(EdgeInsets.symmetric(horizontal: 15, vertical: TOP_BIT_ROOMCODE_V_PADDING))
                     );
                   },
 
@@ -761,8 +761,8 @@ class _NotifWidgetState extends State<NotifWidget> with SingleTickerProviderStat
       color: Colors.pinkAccent,
       child: Row(
         children: [
-          widget.image  == null ? EmptyWidget() : widget.image!.SizedBoxExt(height: 75, width: 75),
-          widget.title.PaddingExt(EdgeInsets.all(8)).ExpandedExt()
+          widget.image  == null ? EmptyWidget() : widget.image!.xSizedBox(height: 75, width: 75),
+          widget.title.xPadding(EdgeInsets.all(8)).xExpanded()
         ],
       ),
     )
@@ -828,7 +828,7 @@ class _AnimatedListItemState extends State<AnimatedListItem> with TickerProvider
         size: Size(dim,dim),
         loading: image == null,
         defaultImage: null)
-        .SizedBoxExt(height: dim, width: dim);
+        .xSizedBox(height: dim, width: dim);
     //.PaddingExt(EdgeInsets.all(spacing));
 
     String playerName = player == null || player.name == null ? '' : player.name!;
@@ -839,7 +839,7 @@ class _AnimatedListItemState extends State<AnimatedListItem> with TickerProvider
             maxLines: 1,
             minFontSize: 10,
             style: TextStyle(fontSize: 50, color: Colors.white, fontFamily: FontFamily.lapsusProBold))
-            .PaddingExt(EdgeInsets.symmetric(horizontal: 8)),
+            .xPadding(EdgeInsets.symmetric(horizontal: 8)),
       ),
     );
 
@@ -881,21 +881,21 @@ class _AnimatedListItemState extends State<AnimatedListItem> with TickerProvider
 
     var finalWidget = Stack(
       children: [
-        Center(child: avatar.PaddingExt(EdgeInsets.all(AVATAR_RADIUS_OFFSET))),
+        Center(child: avatar.xPadding(EdgeInsets.all(AVATAR_RADIUS_OFFSET))),
         Center(child: circularText,),
       ],
-    ).SizedBoxExt(height: AVATAR_TOTAL_DIM, width: AVATAR_TOTAL_DIM);
+    ).xSizedBox(height: AVATAR_TOTAL_DIM, width: AVATAR_TOTAL_DIM);
 
     // To address clipping on the bottom item due to the vertical offset
     if(widget.position == AnimatedListItem.LOWEST)
     {
-      finalWidget = finalWidget.PaddingExt(EdgeInsets.only(bottom: AVATAR_TOTAL_DIM));
+      finalWidget = finalWidget.xPadding(EdgeInsets.only(bottom: AVATAR_TOTAL_DIM));
     }
 
     // finalWidget = Row(children: [ finalWidget ])
     //     .ScaleExt(widget.animation?.value??1);
 
-    finalWidget = finalWidget.ScaleExt(widget.animation?.value??1);
+    finalWidget = finalWidget.xScale(widget.animation?.value??1);
 
     double dx1, dx2, dy;
 
@@ -912,6 +912,6 @@ class _AnimatedListItemState extends State<AnimatedListItem> with TickerProvider
     dy = widget.index * AVATAR_TOTAL_DIM/2;
     dy = -dy;
 
-    return Align(alignment: Alignment.topCenter, heightFactor: 0.5, child: finalWidget.TranslateExt(dx: dx2, dy: 0));
+    return Align(alignment: Alignment.topCenter, heightFactor: 0.5, child: finalWidget.xTranslate(dx: dx2, dy: 0));
   }
 }

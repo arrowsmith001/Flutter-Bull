@@ -46,10 +46,10 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   late AnimationController _animController, _animController2, _animController3, _animController4;
   late Animation<double> dialogPopAnim, anim1_1, anim1_2, anim1_3, anim1_4, anim1_5, anim1_6, anim1_7, anim1_8, anim1_Quick; // _animController1
   late Animation<double> anim2_1; // _animController2
-  final Interpolator overshootInterp = OvershootInterpolator();
-  final Interpolator hardOvershootInterp = OvershootInterpolator(5);
-  final Interpolator decelInterp = DecelerateInterpolator(5);
-  final Interpolator antiOverInterp = AnticipateOvershootInterpolator(3);
+  final Curve overshootInterp = OvershootCurve();
+  final Curve hardOvershootInterp = OvershootCurve(5);
+  final Curve decelInterp = DecelerateCurve(5);
+  final Curve antiOverInterp = AnticipateOvershootCurve(3);
 
   @override
   void initState() {
@@ -275,7 +275,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
         )
 
       ],
-    ).PaddingExt(EdgeInsets.all(8));
+    ).xPadding(EdgeInsets.all(8));
   }
   Widget buildEnterRoomCodeTextField(MainMenuModel model) {
     return Column(
@@ -305,7 +305,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
         )
 
       ],
-    ).PaddingExt(EdgeInsets.all(8));
+    ).xPadding(EdgeInsets.all(8));
   }
 
 
@@ -340,13 +340,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               content:
               Column(children: [
 
-                Text('Utter Bull', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold)).PaddingExt(EdgeInsets.fromLTRB(0,20,0,0)),
-                Text('Privacy Policy', style: TextStyle(fontSize: 24)).PaddingExt(EdgeInsets.fromLTRB(0,5,0,10)),
+                Text('Utter Bull', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold)).xPadding(EdgeInsets.fromLTRB(0,20,0,0)),
+                Text('Privacy Policy', style: TextStyle(fontSize: 24)).xPadding(EdgeInsets.fromLTRB(0,5,0,10)),
               ],)),
 
           SingleChildScrollView(
             child: Text(model.privacyPolicyString??'Error: Privacy policy not found.'),
-          ).PaddingExt(EdgeInsets.symmetric(horizontal: 20, vertical: 10)).ExpandedExt(),
+          ).xPadding(EdgeInsets.symmetric(horizontal: 20, vertical: 10)).xExpanded(),
 
         ],
         buttons: [
@@ -391,13 +391,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               MyCupertinoStyleBox(
                   borderRadius: MyBorderRadii.TOP_ONLY,
                   content: Text('Set up your profile', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold))
-                      .PaddingExt(EdgeInsets.fromLTRB(0,15,0,10))
-                      .ScaleExt(hardOvershootInterp.getValue(anim1_1.value))
+                      .xPadding(EdgeInsets.fromLTRB(0,15,0,10))
+                      .xScale(hardOvershootInterp.transform(anim1_1.value))
               ),
 
               Text('Just a photo and name, so your friends recognise you!', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,)
-                  .PaddingExt(EdgeInsets.fromLTRB(0,20,0,0))
-                  .ScaleExt(hardOvershootInterp.getValue(anim1_2.value)),
+                  .xPadding(EdgeInsets.fromLTRB(0,20,0,0))
+                  .xScale(hardOvershootInterp.transform(anim1_2.value)),
 
             ],
           ),
@@ -415,31 +415,31 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                       fontWeight: FontWeight.bold)),
                   profileImage == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
                 ],
-              ).PaddingExt(EdgeInsets.symmetric(vertical: 12))
-                  .ScaleExt(hardOvershootInterp.getValue(anim1_3.value))
-                  .FlexibleExt(),
+              ).xPadding(EdgeInsets.symmetric(vertical: 12))
+                  .xScale(hardOvershootInterp.transform(anim1_3.value))
+                  .xFlexible(),
 
               GestureDetector(
                 onTap: () { profileImageSelection(ImageSource.camera); },
                 child: buildPlayerAvatar(context, model),
               )
-                  .ScaleExt(hardOvershootInterp.getValue(anim2_1.value))
-                  .ScaleExt(hardOvershootInterp.getValue(anim1_4.value))
-                  .ExpandedExt(),
+                  .xScale(hardOvershootInterp.transform(anim2_1.value))
+                  .xScale(hardOvershootInterp.transform(anim1_4.value))
+                  .xExpanded(),
 
               CupertinoButton(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.image),
-                      Text('Choose from gallery', style: TextStyle(color: Colors.black)).PaddingExt(EdgeInsets.symmetric(horizontal: 8))
+                      Text('Choose from gallery', style: TextStyle(color: Colors.black)).xPadding(EdgeInsets.symmetric(horizontal: 8))
                     ],
                   ),
                   onPressed: (){ profileImageSelection(ImageSource.gallery); }
-              ).ScaleExt(hardOvershootInterp.getValue(anim1_5.value))
+              ).xScale(hardOvershootInterp.transform(anim1_5.value))
             ],
           )
-              .FlexibleExt(4),
+              .xFlexible(4),
 
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -454,22 +454,22 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                       fontWeight: FontWeight.bold)),
                   _profileSetupNameController.value.text == '' ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
                 ],
-              ).PaddingExt(EdgeInsets.symmetric(vertical: 12))
-                  .ScaleExt(hardOvershootInterp.getValue(anim1_6.value))
-                  .FlexibleExt(),
+              ).xPadding(EdgeInsets.symmetric(vertical: 12))
+                  .xScale(hardOvershootInterp.transform(anim1_6.value))
+                  .xFlexible(),
 
               CupertinoTextField(
                 placeholder: name == null ? 'Enter your name here' : name,
                 placeholderStyle: TextStyle(fontFamily: FontFamily.lapsusProBold,color: Colors.grey),
                 controller: _profileSetupNameController,
                 padding: EdgeInsets.all(18),)
-                  .PaddingExt(EdgeInsets.symmetric(horizontal: 20))
-                  .ScaleExt(hardOvershootInterp.getValue(anim1_7.value))
+                  .xPadding(EdgeInsets.symmetric(horizontal: 20))
+                  .xScale(hardOvershootInterp.transform(anim1_7.value))
             ],
           )
-              .FlexibleExt(2),
+              .xFlexible(2),
 
-          Text('You can edit these any time').FlexibleExt(),
+          Text('You can edit these any time').xFlexible(),
 
           MyCupertinoStyleButton(
             onPressed: () => onProfileSetupPressed(context),
@@ -489,12 +489,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               children: [
                 Text('Welcome to Utter Bull!!',
                     style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold))
-                    .ScaleExt(hardOvershootInterp.getValue(anim1_1.value))
-                    .PaddingExt(EdgeInsets.fromLTRB(0,20,0,10)),
+                    .xScale(hardOvershootInterp.transform(anim1_1.value))
+                    .xPadding(EdgeInsets.fromLTRB(0,20,0,10)),
 
 
-                SizedBox(child: Assets.images.bullIcon.image(), height: hardOvershootInterp.getValue(anim1_6.value)*150)
-                    .PaddingExt(EdgeInsets.fromLTRB(0,10,0,10))
+                SizedBox(child: Assets.images.bullIcon.image(), height: hardOvershootInterp.transform(anim1_6.value)*150)
+                    .xPadding(EdgeInsets.fromLTRB(0,10,0,10))
 
 
               ],
@@ -504,8 +504,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
           Column(
               children: [
                 Text("This is a social game to play with a few friends. Make sure you\'re all in the same room or video call.",
-                  textAlign: TextAlign.center,).PaddingExt(EdgeInsets.symmetric(vertical: 12))
-                    .ScaleExt(hardOvershootInterp.getValue(anim1_2.value)),
+                  textAlign: TextAlign.center,).xPadding(EdgeInsets.symmetric(vertical: 12))
+                    .xScale(hardOvershootInterp.transform(anim1_2.value)),
 
                 RichText(
                     textAlign: TextAlign.center,
@@ -518,7 +518,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                           TextSpan(text: ' recommended that you '),
                           TextSpan(text: 'enable tutorial hints', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
                           TextSpan(text: ' throughout your first game. You can disable these any time.')
-                        ])).PaddingExt(EdgeInsets.symmetric(vertical: 12)).ScaleExt(hardOvershootInterp.getValue(anim1_3.value)),
+                        ])).xPadding(EdgeInsets.symmetric(vertical: 12)).xScale(hardOvershootInterp.transform(anim1_3.value)),
 
                 RichText(
                     textAlign: TextAlign.center,
@@ -527,12 +527,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                         children:
                         [
                           TextSpan(text: "All tutorial info can be identified by...")
-                        ])).PaddingExt(EdgeInsets.symmetric(vertical: 12))
-                    .ScaleExt(hardOvershootInterp.getValue(anim1_4.value)),
+                        ])).xPadding(EdgeInsets.symmetric(vertical: 12))
+                    .xScale(hardOvershootInterp.transform(anim1_4.value)),
               ]
-          ).PaddingExt(EdgeInsets.symmetric(horizontal: 16)),
+          ).xPadding(EdgeInsets.symmetric(horizontal: 16)),
 
-          Container().ExpandedExt(),
+          Container().xExpanded(),
 
         ],
         flexList: [1, 2],
@@ -546,7 +546,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               borderRadius: MyBorderRadii.BOTTOM_LEFT_ONLY,
               text: AutoSizeText('No tutorial info, I\'m already a pro', textAlign: TextAlign.center,
                   minFontSize: 16, style: TextStyle(color: Colors.red, fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
-              onPressed: () => onTutorialSetupPressed(false)).ScaleExt(hardOvershootInterp.getValue(anim1_6.value)),
+              onPressed: () => onTutorialSetupPressed(false)).xScale(hardOvershootInterp.transform(anim1_6.value)),
 
           MyCupertinoStyleButton(
               height: 100,
@@ -557,7 +557,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               text: AutoSizeText('Yes! Enable all tutorial info', textAlign: TextAlign.center,
                   minFontSize: 16, style: TextStyle(color: Color.fromARGB(
                       255, 27, 47, 163), fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
-              onPressed: () => onTutorialSetupPressed(true)).ScaleExt(hardOvershootInterp.getValue(anim1_7.value)),
+              onPressed: () => onTutorialSetupPressed(true)).xScale(hardOvershootInterp.transform(anim1_7.value)),
 
 
 
@@ -591,7 +591,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                 Container(
                     height:125,
                     child: buildPlayerAvatar(context, model, animate: false),
-                ).ScaleExt(hardOvershootInterp.getValue(_animController2.value)),
+                ).xScale(hardOvershootInterp.transform(_animController2.value)),
 
                 player == null || player.name == null ? EmptyWidget()
                     : Transform.translate(
@@ -617,9 +617,9 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
       children: [
-        userBarLeft.FlexibleExt(2),
+        userBarLeft.xFlexible(2),
 
-        userBarRight.PaddingExt(EdgeInsets.symmetric(horizontal: 20)).FlexibleExt(1)
+        userBarRight.xPadding(EdgeInsets.symmetric(horizontal: 20)).xFlexible(1)
       ],
     );
   }
@@ -635,18 +635,18 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
             MyListItem(
               onTap: () { profileImageSelection(ImageSource.camera); },
               text: 'New photo from camera', iconData: Icons.camera,)
-                .PaddingExt(EdgeInsets.only(bottom: 10, right: 15))
-                .TranslateExt(dy: ((1-hardOvershootInterp.getValue(anim1_Quick.value))*-20).toDouble()),
+                .xPadding(EdgeInsets.only(bottom: 10, right: 15))
+                .xTranslate(dy: ((1-hardOvershootInterp.transform(anim1_Quick.value))*-20).toDouble()),
             MyListItem(
               onTap: () { profileImageSelection(ImageSource.gallery); },
               text: 'New photo from gallery', iconData: Icons.add_photo_alternate_outlined,)
-                .PaddingExt(EdgeInsets.only(bottom: 10, right: 15))
-                .TranslateExt(dy: ((1-hardOvershootInterp.getValue(anim1_Quick.value))*-50).toDouble()),
+                .xPadding(EdgeInsets.only(bottom: 10, right: 15))
+                .xTranslate(dy: ((1-hardOvershootInterp.transform(anim1_Quick.value))*-50).toDouble()),
             MyListItem(
               onTap: () { onEditName(); },
               text: 'Change name', iconData: Icons.edit,)
-                .PaddingExt(EdgeInsets.only(bottom: 10, right: 15))
-                .TranslateExt(dy: ((1-hardOvershootInterp.getValue(anim1_Quick.value))*-100).toDouble()),
+                .xPadding(EdgeInsets.only(bottom: 10, right: 15))
+                .xTranslate(dy: ((1-hardOvershootInterp.transform(anim1_Quick.value))*-100).toDouble()),
 
           ],
         ),
@@ -741,9 +741,9 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          dialog!.FlexibleExt()
+                          dialog!.xFlexible()
                         ],
-                      ).ScaleExt(0.6 + 0.4 * overshootInterp.getValue(dialogPopAnim.value));
+                      ).xScale(0.6 + 0.4 * overshootInterp.transform(dialogPopAnim.value));
 
                     }
 
@@ -756,33 +756,33 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
                             // Invisible user bar, for spacing purposes
                             buildUserBar(context, state.model)
-                                .PaddingExt(EdgeInsets.fromLTRB(0, 10, 0, 10))
-                                .InvisibleIgnoreExt()
-                                .FlexibleExt(USER_BAR_FLEX),
+                                .xPadding(EdgeInsets.fromLTRB(0, 10, 0, 10))
+                                .xInvisibleIgnore()
+                                .xFlexible(USER_BAR_FLEX),
 
                             Container(
                               //color: AppColors.DebugColor,
                               child: Column(
                                 children: [
-                                  UtterBullTitle().ExpandedExt(),
+                                  UtterBullTitle().xExpanded(),
                                 ],
                               ),
-                            ).ExpandedExt(),
+                            ).xExpanded(),
 
                             // Join/Create Game Buttons
                             AnimatedBuilder(
                               child: _animController4.value < 0.5 ? buttonPanel1 : buttonPanel2,
                               animation: _animController4,
                               builder: (BuildContext context, Widget? child) {
-                                double val = antiOverInterp.getValue(math.sin(math.pi*_animController4.value));
+                                double val = antiOverInterp.transform(math.sin(math.pi*_animController4.value));
                                 return Transform.translate(
                                   child: Opacity(
                                     child: child,
-                                    opacity: Interpolator.clamp01(1 - val),
+                                    opacity: (1 - val).clamp(0.0, 1.0),
                                   ),
                                     offset: Offset(0, 50*val));
                               },
-                            ).PaddingExt(new EdgeInsets.fromLTRB(0,0,0,20)).FlexibleExt(BUTTONS_FLEX)
+                            ).xPadding(new EdgeInsets.fromLTRB(0,0,0,20)).xFlexible(BUTTONS_FLEX)
 
                           ],
                         ),
@@ -792,7 +792,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                         profileEditMenuOpen ? GestureDetector(
                             onTap: () { onProfileImageTapped(); },
                             child: Container(color: Colors.black54.withOpacity(0.8),))
-                            .OpacityExt(anim1_Quick.value) : EmptyWidget(),
+                            .xOpacity(anim1_Quick.value) : EmptyWidget(),
 
                         // Overlaying column
                         Column(
@@ -800,11 +800,11 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
                             // Actual user bar
                             buildUserBar(context, state.model)
-                                .PaddingExt(EdgeInsets.fromLTRB(0, 10, 0, 10))
-                                .FlexibleExt(USER_BAR_FLEX),
+                                .xPadding(EdgeInsets.fromLTRB(0, 10, 0, 10))
+                                .xFlexible(USER_BAR_FLEX),
 
                             // On profile tapped list
-                            profileEditMenuOpen ? buildProfileEditMenu(context).ExpandedExt() : EmptyWidget()
+                            profileEditMenuOpen ? buildProfileEditMenu(context).xExpanded() : EmptyWidget()
                           ],
                         ),
 
@@ -837,7 +837,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
         )
 
 
-    ).BoxDecorationContainerExt(getBackgroundDecoration());
+    ).xBoxDecorContainer(getBackgroundDecoration());
 
   }
 

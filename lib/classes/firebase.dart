@@ -165,11 +165,11 @@ class Vote {
 }
 
 class RoomPages {
-  static const String LOBBY = 'lobby';
-  static const String WRITE = 'write';
-  static const String CHOOSE = 'choose';
-  static const String PLAY = 'play';
-  static const String REVEALS = 'reveals';
+  static const String LOBBY = 'l';
+  static const String WRITE = 'w';
+  static const String CHOOSE = 'c';
+  static const String PLAY = 'p';
+  static const String REVEALS = 'r';
 }
 
 class RoomPhases {

@@ -1,3 +1,4 @@
+
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
 
@@ -12,9 +13,12 @@ import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
 import 'package:flutter_bull/pages/2GameRoom/routes.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/2x2Write/routes.dart';
+import 'package:flutter_bull/pages/2x3Choose/routes.dart';
+import 'package:flutter_bull/pages/2x4Play/routes.dart';
 import 'package:flutter_bull/pages/2x5Reveals/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
+import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -47,59 +51,61 @@ import 'dart:ui' as ui;
 import '../../routes.dart';
 
 
-class RevealsIntro extends StatefulWidget {
+class Play extends StatefulWidget {
 
   @override
-  _RevealsIntroState createState() => _RevealsIntroState();
+  _PlayState createState() => _PlayState();
 }
 
-class _RevealsIntroState extends State<RevealsIntro> {
+class _PlayState extends State<Play> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
+  final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
+  final HeroController _heroController = new HeroController();
 
-  final String thisPageName = RoomPages.REVEALS;
-  final String thisSubPageName = RevealsPages.INTRO;
+  final String thisPageName = RoomPages.PLAY;
 
   @override
   void initState() {
-    super.initState();
-    _runRoutine();
+    // if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
+    // print('Initial route: ' + initialRoute);
+    // try{
+    //   String phase = _bloc.model.room!.phase!;
+    //   if(phase == RoomPhases.CHOSEN || phase == RoomPhases.READING_OUT)
+    //   {
+    //     initialRoute = ChoosePages.MAIN;
+    //   }
+    // }
+    // catch(e)
+    // {
+    //   Utils.printInitializationError(e, thisPageName);
+    // }
   }
 
-  Future<void> _runRoutine() async {
-    await Future.delayed(Duration(seconds: 2));
-    Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false,
-      arguments: 0);
-}
+  String initialRoute = PlayPages.MAIN;
 
   @override
   Widget build(BuildContext context) {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
-        builder: (context, state) {
+      listener: (context, state) {
+        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
+      },
+      builder: (context, state) {
+        return Navigator(
+          observers: [
+            _heroController
+          ],
+          key: navigationKey,
+          initialRoute: initialRoute,
+          onGenerateRoute: (settings) {
+            return PlayRoutes.generate(settings);
+          },
+        );
+      },
+    );
 
-          if(!state.model.isThereEnoughInfoForResults) return MyLoadingIndicator();
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
-                  body: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text('It\'s time to REVEEEEEAL')
-                    ],
-                  ).xPadding(EdgeInsets.all(20))
-
-              ));
-        },
-        listener: (context, state) {
-
-        });
   }
-
-
-
 }
+

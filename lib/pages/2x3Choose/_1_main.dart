@@ -49,6 +49,8 @@ import 'dart:ui' as ui;
 import '../../routes.dart';
 
 class ChooseMain extends StatefulWidget {
+  ChooseMain(this.transitioning);
+  final bool transitioning;
 
   @override
   _ChooseMainState createState() => _ChooseMainState();
@@ -62,6 +64,7 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
 
   late AnimationController _readOutTimerController = new AnimationController(vsync: this);
   late AnimationController _gradientAnimController = new AnimationController(vsync: this);
+  late AnimationController _exitAnimController = new AnimationController(vsync: this);
 
 
   @override
@@ -71,11 +74,12 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
     _readOutTimerController.value = 1;
     _readOutTimerController.duration = new Duration(milliseconds: 1000* GameParams.READ_OUT_TIME_SECONDS);
     _readOutTimerController.addListener(() {
-      if(_readOutTimerController.value == 0.0){
+      double t = _readOutTimerController.value;
+      if(t == 0.0){
         _readOutTimerController.stop();
         _onReadOutTimerComplete();
       }
-      int newSecond = (_readOutTimerController.value * GameParams.READ_OUT_TIME_SECONDS).ceil();
+      int newSecond = (t * GameParams.READ_OUT_TIME_SECONDS).ceil();
       if(newSecond != readOutTimeSeconds)
         {
           // Report change
@@ -88,12 +92,24 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
     _gradientAnimController.duration = new Duration(milliseconds: 3000);
     _gradientAnimController.addListener(() {setState(() {});});
     _gradientAnimController.repeat();
+
+    _exitAnimController.duration = new Duration(milliseconds: 750);
+    _exitAnimController.addListener(() {setState(() {});});
+
+    if(widget.transitioning) {
+      setState(() {
+        // TODO Curate whether the transition is a lobby transition, for example, before automatically setting revealed state
+        statementRevealed = _bloc.model.isItMyTurn??false;
+      });
+      _exitAnimController.forward(from: 0);
+    }
   }
 
   @override
   dispose(){
     _readOutTimerController.dispose();
     _gradientAnimController.dispose();
+    _exitAnimController.dispose();
     super.dispose();
   }
 
@@ -104,17 +120,17 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
 
   int? readOutTimeSeconds;
   void _onStatementRevealed(GameRoomModel model){
-    if(!(model.isItMyTurn??false)) return;
+    if((model.isItMyTurn??false)) {
+      setState(() {
+        statementRevealed = true;
+        _readOutTimerController.reverse(from: 1);
+      });
+    };
 
-    setState(() {
-      statementRevealed = true;
-    });
-
-    _readOutTimerController.reverse(from: 1);
   }
 
-  void _onReadOutTimerComplete(){
-    goToPlay();
+  Future<void> _onReadOutTimerComplete() async {
+    if(statementRevealed) goToPlay();
   }
 
   void goToPlay() {
@@ -127,6 +143,7 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
   static const double OUTER_RRECT_RADIUS = 38;
 
   double m = 0;
+  Curve anticipate = AnticipateCurve(1);
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +161,11 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
           //isMyTurn = !isMyTurn;
 
           bool sufficientInfo = player != null && text != null && isMyTurn != null;
+
+          double h = MediaQuery.of(context).size.height;
+          double v =_exitAnimController.value;
+          double breakDownTranslateValue = h*anticipate.transform(v);
+          double breakDownRotateValue = v/2;
 
           // TODO Move out of build
           MovingGradient gradient = new MovingGradient(
@@ -167,8 +189,9 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AutoSizeText(text!, textAlign: TextAlign.center, style: AppStyles.defaultStyle(fontSize: 100))
-                  .PadAllExt(28)
-                  .FlexibleExt()
+                  .xPadAll(28)
+                  .xRotateTranslate(-breakDownRotateValue, dy: breakDownTranslateValue)
+                  .xFlexible()
             ],
           );
 
@@ -178,18 +201,20 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
 
               Text(primaryMessage,
                   textAlign: TextAlign.center,
-                  style: AppStyles.defaultStyle(fontSize: 36)),
+                  style: AppStyles.defaultStyle(fontSize: 36))
+                  .xRotateTranslate(breakDownRotateValue, dy: breakDownTranslateValue),
 
                Text(secondaryMessage,
                   textAlign: TextAlign.center,
                   style: AppStyles.defaultStyle(fontSize: 25))
-                   .PadSymExt(h: 35)
-                   .EmptyUnless(showSecondaryMessage),
+                   .xPadSym(h: 35)
+                   .xRotateTranslate(-breakDownRotateValue, dy: breakDownTranslateValue)
+                   .xEmptyUnless(showSecondaryMessage),
 
               // !isMyTurn ? EmptyWidget() : Text(text, style: AppStyles.DebugStyle(20)),
               CupertinoButton(
                   color: Colors.blue,
-                  child: AppStyles.MyText('BEGIN'), onPressed: () => _revealStatement()).EmptyUnless(isMyTurn),
+                  child: AppStyles.MyText('BEGIN'), onPressed: () => _revealStatement()).xEmptyUnless(isMyTurn),
 
             ],
           );
@@ -220,15 +245,19 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         children: [
 
-                          avatar.HeroExt(player.id??''),
+                          avatar.xHero(player.id??''),
 
                           Container(
                               height: dim, width: dim,
-                              color: Colors.white.withOpacity(0.8),).EmptyUnless(statementRevealed),
+                              color: Colors.white.withOpacity(0.8),).xEmptyUnless(statementRevealed),
 
                           ClipPath(
                               clipper: PieClipper(1 - _readOutTimerController.value),
-                              child: avatar).EmptyUnless(statementRevealed),
+                              child: avatar).xEmptyUnless(statementRevealed),
+
+                          // ClipPath(
+                          //     clipper: PieClipper(1 - m),//_readOutTimerController.value),
+                          //     child: Container(decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.purpleAccent),)),//.EmptyUnless(statementRevealed),
 
                           AutoSizeText(
                               readOutTimeSeconds.toString(),
@@ -236,21 +265,23 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
                               fontSize: 96,
                                 color: Colors.white,
                                 shadows: [BoxShadow(color: Colors.black, spreadRadius: 50, blurRadius: 10)]),
-                          ).EmptyUnless(statementRevealed && readOutTimeSeconds != null),
+                          ).xEmptyUnless(statementRevealed && readOutTimeSeconds != null),
 
                         ],
                       ),
                     ))
                 ,
-              ).FlexibleExt(),
+              )
+                  .xRotateTranslate(breakDownRotateValue, dy: breakDownTranslateValue)
+                  .xFlexible(),
 
-              (statementRevealed ? revealedWidget : preRevealWidget).ExpandedExt()
+              (statementRevealed ? revealedWidget : preRevealWidget).xExpanded()
 
-              // ,Slider(value: m, onChanged: (v) {
-              //   setState(() {
-              //     m = v;
-              //   });
-              // },)
+              ,Slider(value: m, onChanged: (v) {
+                setState(() {
+                  m = v;
+                });
+              },)
 
             ],
           );
@@ -260,13 +291,13 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
               backgroundColor: Color.fromARGB(255, 36, 49, 153),
               body: !sufficientInfo ? MyLoadingIndicator()
                   : SafeArea(
-                    child: mainColumn.PadSymExt(h: 25, v: 15),
+                    child: mainColumn.xPadSym(h: 25, v: 15),
                   )
 
           );
         },
         listener: (context, state) {
-          GameRoomRoutes.pageListener(context, state, thisPageName);
+          GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
           if(state is NewPhaseState){
             if(state.phase == RoomPhases.READING_OUT)

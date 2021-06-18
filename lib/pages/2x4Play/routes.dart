@@ -13,20 +13,16 @@ import 'package:flutter_bull/pages/2x4Play/_1_main.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_1_main.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_page.dart';
 
-import '_0_intro.dart';
 
+class PlayRoutes {
 
-class ChooseRoutes {
-
-  static Route generate(RouteSettings settings, bool transitioning) {
+  static Route generate(RouteSettings settings) {
 
     return PageRouteBuilder(pageBuilder: (context, anim, anim1) {
 
       switch(settings.name)
       {
-        case ChoosePages.INTRO: return ChooseIntro();
-
-        case ChoosePages.MAIN: return ChooseMain(transitioning);
+        case PlayPages.MAIN: return PlayMain();
       }
 
       return Container(color: Colors.white, child: Center(
@@ -43,7 +39,6 @@ class ChooseRoutes {
   }
 }
 
-class ChoosePages {
-  static const String INTRO = 'intro';
+class PlayPages {
   static const String MAIN = 'main';
 }

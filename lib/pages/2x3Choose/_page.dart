@@ -51,6 +51,8 @@ import '../../routes.dart';
 
 
 class Choose extends StatefulWidget {
+  Choose([this.transitioning = false]);
+  final bool transitioning;
 
   @override
   _ChooseState createState() => _ChooseState();
@@ -60,6 +62,7 @@ class _ChooseState extends State<Choose> {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
   final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
+  final HeroController _heroController = new HeroController();
 
   final String thisPageName = RoomPages.CHOOSE;
 
@@ -69,7 +72,7 @@ class _ChooseState extends State<Choose> {
     // print('Initial route: ' + initialRoute);
     try{
       String phase = _bloc.model.room!.phase!;
-      if(phase == RoomPhases.CHOSEN || phase == RoomPhases.READING_OUT)
+      if(phase == RoomPhases.CHOSEN || phase == RoomPhases.READING_OUT || phase == RoomPhases.PLAY)
       {
         initialRoute = ChoosePages.MAIN;
       }
@@ -87,17 +90,17 @@ class _ChooseState extends State<Choose> {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName);
+        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
       },
       builder: (context, state) {
         return Navigator(
           observers: [
-            HeroController()
+            _heroController
           ],
           key: navigationKey,
           initialRoute: initialRoute,
           onGenerateRoute: (settings) {
-            return ChooseRoutes.generate(settings);
+            return ChooseRoutes.generate(settings, widget.transitioning);
           },
         );
       },

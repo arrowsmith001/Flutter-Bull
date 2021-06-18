@@ -20,7 +20,7 @@ class MyLoadingIndicator extends StatelessWidget {
       child: CircularProgressIndicator(),
     );
 
-    if(size != null) loading = loading.SizedBoxExt(height: size!.height, width: size!.width);
+    if(size != null) loading = loading.xSizedBox(height: size!.height, width: size!.width);
 
     return loading;
   }
@@ -124,7 +124,7 @@ class MyBubble extends StatelessWidget {
                 TextAlign.center,
                 style: AppStyles.defaultStyle(fontSize: 32, color: Colors.black)),
           )
-              .PaddingExt(EdgeInsets.all(8)),
+              .xPadding(EdgeInsets.all(8)),
         )
     );
   }
@@ -153,7 +153,7 @@ class MyCupertinoStyleDialog extends StatelessWidget {
             children:  columnChildren,
           ),
         )
-    ).PaddingExt(outsidePadding);
+    ).xPadding(outsidePadding);
   }
 }
 
@@ -174,17 +174,17 @@ class MyCupertinoStyleDialogWithButtons extends StatelessWidget {
         child: Column(
           children: [
 
-            MyCupertinoStyleDialog(columnChildren, borderRadius: MyBorderRadii.TOP_ONLY, outsidePadding: EdgeInsets.only(top:p,left:p,right:p),).ExpandedExt(),
+            MyCupertinoStyleDialog(columnChildren, borderRadius: MyBorderRadii.TOP_ONLY, outsidePadding: EdgeInsets.only(top:p,left:p,right:p),).xExpanded(),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                buttons[0].PaddingExt(EdgeInsets.only(top: 8, right: 4)).FlexibleExt(flexList == null ? 1 : flexList![0]),
+                buttons[0].xPadding(EdgeInsets.only(top: 8, right: 4)).xFlexible(flexList == null ? 1 : flexList![0]),
 
-                buttons[1].PaddingExt(EdgeInsets.only(top: 8, left: 4)).FlexibleExt(flexList == null ? 1 : flexList![1]),
+                buttons[1].xPadding(EdgeInsets.only(top: 8, left: 4)).xFlexible(flexList == null ? 1 : flexList![1]),
               ],
-            ).PaddingExt(EdgeInsets.only(bottom:p,left:p,right:p))
+            ).xPadding(EdgeInsets.only(bottom:p,left:p,right:p))
 
 
           ],
@@ -224,7 +224,7 @@ class MyCupertinoStyleButton extends StatelessWidget {
         child: text
     );
 
-    button = button.BoxDecorationContainerExt(
+    button = button.xBoxDecorContainer(
         BoxDecoration(
             gradient: RadialGradient(
                 colors: [Colors.white, color],
@@ -237,11 +237,11 @@ class MyCupertinoStyleButton extends StatelessWidget {
             border: Border.all(color: Colors.black26.withOpacity(0.2), width: 1)
         ));
 
-    if(height != null) button = button.SizedBoxExt(height: height!);
+    if(height != null) button = button.xSizedBox(height: height!);
 
     return Row(
       children: [
-        button.ExpandedExt()
+        button.xExpanded()
       ],
     );
   }
@@ -264,7 +264,7 @@ class MyCupertinoStyleBox extends StatelessWidget {
           child: Center(
             child: content,
           ),
-        ).ExpandedExt(),
+        ).xExpanded(),
       ],
     );
   }
@@ -289,9 +289,9 @@ class MyListItem extends StatelessWidget {
               child: Text(text,
                 textAlign: TextAlign.end,
                 style: TextStyle(fontSize: 26, fontFamily: FontFamily.lapsusProBold),)
-                  .PaddingExt(EdgeInsets.symmetric(vertical: 8, horizontal: 18)),
+                  .xPadding(EdgeInsets.symmetric(vertical: 8, horizontal: 18)),
             )
-                .FlexibleExt(),
+                .xFlexible(),
 
             Container(
               width: 50,
@@ -314,36 +314,28 @@ class MyListItem extends StatelessWidget {
 }
 
 
-
-class EmptyWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.shrink();
-  }
-}
-
 class BlueExpandedContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.blue).ExpandedExt();
+    return Container(color: Colors.blue).xExpanded();
   }
 }
 class YellowExpandedContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.yellow).ExpandedExt();
+    return Container(color: Colors.yellow).xExpanded();
   }
 }
 class RedExpandedContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.red).ExpandedExt();
+    return Container(color: Colors.red).xExpanded();
   }
 }
 class GreenExpandedContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.green).ExpandedExt();
+    return Container(color: Colors.green).xExpanded();
   }
 }
 

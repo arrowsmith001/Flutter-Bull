@@ -1,5 +1,9 @@
 
+import 'package:flutter/material.dart';
+
 class Utils {
+
+  static int msNow = DateTime.now().millisecondsSinceEpoch;
 
   static void printError(Object thisClass, String methodName, e) {
     print('Error: ' + thisClass.runtimeType.toString() + '.${methodName}: ' + e.toString());

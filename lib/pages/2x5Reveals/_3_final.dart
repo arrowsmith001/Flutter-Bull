@@ -82,7 +82,7 @@ class _RevealsFinalState extends State<RevealsFinal> {
                     children: [
                       Text(thisSubPageName, style: AppStyles.DebugStyle(42))
                     ],
-                  ).PaddingExt(EdgeInsets.all(20))
+                  ).xPadding(EdgeInsets.all(20))
 
               ));
         },

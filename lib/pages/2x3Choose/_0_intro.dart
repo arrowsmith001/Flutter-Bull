@@ -166,13 +166,13 @@ class _ChooseIntroState extends State<ChooseIntro> with TickerProviderStateMixin
                             clippedRectRadius: 32,
                             borderColor: Colors.transparent,
                             shape: BoxShape.rectangle,)
-                              .HeroExt(selectedPlayer?.id!??'').ExpandedExt(),
+                              .xHero(selectedPlayer?.id!??'').xExpanded(),
                           AppStyles.MyText(selectedPlayer!.name!, color: Colors.black)
                         ],
-                      ).PaddingExt(EdgeInsets.all(16)),)
-                        .ExpandedExt(),
+                      ).xPadding(EdgeInsets.all(16)),)
+                        .xExpanded(),
 
-                        playerRing.ExpandedExt(),
+                        playerRing.xExpanded(),
 
 
                 ],
@@ -183,7 +183,7 @@ class _ChooseIntroState extends State<ChooseIntro> with TickerProviderStateMixin
         },
         listener: (context, state) {
 
-          GameRoomRoutes.pageListener(context, state, thisPageName);
+          GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
         });
   }
@@ -444,7 +444,7 @@ class _PlayerSelectorState extends State<PlayerSelector> with SingleTickerProvid
         return Positioned(
           child: Avatar(image,
               borderColor: playerIsSelected ? Colors.yellowAccent : Avatar.DEFAULT_BORDER_COLOR,
-              size: Size(dim, dim)).OpacityExt((1-t)),
+              size: Size(dim, dim)).xOpacity((1-t)),
           bottom: bottom + widget.explosionFactor*vec.dy,
           left: left + widget.explosionFactor*vec.dx,
         );

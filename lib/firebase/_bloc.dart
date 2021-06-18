@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bull/classes/classes.dart';
 import 'package:flutter_bull/utilities/game.dart';
+import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -485,8 +486,13 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
     if(event is StartRoundEvent)
       {
-        await repo.setRoomField(model.room!.code!, [Room.ROUND_START_UNIX], GameParams.convertUnixForUpload(DateTime.now().millisecondsSinceEpoch));
-        await repo.setRoomField(model.room!.code!, [Room.PAGE], RoomPages.PLAY);
+        Map<String, dynamic> changes = {};
+        changes.addAll({Room.ROUND_START_UNIX : GameParams.convertUnixForUpload(Utils.msNow)});
+        changes.addAll({Room.PAGE : RoomPages.PLAY});
+        changes.addAll({Room.PHASE : RoomPhases.PLAY});
+
+        await repo.setRoomFields(model.room!.code!, changes);
+
         add(new PushNewVoteEvent(
             model.getPlayerWhoseTurn()!.id!,
             new Vote.reader()));
