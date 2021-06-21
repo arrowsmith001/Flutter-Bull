@@ -131,6 +131,18 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
             }
         }
 
+      if(state is fbState.PlayerVotesChangeState)
+        {
+          var changes = state.changes;
+          int turn = model.room!.turn!;
+
+          // If all vote lists are adequately long for every player
+          if(changes.values.length == model.roomPlayerCount && changes.values.every((voteList) => voteList.length == turn + 1)){
+            // All players have voted, round end
+            yield AllPlayersVotedState(model);
+          }
+        }
+
       if(state is fbState.NewRevealedNumberState)
       {
         yield RevealState(state.newRevealedNumber, model);
@@ -216,13 +228,13 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
          try
          {
            bool? votedTrue = event.votedTrue;
-           int t = event.t;
+           int? t = event.t;
 
            // Assert that vote list so far is expected given the turn
            int turn = model.room!.turn!;
            List<Vote>? votes = model.getMyVotes();
            int votesLength = votes == null ? 0 : votes.length;
-           assert(votesLength == turn);
+           assert(votesLength <= turn);
 
            // Determine voter type
            String whoseTurnId = model.getPlayerWhoseTurn()!.id!;
@@ -235,7 +247,7 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
          }
            catch(e)
         {
-          print(e.toString());
+          print('Error at event is VoteEvent: ' + e.toString());
           // TODO Something went wrong while voting
         }
 
@@ -248,6 +260,21 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
     {
       int turn = model.room!.turn!;
       int playerCount = model.roomPlayerCount;
+
+      // Analyse votes so far
+      for(String id in model.room!.playerIds!){
+        var votes = model.room!.playerVotes!;
+        int voteNum = votes.containsKey(id) ? model.room!.playerVotes![id]!.length : 0;
+        if(voteNum <= turn)
+          {
+            for(int i = voteNum; i <= turn; i++)
+              {
+                Vote vote = new Vote.fromData(id, null, model.getPlayerFromOrder(i)!.id!, model.getTargetOf(id)!);
+                firebaseBloc.add(fbEvent.PushNewVoteEvent(id, vote));
+              }
+          }
+      }
+
       print(turn.toString() + ' ' + playerCount.toString());
       if(turn + 1 < playerCount)
       {
@@ -314,6 +341,8 @@ class GameRoomModel {
   Player? get me => dataModel.me;
 
   bool get isLastTurn => dataModel.isLastTurn;
+
+  bool? get haveIVoted => dataModel.haveIVoted;
   bool hasPlayerSubmittedText(userId) => dataModel.hasPlayerSubmittedText(userId);
 
   Player? getRoomMember(int i) => dataModel.getRoomMember(i);
@@ -337,7 +366,7 @@ class GameRoomModel {
 
   int? getNumberWhoVoted(int turn) => dataModel.getNumberWhoVoted(turn);
 
-  List<Player> getPlayersWhoVoted(int turn, [bool? votedTrue]) => dataModel.getPlayersWhoVoted(turn, votedTrue);
+  List<Player> getPlayersWhoVoted(int turn, {bool? votedTrue, bool includeEmptyVotes = false}) => dataModel.getPlayersWhoVoted(turn, votedTrue: votedTrue, includeEmptyVotes: includeEmptyVotes);
 
   List<int> getVoteTimes(List<Player> players, int turn) => dataModel.getVoteTimes(players, turn);
 
@@ -348,6 +377,8 @@ class GameRoomModel {
   int? getPlayerScore(String id) => dataModel.getPlayerScore(id);
 
   int? getRoundSpecificSeed() => dataModel.getRoundSpecificSeed();
+
+  String? getTargetOf(String? id) => dataModel.getTargetOf(id);
 
 }
 

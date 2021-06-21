@@ -130,16 +130,17 @@ class Vote {
 
   Map<String, dynamic> toJson() => _$VoteToJson(this);
 
-  Vote.fromData(String voterId, bool? votedTrue, String whoseTurnId, String targetId, [int t = 0]){
-    this.votedTrue = votedTrue;
-    if(voterId == whoseTurnId) this.votedTrue = null;
-    if(this.votedTrue == null) type = Vote.VOTE_TYPE_READER;
+  Vote.fromData(String voterId, bool? votedTrue, String whoseTurnId, String targetId, [int? t]){
+    if(voterId == whoseTurnId) {
+      this.type = Vote.VOTE_TYPE_READER;
+    }
     else
     {
+      this.votedTrue = votedTrue;
+      this.time = t;
       if(whoseTurnId == targetId) type = Vote.VOTE_TYPE_SABOTEUR;
       else type = Vote.VOTE_TYPE_VOTER;
     }
-    this.time = t;
   }
 
   Vote.reader() {
@@ -159,7 +160,7 @@ class Vote {
 
   String? type;
   bool? votedTrue; // null for Reader
-  int? time;
+  int? time; // null for Reader
 
   bool isReader() => votedTrue == null || type == Vote.VOTE_TYPE_READER; // null for Reader
 }

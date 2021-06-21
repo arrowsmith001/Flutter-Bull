@@ -42,7 +42,7 @@ import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -64,6 +64,9 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
   late AnimationController _animController;
   String? animatedVoterId;
 
+  bool get isRoundOver => t == 0;
+  bool get hasEveryoneVoted => _bloc.model.getNumberWhoVoted(_bloc.model.room!.turn!) == _bloc.model.roomPlayerCount - 1;
+
   @override
   void initState() {
     super.initState();
@@ -74,20 +77,58 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
     unixRoundStart = GameParams.getTrueUnixFromDownloaded(_bloc.model.room!.roundStartUnix!);
     int unixNow = _unix;
     int elapsed = unixNow - unixRoundStart;
+    t = max(0, getMsFromMins(totalMinutes) - elapsed);
+
+    if(t == 0)
+      {
+        // Take some action as round is over
+        _disableVoting();
+      }
+
+    if(_bloc.model.haveIVoted == true || _bloc.model.isItMyTurn == true) _disableVoting();
 
     initialItemCount = _bloc.model.getNumberWhoVoted(_bloc.model.room!.turn!)!;
 
-    _createTimer(elapsed);
+    if(hasEveryoneVoted) _onRoundEnd();
+    else _createTimer();
+  }
+
+  void _disableVoting(){
+    setState(() {
+      votingEnabled = false;
+    });
   }
 
   int initialItemCount = 0;
   int unixRoundStart = 0;
   int get _unix => DateTime.now().millisecondsSinceEpoch;
 
-  void _createTimer(int msElapsed){
+  void _onPlayerVoted(NewPlayerVotedState state) {
+    print('_onPlayerVoted() ${state.player!.name}');
     setState(() {
-      t = max(0, getMsFromMins(totalMinutes) - msElapsed);
+      this.animatedVoterId = state.voterId;
+      if(state.model.myId == state.player!.id!) _onMyVote();
     });
+    _animController.forward(from: 0);
+  }
+
+  void _onAllPlayersVoted(GameRoomModel model) {
+    print('_onAllPlayersVoted()');
+    if(_roundTimer != null) _roundTimer!.cancel();
+    setState(() {
+      t = 0;
+    });
+  }
+
+  // When round ends from the timer
+  void _onRoundEnd() {
+    print('_onRoundEnd()');
+    setState(() {
+      votingEnabled = false;
+    });
+  }
+
+  void _createTimer(){
     _roundTimer = new Timer.periodic(
         new Duration(milliseconds: 10),
             (timer) {
@@ -96,7 +137,8 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
                   if(t <= 0)
                   {
                     t = 0;
-                    _roundTimer.cancel();
+                    if(_roundTimer != null) _roundTimer!.cancel();
+                    _onRoundEnd();
                   }
                   else t = getMsFromMins(totalMinutes) - (_unix - unixRoundStart);
           });
@@ -107,7 +149,7 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
 
   @override
   void dispose(){
-    _roundTimer.cancel();
+    if(_roundTimer != null) _roundTimer!.cancel();
     _animController.dispose();
     super.dispose();
   }
@@ -123,7 +165,7 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
   int getSecsOnMinFromMs(int ms) => max(0, (ms/(1000)).floor() - getMinsFromMs(ms)*60);
   int getMsOnMinFromMs(int ms) => max(0, (ms - getMinsFromMs(ms)*60*1000) % 1000);
 
-  late Timer _roundTimer;
+  Timer? _roundTimer;
 
   Widget _buildTimerDisplay(){
 
@@ -131,17 +173,48 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
     int s = getSecsOnMinFromMs(t);
     int ms = (getMsOnMinFromMs(t) / 100).floor();
 
-    return Text('${m} : ${s} : ${ms} (${(timerFraction*1000).round()/1000})', style: AppStyles.DebugStyle(24),);
+    return Column(
+      children: [
+        Text('${m} : ${s} : ${ms}', style: AppStyles.defaultStyle(fontSize: 48)),
+        Container(color: Colors.white, height: 10, width: (MediaQuery.of(context).size.width - 100)*timerFraction,)
+      ],
+    );
   }
 
   int getSecondsElapsed(int ms) => totalMinutes*60 - max(0, (ms/1000).floor());
   bool voting = false;
+  bool votingEnabled = true;
   void vote(bool? votedTrue) {
     setState(() {
       voting = true;
     });
     _bloc.add(VoteEvent(votedTrue, getSecondsElapsed(t)));
   }
+
+  void _onMyVote() {
+    _disableVoting();
+  }
+
+  Widget _buildVoteButton(bool voteTrue) {
+    return Container(
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.4),
+                blurRadius: 10)
+          ]
+      ),
+      child: Column(
+          children: [
+            CupertinoButton(
+                padding: EdgeInsets.all(24),
+                color: voteTrue ? AppColors.trueColor : AppColors.bullColor,
+                child: AutoSizeText(voteTrue ? 'TRUE' : 'BULL', maxLines: 1, style: AppStyles.defaultStyle(fontSize: 100)),
+                onPressed: !votingEnabled ? null : () => vote(voteTrue)).xExpanded()
+          ]),
+    );
+  }
+
 
   void goToNextTurn(){
     _bloc.add(NextTurnRequestedFromPlayEvent());
@@ -165,16 +238,16 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
 
           bool sufficientInfo = player != null && text != null && isMyTurn != null;
 
-          Widget playerWhoseTurnPanel = !sufficientInfo ? EmptyWidget() : Row(
+          Widget playerWhoseTurnPanel = Row(
             children: [
-              Avatar(player.profileImage, size: Size(100, 100))
+              Avatar(player!.profileImage, size: Size(100, 100))
                   .xHero(player.id??''),
 
-              MyBubble(text, size: Size(100, 100)).xExpanded()
+              MyBubble(text!, size: Size(100, 100)).xExpanded()
             ],
-          );
+          ).xEmptyUnless(sufficientInfo);
 
-          List<Player> playersWhoVoted = state.model.getPlayersWhoVoted(turn);
+          List<Player> playersWhoVoted = state.model.getPlayersWhoVoted(turn, includeEmptyVotes: true);
           List<Player> playersWhoCanVote = state.model.getPlayersWhoCanVote(turn);
 
           //print('voted: ' + playersWhoVoted.toString() + ', canVote: ' + playersWhoCanVote.toString());
@@ -261,6 +334,13 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
 
                     buttonPanel.xExpanded(),
 
+                  CupertinoButton(
+                      child: Container(
+                        color: Colors.white,
+                          child: Text('BEGIN NEXT ROUND').xPadSym(v: 12, h : 36)),
+                      onPressed: () => goToNextTurn()
+                  ).xEmptyUnless((state.model.isItMyTurn??false) && isRoundOver)
+
                 ],
               ).xPadding(EdgeInsets.all(20)),
                   )
@@ -275,7 +355,7 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
         },
         listener: (context, state) {
 
-          GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
+          //GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
           if(state is NewUnixTimeState){
             setState(() {
@@ -284,14 +364,18 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
           }
 
           if(state is NewPlayerVotedState)
-            {
-              setState(() {
-                this.animatedVoterId = state.voterId;
-              });
-              _animController.forward(from: 0);
-              //print('Inserting voter (${state.numberVotedSoFar.toString()})');
-              //if(_animListKey.currentState != null) _animListKey.currentState!.insertItem(state.numberVotedSoFar - 1);
-            }
+          {
+            _onPlayerVoted(state);
+            //print('Inserting voter (${state.numberVotedSoFar.toString()})');
+            //if(_animListKey.currentState != null) _animListKey.currentState!.insertItem(state.numberVotedSoFar - 1);
+          }
+
+          if(state is AllPlayersVotedState)
+          {
+            _onAllPlayersVoted(state.model);
+            //print('Inserting voter (${state.numberVotedSoFar.toString()})');
+            //if(_animListKey.currentState != null) _animListKey.currentState!.insertItem(state.numberVotedSoFar - 1);
+          }
           // if(state is NewTimeElapsedState)
           // {
           //   setState(() {
@@ -305,25 +389,8 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
         );
   }
 
-  Widget _buildVoteButton(bool voteTrue) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 10)
-        ]
-      ),
-      child: Column(
-                    children: [
-                      CupertinoButton(
-                        padding: EdgeInsets.all(24),
-                          color: voteTrue ? AppColors.trueColor : AppColors.bullColor,
-                          child: AutoSizeText(voteTrue ? 'TRUE' : 'BULL', maxLines: 1, style: AppStyles.defaultStyle(fontSize: 100)),
-                          onPressed: () => vote(voteTrue)).xExpanded()
-                    ]),
-    );
-  }
+
+
 
 
 

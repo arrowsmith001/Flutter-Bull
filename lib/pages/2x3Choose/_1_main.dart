@@ -43,7 +43,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -271,7 +271,7 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
                       ),
                     ))
                 ,
-              )
+              ).xEmptyUnless(!widget.transitioning)
                   .xRotateTranslate(breakDownRotateValue, dy: breakDownTranslateValue)
                   .xFlexible(),
 
@@ -297,7 +297,7 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
           );
         },
         listener: (context, state) {
-          GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
+          //GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
           if(state is NewPhaseState){
             if(state.phase == RoomPhases.READING_OUT)

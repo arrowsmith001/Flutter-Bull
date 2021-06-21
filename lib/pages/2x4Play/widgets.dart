@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bull/extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'package:flutter_bull/utilities/interpolators.dart';
 
 class AnimatedVoterAvatar extends StatefulWidget {

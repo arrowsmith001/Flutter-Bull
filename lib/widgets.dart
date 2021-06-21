@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'classes/classes.dart';
-import 'extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'gen/assets.gen.dart';
 
 class MyLoadingIndicator extends StatelessWidget {

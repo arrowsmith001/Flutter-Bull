@@ -45,7 +45,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -64,22 +64,11 @@ class _PlayState extends State<Play> {
   final HeroController _heroController = new HeroController();
 
   final String thisPageName = RoomPages.PLAY;
+  final GlobalKey<_PlayState> _globalKey = new GlobalKey();
 
   @override
   void initState() {
-    // if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
-    // print('Initial route: ' + initialRoute);
-    // try{
-    //   String phase = _bloc.model.room!.phase!;
-    //   if(phase == RoomPhases.CHOSEN || phase == RoomPhases.READING_OUT)
-    //   {
-    //     initialRoute = ChoosePages.MAIN;
-    //   }
-    // }
-    // catch(e)
-    // {
-    //   Utils.printInitializationError(e, thisPageName);
-    // }
+
   }
 
   String initialRoute = PlayPages.MAIN;
@@ -89,7 +78,7 @@ class _PlayState extends State<Play> {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
+        //GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
       },
       builder: (context, state) {
         return Navigator(

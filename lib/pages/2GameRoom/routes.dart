@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc_states.dart';
 import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
@@ -10,13 +11,15 @@ import 'package:flutter_bull/pages/2x3Choose/_page.dart';
 import 'package:flutter_bull/pages/2x4Play/_1_main.dart';
 import 'package:flutter_bull/pages/2x4Play/_page.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_page.dart';
-import 'package:flutter_bull/extensions.dart';
+import 'package:extensions/extensions.dart';
+import 'package:flutter_bull/utilities/design.dart';
 
 class GameRoomRoutes {
 
   static Route generate(RouteSettings settings) {
 
-    Widget prevPage = settings.arguments as Widget;
+    final Widget prevPage = settings.arguments as Widget;
+    print('Page type: ' + prevPage.runtimeType.toString());
 
     // TODO Do cool transitions
     return PageRouteBuilder(
@@ -28,23 +31,26 @@ class GameRoomRoutes {
         {
           case '/': return Container(color: Colors.purpleAccent);
 
-          case RoomPages.LOBBY: return child;
+          case RoomPages.LOBBY:
+            var prev = ClipPath(child: prevPage, clipper: PieClipper(anim1.value));
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                child, prev
+              ],
+            );
 
           case RoomPages.WRITE:
             Animation anim = CurvedAnimation(parent: anim1, curve: Curves.elasticInOut);
             return child.xScale(anim.value);
 
           case RoomPages.CHOOSE:
-            // final Tween<Offset> offsetTween = Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset(0.0, 0.0));
-            // final Animation<Offset> slideOutLeftAnimation = offsetTween.animate(anim1);
-            // return SlideTransition(position: slideOutLeftAnimation, child: child);
             return child;
 
           case RoomPages.PLAY:
           final Tween<Offset> offsetTween = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(0.0, 1.0));
           final Animation<Offset> slideInFromTheRightAnimation = offsetTween.animate(CurvedAnimation(parent: anim1, curve: Curves.easeInOut));
           var prev = SlideTransition(position: slideInFromTheRightAnimation, child: prevPage is Choose ? Choose(true) : prevPage);
-
           return Stack(
             alignment: Alignment.center,
             children: [
@@ -52,7 +58,14 @@ class GameRoomRoutes {
             ],
           );
 
-          case RoomPages.REVEALS: return child;
+          case RoomPages.REVEALS:
+            var prev = ClipPath(child: prevPage, clipper: PieClipper(anim1.value));
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                child, prev
+              ],
+            );
 
           default: return child;
         }
@@ -60,32 +73,60 @@ class GameRoomRoutes {
 
         pageBuilder: (context, anim1, anim2) {
 
-      switch(settings.name)
-      {
-        case '/': return Container(color: Colors.purpleAccent);
+         return getPage(settings.name);
 
-        case RoomPages.LOBBY: return Lobby();
-
-        case RoomPages.WRITE: return Write();
-
-        case RoomPages.CHOOSE: return Choose();
-
-        case RoomPages.PLAY: return Play();
-
-        case RoomPages.REVEALS: return Reveals();
-      }
-
-      return Container(color: Colors.white, child: Center(
-          child: Text("Error: Unknown route name " + (settings.name??'null'))));
-
-    });
+    }
+    );
   }
 
-  static pageListener(BuildContext context, GameRoomState state, String page, Widget pageWidget) {
+
+
+  static pageListener(BuildContext context, GameRoomState state, String prevPageName) {
     if(state is RoomPageChangedState)
       {
-        Navigator.of(context).pushNamedAndRemoveUntil(state.newPage, (route) => false, arguments: pageWidget);
+        Widget pageWidget = getPage(prevPageName);
+        print('pageListener: ' + pageWidget.runtimeType.toString());
+        String? pageName = state.newPage;
+        SchedulerBinding.instance!.addPostFrameCallback((_) {
+          Navigator.of(context).pushNamedAndRemoveUntil(pageName, (route) => false, arguments: pageWidget);
+        });
       }
 
   }
 }
+
+Widget getPage(String? pageName){
+  switch(pageName)
+  {
+    case '/': return Container(color: Colors.purpleAccent);
+
+    case RoomPages.LOBBY: return Lobby();
+
+    case RoomPages.WRITE: return Write();
+
+    case RoomPages.CHOOSE: return Choose();
+
+    case RoomPages.PLAY: return Play();
+
+    case RoomPages.REVEALS: return Reveals();
+  }
+
+  return Container(color: Colors.white, child: Center(
+      child: Text("Error: Unknown route name " + (pageName??'null'))));
+}
+
+// class MyCustomPageRoute extends CupertinoPageRoute {
+//   final Widget prevPage;
+//   MyCustomPageRoute({required this.prevPage, required WidgetBuilder builder, required RouteSettings settings}) : super(builder: builder, settings: settings);
+//
+//   @override
+//   Widget buildTransitions(BuildContext context, Animation<double> anim1, Animation<double> anim2, Widget currentPage) {
+//     var prev = ClipPath(child: prevPage, clipper: PieClipper(anim1.value));
+//     return Stack(
+//       alignment: Alignment.center,
+//       children: [
+//         currentPage, prev
+//       ],
+//     );
+//   }
+// }

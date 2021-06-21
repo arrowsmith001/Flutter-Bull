@@ -42,7 +42,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -61,6 +61,7 @@ class _RevealsState extends State<Reveals> {
 
   final String thisPageName = RoomPages.REVEALS;
 
+  String initialRoute = RevealsPages.INTRO;
   @override
   void initState() {
     // if(_bloc.model.room != null) initialRoute = _bloc.model.room!.page ?? '/';
@@ -69,6 +70,7 @@ class _RevealsState extends State<Reveals> {
       int turn = _bloc.model.room!.turn!;
       int revealed = _bloc.model.room!.revealed!;
       int playerCount = _bloc.model.roomPlayerCount;
+
       if(turn > 0 || revealed > 0)
         {
           if(revealed >= playerCount)
@@ -91,14 +93,12 @@ class _RevealsState extends State<Reveals> {
     }
   }
 
-  String initialRoute = RevealsPages.INTRO;
-
   @override
   Widget build(BuildContext context) {
 
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) {
-        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
+        //GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
       },
       builder: (context, state) {
         return Navigator(

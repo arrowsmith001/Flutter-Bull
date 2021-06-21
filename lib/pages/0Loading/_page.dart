@@ -11,7 +11,7 @@ import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import '../../routes.dart';
 import '_bloc.dart';
 import '_bloc_states.dart';

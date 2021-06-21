@@ -65,6 +65,9 @@ class NewPlayerVotedState extends GameRoomState {
   final Vote vote;
   final int numberVotedSoFar;
 }
+class AllPlayersVotedState extends GameRoomState {
+  const AllPlayersVotedState(GameRoomModel model) : super(model);
+}
 
 class RevealState extends GameRoomState {
   const RevealState(this.newRevealedNumber, GameRoomModel model) : super(model);

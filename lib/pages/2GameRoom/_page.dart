@@ -35,7 +35,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -70,7 +70,12 @@ class _GameRoomState extends State<GameRoom> {
   @override
   Widget build(BuildContext context) {
 
-    Widget main = BlocBuilder<GameRoomBloc, GameRoomState>(
+    Widget main = BlocConsumer<GameRoomBloc, GameRoomState>(
+      listener: (context, state){
+        if(state is RoomPageChangedState){
+          GameRoomRoutes.pageListener(navigationKey.currentState!.context, state, state.model.room!.page!);
+        }
+      },
       buildWhen: (s1, s2) => s2 is NewRoomState,
       builder: (context, state) {
         return HeroControllerScope(

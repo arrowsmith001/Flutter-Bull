@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import 'package:flutter_bull/utilities/res.dart';
 
 import '../../classes/classes.dart';
-import 'package:flutter_bull/extensions.dart';
+import 'package:extensions/extensions.dart';
 
 
 class UtterBullTitle extends StatefulWidget {

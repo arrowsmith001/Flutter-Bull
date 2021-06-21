@@ -339,7 +339,7 @@ class FirebaseDatabaseProvider {
             {
               votes = List.from(data.value as List);
               votesLength = votes.length;
-              assert(votesLength == turn);
+              assert(votesLength <= turn);
               votes.add(vote.toJson());
             }
           data.value = votes;

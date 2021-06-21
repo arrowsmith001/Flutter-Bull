@@ -47,7 +47,7 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -437,7 +437,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     return BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state) async{
 
-        GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
+        //GameRoomRoutes.pageListener(context, state, thisPageName, this.widget);
 
         if(state is NewRoomState) {
           setState(() {

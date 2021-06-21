@@ -3,7 +3,7 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import '../extensions.dart';
+import 'package:extensions/extensions.dart';
 import '../utilities/local_res.dart';
 import '../widgets.dart';
 
@@ -40,6 +40,56 @@ class MainMenuButton extends StatelessWidget {
 
           image.xSizedBox(height: imageSize, width: imageSize).xPadding(new EdgeInsets.fromLTRB(15,3,15,3)).xFlexible()
         ],
+      ),
+    );
+  }
+}
+
+
+class MyClass extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Title 1'),
+                )
+            ),
+            Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Title 2'),
+                )
+            ),
+            Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Title 3'),
+                )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MyClass2 extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+          child: [
+              Text('Title 1').xPadAll(8).xExpanded(),
+              Text('Title 2').xPadAll(8).xExpanded(),
+              Text('Title 3').xPadAll(8).xExpanded(),
+            ].xColumn()
       ),
     );
   }

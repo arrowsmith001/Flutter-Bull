@@ -73,7 +73,7 @@ class TextEntrySubmittedEvent extends GameRoomEvent {
 class VoteEvent extends GameRoomEvent{
   VoteEvent(this.votedTrue, this.t);
   bool? votedTrue;
-  int t;
+  int? t;
 }
 
 class NextTurnRequestedFromPlayEvent extends GameRoomEvent{}

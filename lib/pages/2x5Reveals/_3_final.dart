@@ -41,13 +41,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
 
 
 class RevealsFinal extends StatefulWidget {
+  //RevealsFinal(this.nav);
+  //final GlobalKey<NavigatorState> nav;
 
   @override
   _RevealsFinalState createState() => _RevealsFinalState();
@@ -71,20 +73,21 @@ class _RevealsFinalState extends State<RevealsFinal> {
     return BlocConsumer<GameRoomBloc, GameRoomState>(
         builder: (context, state) {
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
-                  body: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(thisSubPageName, style: AppStyles.DebugStyle(42))
-                    ],
-                  ).xPadding(EdgeInsets.all(20))
+          return Scaffold(
+              backgroundColor: AppColors.revealsScaffoldBackgroundColor,
+              appBar: CupertinoNavigationBar(
+                leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
+              ),
+              body: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(thisSubPageName, style: AppStyles.DebugStyle(42))
+                  ],
+                ).xPadding(EdgeInsets.all(20)),
+              )
 
-              ));
+          );
         },
         listener: (context, state) {
 

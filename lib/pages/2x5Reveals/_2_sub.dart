@@ -43,7 +43,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -51,6 +51,7 @@ import '../../routes.dart';
 
 class RevealsSub extends StatefulWidget {
   RevealsSub({this.playerId});
+  //final GlobalKey<NavigatorState> nav;
 
   String? playerId;
 
@@ -157,8 +158,8 @@ class _RevealsSubState extends State<RevealsSub> {
 
           int turn = state.model.whichTurnWasThisPlayer(player.id!)!;
 
-          List<Player> votedTrue = state.model.getPlayersWhoVoted(turn, true);
-          List<Player> votedBull = state.model.getPlayersWhoVoted(turn, false);
+          List<Player> votedTrue = state.model.getPlayersWhoVoted(turn, votedTrue: true);
+          List<Player> votedBull = state.model.getPlayersWhoVoted(turn, votedTrue: false);
           List<int> votedTrueTimes = state.model.getVoteTimes(votedTrue, turn);
           List<int> votedBullTimes = state.model.getVoteTimes(votedBull, turn);
 
@@ -196,62 +197,63 @@ class _RevealsSubState extends State<RevealsSub> {
           // Widget bullList = _buildVoteGrid(votedBull, false);
 
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-                  body: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+          return Scaffold(
+              backgroundColor: AppColors.revealsScaffoldBackgroundColor,
+              body: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
 
-                      mainAvatar,
-
-
-                      Column(
-                        children: [
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-
-                              [
-                                Text(votedTrue.length.toString(), style: AppStyles.TruthStyle(fontSize: 42),),
-                                Text('VOTED TRUE', style: AppStyles.TruthStyle(),),
-                                  trueList.xExpanded(),
-                              ]
-                                  .xColumn().xExpanded(),
+                    mainAvatar,
 
 
-                              [
-                                Text(votedBull.length.toString(), style: AppStyles.BullStyle(fontSize: 42),),
-                                  Text('VOTED BULL', style: AppStyles.BullStyle(),),
-                                  bullList.xExpanded(),
-                              ].xColumn().xExpanded()
+                    Column(
+                      children: [
 
-                            ],
-                          )
-                              .xExpanded()
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
 
-                        ],
-                      ).xPadding(EdgeInsets.all(12))
-                          .xExpanded(),
-
-                      !hasBeenRevealed ? EmptyWidget()
-                          : GestureDetector(
-                        onTap: () {
-
-                        },
-                            child: Text(truth ? 'TRUE' : 'BULL',
-                            style: truth ? AppStyles.TruthStyle(fontSize: 64) : AppStyles.BullStyle(fontSize: 64)),
-                          ),
-
-                      !isMyTurn ? EmptyWidget()
-                          : CupertinoButton(child: Text('Reveal'), onPressed: () => _advanceRevealNumber(),)
+                            [
+                              Text(votedTrue.length.toString(), style: AppStyles.TruthStyle(fontSize: 42),),
+                              Text('VOTED TRUE', style: AppStyles.TruthStyle(),),
+                                trueList.xExpanded(),
+                            ]
+                                .xColumn().xExpanded(),
 
 
-                    ],
-                  ).xPadding(EdgeInsets.all(20))
+                            [
+                              Text(votedBull.length.toString(), style: AppStyles.BullStyle(fontSize: 42),),
+                                Text('VOTED BULL', style: AppStyles.BullStyle(),),
+                                bullList.xExpanded(),
+                            ].xColumn().xExpanded()
 
-              ));
+                          ],
+                        )
+                            .xExpanded()
+
+                      ],
+                    ).xPadding(EdgeInsets.all(12))
+                        .xExpanded(),
+
+                    !hasBeenRevealed ? EmptyWidget()
+                        : GestureDetector(
+                      onTap: () {
+
+                      },
+                          child: Text(truth ? 'TRUE' : 'BULL',
+                          style: truth ? AppStyles.TruthStyle(fontSize: 64) : AppStyles.BullStyle(fontSize: 64)),
+                        ),
+
+                    !isMyTurn ? EmptyWidget()
+                        : CupertinoButton(child: Text('Reveal'), onPressed: () => _advanceRevealNumber(),)
+
+
+                  ],
+                ).xPadding(EdgeInsets.all(20)),
+              )
+
+          );
         },
         listener: (context, state) {
 

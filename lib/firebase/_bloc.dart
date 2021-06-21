@@ -348,15 +348,15 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
         yield NewUnixTimeState(newTime, model);
       }
 
-      // if(event.changes.containsKey(Room.PLAYER_VOTES))
-      // {
-      //   Map<String, List> map = Map.from(event.changes[Room.PLAYER_VOTES]);
-      //   Map<String, List<Vote>> changes = map
-      //       .map((id, list) => MapEntry(id, list
-      //       .map((json) => Vote.fromJson(Map<String, dynamic>.from(json))).toList()));
-      //
-      //   yield PlayerVotesChangeState(changes, model);
-      // }
+      if(event.changes.containsKey(Room.PLAYER_VOTES))
+      {
+        Map<String, List> map = Map.from(event.changes[Room.PLAYER_VOTES]);
+        Map<String, List<Vote>> changes = map
+            .map((id, list) => MapEntry(id, list
+            .map((json) => Vote.fromJson(Map<String, dynamic>.from(json))).toList()));
+
+        yield PlayerVotesChangeState(changes, model);
+      }
     }
 
     if(event is RoomPlayerAddedEvent)
@@ -487,7 +487,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     if(event is StartRoundEvent)
       {
         Map<String, dynamic> changes = {};
-        changes.addAll({Room.ROUND_START_UNIX : GameParams.convertUnixForUpload(Utils.msNow)});
+        changes.addAll({Room.ROUND_START_UNIX : GameParams.convertUnixForUpload(Utils.msNow())});
         changes.addAll({Room.PAGE : RoomPages.PLAY});
         changes.addAll({Room.PHASE : RoomPhases.PLAY});
 
@@ -621,6 +621,20 @@ class DataModel {
   Player? get me => getPlayer(userId);
 
   bool get isLastTurn => roomPlayerCount == room!.turn! + 1;
+
+  bool? get haveIVoted {
+    try{
+      assert(room != null);
+      assert(room!.turn != null);
+      if(room!.playerVotes == null) return false;
+      if(!room!.playerVotes!.containsKey(userId)) return false;
+      return (room!.playerVotes![userId]!.length > room!.turn!);
+    }catch(e)
+    {
+      return null;
+    }
+  }
+
   bool hasPlayerSubmittedText(String? userId) => getPlayerText(getPlayerTarget(userId)) != null;
 
 
@@ -702,23 +716,31 @@ class DataModel {
   }
 
   bool? getTruth(arg) {
-    if(arg == null) return null;
-    if(room == null) return null;
-    if(room!.playerTruths == null) return null;
-    String playerId;
-    if(arg is String) {playerId = arg;}
-    else if(arg is Player) {playerId = arg.id!;}
-    else return null;
-    if(!room!.playerTruths!.containsKey(playerId)) return null;
-    return room!.playerTruths![playerId];
+    try{
+      assert (arg == null);
+      assert (room == null);
+      assert (room!.playerTruths == null);
+      assert(arg is String || arg is Player);
+      String playerId = arg is String ? arg : (arg as Player).id!;
+      assert(!room!.playerTruths!.containsKey(playerId));
+      return room!.playerTruths![playerId];
+    }catch(e){
+      print('Error in getTruth: ' + e.toString());
+      return null;
+    }
   }
 
   Player? getPlayerWhoseTurn() {
-    if(room == null) return null;
-    if(room!.playerOrder == null) return null;
-    if(room!.turn == null) return null;
-    if(room!.playerOrder!.length <= room!.turn!) return null;
-    return getPlayer(room!.playerOrder![room!.turn!]);
+    try{
+      assert(room == null);
+      assert(room!.playerOrder == null);
+      assert(room!.turn == null);
+      assert(room!.playerOrder!.length <= room!.turn!);
+      return getPlayer(room!.playerOrder![room!.turn!]);
+    }catch(e){
+      print('Error in getPlayerWhoseTurn: ' + e.toString());
+      return null;
+    }
   }
 
   String? getPlayerText(String? id) {
@@ -833,19 +855,12 @@ class DataModel {
   }
 
   // 'votedTrue == null' indicates to get all voters
-  List<Player> getPlayersWhoVoted(int turn, [bool? votedTrue]) {
+  List<Player> getPlayersWhoVoted(int turn, { bool? votedTrue, bool includeEmptyVotes = false}) {
     try{
       assert(room != null);
       if(room!.playerVotes == null) return [];
       List<Player> list = room!.playerVotes!.keys
-          .where((id) =>
-
-        room!.playerVotes![id]!.length > turn
-          &&
-        room!.playerVotes![id]![turn].type != Vote.VOTE_TYPE_READER
-          &&
-        (votedTrue == null || room!.playerVotes![id]![turn].votedTrue == votedTrue))
-
+          .where((id) => didPlayerVoteOnThisTurn(id, turn, votedTrue: votedTrue, includeEmptyVotes: includeEmptyVotes))
           .map((userId) => getPlayer(userId)!).toList();
       return list;
     }catch(e)
@@ -855,19 +870,12 @@ class DataModel {
     }
   }
 
-  int? getNumberWhoVoted(int turn, [bool? votedTrue]) { // TODO implement votedTrue
+  int? getNumberWhoVoted(int turn, {bool? votedTrue, bool includeEmptyVotes = false}) { // TODO implement votedTrue
     try{
       assert(room != null);
       if(room!.playerVotes == null) return 0;
       return room!.playerVotes!.keys
-          .where((id) =>
-
-            room!.playerVotes![id]!.length > turn
-          &&
-            room!.playerVotes![id]![turn].type != Vote.VOTE_TYPE_READER
-          &&
-            (votedTrue == null || room!.playerVotes![id]![turn].votedTrue == votedTrue))
-
+          .where((id) => didPlayerVoteOnThisTurn(id, turn, votedTrue: votedTrue, includeEmptyVotes: includeEmptyVotes))
           .length;
     }catch(e)
     {
@@ -876,7 +884,17 @@ class DataModel {
     }
   }
 
-  getVoteTimes(List<Player> players, int turn) {
+  bool didPlayerVoteOnThisTurn(String id, int turn, {bool? votedTrue, bool includeEmptyVotes = false}){
+    return room!.playerVotes![id]!.length > turn
+        &&
+        room!.playerVotes![id]![turn].type != Vote.VOTE_TYPE_READER
+        &&
+        (includeEmptyVotes || room!.playerVotes![id]![turn].time != null)
+        &&
+        (votedTrue == null || room!.playerVotes![id]![turn].votedTrue == votedTrue);
+  }
+
+  List<int> getVoteTimes(List<Player> players, int turn) {
     try{
       assert(room != null);
       assert(room!.playerVotes != null);
@@ -884,7 +902,7 @@ class DataModel {
       return list;
     }catch(e)
     {
-      print('whichTurnWasThisPlayer ERROR: ' + e.toString());
+      print('getVoteTimes ERROR: ' + e.toString());
       return [];
     }
   }
@@ -961,6 +979,20 @@ class DataModel {
     }catch(e)
     {
       print('getRoundSpecificSeed ERROR: ' + e.toString());
+      return null;
+    }
+  }
+
+  String? getTargetOf(String? id) {
+    try{
+      assert(id != null);
+      assert(room != null);
+      assert(room!.playerTargets != null);
+      assert(room!.playerTargets!.containsKey(id));
+      return room!.playerTargets![id];
+    }catch(e)
+    {
+      print('getTargetOf ERROR: ' + e.toString());
       return null;
     }
   }

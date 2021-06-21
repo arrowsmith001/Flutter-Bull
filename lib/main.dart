@@ -32,8 +32,9 @@ import 'package:provider/provider.dart';
 import 'classes/classes.dart';
 import 'classes/firebase.dart';
 import 'developer.dart';
-import 'extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
+
 
 void main() {
     WidgetsFlutterBinding.ensureInitialized();

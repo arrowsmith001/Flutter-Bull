@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/firebase/_bloc.dart';
@@ -41,13 +42,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
 
 
 class RevealsIntro extends StatefulWidget {
+  //RevealsIntro(this.nav);
+  //final GlobalKey<NavigatorState> nav;
 
   @override
   _RevealsIntroState createState() => _RevealsIntroState();
@@ -63,13 +66,14 @@ class _RevealsIntroState extends State<RevealsIntro> {
   @override
   void initState() {
     super.initState();
-    _runRoutine();
+    _runRoutine(context);
   }
 
-  Future<void> _runRoutine() async {
+  Future<void> _runRoutine(BuildContext context) async {
     await Future.delayed(Duration(seconds: 2));
-    Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false,
-      arguments: 0);
+    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+      Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.MAIN, (route) => false, arguments: 0);
+    });
 }
 
   @override
@@ -80,20 +84,23 @@ class _RevealsIntroState extends State<RevealsIntro> {
 
           if(!state.model.isThereEnoughInfoForResults) return MyLoadingIndicator();
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-                  appBar: CupertinoNavigationBar(
-                    leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-                  ),
-                  body: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text('It\'s time to REVEEEEEAL')
-                    ],
-                  ).xPadding(EdgeInsets.all(20))
+          return Scaffold(
+              backgroundColor: AppColors.revealsScaffoldBackgroundColor,
+              body: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Center(
+                        child: AutoSizeText('It\'s time to REVEAL the TRUTH',
+                          minFontSize: 20,
+                          textAlign: TextAlign.center,
+                          style:  AppStyles.defaultStyle(fontSize: 100, color: Colors.black),))
+                        .xFlexible()
+                  ],
+                ).xPadding(EdgeInsets.all(20)),
+              )
 
-              ));
+          );
         },
         listener: (context, state) {
 

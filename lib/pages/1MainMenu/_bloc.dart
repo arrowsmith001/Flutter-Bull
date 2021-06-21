@@ -14,7 +14,7 @@ import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_bull/extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'package:provider/provider.dart';
 
 import '_bloc_events.dart';

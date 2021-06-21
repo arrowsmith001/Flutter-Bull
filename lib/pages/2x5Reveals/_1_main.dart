@@ -41,17 +41,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
-import '../../extensions.dart';
+import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
 
 
 class RevealsMain extends StatefulWidget {
-
   static const String ROUTE_ARGS_TURN = 'turn';
 
   RevealsMain({required this.turn});
+  //final GlobalKey<NavigatorState> nav;
   final int turn;
 
   @override
@@ -151,7 +151,7 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
   _goToSubPage() async {
     if(!lock){
       lock = true;
-      Navigator.pushNamedAndRemoveUntil(context, RevealsPages.SUB, (route) => false,
+      Navigator.of(context).pushNamedAndRemoveUntil(RevealsPages.SUB, (route) => false,
           arguments: _bloc.model.getPlayerFromOrder(mostFocusedIndex)!.id);
     }
   }
@@ -361,54 +361,54 @@ class _RevealsMainState extends State<RevealsMain> with TickerProviderStateMixin
 
           focusTextWidget = focusTextWidget.xHero(focusedPlayer.id! + 'bubble');
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-                  body: Stack(
-                    alignment: Alignment.center,
-                    children: [
+          return Scaffold(
+              backgroundColor: AppColors.revealsScaffoldBackgroundColor,
+              body: SafeArea(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
 
-                      Center(
-                        child: Image(
-                          image: Assets.images.spiny1,
-                          color: Colors.white,
-                        ).xRotate(_rotateAnimController.value),
-                      ),
+                    Center(
+                      child: Image(
+                        image: Assets.images.spiny1,
+                        color: Colors.white,
+                      ).xRotate(_rotateAnimController.value),
+                    ),
 
-                      Column(
-                        children: [
-                          list.xPadding(EdgeInsets.all(50)).xExpanded(),
-                          Container(
-                              child:
+                    Column(
+                      children: [
+                        list.xPadding(EdgeInsets.all(50)).xExpanded(),
+                        Container(
+                            child:
 
-                                  Column(
-                                    children: [
+                                Column(
+                                  children: [
 
-                                      focusTextWidget
-                                          .xExpanded(),
+                                    focusTextWidget
+                                        .xExpanded(),
 
-                                      EmptyWidget().xExpanded()
+                                    EmptyWidget().xExpanded()
 
-                                    ],
-                                  )
+                                  ],
+                                )
 
 
-                            ).xExpanded()
-                        ],
-                      ),
+                          ).xExpanded()
+                      ],
+                    ),
 
-                      Column(
-                        children: [
-                          CupertinoTextField(controller: _debugTextController,),
-                          CupertinoButton(child: Text('Enter'), onPressed: () => _debugAction()),
-                          CupertinoButton(child: Text('Clear'), onPressed: () => _debugTextController.clear())
-                        ],
-                      )
+                    // Column(
+                    //   children: [
+                    //     CupertinoTextField(controller: _debugTextController,),
+                    //     CupertinoButton(child: Text('Enter'), onPressed: () => _debugAction()),
+                    //     CupertinoButton(child: Text('Clear'), onPressed: () => _debugTextController.clear())
+                    //   ],
+                    // )
 
-                    ],
-                  )
-
+                  ],
+                ),
               )
+
           );
         },
         listener: (context, state) {
