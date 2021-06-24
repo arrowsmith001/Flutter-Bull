@@ -75,9 +75,6 @@ class _RevealsFinalState extends State<RevealsFinal> {
 
           return Scaffold(
               backgroundColor: AppColors.revealsScaffoldBackgroundColor,
-              appBar: CupertinoNavigationBar(
-                leading: Text(thisPageName, style: AppStyles.DebugStyle(32),),
-              ),
               body: SafeArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

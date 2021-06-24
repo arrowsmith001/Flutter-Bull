@@ -154,7 +154,7 @@ class _PlayMainState extends State<PlayMain> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  late int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER]; // Total minutes
+  late int totalMinutes = _bloc.model.room!.settings[Room.SETTINGS_ROUND_TIMER].toInt(); // Total minutes
 
   int t = 0; // Current time in milliseconds
   int get getRoundTimerTotalInMs => getMsFromMins(totalMinutes); // Total round time in ms

@@ -14,6 +14,7 @@ import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/2x2Write/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
+import 'package:flutter_bull/utilities/design.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -52,12 +53,17 @@ class WriteIntro extends StatefulWidget {
   _WriteIntroState createState() => _WriteIntroState();
 }
 
-class _WriteIntroState extends State<WriteIntro> {
+class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
 
   GameRoomBloc get _bloc => BlocProvider.of<GameRoomBloc>(context, listen: false);
 
   final String thisPageName = RoomPages.WRITE;
   final String thisSubPageName = WritePages.INTRO;
+
+  late AnimationController _bgAnimController = new AnimationController(vsync: this);
+
+  late AnimationController _animController = new AnimationController(vsync: this);
+  late Animation _avatarAnim;
 
   @override
   void initState() {
@@ -76,6 +82,23 @@ class _WriteIntroState extends State<WriteIntro> {
       // TODO HANDLE INITIALIZATION ERROR
       print('Error initializing ' + thisPageName + ': ' + e.toString());
     }
+
+    _bgAnimController.addListener(() {setState(() {
+
+    });});
+    _bgAnimController.duration = Duration(milliseconds: 8000);
+    _bgAnimController.repeat();
+
+    _animController.duration = Duration(seconds: 10);
+    _avatarAnim = new CurvedAnimation(parent: _animController, curve: Interval(0.0, 0.1, curve: Curves.easeOutCubic));
+    _animController.forward(from: 0);
+  }
+
+  @override
+  void dispose(){
+    _bgAnimController.dispose();
+    _animController.dispose();
+    super.dispose();
   }
 
   _beginRoutine(){
@@ -106,44 +129,299 @@ class _WriteIntroState extends State<WriteIntro> {
           TextStyle truthStyle =  AppStyles.TruthStyle(fontSize: fontSize);
           TextStyle bullStyle =  AppStyles.BullStyle(fontSize: fontSize);
 
-          double dim = (MediaQuery.of(context).size.width / 3) - 20;
+          Size size = MediaQuery.of(context).size;
+          double dim = (size.width / 3) - 20;
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: Color.fromARGB(255, 252, 225, 255),
-                  body: !sufficientInfo ? MyLoadingIndicator()
-                      : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Avatar(me.profileImage, size: Size(dim,dim), loading: me.profileImage == null, defaultImage: null).xSizedBox(height: dim, width: dim)
-                        ],
-                      ),
-                      RichText(
-                        textAlign: TextAlign.center,
-                          text: TextSpan(
-                        children: [
-                          TextSpan(text: 'Everyone will now write 1 statement each', style: style),
-                          TextSpan(text: '\n\nThis statement will either be a ', style: style), TextSpan(text: 'truth about themselves,', style: truthStyle),
-                          TextSpan(text: ' or a ', style: style), TextSpan(text: 'lie about another player', style: bullStyle),
-                          TextSpan(text: '\n\nYou must keep your role a secret from all other players', style: boldStyle),
-                        ]
-                      )),
-                      CupertinoButton(
-                        color: Colors.indigoAccent,
-                          child: AppStyles.MyText('Reveal your role and start writing',color: Colors.white,), onPressed: () => Navigator.of(context).pushNamed(WritePages.MAIN))
-                    ],
-                  ).xPadding(EdgeInsets.all(20))
+          var eat =
+          Stack(
+            children:
+          [
+            EntryAnimatedText(
+                'It\'s time to get your secret role',
+                style: AppStyles.defaultStyle(
+                    fontSize: 54,
+                    shadows: [AppShadows.cartoony])).xPadSym(h: 25)
+          ],);
 
-              ));
+          var mg = MovingGradient(begin: Alignment.centerRight, end: Alignment.centerLeft,
+            //colors: [Colors.grey.withOpacity(0.6), Colors.white, Colors.grey],
+            colors: [Color.fromARGB(75, 179, 179, 179), Color.fromARGB(75, 232, 232, 232), Color.fromARGB(75, 154, 154, 154), Color.fromARGB(75, 210, 210, 210), Color.fromARGB(75, 255, 255, 255),],
+          );
+
+          var mg2 = MovingGradient(begin: Alignment.centerLeft, end: Alignment.centerRight,
+            //colors: [Colors.grey.withOpacity(0.6), Colors.white, Colors.grey],
+            colors: [Color.fromARGB(255, 232, 232, 232), Color.fromARGB(255, 210, 210, 210), Color.fromARGB(255, 255, 255, 255),],
+          );
+
+          var boxDeco1 = BoxDecoration(gradient: mg.getGradient((_bgAnimController.value*2)%1.0));
+          var boxDeco2 = BoxDecoration(gradient: mg2.getGradient(_bgAnimController.value));
+
+          List<Player?> playersExceptMe = state.model.getPlayersExcept([state.model.myId!]);
+
+          return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: !sufficientInfo ? MyLoadingIndicator()
+                  : SafeArea(
+                child: Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+
+                    Column(
+                      children: [
+                        Avatar(me.profileImage, borderWidth: 0)
+                            .xPadAll(35)
+                            .xTranslate(dy: -size.height/2 * (1 - _avatarAnim.value))
+                            .xExpanded(),
+
+                        eat.xPadOnly(right: 50).xExpanded(),
+                      ],
+                    ),
+
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: CupertinoButton(
+                          child: Text('SKIP',
+                            style: AppStyles.defaultStyle(fontSize: 36, color:  Colors.black),),
+                          onPressed: () => _goToMain(context)),
+                    )
+                  ]
+                    ..addAll(List.generate(playersExceptMe.length,
+                            (i) {
+                    Player? player = playersExceptMe[i];
+
+                    return Positioned(
+                      bottom: 75,
+                      left: i * size.width / (state.model.roomPlayerCount -1),
+                      child: Avatar(player!.profileImage,
+                          shape: BoxShape.rectangle,
+                          borderWidth: 0,
+                          size: Size(75,75)),
+                    );
+
+                  })),
+                )
+              ).xPadding(EdgeInsets.all(20))
+                .xBoxDecorContainer(boxDeco1)
+              .xBoxDecorContainer(boxDeco2)
+
+          );
         },
         listener: (context, state) {
           WriteRoutes.pageListener(context, state, thisPageName);
         });
   }
 
+  void _goToMain(BuildContext context) => Navigator.of(context).pushNamed(WritePages.MAIN);
+}
+
+class EntryAnimatedText extends StatefulWidget {
+
+  EntryAnimatedText(this.text, {this.style, this.textAlign});
+  String text;
+  TextStyle? style;
+  TextAlign? textAlign;
+
+  @override
+  _EntryAnimatedTextState createState() => _EntryAnimatedTextState();
+}
+
+class _EntryAnimatedTextState extends State<EntryAnimatedText> with SingleTickerProviderStateMixin {
+
+  late AnimationController animController1 = new AnimationController(vsync: this);
+
+  @override
+  void initState() {
+    super.initState();
+    animController1.duration = new Duration(milliseconds: 3000);
+    animController1.forward(from: 0);
+    animController1.addListener(() {setState(() {});});
+    animController1.addStatusListener((status) {
+      // if(status == AnimationStatus.completed)
+      //   {
+      //     setState(() {
+      //       controllerNumber = 2;
+      //       animController2.repeat();
+      //     });
+      //   }
+    });
+
+    animController1.repeat();
+  }
+
+  @override
+  void dispose() {
+    animController1.dispose();
+    super.dispose();
+  }
+
+  int controllerNumber = 1;
+
+  @override
+  Widget build(BuildContext context) {
+
+    Size size = MediaQuery.of(context).size;
+    return CustomPaint(
+      size: size,
+      painter: EntryAnimatedTextPainter(
+          widget.text,
+          controllerNumber: controllerNumber,
+          controller1: animController1,
+          stagger: 0.6,
+          style: widget.style),);
+  }
+}
+
+class EntryAnimatedTextPainter extends CustomPainter {
+
+  // TODO Precalculate as much as possible
+  EntryAnimatedTextPainter(this.text,
+      {this.style, this.controller1, this.controllerNumber = 1, double? stagger,})
+  {
+    if(stagger == null) this.stagger = 0;
+
+    if(controller1 != null){
+      _initAnimations();
+    }
+
+    _precalculateValues();
+  }
+
+  int controllerNumber;
+  AnimationController? controller1;
+  String text;
+  TextStyle? style;
+  List<Animation> anims1 = [];
+  late List<int> spaceIndices;
+  int spaceIndex = 1;
+  late double stagger;
+
+  late TextPainter tp = new TextPainter(textDirection: TextDirection.ltr);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    dx = 0.0;
+    dy = 0.0;
+    x = 0.0;
+    lastBreak = 0;
+    nextBreak = spaceIndices[0];
+    spaceIndex = 0;
+    wrapAtNextSpace = false;
+    notWrappedYet = true;
+    lastWrap = 0;
+
+    tp.text = TextSpan(text: ' ', style: style);
+    tp.layout(minWidth: 0, maxWidth: double.maxFinite);
+    double spaceLength = tp.maxIntrinsicWidth;
+
+    for(int i = 0; i < text.length; i++){
+
+      if(text[i] == ' ') {
+        if(wrapAtNextSpace){
+          canvas.translate(-x - (notWrappedYet ? spaceLength : 0), tp.height);
+          x = 0.0;
+          wrapAtNextSpace = false;
+          if(notWrappedYet) notWrappedYet = false;
+          //lastWrap =
+        }
+
+        spaceIndex++;
+        lastBreak = nextBreak + 1;
+        nextBreak = spaceIndices[spaceIndex];
+      }
+
+      // TODO Cache measurements for next round
+      // Measure current 'word'
+      String word = text.substring(lastBreak, nextBreak);
+      tp.text = TextSpan(text: word, style: style);
+      tp.layout(minWidth: 0, maxWidth: double.maxFinite);
+
+      double w = tp.maxIntrinsicWidth;
+
+      if(x + w + spaceLength >= size.width) {
+        wrapAtNextSpace = true;
+      }
+
+      _drawLetter(canvas, size, i);
+    }
+  }
+  bool wrapAtNextSpace = false;
+  bool notWrappedYet = true;
+  double dx = 0.0;
+  double dy = 0.0;
+  double x = 0.0;
+  int lastBreak = 0;
+  int nextBreak = 0;
+  int lastWrap = 0;
+
+  void _drawLetter(Canvas canvas, Size size, int i) {
+
+    double v = 0.5*(1 + math.sin(anims1[i].value * math.pi * 2)) * anims1[i].value*2;
+
+    String s = text[i];
+
+    tp.text = TextSpan(text: s, style: style);
+    tp.layout(minWidth: 0, maxWidth: double.maxFinite);
+
+    double w = tp.maxIntrinsicWidth;
+    double h = tp.height;
+    Offset c = new Offset(w/2, h/2);
+
+    canvas.translate((1-v)*c.dx, (1-v)*c.dy);
+    canvas.scale(v);
+    tp.paint(canvas, new Offset(0,0));
+    canvas.scale(1/v);
+    canvas.translate(-(1-v)*c.dx, -(1-v)*c.dy);
+
+    dx = tp.maxIntrinsicWidth;
+    x += dx;
+
+    // if(x + dx >= size.width){
+    //   canvas.translate(-x + dx, tp.height);
+    //   x = 0.0;
+    // }
+    // else{
+    canvas.translate(dx, 0);
+    // }
+
+  }
+
+  bool get _shouldRepaint => !controller1!.isCompleted;
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return _shouldRepaint;
+  }
+
+  void _initAnimations() {
+    int n = text.length;
+    double frac = 1/n;
+    double dur = ui.lerpDouble(frac, 1.0, stagger)!;
+    double incr = (1-dur)/n;
+
+    double begin = 0.0;
+    double end = dur;
+
+    for(int i = 0; i < text.length; i++){
+      var curve = Interval(begin, end, curve: OvershootCurve(5));
+      var entryAnim = CurvedAnimation(parent: controller1!, curve: curve);
+      anims1.add(entryAnim);
+
+      begin += incr;
+      end += incr;
+    }
+  }
+
+  void _precalculateValues() {
+    // TODO Precalculate as much as possible
+    List<String> spaces = text.split(' ');
+    int i = 0;
+    spaceIndices = List.generate(spaces.length, (index) {
+      i += (spaces[index].length + (index == 0 ? 0 : 1));
+      return i;
+    });
+  }
 
 
 }
+

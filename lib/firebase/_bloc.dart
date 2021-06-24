@@ -717,12 +717,12 @@ class DataModel {
 
   bool? getTruth(arg) {
     try{
-      assert (arg == null);
-      assert (room == null);
-      assert (room!.playerTruths == null);
+      assert (arg != null);
+      assert (room != null);
+      assert (room!.playerTruths != null);
       assert(arg is String || arg is Player);
       String playerId = arg is String ? arg : (arg as Player).id!;
-      assert(!room!.playerTruths!.containsKey(playerId));
+      assert(room!.playerTruths!.containsKey(playerId));
       return room!.playerTruths![playerId];
     }catch(e){
       print('Error in getTruth: ' + e.toString());
@@ -732,10 +732,10 @@ class DataModel {
 
   Player? getPlayerWhoseTurn() {
     try{
-      assert(room == null);
-      assert(room!.playerOrder == null);
-      assert(room!.turn == null);
-      assert(room!.playerOrder!.length <= room!.turn!);
+      assert(room != null);
+      assert(room!.playerOrder != null);
+      assert(room!.turn != null);
+      assert(room!.turn! < room!.playerOrder!.length);
       return getPlayer(room!.playerOrder![room!.turn!]);
     }catch(e){
       print('Error in getPlayerWhoseTurn: ' + e.toString());
@@ -994,6 +994,19 @@ class DataModel {
     {
       print('getTargetOf ERROR: ' + e.toString());
       return null;
+    }
+  }
+
+  List<Player?> getPlayersExcept(List<String> ids) {
+    try{
+      assert(room != null);
+      assert(room!.playerIds != null);
+      return List.from(room!.playerIds!)
+          .where((id) => !ids.contains(id))
+          .map((id) => getPlayer(id)).toList();
+    }catch(e){
+      print('getPlayersExcept ERROR: ' + e.toString());
+      return [];
     }
   }
 

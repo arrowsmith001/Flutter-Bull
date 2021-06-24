@@ -75,6 +75,10 @@ class _RevealsSubState extends State<RevealsSub> {
     _bloc.add(AdvanceRevealNumberEvent());
   }
 
+  void _nextRevealTurn(){
+    _bloc.add(NextTurnRequestedFromRevealsEvent());
+  }
+
   void _reveal(bool truth){
 
   }
@@ -236,17 +240,17 @@ class _RevealsSubState extends State<RevealsSub> {
                     ).xPadding(EdgeInsets.all(12))
                         .xExpanded(),
 
-                    !hasBeenRevealed ? EmptyWidget()
-                        : GestureDetector(
+                    GestureDetector(
                       onTap: () {
 
                       },
                           child: Text(truth ? 'TRUE' : 'BULL',
                           style: truth ? AppStyles.TruthStyle(fontSize: 64) : AppStyles.BullStyle(fontSize: 64)),
-                        ),
+                        ).xEmptyUnless(hasBeenRevealed),
 
-                    !isMyTurn ? EmptyWidget()
-                        : CupertinoButton(child: Text('Reveal'), onPressed: () => _advanceRevealNumber(),)
+                    CupertinoButton(
+                      child: Text(!hasBeenRevealed ? 'Reveal' : 'Go to next reveal'),
+                      onPressed: () => !hasBeenRevealed ? _advanceRevealNumber() : _nextRevealTurn()).xEmptyUnless(isMyTurn)
 
 
                   ],

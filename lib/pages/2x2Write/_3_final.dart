@@ -81,14 +81,12 @@ class _WriteFinalState extends State<WriteFinal> {
     return BlocConsumer<GameRoomBloc, GameRoomState>(
         builder: (context, state) {
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: Color.fromARGB(255, 252, 225, 255),
-                  body:
-
-                      Text('Its time to play!', style: AppStyles.defaultStyle(fontSize: 54, color: Colors.black)),
-
-              ));
+          return Scaffold(
+            backgroundColor: Color.fromARGB(255, 252, 225, 255),
+            body: SafeArea(
+              child: Text('Its time to play!', style: AppStyles.defaultStyle(fontSize: 54, color: Colors.black))
+            ),
+          );
         },
         listener: (context, state) {
           //WriteRoutes.pageListener(context, state, thisPageName);

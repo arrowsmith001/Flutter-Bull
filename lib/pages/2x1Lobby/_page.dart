@@ -182,7 +182,10 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
   void _onNewSettings(Map<String, dynamic> newSettings) {
     setState(() {
-      for(String k in _settings.keys) _settings[k] = newSettings[k];
+      for(String k in _settings.keys) {
+        _settings[k] = newSettings[k];
+        _settingsLocal[k] = newSettings[k];
+      }
     });
     _refreshSettings();
   }
@@ -343,7 +346,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('CLEAN', style: AppStyles.defaultStyle(),).xPadding(EdgeInsets.only(left: 8)).xFlexible(),
+                      AutoSizeText('CLEAN', maxLines: 1, style: AppStyles.defaultStyle()).xPadOnly(left: 8).xFlexible(),
                       lewdnessOn ? EmptyWidget() : Assets.images.tickIconTrans.image(height: 25, color: Colors.white).xPadding(EdgeInsets.only(right: 8))
                     ],),
                     Assets.images.lewdnessOff.image(height: 65).xPadding(EdgeInsets.symmetric(vertical: 10, horizontal: 10))
@@ -537,6 +540,26 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
               .xScale(_startButtonAnimController.value),  )
               : EmptyWidget();
 
+        Widget panelHandleRRect = Container(
+          height: SLIDE_HANDLE_HEIGHT,
+          width: 100,
+          decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: MyBorderRadii.all(10.0)
+          ),
+        );
+
+        Widget roomCodeText = Container(
+          alignment: Alignment.topCenter,
+          height: TOP_BIT_ROOMCODE_HEIGHT,
+          child: AutoSizeText(room.code!,
+              minFontSize: 24,
+              style: TextStyle(
+                  fontSize: 72,
+                  color: Colors.white,
+                  fontFamily: FontFamily.lapsusProBold)),
+        );
+
         Widget WaitingRoom =
           Scaffold(
             //floatingActionButton: model.amIHost ? FloatingActionButton(onPressed: () => startGame()) : null,
@@ -546,6 +569,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 SlidingUpPanel(
                   onPanelSlide: (d) {
                     setState(() {
+                      //print('Panel sliding: ${d.toString()}');
                       _panelSlideValue = d * (PANEL_MAX_HEIGHT - TOP_BIT_HEIGHT);
                       _panelSlideProgress = d;
                     });
@@ -559,7 +583,8 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                   controller: _panelController,
                   isDraggable: true,//!isUsingSlider,
                   parallaxEnabled: true,
-                  boxShadow: null,
+                  //boxShadow: null,
+                  boxShadow: [BoxShadow(color: Colors.white, spreadRadius: 10, blurRadius: 25)],
                   minHeight: TOP_BIT_HEIGHT,
                   maxHeight: PANEL_MAX_HEIGHT,
                   color: Colors.transparent,
@@ -575,13 +600,13 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
                         ),
 
-                        child: room.code == null ? EmptyWidget()
-                            : Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
 
                             GestureDetector(
                               onTap: () {
+                                print('panelIsOpen: ${_panelIsOpen.toString()}');
                                 if(_panelIsOpen) _panelController.close();
                                 else _panelController.open();
                                 _panelIsOpen = !_panelIsOpen;
@@ -589,25 +614,10 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
                               child: Column(
                                 children: [
-                                  Container(
-                                    height: SLIDE_HANDLE_HEIGHT,
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.3),
-                                        borderRadius: MyBorderRadii.all(10.0)
-                                    ),
-                                  ).xPadding(EdgeInsets.symmetric(vertical: SLIDE_HANDLE_V_PADDING)),
 
-                                  Container(
-                                    alignment: Alignment.topCenter,
-                                    height: TOP_BIT_ROOMCODE_HEIGHT,
-                                    child: AutoSizeText(room.code!,
-                                        minFontSize: 24,
-                                        style: TextStyle(
-                                            fontSize: 72,
-                                            color: Colors.white,
-                                            fontFamily: FontFamily.lapsusProBold)),
-                                  )
+                                  panelHandleRRect.xPadSym(v: SLIDE_HANDLE_V_PADDING),
+
+                                  roomCodeText
                                 ],
                               ),
                             ),
@@ -616,7 +626,8 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
                           ],
                         )
-                            .xPadding(EdgeInsets.symmetric(horizontal: 15, vertical: TOP_BIT_ROOMCODE_V_PADDING))
+                            .xPadSym(h: 15, v: TOP_BIT_ROOMCODE_V_PADDING)
+                            .xEmptyUnless(room.code != null)
                     );
                   },
 
@@ -721,9 +732,12 @@ class _NotifCenterState extends State<NotifCenter> {
         builder: (context, snap)
         {
           if(!snap.hasData || snap.data == null) return EmptyWidget();
-          return ListView.builder(
-            itemCount: notifWidgets.length,
-              itemBuilder: (context, i) => notifWidgets[i]);
+          return IgnorePointer(
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: notifWidgets.length,
+                itemBuilder: (context, i) => notifWidgets[i]),
+          );
         });
   }
 }
@@ -756,14 +770,16 @@ class _NotifWidgetState extends State<NotifWidget> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     //double dx = (1-_animController.value)*MediaQuery.of(context).size.width;
-    return Container(
-      height: 75,
-      color: Colors.pinkAccent,
-      child: Row(
-        children: [
-          widget.image  == null ? EmptyWidget() : widget.image!.xSizedBox(height: 75, width: 75),
-          widget.title.xPadding(EdgeInsets.all(8)).xExpanded()
-        ],
+    return GestureDetector(
+      child: Container(
+        height: 75,
+        color: Colors.pinkAccent,
+        child: Row(
+          children: [
+            widget.image  == null ? EmptyWidget() : widget.image!.xSizedBox(height: 75, width: 75),
+            widget.title.xPadding(EdgeInsets.all(8)).xExpanded()
+          ],
+        ),
       ),
     )
     ;

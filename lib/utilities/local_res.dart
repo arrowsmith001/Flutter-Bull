@@ -20,6 +20,11 @@ class AppColors{
 
 }
 
+class AppShadows{
+  static Shadow cartoony = BoxShadow(color: Colors.black, spreadRadius: 2, blurRadius: 5);
+
+}
+
 class AppStyles {
 
   static TextStyle MainMenuButtonTextStyle(double size, Color fontColor) => TextStyle(
@@ -43,8 +48,11 @@ class AppStyles {
           fontSize: fontSize ?? 24,
           fontFamily: FontFamily.lapsusProBold);
 
-  static TextStyle defaultStyle({double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows, FontWeight fontWeight = FontWeight.normal}) {
-    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize, color: color, shadows: shadows, fontWeight: fontWeight);
+  static TextStyle defaultStyle({double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR,
+    List<Shadow>? shadows, FontWeight fontWeight = FontWeight.normal, Paint? foreground, Paint? background}) {
+    return TextStyle(fontFamily: FontFamily.lapsusProBold, fontSize: fontSize,
+        color: foreground == null ? color : null, shadows: shadows, fontWeight: fontWeight,
+        foreground: foreground, background: background);
   }
 
   static Text MyText(String text, {double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {

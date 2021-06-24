@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 //import 'package:flutter_bull/extensions.dart';
@@ -30,25 +32,52 @@ class MovingGradient {
   // }
 
 
-  LinearGradient getGradient(double t) => LinearGradient(
-    begin: begin, end: end,
-      colors: <Color>[
-        colors[0],
-        colors[1],
-        colors[2],
-        colors[0],
-        colors[1],
-        colors[2]
-      ],
-      stops: [
-        0,
-        6*t > 4 ? 0.5 * ((t-(4/6)) / (2/6)) : 0,
-        6*t > 2 ? (t-(2/6)) / (4/6) : 0,
-        6*t < 4 ? (3/2)*t : 1,
-        6*t < 2 ? 0.5 + 0.5*(3*t) : 1,
-        1
-      ]
-  );
+  LinearGradient getGradient(double t) {
+
+    List<Color> colors = [this.colors, this.colors].expand((element) => element).toList();
+    int n = this.colors.length;
+    int N = n*2;
+
+    // TODO Make good
+
+    List<double> stops = List.generate(colors.length, (i)
+    {
+      //t = 0;
+      double lower = lerpDouble(n, 0, t)!;
+      double upper = lerpDouble(N, n, t)!;
+
+      if(i < lower.ceil()) return 0.0;
+      if(i > upper.ceil()) return 1.0;
+      //double tt = lerpDouble();
+
+      double interval = upper - lower - 1;
+      double d1 = (i - lower) / interval;
+
+      double d = lerpDouble(0, 1, d1)!;
+      //double d = lerpDouble(0, 1, t)!;
+      //print('i ${i.toString()} d ${d.toString()} lower ${lower.toString()} upper ${upper.toString()}');
+      return d;
+    });
+
+    return LinearGradient(
+        begin: begin, end: end,
+        colors: colors,
+        stops: stops
+    );
+
+    // return LinearGradient(
+    //     begin: begin, end: end,
+    //     colors: colors,
+    //     stops: [
+    //       0,
+    //       t > 4/6 ? 0.5 * ((t-(4/6)) / (2/6)) : 0,
+    //       t > 2/6 ? (t-(2/6)) / (4/6) : 0,
+    //       t < 4/6 ? (3/2)*t : 1,
+    //       t < 2/6 ? 0.5 + 0.5*(3*t) : 1,
+    //       1
+    //     ]
+    // );
+  }
 
 }
 

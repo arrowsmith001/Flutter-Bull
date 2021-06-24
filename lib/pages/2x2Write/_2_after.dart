@@ -133,22 +133,23 @@ class _WriteAfterState extends State<WriteAfter> {
 
           _computeDxDy(context, state.model.roomPlayerCount);
 
-          return SafeArea(
-              child: Scaffold(
-                  backgroundColor: Color.fromARGB(255, 252, 225, 255),
-                  body: !sufficientInfo ? MyLoadingIndicator()
-                      : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+          return Scaffold(
+              backgroundColor: Color.fromARGB(255, 252, 225, 255),
+              body: !sufficientInfo ? MyLoadingIndicator()
+                  : SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
 
-                      //_buildFakeWrap(state, dim).FlexibleExt(),
+                    //_buildFakeWrap(state, dim).FlexibleExt(),
 
-                      Text('Waiting for players to submit statements...', style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
-                    ],
-                  )
-                      //.PaddingExt(EdgeInsets.all(20))
+                    Text('Waiting for players to submit statements...', style: AppStyles.defaultStyle(fontSize: 42, color: Colors.black)),
+                  ],
+                )
+              )
+            //.PaddingExt(EdgeInsets.all(20))
 
-              ));
+          );
         },
         listener: (context, state) {
           WriteRoutes.pageListener(context, state, thisPageName);

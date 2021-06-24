@@ -278,7 +278,7 @@ class GameRoomBloc extends Bloc<GameRoomEvent, GameRoomState>{
       print(turn.toString() + ' ' + playerCount.toString());
       if(turn + 1 < playerCount)
       {
-        add(SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE, turn: turn + 1));
+        add(SetPagePhaseOrTurnEvent(page: RoomPages.CHOOSE, phase: RoomPhases.CHOOSE, turn: turn + 1));
       }
       else
       {
@@ -379,6 +379,8 @@ class GameRoomModel {
   int? getRoundSpecificSeed() => dataModel.getRoundSpecificSeed();
 
   String? getTargetOf(String? id) => dataModel.getTargetOf(id);
+
+  List<Player?> getPlayersExcept(List<String> ids) => dataModel.getPlayersExcept(ids);
 
 }
 

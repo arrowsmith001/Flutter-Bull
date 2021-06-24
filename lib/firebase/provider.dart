@@ -227,13 +227,16 @@ class FirebaseDatabaseProvider {
     bool playerAddedToRoom = false;
 
     int attempts = 0;
-    const int MAX_ATTEMPTS = 10;
+    const int MAX_ATTEMPTS = 1;
+
+    var data = await _dbRef.child('rooms').child(roomCode).once(); // Why the fuck should I have to do this for it to work?
 
     do {
       try{
         transactionResult = await _dbRef.child('rooms').child(roomCode).runTransaction((data) async {
 
           Room room = Room.fromJson(Map.from(data.value));
+
           List<String>? ids = room.playerIds;
           Map<String, int>? scores = room.playerScores;
 
@@ -247,6 +250,7 @@ class FirebaseDatabaseProvider {
             playerAddedToRoom = true;
           }
           data.value = room.toJson();
+
           return data;
         });
         success = (transactionResult.committed);

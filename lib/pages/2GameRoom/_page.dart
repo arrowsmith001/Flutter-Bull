@@ -58,6 +58,7 @@ class _GameRoomState extends State<GameRoom> {
   final GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
 
   final HeroController _heroController = CupertinoApp.createCupertinoHeroController();
+  final ChatPanelController _chatController = new ChatPanelController();
 
   @override
   void initState() {
@@ -73,19 +74,31 @@ class _GameRoomState extends State<GameRoom> {
     Widget main = BlocConsumer<GameRoomBloc, GameRoomState>(
       listener: (context, state){
         if(state is RoomPageChangedState){
+          _chatController.close();
           GameRoomRoutes.pageListener(navigationKey.currentState!.context, state, state.model.room!.page!);
         }
       },
       buildWhen: (s1, s2) => s2 is NewRoomState,
       builder: (context, state) {
-        return HeroControllerScope(
-          controller: _heroController,
-          child: Navigator(
-            key: navigationKey,
-            initialRoute: initialRoute,
-            onGenerateRoute: (settings) => GameRoomRoutes.generate(settings),
+        return Stack(
+          children: [
+
+          HeroControllerScope(
+            controller: _heroController,
+            child: Navigator(
+              key: navigationKey,
+              initialRoute: initialRoute,
+              onGenerateRoute: (settings) => GameRoomRoutes.generate(settings),
+            ),
           ),
-        );
+
+
+          Positioned(
+            right: 0,
+            child: ChatPanel(_chatController)
+          )
+
+        ],);
       },
     );
 
@@ -95,7 +108,103 @@ class _GameRoomState extends State<GameRoom> {
   }
 }
 
+class ChatPanelController extends ChangeNotifier {
+  bool isOpen = false;
+  void open(){
+    isOpen = true;
+    notifyListeners();
+  }
+  void close(){
+    isOpen = false;
+    notifyListeners();
+  }
+  void toggle(){
+    isOpen = !isOpen;
+    notifyListeners();
+  }
+}
 
+// TODO Make this good (hook up to notifs?)
+class ChatPanel extends StatefulWidget {
+  ChatPanel(this.controller);
+  final ChatPanelController controller;
+
+  @override
+  _ChatPanelState createState() => _ChatPanelState();
+}
+
+class _ChatPanelState extends State<ChatPanel> with TickerProviderStateMixin {
+
+  ChatPanelController get _controller => widget.controller;
+  late AnimationController animController = new AnimationController(vsync: this);
+  late Animation anim = new CurvedAnimation(parent: animController, curve: Curves.easeInOutCubic);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller.addListener(() {setState(() {
+      if(_controller.isOpen) animController.forward(from: animController.value);
+      else animController.reverse(from: animController.value);
+    });});
+
+    animController.addListener(() {setState(() {
+
+    });});
+    animController.duration = new Duration(milliseconds: ANIM_LENGTH_MS);
+    animController.value = _controller.isOpen ? 1 : 0;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  static const double PANEL_WIDTH_PROPORTION = 0.75;
+  static const double HANDLE_WIDTH = 25;
+  static const int ANIM_LENGTH_MS = 200;
+
+  @override
+  Widget build(BuildContext context) {
+
+    Size size = MediaQuery.of(context).size;
+    double w = size.width*PANEL_WIDTH_PROPORTION;
+    double dx = w * (1 - anim.value);
+
+    return Stack(
+      children: [
+
+        Container(
+            height: size.height,
+            width: w + HANDLE_WIDTH)
+            .xInvisibleIgnore(),
+
+        Positioned(
+          right: 0,
+          child: Container(
+              height: size.height,
+              width: w,
+              color: Colors.black.withOpacity(0.75)
+          ),
+        ),
+
+        Positioned(
+          right: w,
+          top: 40,
+          child: GestureDetector(
+            onTap: () => widget.controller.toggle(),
+              child: Container(
+                  height: 100,
+                  width: HANDLE_WIDTH,
+                  color: Colors.pinkAccent)
+          ),
+        )
+      ],
+    )
+    .xTranslate(dx: dx);
+  }
+}
 
 
 

@@ -81,7 +81,7 @@ class Avatar extends StatelessWidget{
                         ),
                         image: DecorationImage(
                           colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
-                          fit: BoxFit.contain,
+                          fit: BoxFit.fill,
                           image: image == null ? Assets.images.bullImgTransparent : image!.image,
                         ))
                 ),
