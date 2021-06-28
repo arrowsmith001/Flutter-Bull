@@ -92,6 +92,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/lewdness_off.png');
   AssetGenImage get lewdnessV2 =>
       const AssetGenImage('assets/images/lewdness_v2.png');
+  AssetGenImage get loadingArrows =>
+      const AssetGenImage('assets/images/loading_arrows.png');
   AssetGenImage get minusSignPNG =>
       const AssetGenImage('assets/images/minus_sign.PNG');
   String get minusSignSvg => 'assets/images/minus_sign.svg';

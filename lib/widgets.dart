@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,21 +10,47 @@ import 'classes/classes.dart';
 import 'package:extensions/extensions.dart';
 import 'gen/assets.gen.dart';
 
-class MyLoadingIndicator extends StatelessWidget {
-  MyLoadingIndicator([this.size]);
+class MyLoadingIndicator extends StatefulWidget {
+  MyLoadingIndicator([this.size = DEFAULT_LOADING_SIZE]);
 
-  Size? size;
+  static const Size DEFAULT_LOADING_SIZE = const Size(50, 50);
+
+  Size size;
+
+  @override
+  _MyLoadingIndicatorState createState() => _MyLoadingIndicatorState();
+}
+
+class _MyLoadingIndicatorState extends State<MyLoadingIndicator> with SingleTickerProviderStateMixin {
+
+  static const Duration SPIN_DURATION = const Duration(seconds: 1);
+  static const Curve SPIN_CURVE = Curves.easeInOut;
+
+  late AnimationController _animController = new AnimationController(vsync: this, duration: SPIN_DURATION);
+  late Animation<double> animation = new CurvedAnimation(parent: _animController, curve: SPIN_CURVE);
+
+  @override
+  void initState() {
+    super.initState();
+    _animController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  Size get size => widget.size;
+
 
   @override
   Widget build(BuildContext context) {
 
-    Widget loading = Center(
-      child: CircularProgressIndicator(),
+    return Center(
+      child: Assets.images.loadingArrows.image(width: size.width, height: size.height)
+      .xRotate(pi*2*animation.value),
     );
-
-    if(size != null) loading = loading.xSizedBox(height: size!.height, width: size!.width);
-
-    return loading;
   }
 }
 
@@ -30,13 +58,15 @@ class MyLoadingIndicator extends StatelessWidget {
 class Avatar extends StatelessWidget{
   Avatar(this.image,
       {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false,
-        this.defaultImage, this.size, this.shape = BoxShape.circle, this.borderRadius = 8.0, this.borderColor, this.clippedRectRadius});
+        this.defaultImage, this.size = const Size(100, 100), this.shape = BoxShape.circle,
+        this.borderRadius = 8.0, this.borderColor, this.clippedRectRadius});
+
   final double borderFlashValue;
   final double borderWidth;
   final bool loading;
   final Image? image;
   final ImageProvider? defaultImage;
-  final Size? size;
+  final Size size;
   final BoxShape shape;
   final double borderRadius;
   final Color? borderColor;
@@ -47,15 +77,15 @@ class Avatar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    Widget loadingIndicator = MyLoadingIndicator(size);
+    Widget loadingIndicator = MyLoadingIndicator(new Size(size.width*0.5, size.height*0.5));
     loadingIndicator = Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: loadingIndicator);
-    if(size != null) loadingIndicator = Container(child: loadingIndicator, width: size!.width, height: size!.height);
+    if(size != null) loadingIndicator = Container(child: loadingIndicator, width: size.width, height: size.height);
 
     //if(image == null) return EmptyWidget();
 
     return SizedBox(
-      height: size?.height,
-      width: size?.width,
+      height: size.height,
+      width: size.width,
       child: Stack(
         children: [
 
@@ -69,8 +99,8 @@ class Avatar extends StatelessWidget{
                 borderRadius: BorderRadius.circular(clippedRectRadius ?? 0),
                 clipBehavior: Clip.hardEdge,
                 child: Container(
-                    height: size == null ? null : size!.height,
-                    width: size == null ? null : size!.width,
+                    height: size.height,
+                    width: size.width,
                     decoration: BoxDecoration(
                       //color: Color.fromARGB(101, 229, 220, 220),
                         shape: clippedRectRadius == null ? shape : BoxShape.rectangle,

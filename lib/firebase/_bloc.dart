@@ -258,7 +258,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     if(event is LeaveGameRequested)
     {
       await _unsubFromAll();
-      bool success = await repo.leaveGame(model.userId!, model.room!.code!); // TODO Unjustified ! ?
+      bool success = await repo.leaveGame(model.userId!, model.me!.occupiedRoomCode!); // TODO Unjustified ! ?
       yield GameLeftState(success, model);
     }
 

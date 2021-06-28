@@ -23,6 +23,8 @@ environment:
 dependencies:
   extensions:
     path: "../extensions"
+  design:
+    path: "../design"
   flutter:
     sdk: flutter
   auto_size_text: ^2.1.0

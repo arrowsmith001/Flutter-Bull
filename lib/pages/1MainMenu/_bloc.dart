@@ -25,7 +25,6 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
 
   MainMenuBloc(this.model, {required this.firebaseBloc}) : super(InitialState(model)){
 
-
     this.firebaseBloc.bs.listen((state) {
       add(FirebaseStateEvent(state));
     });

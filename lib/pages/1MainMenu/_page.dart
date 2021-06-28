@@ -19,7 +19,7 @@ import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/pages/1MainMenu/background.dart';
 import 'package:flutter_bull/pages/1MainMenu/title.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
-import 'package:flutter_bull/utilities/interpolators.dart';
+import 'package:flutter_bull/utilities/curves.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets.dart';
@@ -32,6 +32,8 @@ import 'dart:ui' as ui;
 
 import '../../routes.dart';
 import '_bloc.dart';
+
+// TODO Make MainMenu impeccable. Establish style. <<<<<<<<<<<<<<<<<<<<<
 
 class MainMenu extends StatefulWidget {
 
@@ -94,7 +96,6 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
   }
 
-
   @override
   void dispose(){
     _animController.dispose();
@@ -105,6 +106,13 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _nameTextController.dispose();
     _roomCodeTextController.dispose();
     super.dispose();
+  }
+
+  void _blocListen(BuildContext context, MainMenuState s) {
+    if(s is DialogState || s is MenuState) _animController.forward(from: 0);
+    if(s is UserProfileImageChangedState) {_animController2.forward(from: 0);}
+    if(s is NewRoomState) goToGameRoom();
+    if(s is GameLeftState) _animController4.reverse(from: 1);
   }
 
   Future onTopBarPressed() async {
@@ -215,10 +223,11 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _bloc.add(ImageSelectionRequested(new ImagePicker(), source));
   }
 
-  Widget buildPlayerAvatar(BuildContext context, MainMenuModel model, {double borderWidth = 5, bool animate = true}) {
+  Widget buildPlayerAvatar(BuildContext context, MainMenuModel model, {double borderWidth = 5, bool animate = true, double dim = 50}) {
     Player? player = model.user;
     Image? profileImage = player == null ? null : player.profileImage;
     return Avatar(profileImage,
+        size: Size(dim, dim),
         defaultImage: Assets.images.shutter,
         borderWidth: borderWidth,
         borderFlashValue: animate ? _animController3.value : 0);
@@ -581,6 +590,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
       ),
     );
 
+    const double USER_BAR_AVATAR_DIM = 125;
     var userBarRight = Stack(
       children: [
 
@@ -589,8 +599,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               children: [
 
                 Container(
-                    height:125,
-                    child: buildPlayerAvatar(context, model, animate: false),
+                    height: USER_BAR_AVATAR_DIM,
+                    child: buildPlayerAvatar(context, model, animate: false, dim: USER_BAR_AVATAR_DIM),
                 ).xScale(hardOvershootInterp.transform(_animController2.value)),
 
                 player == null || player.name == null ? EmptyWidget()
@@ -705,141 +715,148 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
+        body: BlocConsumer<MainMenuBloc, MainMenuState>(
+          listener: (context, s) => _blocListen(context, s),
+          builder: (context, state)
+          {
+            Player? player = state.model.user;
+            Image? playerImage = player == null ? null : player.profileImage;
+            bool currentlyOccupyingRoom = player != null && player.occupiedRoomCode != null;
 
-            MainMenuBackgroundEffect(),
+            return Stack(
+              children: [
 
-            SafeArea(
-              child: BlocConsumer<MainMenuBloc, MainMenuState>(
-                  buildWhen: (s1, s2) {
-                    return s2 is DialogState || s2 is MenuState;
-                  },
-                  listener: (context, s){
-                    if(s is DialogState || s is MenuState) _animController.forward(from: 0);
-                    if(s is UserProfileImageChangedState) {_animController2.forward(from: 0);}
-                    if(s is NewRoomState) goToGameRoom();
-                    if(s is GameLeftState) _animController4.reverse(from: 1);
-                  },
-                  builder: (context, state){
+                MainMenuBackgroundEffect(),
 
-                    Player? player = state.model.user;
-                    Image? playerImage = player == null ? null : player.profileImage;
-                    bool currentlyOccupyingRoom = player != null && player.occupiedRoomCode != null;
+                SafeArea(
+                  child: LayoutBuilder(
+                      builder: (context, constraints){
 
-                    if(state is InitialState) return EmptyWidget();
+                        if(state is InitialState) return MyLoadingIndicator();
 
-                    if(state is DialogState)
-                    {
+                        if(state is DialogState)
+                        {
 
-                      Widget? dialog;
+                          Widget? dialog;
 
-                      if(state is PrivacyPolicyState) dialog = buildPrivacyPolicyDialog(context, state.model);
-                      if(state is ProfileSetupState) dialog = buildProfileSetupDialog(context, state.model);
-                      if(state is TutorialSetupState) dialog = buildTutorialSetup(context);
+                          if(state is PrivacyPolicyState) dialog = buildPrivacyPolicyDialog(context, state.model);
+                          if(state is ProfileSetupState) dialog = buildProfileSetupDialog(context, state.model);
+                          if(state is TutorialSetupState) dialog = buildTutorialSetup(context);
 
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          dialog!.xFlexible()
-                        ],
-                      ).xScale(0.6 + 0.4 * overshootInterp.transform(dialogPopAnim.value));
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              dialog!.xFlexible()
+                            ],
+                          ).xScale(0.6 + 0.4 * overshootInterp.transform(dialogPopAnim.value));
 
-                    }
+                        }
 
-                    return Stack(
-                      children: [
-
-                        // Main Column
-                        Column(
+                        return Stack(
                           children: [
 
-                            // Invisible user bar, for spacing purposes
-                            buildUserBar(context, state.model)
-                                .xPadding(EdgeInsets.fromLTRB(0, 10, 0, 10))
-                                .xInvisibleIgnore()
-                                .xFlexible(USER_BAR_FLEX),
+                            // Main Column
+                            Column(
+                              children: [
 
-                            Container(
-                              //color: AppColors.DebugColor,
-                              child: Column(
-                                children: [
-                                  UtterBullTitle().xExpanded(),
-                                ],
-                              ),
-                            ).xExpanded(),
+                                // Invisible user bar, for spacing purposes
+                                buildUserBar(context, state.model)
+                                    .xPadding(EdgeInsets.fromLTRB(0, 10, 0, 10))
+                                    .xInvisibleIgnore()
+                                    .xFlexible(USER_BAR_FLEX),
 
-                            // Join/Create Game Buttons
-                            AnimatedBuilder(
-                              child: _animController4.value < 0.5 ? buttonPanel1 : buttonPanel2,
-                              animation: _animController4,
-                              builder: (BuildContext context, Widget? child) {
-                                double val = antiOverInterp.transform(math.sin(math.pi*_animController4.value));
-                                return Transform.translate(
-                                  child: Opacity(
-                                    child: child,
-                                    opacity: (1 - val).clamp(0.0, 1.0),
+                                Container(
+                                  //color: AppColors.DebugColor,
+                                  child: Column(
+                                    children: [
+                                      UtterBullTitle().xExpanded(),
+                                    ],
                                   ),
-                                    offset: Offset(0, 50*val));
-                              },
-                            ).xPadding(new EdgeInsets.fromLTRB(0,0,0,20)).xFlexible(BUTTONS_FLEX)
+                                ).xExpanded(),
+
+                                // Join/Create Game Buttons
+                                AnimatedBuilder(
+                                  child: _animController4.value < 0.5 ? buttonPanel1 : buttonPanel2,
+                                  animation: _animController4,
+                                  builder: (BuildContext context, Widget? child) {
+                                    double val = antiOverInterp.transform(math.sin(math.pi*_animController4.value));
+                                    return Transform.translate(
+                                        child: Opacity(
+                                          child: child,
+                                          opacity: (1 - val).clamp(0.0, 1.0),
+                                        ),
+                                        offset: Offset(0, 50*val));
+                                  },
+                                ).xPadding(new EdgeInsets.fromLTRB(0,0,0,20)).xFlexible(BUTTONS_FLEX)
+
+                              ],
+                            ),
+
 
                           ],
-                        ),
+                        );
 
 
-                        // Grey translucent layer
-                        profileEditMenuOpen ? GestureDetector(
-                            onTap: () { onProfileImageTapped(); },
-                            child: Container(color: Colors.black54.withOpacity(0.8),))
-                            .xOpacity(anim1_Quick.value) : EmptyWidget(),
+                        // Main stack
 
-                        // Overlaying column
-                        Column(
-                          children: [
-
-                            // Actual user bar
-                            buildUserBar(context, state.model)
-                                .xPadding(EdgeInsets.fromLTRB(0, 10, 0, 10))
-                                .xFlexible(USER_BAR_FLEX),
-
-                            // On profile tapped list
-                            profileEditMenuOpen ? buildProfileEditMenu(context).xExpanded() : EmptyWidget()
-                          ],
-                        ),
+                      }),
+                ),
 
 
-                        // Overlaying container with progress indicator
-                        !loading ? EmptyWidget() : Container(
-                          color: Colors.grey.withOpacity(0.3),
-                          child: Center(
-                            child: CircularProgressIndicator(backgroundColor: Colors.redAccent,),
-                          ),
-                        ),
+                // Grey translucent layer
+                GestureDetector(
+                    onTap: () { onProfileImageTapped(); },
+                    child: Container(color: Colors.black54.withOpacity(0.8),))
+                    .xOpacity(anim1_Quick.value)
+                    .xEmptyUnless(profileEditMenuOpen),
 
-                        !editingName ? EmptyWidget() :
-                        buildEnterNameTextField(state.model),
+                // Overlaying column
+                SafeArea(
+                  child: Column(
+                    children: [
 
-                        !enteringRoomCode ? EmptyWidget() :
-                        buildEnterRoomCodeTextField(state.model)
+                      // Actual user bar
+                      Container(
+                        child: buildUserBar(context, state.model),
+                      ).xFlexible(USER_BAR_FLEX),
+
+                      // On profile tapped list
+                      buildProfileEditMenu(context).xEmptyUnless(profileEditMenuOpen).xExpanded()
+                    ],
+                  ),
+                ),
 
 
-                      ],
-                    );
+                // Overlaying container with progress indicator
+                Container(
+                  color: Colors.grey.withOpacity(0.3),
+                  child: MyLoadingIndicator(),
+                ).xEmptyUnless(loading),
 
-                    // Main stack
+                SafeArea(
+                  child: buildEnterNameTextField(state.model)
+                    .xEmptyUnless(editingName),
+                ),
 
-                  }),
-            )
+                SafeArea(
+                  child: buildEnterRoomCodeTextField(state.model)
+                      .xEmptyUnless(enteringRoomCode),
+                ),
 
+                //Center(child: MyLoadingIndicator(const Size(75, 75)))
 
-          ],
+              ],
+            );
+
+          },
         )
 
 
     ).xBoxDecorContainer(getBackgroundDecoration());
 
   }
+
+
 
 
 

@@ -393,6 +393,7 @@ class FirebaseDatabaseProvider {
       try{
         transactionResult = await _dbRef.child('rooms').child(roomCode).runTransaction((data) async {
 
+          if(data.value == null) return data;
           Room room = Room.fromJson(Map.from(data.value));
           List<String>? ids = room.playerIds;
           Map<String, int>? scores = room.playerScores;

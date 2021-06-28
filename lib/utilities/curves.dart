@@ -1,3 +1,4 @@
+
 import 'dart:math';
 
 import 'package:flutter/animation.dart';
@@ -42,7 +43,7 @@ class AnticipateOvershootCurve extends Curve{
 
 // For animations that want a "bounce" effect
 class BounceCurve extends Curve{
-  BounceCurve();
+  const BounceCurve();
 
   @override
   double transform(double t) {
@@ -55,7 +56,7 @@ class BounceCurve extends Curve{
 
 // For animations than slow down towards the end
 class DecelerateCurve extends Curve{
-  DecelerateCurve([this.T=1]);
+  const DecelerateCurve([this.T=1]);
   final double T;
 
   @override
@@ -67,13 +68,29 @@ class DecelerateCurve extends Curve{
 // For animations that want to jump and then return as a bounce
 class JumpThenBounceCurve extends Curve{
 
-  JumpThenBounceCurve();
-  final Curve decel = new DecelerateCurve();
-  final Curve bounce = new BounceCurve();
+  const JumpThenBounceCurve();
+  final Curve decel = const DecelerateCurve();
+  final Curve bounce = const BounceCurve();
 
   @override
   double transform(double t) {
     if(t < 0.5) return decel.transform(2*t);
     return 1-bounce.transform(2*(t-0.5));
+  }
+}
+
+
+class SinCurve extends Curve{
+
+  const SinCurve({this.factor = 1.0, this.offset = 0.0, this.amp = 1.0, this.abs = false});
+  final double factor;
+  final double offset;
+  final double amp;
+  final bool abs;
+  @override
+  double transform(double t) {
+    double d = amp*sin(2*pi*(t*(1/factor) + offset));
+    if(!abs) return d;
+    return max(0.0, d);
   }
 }

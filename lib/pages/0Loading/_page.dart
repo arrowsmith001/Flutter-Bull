@@ -58,24 +58,22 @@ class _LoadingState extends State<Loading> {
             progress = state.progress;
           }
 
-        return SafeArea(
-          child: Scaffold(
-            body: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor
-              ),
-              child: Center(
-                child: !loading ? EmptyWidget()
-                    : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                      value: progress,
-                    ),
-                    Text(message)
-                  ],
-                ),
+        return Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor
+            ),
+            child: Center(
+              child: !loading ? EmptyWidget()
+                  : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                    value: progress,
+                  ),
+                  Text(message)
+                ],
               ),
             ),
           ),

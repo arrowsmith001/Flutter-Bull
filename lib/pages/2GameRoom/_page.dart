@@ -27,7 +27,7 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
-import 'package:flutter_bull/utilities/interpolators.dart';
+import 'package:flutter_bull/utilities/curves.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets.dart';

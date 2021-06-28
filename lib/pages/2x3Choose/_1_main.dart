@@ -35,7 +35,7 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
-import 'package:flutter_bull/utilities/interpolators.dart';
+import 'package:flutter_bull/utilities/curves.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets.dart';
@@ -44,6 +44,7 @@ import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
 import 'package:extensions/extensions.dart';
+import 'package:design/design.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -168,9 +169,9 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
           double breakDownRotateValue = v/2;
 
           // TODO Move out of build
-          MovingGradient gradient = new MovingGradient(
-              begin: Alignment.topLeft, end: Alignment.bottomRight,
-              colors: [Colors.blue, Colors.indigo, Colors.lightBlueAccent]);
+          // MovingGradient gradient = new MovingGradient(
+          //     begin: Alignment.topLeft, end: Alignment.bottomRight,
+          //     colors: [Colors.blue, Colors.indigo, Colors.lightBlueAccent]);
           double t = (m*5) % 1.0;
 
           double dim = MediaQuery.of(context).size.width - 2*DIM_PADDING;
@@ -237,7 +238,7 @@ class _ChooseMainState extends State<ChooseMain> with TickerProviderStateMixin {
                     height: dim + DIM_PADDING,
                     width: dim + DIM_PADDING,
                     decoration: BoxDecoration(
-                        gradient: gradient.getGradient(_gradientAnimController.value)
+                        //gradient: gradient.getGradient(_gradientAnimController.value)
                     ),
                     child: ClipRRect(
                       borderRadius: MyBorderRadii.all(INNER_RRECT_RADIUS),
