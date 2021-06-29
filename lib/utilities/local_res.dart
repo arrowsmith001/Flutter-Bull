@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 
 import '../gen/assets.gen.dart';
@@ -17,6 +18,8 @@ class AppColors{
       255, 255, 220, 220);
 
   static const Color ScoreColor = const Color.fromARGB(255, 255, 221, 126);
+
+  static Color translucentGreyBg = Colors.black54.withOpacity(0.7);
 
 }
 

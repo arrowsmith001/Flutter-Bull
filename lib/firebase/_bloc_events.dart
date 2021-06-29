@@ -84,7 +84,10 @@ class SetCurrentRoomFieldEvent extends FirebaseEvent {
   List<String> path;
   dynamic value;
 }
-
+class UserChangedOccupiedRoomCodeEvent extends FirebaseEvent {
+  UserChangedOccupiedRoomCodeEvent(this.roomCode);
+  String? roomCode;
+}
 
 
 class StartGameEvent extends FirebaseEvent {}

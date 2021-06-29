@@ -7,8 +7,10 @@ import 'package:flutter_bull/utilities/res.dart';
 import '../../classes/classes.dart';
 import 'package:extensions/extensions.dart';
 
-
+// TODO Investigate title (consult physical device too) <<<<<<
 class UtterBullTitle extends StatefulWidget {
+  UtterBullTitle({this.size = Size.zero});
+  final Size size;
 
   final ResourceManager rm = new ResourceManager();
 
@@ -83,34 +85,34 @@ class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProvid
   //
   //     }
   // }
-
+  Size get size => widget.size;
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     //screenSize = largestSizeOfRatio(screenSize, 1, 1);
 
-    var size = new Size(screenSize.width, screenSize.height);
+    //var size = new Size(screenSize.width, screenSize.height);
     //List<double> scales = getScaleModifiers([utter_text_image, bull_text_image, bull_image, spiny_1_image, spiny_2_image]);
 
     var utter = CustomPaint(
-        foregroundPainter: UtterPainter(utter_text_image, _utterFraction),
-        size: size);
+      size: size,
+        foregroundPainter: UtterPainter(utter_text_image, _utterFraction));
 
     var bull = CustomPaint(
-        foregroundPainter: BullPainter(bull_text_image, _bullFraction),
-    size: size);
+        size: size,
+        foregroundPainter: BullPainter(bull_text_image, _bullFraction));
 
     var bullPic = CustomPaint(
-        foregroundPainter: BullImagePainter(bull_image, _bullPicFraction),
-        size: size);
+        size: size,
+        foregroundPainter: BullImagePainter(bull_image, _bullPicFraction));
 
     var spiny1 = CustomPaint(
-        foregroundPainter: SpinyPainter1(spiny_1_image, _spiny1Fraction),
-        size: size);
+        size: size,
+        foregroundPainter: SpinyPainter1(spiny_1_image, _spiny1Fraction));
 
     var spiny2 = CustomPaint(
-        foregroundPainter: SpinyPainter2(spiny_1_image, _spiny2Fraction),
-        size: size);
+        size: size,
+        foregroundPainter: SpinyPainter2(spiny_1_image, _spiny2Fraction));
 
 
     return Stack(
@@ -150,11 +152,11 @@ class UtterPainter extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = shrinkImageToFitSize(image, size);
+    var dstRect = fitRectInside(imageRect, size);// imageRect;
     var scaleFactor = 0.8;
 
     //
-    dstRect = imageRect;
+    //dstRect = imageRect;
     canvas.translate(10, 35);
     rotateAroundCenter(canvas, 2 * math.pi * -0.02);
     scaleAroundCenter(canvas, scaleFactor);
@@ -174,11 +176,11 @@ class BullPainter extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = shrinkImageToFitSize(image, size);
+    var dstRect = fitRectInside(imageRect, size);// imageRect;
     var scaleFactor = 0.8;
 
     //
-    dstRect = imageRect;
+    //dstRect = imageRect;
     canvas.translate(100, 100);
     scaleAroundCenter(canvas, scaleFactor);
     //
@@ -196,14 +198,14 @@ class BullImagePainter extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = shrinkImageToFitSize(image, size);
+    var dstRect = fitRectInside(imageRect, size);// imageRect;
     var scaleFactor = 0.6;
 
-    //
-    dstRect = imageRect;
-    canvas.translate(0, 75);
-    scale(canvas, scaleFactor);
-    //
+
+    // dstRect = imageRect;
+    // canvas.translate(0, 75);
+    // scale(canvas, scaleFactor);
+
 
     canvas.drawImageRect(image, imageRect, dstRect, Paint());
   }
@@ -218,14 +220,15 @@ class SpinyPainter1 extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
     
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = shrinkImageToFitSize(image, size);
+    var dstRect = fitRectInside(imageRect, size);// imageRect;
     var scaleFactor = 0.45;
 
-    //
-    dstRect = imageRect;
-    scale(canvas, scaleFactor);
-    rotateAroundCenter(canvas, _fraction * 2 * math.pi);
-    //
+
+    // dstRect = imageRect;
+    // scale(canvas, scaleFactor);
+    // rotateAroundCenter(canvas, _fraction * 2 * math.pi);
+
+    canvas.translate(50, 0);
 
     canvas.drawImageRect(image, imageRect, dstRect, Paint()
     ..colorFilter = ColorFilter.mode(ui.Color.fromARGB(255, 255, 255, 255), ui.BlendMode.srcATop));
@@ -241,13 +244,13 @@ class SpinyPainter2 extends SingleImageCustomPainterAlwaysRepaint {
   void paint(Canvas canvas, Size size) {
 
     var imageRect = MyFunctions.getRectFromUiImage(image);
-    var dstRect = shrinkImageToFitSize(image, size);
+    var dstRect = fitRectInside(imageRect, size);// imageRect;
     var scaleFactor = 0.475;
 
     //
-    dstRect = imageRect;
-    scale(canvas, scaleFactor);
-    rotateAroundCenter(canvas, _fraction * 2 * math.pi * 0.5);
+    //dstRect = imageRect;
+    // scale(canvas, scaleFactor);
+    // rotateAroundCenter(canvas, _fraction * 2 * math.pi * 0.5);
     //
 
     canvas.drawImageRect(image, imageRect, dstRect, Paint()

@@ -43,8 +43,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
   late BehaviorSubject<FirebaseState> bs;
 
   // Unsubs from all streams except userIdSub
-  Future<void> _unsubFromAll() async
-  {
+  Future<void> _unsubFromAll() async {
     List<Future> futures = [];
     if(roomSub != null) futures.add(roomSub!.cancel());
     if(roomChangesSub != null) futures.add(roomChangesSub!.cancel());
@@ -149,14 +148,16 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     }
   }
 
-  Future<void> _subscribeRoom(String roomCode) async {
-    print('_subscribeRoom: ' + roomCode);
+  Future<void> _subscribeRoom(String? roomCode) async {
+    print('_subscribeRoom: ' + roomCode.toString());
     // TODO await concurrently
     if(roomSub != null) await roomSub!.cancel();
     if(roomChangesSub != null) await roomChangesSub!.cancel();
     if(roomPlayerAdditionsSub != null) await roomPlayerAdditionsSub!.cancel();
     if(roomPlayerRemovalsSub != null) await roomPlayerRemovalsSub!.cancel();
     //if(roomPlayerVotesChildChangesSub != null) await roomPlayerVotesChildChangesSub!.cancel();
+
+    if(roomCode == null) return;
 
     roomSub = repo.streamRoom(roomCode).listen((room) {
       add(OnRoomStreamEvent(room));
@@ -212,24 +213,28 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
       if(changes.containsKey(Player.NAME))
       {
-        yield NameChangedState(event.userId, changes[Player.NAME], model);
+        yield PlayerNameChangedState(event.userId, changes[Player.NAME], model);
       }
 
       if(changes.containsKey(Player.OCCUPIED_ROOM_CODE))
         {
-          String roomCode = changes[Player.OCCUPIED_ROOM_CODE];
-          if(!model.isRoom(roomCode))
-            {
-              await _subscribeRoom(roomCode);
-            }
+          String? roomCode = changes[Player.OCCUPIED_ROOM_CODE];
+          if(model.isUser(event.userId) && !model.isRoom(roomCode)) add(UserChangedOccupiedRoomCodeEvent(roomCode));
         }
     }
 
-
     if(event is ImagePicked)
     {
-      String? fileExt = await repo.uploadProfileImage(event.file);
-      await repo.setPlayerField(model.userId!, Player.PROFILE_ID, fileExt);
+      yield ImagePickedStartedState(model);
+      String? fileExt;
+      try{
+        fileExt = await repo.uploadProfileImage(event.file);
+        await repo.setPlayerField(model.userId!, Player.PROFILE_ID, fileExt);
+      }catch(e)
+      {
+        yield ImagePickedFinishedState(fileExt, model);
+      }
+      yield ImagePickedFinishedState(fileExt, model);
     }
 
     if(event is ChangeUsernameEvent)
@@ -245,18 +250,21 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
     if(event is CreateGameRequested)
     {
+      yield CreateGameStartedState(model);
       String? roomCode = await repo.createGame(model.userId!);
       yield GameCreatedState(roomCode, model);
     }
 
     if(event is JoinGameRequested)
     {
+      yield JoinGameStartedState(model);
       bool success = await repo.joinGame(model.userId!, event.roomCode);
       yield GameJoinedState(success, model);
     }
 
     if(event is LeaveGameRequested)
     {
+      yield LeaveGameStartedState(model);
       await _unsubFromAll();
       bool success = await repo.leaveGame(model.userId!, model.me!.occupiedRoomCode!); // TODO Unjustified ! ?
       yield GameLeftState(success, model);
@@ -522,6 +530,12 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
       await repo.setRoomField(model.room!.code!, [Room.PHASE], RoomPhases.GO_TO_RESULTS);
     }
 
+    if(event is UserChangedOccupiedRoomCodeEvent){
+        if(event.roomCode != null) yield SubscribingToRoomStartState(model, event.roomCode!);
+        await _subscribeRoom(event.roomCode);
+        //yield SubscribingToRoomFinishState(event.roomCode);
+    }
+
     // if(event is TextEntryWithdrawnEvent)
     // {
     //   if(model.room != null && model.room!.code != null)
@@ -566,27 +580,36 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     print('OnPlayerStreamEvent: ${event.userId} : ' + (event.player == null ? 'null' : event.player.toString()));
     Player? streamedPlayer = event.player;
     String userId = event.userId;
+    bool isUser = model.isUser(userId);
 
     if(streamedPlayer != null)
     {
       // Establish image
-      if(streamedPlayer.profileId != null && !model.hasImage(streamedPlayer.profileId))
+      if(streamedPlayer.profileId != null)
       {
-        Image? newProfileImage = await repo.getProfileImage(streamedPlayer.profileId);
-        model.setProfileImage(streamedPlayer.profileId!, newProfileImage);
+        String profileId = streamedPlayer.profileId!;
+        if(!model.hasImage(profileId))
+          {
+            if(isUser) yield SyncingImageStartedState(model);
+            try{
+              Image? newProfileImage = await repo.getProfileImage(profileId);
+              model.setProfileImage(profileId, newProfileImage);
+            }catch(e)
+            {
+              if(isUser) yield SyncingImageFinishedState(model);
+            }
+            if(isUser) yield SyncingImageFinishedState(model);
+          }
+        else{
+          model.setProfileImage(profileId, model.getProfileImage(profileId));
+        }
       }
 
       //If player is user
-      if(streamedPlayer.id == model.userId)
+      if(model.isUser(streamedPlayer.id))
       {
         String? roomCode = streamedPlayer.occupiedRoomCode;
-        if(roomCode != null)
-        {
-          if(!model.isRoom(roomCode))
-          {
-            await _subscribeRoom(roomCode);
-          }
-        }
+        if(!model.isRoom(roomCode)) add(UserChangedOccupiedRoomCodeEvent(roomCode));
       }
 
     }
@@ -600,7 +623,10 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     {
       yield OnPlayerStreamState(userId, model);
     }
+
+
   }
+
 
 
 
@@ -637,13 +663,16 @@ class DataModel {
 
   bool hasPlayerSubmittedText(String? userId) => getPlayerText(getPlayerTarget(userId)) != null;
 
-
-
-  void setUserId(String? userId) {this.userId = userId;}
+  bool get userEstablished => (this.userId != null && me != null);
+  bool get roomEstablished => userEstablished
+      && (me!.occupiedRoomCode == null || me!.occupiedRoomCode != null && room != null && me!.occupiedRoomCode == room!.code);
+  void setUserId(String? userId) {
+    this.userId = userId;
+  }
 
   // Room
   Room? room;
-  bool isRoom(String roomCode) {
+  bool isRoom(String? roomCode) {
     if(room == null) return false;
     return (room!.code == roomCode);
   }
@@ -692,7 +721,8 @@ class DataModel {
   }
   Image? getProfileImage(String profileId) => profileImagesMap.containsKey(profileId) ? profileImagesMap[profileId] : null;
 
-  bool isUser(String userId) {
+  bool isUser(String? userId) {
+    if(this.userId == null) return false;
     return this.userId == userId;
   }
 

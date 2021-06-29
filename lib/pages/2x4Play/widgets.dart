@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:extensions/extensions.dart';
-import 'package:flutter_bull/utilities/curves.dart';
+import 'package:design/design.dart';
 
 class AnimatedVoterAvatar extends StatefulWidget {
 

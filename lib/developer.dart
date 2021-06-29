@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bull/firebase/_bloc_events.dart';
+import 'package:flutter_bull/pages/1MainMenu/_bloc.dart';
+import 'package:flutter_bull/pages/1MainMenu/_bloc_events.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc_events.dart' as grEvent;
 import 'package:flutter_bull/utilities/local_res.dart';
@@ -25,6 +27,7 @@ class DeveloperPanel extends StatefulWidget {
 
 class _DeveloperPanelState extends State<DeveloperPanel> {
 
+  MainMenuBloc get _mmBloc => BlocProvider.of<MainMenuBloc>(context);
   GameRoomBloc get _gameBloc => BlocProvider.of<GameRoomBloc>(context);
   FirebaseBloc get _fbBloc => BlocProvider.of<FirebaseBloc>(context);
   Repository get _repo => RepositoryProvider.of<Repository>(context);
@@ -41,6 +44,8 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
   static const String BEGIN_CHOOSE_FROM_END_OF_PLAY = 'Begin choose from end of play';
   static const String REVEAL_NEXT = 'Reveal next';
   static const String NEXT_REVEAL_TURN = 'Next reveal turn';
+  static const String DELETE_PREFS = 'Delete prefs';
+  static const String DELETE_USER = 'Delete user';
   late List<String> actions;
 
   bool executing = false;
@@ -52,7 +57,7 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
     String action = actions[selectedAction!];
 
     DataModel model = _fbBloc.model;
-    String roomCode = model.room!.code!;
+    String? roomCode = model.room == null ? null : model.room!.code!;
 
     switch(action){
       case CREATE_PLAYER_AND_ADD_TO_ROOM:
@@ -64,7 +69,7 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
           Player.NAME : 'Bot' + Random().nextInt(1000).toString(),
           Player.PROFILE_ID : await _getRandomProfileId()
         });
-        await _repo.joinGame(uid, roomCode);
+        await _repo.joinGame(uid, roomCode!);
 
         break;
       case REMOVE_RANDOM_NON_HOST_PLAYER:
@@ -72,26 +77,26 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
         String? userId = model.room!.playerIds!.where((id) => !model.isHost(id)).getRandom();
         print('Removing ' + (userId == null ? 'null' : userId));
         if(userId != null){
-          await _repo.leaveGame(userId, roomCode);
+          await _repo.leaveGame(userId, roomCode!);
           if(userId != model.userId){
             _repo.setPlayerField(userId, '', null);
           }
         }
         break;
       case REMOVE_HOST_PLAYER:
-        await _repo.leaveGame(model.room!.host!, roomCode);
+        await _repo.leaveGame(model.room!.host!, roomCode!);
         break;
       case SUBMIT_ALL_BOT_STATEMENTS:
         for(String userId in model.playerMap.keys)
         {
           if(!_isTestId(userId)) continue;
-          await _setTextSubmission(userId, roomCode, model);
+          await _setTextSubmission(userId, roomCode!, model);
         }
         break;
       case SUBMIT_ALL_STATEMENTS:
         for(String userId in model.playerMap.keys)
         {
-          await _setTextSubmission(userId, roomCode, model);
+          await _setTextSubmission(userId, roomCode!, model);
         }
         break;
       case BOTS_VOTE_STAGGERED:
@@ -127,6 +132,12 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
         break;
       case NEXT_REVEAL_TURN:
         _gameBloc.add(grEvent.NextTurnRequestedFromRevealsEvent());
+        break;
+      case DELETE_PREFS:
+        _mmBloc.add(DebugEvent(clearAllPrefs: true));
+        break;
+      case DELETE_USER:
+        _repo.setPlayerField(model.userId!, '', null);
         break;
     }
 
@@ -190,7 +201,9 @@ class _DeveloperPanelState extends State<DeveloperPanel> {
       BEGIN_PLAY_FROM_CHOOSE,
       BEGIN_CHOOSE_FROM_END_OF_PLAY,
       REVEAL_NEXT,
-      NEXT_REVEAL_TURN
+      NEXT_REVEAL_TURN,
+      DELETE_PREFS,
+      DELETE_USER
     ];
     
     double dim = 75;

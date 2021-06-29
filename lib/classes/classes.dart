@@ -33,9 +33,32 @@ abstract class SingleImageCustomPainterAlwaysRepaint extends CustomPainter {
     canvasActionAboutCenter(canvas, canvas.rotate, angle, offset);
   }
 
+  Rect rectFromDimensions(num width, num height){
+    return Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble());
+  }
+  Rect rectFromSize(Size size){
+    return Rect.fromLTWH(0, 0, size.width.toDouble(), size.height.toDouble());
+  }
+
+  Rect fitRectInside(Rect rect, Size size){
+    double width = rect.width;
+    double height = rect.height;
+    if(width > size.width){
+      double frac = size.width / width;
+      width *= frac;
+      height *= frac;
+    }
+    if(height > size.height){
+      double frac = size.height / height;
+      width *= frac;
+      height *= frac;
+    }
+    return new Rect.fromLTWH(0, 0, width, height);
+  }
+
   Rect shrinkImageToFitSize(ui.Image image, Size size) {
     if(image.height <= size.height && image.width <= size.width)
-      return Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
+      return rectFromDimensions(image.width, image.height);
 
     double heightRatio = size.height / image.height;
     double widthRatio = size.width / image.width;
@@ -99,7 +122,7 @@ class MyBorderRadii {
 
 }
 
-
+// TODO Make stricter
 class Validators{
 
   static String? EmailValidation<T>(T value){

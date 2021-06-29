@@ -74,11 +74,8 @@ class FirebaseProvider {
 
   Future<String?> uploadProfileImage(File file) async {
     String photoId = Uuid().v4();
-
     String fileExt = photoId + '.' + file.path.split('.').last;
-
     await cloud.uploadProfileImage(file, fileExt);
-
     return fileExt;
   }
 

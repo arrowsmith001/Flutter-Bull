@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:math' as math;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:design/design.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/pages/1MainMenu/background.dart';
 import 'package:flutter_bull/pages/1MainMenu/title.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
-import 'package:flutter_bull/utilities/curves.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets.dart';
@@ -46,7 +46,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   MainMenuBloc get _bloc => BlocProvider.of<MainMenuBloc>(context, listen: false);
 
   late AnimationController _animController, _animController2, _animController3, _animController4;
-  late Animation<double> dialogPopAnim, anim1_1, anim1_2, anim1_3, anim1_4, anim1_5, anim1_6, anim1_7, anim1_8, anim1_Quick; // _animController1
+  late List<Animation<double>> anims1;
+  late Animation<double> dialogPopAnim, anim1_Quick; // _animController1
   late Animation<double> anim2_1; // _animController2
   final Curve overshootInterp = OvershootCurve();
   final Curve hardOvershootInterp = OvershootCurve(5);
@@ -59,39 +60,30 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
     _bloc.add(SetupEvent());
 
-    _animController = new AnimationController(vsync: this);
+    _animController = new AnimationController(vsync: this, duration: const Duration(milliseconds: 5000));
     _animController.addListener(() {setState(() { });});
-    _animController.duration = Duration(milliseconds: 5000);
     dialogPopAnim = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(0, 0.1)));
 
     // Profile pop
-    _animController2 = new AnimationController(vsync: this);
+    _animController2 = new AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _animController2.addListener(() {setState(() { });});
-    _animController2.duration = Duration(milliseconds: 500);
     _animController2.value = 1;
     anim2_1 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController2, curve: Interval(0, 1)));
 
     // Cyclic
-    _animController3 = new AnimationController(vsync: this);
+    _animController3 = new AnimationController(vsync: this, duration: const Duration(milliseconds: 3000));
     _animController3.addListener(() {setState(() { });});
-    _animController3.duration = Duration(milliseconds: 3000);
     _animController3.repeat(reverse: true);
 
     // Button panel
-    _animController4 = new AnimationController(vsync: this);
+    _animController4 = new AnimationController(vsync: this, duration: const Duration(milliseconds: 750));
     _animController4.addListener(() {setState(() { });});
-    _animController4.duration = Duration(milliseconds: 750);
 
     double intervalValue = 0.1, staggerValue = 0.01;
-    anim1_Quick = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(0, 0.01)));
-    anim1_1 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue, staggerValue + intervalValue)));
-    anim1_2 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*2, staggerValue*2 + intervalValue)));
-    anim1_3 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*3, staggerValue*3 + intervalValue)));
-    anim1_4 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*4, staggerValue*4 + intervalValue)));
-    anim1_5 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*5, staggerValue*5 + intervalValue)));
-    anim1_6 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*6, staggerValue*6 + intervalValue)));
-    anim1_7 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*7, staggerValue*7 + intervalValue)));
-    anim1_8 = new Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animController, curve: Interval(staggerValue*8, staggerValue*8 + intervalValue)));
+    anim1_Quick = new Tween<double>(begin: 0, end: 1).animate(new CurvedAnimation(parent: _animController, curve: Interval(0, 0.01)));
+    anims1 = List.generate(8, (i) => new Tween<double>(begin: 0, end: 1).animate(
+        new CurvedAnimation(parent: _animController,
+            curve: Interval((i+1)*staggerValue, (i+1)*staggerValue + intervalValue))));
     _animController.forward();
 
   }
@@ -109,10 +101,26 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   }
 
   void _blocListen(BuildContext context, MainMenuState s) {
-    if(s is DialogState || s is MenuState) _animController.forward(from: 0);
+    //if(isInMenuState) print(s.model.userEstablished.toString() + ' ' + s.model.roomEstablished.toString());
+    if(s is DialogState || s is MenuState) {
+      _animController.forward(from: 0);
+    }
     if(s is UserProfileImageChangedState) {_animController2.forward(from: 0);}
     if(s is NewRoomState) goToGameRoom();
     if(s is GameLeftState) _animController4.reverse(from: 1);
+
+
+    // if(s.model.menuState is MenuState){
+    //   if(!s.model.userEstablished) setLoading(true, 'Loading user account...');
+    //   else if(!s.model.roomEstablished) setLoading(true, 'Loading current game...');
+    //   else setLoading(false, null);
+    // }
+    //
+    // if(s is LoadingState)
+    //   {
+    //     setLoading(s.loading, s.message);
+    //   }
+
   }
 
   Future onTopBarPressed() async {
@@ -130,7 +138,6 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   onTutorialSetupPressed(bool tutorialModeOn) async {
     _bloc.add(TutorialSetupPressed(tutorialModeOn));
   }
-
 
   void onCreateGame() async {
     setState(() {
@@ -166,6 +173,9 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     _bloc.add(LeaveGameEvent());
   }
 
+  bool loading = true;
+  String? loadingMessage;
+
   bool goingToGameRoom = false;
   bool creatingGame = false;
   bool joiningGame = false;
@@ -173,7 +183,6 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   bool leavingGame = false;
 
   // TODO Either forbid popping scope to main menu, or reset variables to allow re-creating rooms
-
   Future<void> goToGameRoom() async {
     if(!_animController4.isCompleted) _animController4.forward(from: 0);
     if(goingToGameRoom) {
@@ -193,46 +202,52 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     goingToGameRoom = false;
   }
 
-
-
   // IMAGE SELECTION
   TextEditingController _profileSetupNameController = new TextEditingController();
 
   bool profileEditMenuOpen = false;
-  bool loading = false;
 
   void onProfileImageTapped() {
-    if(profileEditMenuOpen)
-    {
-      setState(() {
+    setState(() {
+      enteringRoomCode = false;
+      if(profileEditMenuOpen)
+      {
         profileEditMenuOpen = false;
         editingName = false;
         _animController.reverse(from: 1);
-      });
-    }
-    else
-    {
-      setState(() {
+      }
+      else
+      {
         profileEditMenuOpen = true;
         _animController.forward(from: 0);
-      });
-    }
+      }
+    });
   }
 
+  ImagePicker picker = new ImagePicker();
   void profileImageSelection(ImageSource source) {
-    _bloc.add(ImageSelectionRequested(new ImagePicker(), source));
+    _bloc.add(ImageSelectionRequested(picker, source));
   }
 
-  Widget buildPlayerAvatar(BuildContext context, MainMenuModel model, {double borderWidth = 5, bool animate = true, double dim = 50}) {
+  Widget _buildPlayerAvatar(BuildContext context, MainMenuModel model,
+      {double borderWidth = 5, bool animate = true, double dim = 50}) {
     Player? player = model.user;
     Image? profileImage = player == null ? null : player.profileImage;
     return Avatar(profileImage,
         size: Size(dim, dim),
-        defaultImage: Assets.images.shutter,
         borderWidth: borderWidth,
         borderFlashValue: animate ? _animController3.value : 0);
   }
 
+  Widget _buildProfileAvatarSelect(BuildContext context, MainMenuModel model) {
+    Player? player = model.user;
+    Image? profileImage = player == null ? null : player.profileImage;
+    return Avatar(profileImage,
+        size: Size(500, 500),
+        defaultImage: Assets.images.shutter,
+        borderWidth: 5,
+        borderFlashValue: _animController3.value);
+  }
 
   TextEditingController _nameTextController = TextEditingController();
   bool editingName = false;
@@ -250,10 +265,10 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     });
   }
 
-  // Todo generalize
+  // Todo combine
   Widget buildEnterNameTextField(MainMenuModel model) {
     // TODO React to name change event
-    if(model.user != null && model.user!.name == null) {
+    if(model.user != null && model.user!.name != null) {
       _nameTextController.text = model.user!.name!;
     }
 
@@ -318,8 +333,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   }
 
 
-
-  BoxDecoration getBackgroundDecoration(){
+  BoxDecoration getBackgroundDecoration(BuildContext context){
     // BACKGROUND
     var primaryColor = CupertinoTheme.of(context).primaryColor;
     var fadedPrimaryColor = ui.Color.lerp(primaryColor, Colors.white, 0.2)!;
@@ -340,7 +354,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     );
   }
 
-  Widget buildPrivacyPolicyDialog(BuildContext context, MainMenuModel model){
+  Widget _buildPrivacyPolicyDialog(BuildContext context, MainMenuModel model){
     return MyCupertinoStyleDialogWithButtons(
         columnChildren: [
           MyCupertinoStyleBox(
@@ -364,7 +378,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               height: 100,
               glowPosition: Alignment.bottomLeft,
               value: _animController3.value,
-              color: Color.fromARGB(255, 255, 206, 206),
+              //color: Color.fromARGB(255, 255, 206, 206),
               borderRadius: MyBorderRadii.BOTTOM_LEFT_ONLY,
               text: AutoSizeText('I\'m not okay with that', textAlign: TextAlign.center,
                   minFontSize: 16, style: TextStyle(color: Colors.red, fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
@@ -374,7 +388,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               height: 100,
               glowPosition: Alignment.bottomRight,
               value: _animController3.value,
-              color: Color.fromARGB(255, 211, 243, 255),
+              //color: Color.fromARGB(255, 211, 243, 255),
               borderRadius: MyBorderRadii.BOTTOM_RIGHT_ONLY,
               text: AutoSizeText('I\'m cool with that', textAlign: TextAlign.center,
                   minFontSize: 16, style: TextStyle(color: Color.fromARGB(
@@ -387,7 +401,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     );
   }
 
-  Widget buildProfileSetupDialog(BuildContext context, MainMenuModel model){
+  Widget _buildProfileSetupDialog(BuildContext context, MainMenuModel model){
     Player? player = model.user;
     String? name = player == null ? null : player.name;
     Image? profileImage = player == null ? null : player.profileImage;
@@ -401,12 +415,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   borderRadius: MyBorderRadii.TOP_ONLY,
                   content: Text('Set up your profile', style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold))
                       .xPadding(EdgeInsets.fromLTRB(0,15,0,10))
-                      .xScale(hardOvershootInterp.transform(anim1_1.value))
+                      .xScale(hardOvershootInterp.transform(anims1[0].value))
               ),
 
               Text('Just a photo and name, so your friends recognise you!', style: TextStyle(fontSize: 20), textAlign: TextAlign.center,)
                   .xPadding(EdgeInsets.fromLTRB(0,20,0,0))
-                  .xScale(hardOvershootInterp.transform(anim1_2.value)),
+                  .xScale(hardOvershootInterp.transform(anims1[1].value)),
 
             ],
           ),
@@ -425,15 +439,15 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   profileImage == null ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
                 ],
               ).xPadding(EdgeInsets.symmetric(vertical: 12))
-                  .xScale(hardOvershootInterp.transform(anim1_3.value))
+                  .xScale(hardOvershootInterp.transform(anims1[2].value))
                   .xFlexible(),
 
               GestureDetector(
                 onTap: () { profileImageSelection(ImageSource.camera); },
-                child: buildPlayerAvatar(context, model),
+                child: _buildProfileAvatarSelect(context, model),
               )
                   .xScale(hardOvershootInterp.transform(anim2_1.value))
-                  .xScale(hardOvershootInterp.transform(anim1_4.value))
+                  .xScale(hardOvershootInterp.transform(anims1[3].value))
                   .xExpanded(),
 
               CupertinoButton(
@@ -445,7 +459,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                     ],
                   ),
                   onPressed: (){ profileImageSelection(ImageSource.gallery); }
-              ).xScale(hardOvershootInterp.transform(anim1_5.value))
+              ).xScale(hardOvershootInterp.transform(anims1[4].value))
             ],
           )
               .xFlexible(4),
@@ -464,16 +478,19 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   _profileSetupNameController.value.text == '' ? EmptyWidget() : Icon(Icons.done, color: Colors.green,)
                 ],
               ).xPadding(EdgeInsets.symmetric(vertical: 12))
-                  .xScale(hardOvershootInterp.transform(anim1_6.value))
+                  .xScale(hardOvershootInterp.transform(anims1[5].value))
                   .xFlexible(),
 
               CupertinoTextField(
+                autocorrect: false,
+                style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold,),
+                decoration: BoxDecoration(color:Colors.white),
                 placeholder: name == null ? 'Enter your name here' : name,
-                placeholderStyle: TextStyle(fontFamily: FontFamily.lapsusProBold,color: Colors.grey),
+                placeholderStyle: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold,color: Colors.black.withOpacity(0.3)),
                 controller: _profileSetupNameController,
                 padding: EdgeInsets.all(18),)
                   .xPadding(EdgeInsets.symmetric(horizontal: 20))
-                  .xScale(hardOvershootInterp.transform(anim1_7.value))
+                  .xScale(hardOvershootInterp.transform(anims1[6].value))
             ],
           )
               .xFlexible(2),
@@ -489,7 +506,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
         ]);
   }
 
-  Widget buildTutorialSetup(BuildContext context){
+  Widget _buildTutorialSetup(BuildContext context){
     return MyCupertinoStyleDialogWithButtons(
         columnChildren: [
           MyCupertinoStyleBox(
@@ -498,11 +515,11 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               children: [
                 Text('Welcome to Utter Bull!!',
                     style: TextStyle(fontSize: 24, fontFamily: FontFamily.lapsusProBold))
-                    .xScale(hardOvershootInterp.transform(anim1_1.value))
+                    .xScale(hardOvershootInterp.transform(anims1[0].value))
                     .xPadding(EdgeInsets.fromLTRB(0,20,0,10)),
 
 
-                SizedBox(child: Assets.images.bullIcon.image(), height: hardOvershootInterp.transform(anim1_6.value)*150)
+                SizedBox(child: Assets.images.bullIcon.image(), height: hardOvershootInterp.transform(anims1[1].value)*150)
                     .xPadding(EdgeInsets.fromLTRB(0,10,0,10))
 
 
@@ -514,7 +531,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               children: [
                 Text("This is a social game to play with a few friends. Make sure you\'re all in the same room or video call.",
                   textAlign: TextAlign.center,).xPadding(EdgeInsets.symmetric(vertical: 12))
-                    .xScale(hardOvershootInterp.transform(anim1_2.value)),
+                    .xScale(hardOvershootInterp.transform(anims1[2].value)),
 
                 RichText(
                     textAlign: TextAlign.center,
@@ -527,7 +544,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                           TextSpan(text: ' recommended that you '),
                           TextSpan(text: 'enable tutorial hints', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
                           TextSpan(text: ' throughout your first game. You can disable these any time.')
-                        ])).xPadding(EdgeInsets.symmetric(vertical: 12)).xScale(hardOvershootInterp.transform(anim1_3.value)),
+                        ])).xPadding(EdgeInsets.symmetric(vertical: 12)).xScale(hardOvershootInterp.transform(anims1[3].value)),
 
                 RichText(
                     textAlign: TextAlign.center,
@@ -537,7 +554,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                         [
                           TextSpan(text: "All tutorial info can be identified by...")
                         ])).xPadding(EdgeInsets.symmetric(vertical: 12))
-                    .xScale(hardOvershootInterp.transform(anim1_4.value)),
+                    .xScale(hardOvershootInterp.transform(anims1[4].value)),
               ]
           ).xPadding(EdgeInsets.symmetric(horizontal: 16)),
 
@@ -555,7 +572,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               borderRadius: MyBorderRadii.BOTTOM_LEFT_ONLY,
               text: AutoSizeText('No tutorial info, I\'m already a pro', textAlign: TextAlign.center,
                   minFontSize: 16, style: TextStyle(color: Colors.red, fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
-              onPressed: () => onTutorialSetupPressed(false)).xScale(hardOvershootInterp.transform(anim1_6.value)),
+              onPressed: () => onTutorialSetupPressed(false)).xScale(hardOvershootInterp.transform(anims1[5].value)),
 
           MyCupertinoStyleButton(
               height: 100,
@@ -566,7 +583,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
               text: AutoSizeText('Yes! Enable all tutorial info', textAlign: TextAlign.center,
                   minFontSize: 16, style: TextStyle(color: Color.fromARGB(
                       255, 27, 47, 163), fontFamily: FontFamily.lapsusProBold, fontSize: 32)),
-              onPressed: () => onTutorialSetupPressed(true)).xScale(hardOvershootInterp.transform(anim1_7.value)),
+              onPressed: () => onTutorialSetupPressed(true)).xScale(hardOvershootInterp.transform(anims1[6].value)),
 
 
 
@@ -574,7 +591,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     );
   }
 
-  Widget buildUserBar(BuildContext context, MainMenuModel model){
+  Widget _buildUserBar(BuildContext context, MainMenuModel model){
     Player? player = model.user;
     Image? playerImage = player == null ? null : player.profileImage;
 
@@ -600,7 +617,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
                 Container(
                     height: USER_BAR_AVATAR_DIM,
-                    child: buildPlayerAvatar(context, model, animate: false, dim: USER_BAR_AVATAR_DIM),
+                    child: _buildPlayerAvatar(context, model, animate: false, dim: USER_BAR_AVATAR_DIM),
                 ).xScale(hardOvershootInterp.transform(_animController2.value)),
 
                 player == null || player.name == null ? EmptyWidget()
@@ -667,22 +684,23 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
 
+    final Size size = MediaQuery.of(context).size;
 
     // BUTTONS
     var buttonIconSize = 65.0;
     var minFontSize = 10.0;
     var fontSize = 30.0;
 
-    Widget createGameButton = MainMenuButton("CREATE GAME", Assets.images.bullAddGlowBrown.image(), () async { onCreateGame(); },
+    Widget createGameButton = MainMenuButton("CREATE GAME", Assets.images.bullAddGlowBrown.image(), () => onCreateGame(),
         fontSize: fontSize, minFontSize: minFontSize, imageSize: buttonIconSize);
 
-    Widget joinGameButton = MainMenuButton("JOIN GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onJoinGame(); },
+    Widget joinGameButton = MainMenuButton("JOIN GAME", Assets.images.arrowsGlowBrownEdit.image(), () => onJoinGame(),
         fontSize: fontSize+10, minFontSize: minFontSize, imageSize: buttonIconSize+10);
 
-    Widget resumeGameButton = MainMenuButton("RESUME", Assets.images.arrowsGlowBrownEdit.image(), () async { onResumeGame(); },
+    Widget resumeGameButton = MainMenuButton("RESUME", Assets.images.arrowsGlowBrownEdit.image(), () => onResumeGame(),
         fontSize: fontSize+16, minFontSize: minFontSize, fontColor: Colors.lightGreenAccent, imageSize: buttonIconSize+10);
 
-    Widget leaveGameButton = MainMenuButton("LEAVE GAME", Assets.images.arrowsGlowBrownEdit.image(), () async { onLeaveGame(); },
+    Widget leaveGameButton = MainMenuButton("LEAVE GAME", Assets.images.arrowsGlowBrownEdit.image(), () => onLeaveGame(),
         fontSize: fontSize, minFontSize: minFontSize, fontColor: Colors.white, imageSize: buttonIconSize+10);
 
     Widget buttonPanel1 = Column(
@@ -711,6 +729,19 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     const int TITLE_FLEX = 4;
     const int BUTTONS_FLEX = 0;
 
+    var utterBullAspectRatio = 1.25;
+    var utterBullTitle = Container(
+      //color: AppColors.DebugColor,
+      child: Column(
+        children: [
+          AspectRatio(
+              aspectRatio: utterBullAspectRatio,
+              child: Container(color: Colors.pink,
+                  child: UtterBullTitle(size: Size(size.width, size.width/utterBullAspectRatio)))).xFlexible(),
+        ],
+      ),
+    );
+
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
@@ -723,6 +754,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
             Image? playerImage = player == null ? null : player.profileImage;
             bool currentlyOccupyingRoom = player != null && player.occupiedRoomCode != null;
 
+            bool isInMenuState = state.model.menuState is MenuState;
+
             return Stack(
               children: [
 
@@ -732,16 +765,16 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                   child: LayoutBuilder(
                       builder: (context, constraints){
 
-                        if(state is InitialState) return MyLoadingIndicator();
+                        if(state.model.menuState is InitialState) return MyLoadingIndicator();
 
-                        if(state is DialogState)
+                        if(state.model.menuState is DialogState)
                         {
 
                           Widget? dialog;
 
-                          if(state is PrivacyPolicyState) dialog = buildPrivacyPolicyDialog(context, state.model);
-                          if(state is ProfileSetupState) dialog = buildProfileSetupDialog(context, state.model);
-                          if(state is TutorialSetupState) dialog = buildTutorialSetup(context);
+                          if(state.model.menuState is PrivacyPolicyState) dialog = _buildPrivacyPolicyDialog(context, state.model);
+                          if(state.model.menuState is ProfileSetupState) dialog = _buildProfileSetupDialog(context, state.model);
+                          if(state.model.menuState is TutorialSetupState) dialog = _buildTutorialSetup(context);
 
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -760,19 +793,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
                               children: [
 
                                 // Invisible user bar, for spacing purposes
-                                buildUserBar(context, state.model)
+                                _buildUserBar(context, state.model)
                                     .xPadding(EdgeInsets.fromLTRB(0, 10, 0, 10))
                                     .xInvisibleIgnore()
                                     .xFlexible(USER_BAR_FLEX),
 
-                                Container(
-                                  //color: AppColors.DebugColor,
-                                  child: Column(
-                                    children: [
-                                      UtterBullTitle().xExpanded(),
-                                    ],
-                                  ),
-                                ).xExpanded(),
+                                utterBullTitle.xExpanded(),
 
                                 // Join/Create Game Buttons
                                 AnimatedBuilder(
@@ -805,10 +831,15 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
                 // Grey translucent layer
                 GestureDetector(
-                    onTap: () { onProfileImageTapped(); },
-                    child: Container(color: Colors.black54.withOpacity(0.8),))
+                    onTap: () {
+                      if(enteringRoomCode) setState(() {
+                        enteringRoomCode = false;
+                      });
+                      else onProfileImageTapped();
+                    },
+                    child: Container(color: AppColors.translucentGreyBg))
                     .xOpacity(anim1_Quick.value)
-                    .xEmptyUnless(profileEditMenuOpen),
+                    .xEmptyUnless(profileEditMenuOpen || enteringRoomCode),
 
                 // Overlaying column
                 SafeArea(
@@ -817,33 +848,41 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
 
                       // Actual user bar
                       Container(
-                        child: buildUserBar(context, state.model),
+                        child: _buildUserBar(context, state.model),
                       ).xFlexible(USER_BAR_FLEX),
 
                       // On profile tapped list
                       buildProfileEditMenu(context).xEmptyUnless(profileEditMenuOpen).xExpanded()
                     ],
                   ),
-                ),
+                )
+                    .xEmptyUnless(isInMenuState),
 
-
-                // Overlaying container with progress indicator
-                Container(
-                  color: Colors.grey.withOpacity(0.3),
-                  child: MyLoadingIndicator(),
-                ).xEmptyUnless(loading),
-
+                // Name text field
                 SafeArea(
                   child: buildEnterNameTextField(state.model)
                     .xEmptyUnless(editingName),
                 ),
 
+                // Room code text field
                 SafeArea(
                   child: buildEnterRoomCodeTextField(state.model)
                       .xEmptyUnless(enteringRoomCode),
                 ),
 
                 //Center(child: MyLoadingIndicator(const Size(75, 75)))
+
+                // Overlaying container with progress indicator
+                Container(
+                  color: AppColors.translucentGreyBg,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      state.model.loadingMessage != null ? AppStyles.MyText(state.model.loadingMessage!) : EmptyWidget(),
+                      MyLoadingIndicator(color: Colors.white)
+                    ],
+                  ),
+                ).xEmptyUnless(state.model.loading),
 
               ],
             );
@@ -852,7 +891,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
         )
 
 
-    ).xBoxDecorContainer(getBackgroundDecoration());
+    ).xBoxDecorContainer(getBackgroundDecoration(context));
 
   }
 

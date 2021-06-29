@@ -56,4 +56,9 @@ class GameLeftState extends MainMenuState {
 }
 
 
+class LoadingState extends MainMenuState {
+  const LoadingState(MainMenuModel model, {this.loading = false, this.message}) : super(model);
+  final bool loading;
+  final String? message;
+}
 

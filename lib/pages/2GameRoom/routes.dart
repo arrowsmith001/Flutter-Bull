@@ -13,7 +13,6 @@ import 'package:flutter_bull/pages/2x4Play/_page.dart';
 import 'package:flutter_bull/pages/2x5Reveals/_page.dart';
 import 'package:extensions/extensions.dart';
 import 'package:design/design.dart';
-import 'package:flutter_bull/utilities/design.dart';
 
 class GameRoomRoutes {
 

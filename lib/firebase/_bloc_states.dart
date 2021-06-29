@@ -54,8 +54,8 @@ class ProfileImageUpdatedState extends FirebaseState {
   final String userId;
 }
 
-class NameChangedState extends FirebaseState {
-  const NameChangedState(this.userId, this.newName, DataModel model) : super(model);
+class PlayerNameChangedState extends FirebaseState {
+  const PlayerNameChangedState(this.userId, this.newName, DataModel model) : super(model);
   final String userId;
   final String newName;
 }
@@ -82,8 +82,21 @@ class GameLeftState extends FirebaseState {
   final bool success;
 }
 
+// Image
 
-
+class ImagePickedStartedState extends FirebaseState {
+  const ImagePickedStartedState(DataModel model) : super(model);
+}
+class ImagePickedFinishedState extends FirebaseState {
+  const ImagePickedFinishedState(this.fileExt, DataModel model) : super(model);
+  final String? fileExt;
+}
+class SyncingImageStartedState extends FirebaseState {
+  const SyncingImageStartedState(DataModel model) : super(model);
+}
+class SyncingImageFinishedState extends FirebaseState {
+  const SyncingImageFinishedState(DataModel model) : super(model);
+}
 
 // Room
 class RoomChangeState extends FirebaseState {
@@ -106,6 +119,11 @@ class NewRoomState extends FirebaseState {
   const NewRoomState(DataModel model) : super(model);
 }
 
+class SubscribingToRoomStartState extends FirebaseState {
+  const SubscribingToRoomStartState(DataModel model, this.roomCode, ) : super(model);
+  final String roomCode;
+}
+
 
 // TODO Generalize at the fbBloc level
 class RoomPageChangedState extends FirebaseState {
@@ -120,7 +138,15 @@ class RoomSettingsChangedState extends FirebaseState {
 }
 
 
-
+class CreateGameStartedState extends FirebaseState {
+  const CreateGameStartedState(DataModel model) : super(model);
+}
+class JoinGameStartedState extends FirebaseState {
+  const JoinGameStartedState(DataModel model) : super(model);
+}
+class LeaveGameStartedState extends FirebaseState {
+  const LeaveGameStartedState(DataModel model) : super(model);
+}
 
 
 // Game

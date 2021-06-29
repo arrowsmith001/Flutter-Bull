@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bubble/bubble.dart';
+import 'package:design/design.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
@@ -11,11 +12,12 @@ import 'package:extensions/extensions.dart';
 import 'gen/assets.gen.dart';
 
 class MyLoadingIndicator extends StatefulWidget {
-  MyLoadingIndicator([this.size = DEFAULT_LOADING_SIZE]);
+  MyLoadingIndicator({this.color = const Color.fromARGB(255, 0, 0, 0), this.size = DEFAULT_LOADING_SIZE});
 
   static const Size DEFAULT_LOADING_SIZE = const Size(50, 50);
 
   Size size;
+  Color color;
 
   @override
   _MyLoadingIndicatorState createState() => _MyLoadingIndicatorState();
@@ -24,7 +26,7 @@ class MyLoadingIndicator extends StatefulWidget {
 class _MyLoadingIndicatorState extends State<MyLoadingIndicator> with SingleTickerProviderStateMixin {
 
   static const Duration SPIN_DURATION = const Duration(seconds: 1);
-  static const Curve SPIN_CURVE = Curves.easeInOut;
+  static const Curve SPIN_CURVE = const AnticipateOvershootCurve();// Curves.easeInOut;
 
   late AnimationController _animController = new AnimationController(vsync: this, duration: SPIN_DURATION);
   late Animation<double> animation = new CurvedAnimation(parent: _animController, curve: SPIN_CURVE);
@@ -42,13 +44,15 @@ class _MyLoadingIndicatorState extends State<MyLoadingIndicator> with SingleTick
   }
 
   Size get size => widget.size;
+  Color get color => widget.color;
 
 
   @override
   Widget build(BuildContext context) {
 
     return Center(
-      child: Assets.images.loadingArrows.image(width: size.width, height: size.height)
+      child: Assets.images.loadingArrows
+          .image(width: size.width, height: size.height, color: color, colorBlendMode: BlendMode.srcIn)
       .xRotate(pi*2*animation.value),
     );
   }
@@ -77,9 +81,10 @@ class Avatar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    Widget loadingIndicator = MyLoadingIndicator(new Size(size.width*0.5, size.height*0.5));
+    Widget loadingIndicator = MyLoadingIndicator(size: new Size(size.width, size.height)).xPadAll(size.width*0.1);
     loadingIndicator = Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: loadingIndicator);
-    if(size != null) loadingIndicator = Container(child: loadingIndicator, width: size.width, height: size.height);
+    //if(size != null) loadingIndicator = Container(child: loadingIndicator, width: size.width, height: size.height);
+    //loadingIndicator = Column(children: [loadingIndicator.xFlexible()],);
 
     //if(image == null) return EmptyWidget();
 
@@ -91,7 +96,7 @@ class Avatar extends StatelessWidget{
 
           Center(child: loadingIndicator),
 
-          image == null ? EmptyWidget() :
+          image == null && defaultImage == null ? EmptyWidget() :
           Center(
             child: AspectRatio(
               aspectRatio: 1,
@@ -112,7 +117,7 @@ class Avatar extends StatelessWidget{
                         image: DecorationImage(
                           colorFilter: loading ? ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.lighten) : null,
                           fit: BoxFit.fill,
-                          image: image == null ? Assets.images.bullImgTransparent : image!.image,
+                          image: image == null ? defaultImage! : image!.image,
                         ))
                 ),
               ),
@@ -249,7 +254,7 @@ class MyCupertinoStyleButton extends StatelessWidget {
     Widget button = CupertinoButton(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         borderRadius: borderRadius,
-        //color: color,
+        color: color,
         onPressed: onPressed,
         child: text
     );

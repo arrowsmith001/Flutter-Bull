@@ -16,7 +16,6 @@ import 'package:flutter_bull/pages/2x1Lobby/_page.dart';
 import 'package:flutter_bull/pages/2x2Write/routes.dart';
 import 'package:flutter_bull/pages/widgets.dart';
 import 'package:flutter_bull/firebase/provider.dart';
-import 'package:flutter_bull/utilities/design.dart';
 import 'package:flutter_bull/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +35,6 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
-import 'package:flutter_bull/utilities/curves.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets.dart';
@@ -147,7 +145,7 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
       v = v.proportionInRange(l, u);
 
       v = DecelerateCurve().transform(v);
-      v = SinCurve(offset: (math.pi/2) + math.pi).transform(v);
+      v = TrigCurve.sin(offset: (math.pi/2) + math.pi).transform(v);
 
       return Offset(0, standardOffset -(v + 1) * 10);
     }
