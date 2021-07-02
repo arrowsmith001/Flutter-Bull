@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bull/classes/classes.dart';
+import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/utilities/repository.dart';
@@ -18,6 +19,8 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/utilities/res.dart';
+
+import 'exceptions.dart';
 
 class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
 
@@ -251,23 +254,40 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState>{
     if(event is CreateGameRequested)
     {
       yield CreateGameStartedState(model);
-      String? roomCode = await repo.createGame(model.userId!);
-      yield GameCreatedState(roomCode, model);
+      String? roomCode, errorMessage;
+      try{
+        roomCode = await repo.createGame(model.userId!);
+      } on CreateRoomException
+      catch(cre) {errorMessage = cre.message;}
+      catch(e) {errorMessage = 'An error occured.';}
+      yield GameCreatedState(roomCode, model, errorMessage: errorMessage);
     }
 
     if(event is JoinGameRequested)
     {
       yield JoinGameStartedState(model);
-      bool success = await repo.joinGame(model.userId!, event.roomCode);
-      yield GameJoinedState(success, model);
+      String? errorMessage;
+      try{
+        await repo.joinGame(model.userId!, event.roomCode);
+      } on JoinRoomException
+      catch(jre) {errorMessage = jre.message;}
+      catch(e) {errorMessage = 'An error occured.';}
+      yield GameJoinedState(model, errorMessage: errorMessage);
     }
 
     if(event is LeaveGameRequested)
     {
       yield LeaveGameStartedState(model);
-      await _unsubFromAll();
-      bool success = await repo.leaveGame(model.userId!, model.me!.occupiedRoomCode!); // TODO Unjustified ! ?
-      yield GameLeftState(success, model);
+      String? errorMessage;
+      try{
+
+        await _unsubFromAll();
+        await repo.leaveGame(model.userId!, model.me!.occupiedRoomCode!); // TODO Unjustified ! ?
+
+      } on LeaveRoomException
+      catch(lre) {errorMessage = lre.message;}
+      catch(e) {errorMessage = 'An error occured.';}
+      yield GameLeftState(model, errorMessage: errorMessage);
     }
 
 

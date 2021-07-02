@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bull/utilities/game.dart';
+import 'package:flutter_bull/utilities/misc.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'classes.dart';
@@ -50,6 +51,8 @@ class Room {
   static const String SETTINGS_ALL_TRUTHS_POSSIBLE = 'allTruthsPossible';
   static const String SETTINGS_LEWD_HINTS_ENABLED = 'lewdHintsEnabled';
   static const String SETTINGS_ROUND_TIMER = 'roundTimer';
+
+  static const String CODE_FORMAT_DESCRIPTION = 'Game code format is 3 letters followed by 2 numbers.';
 
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
   Map<String, dynamic> toJson() => _$RoomToJson(this);
@@ -102,6 +105,18 @@ class Room {
   Map<String, bool>? playerTruths;
   Map<String, String>? playerTexts;
   Map<String, List<Vote>>? playerVotes;
+
+  static bool isCodeValid(String roomCode) {
+    if(roomCode.trim().length != 5) return false;
+    roomCode = roomCode.trim();
+    String first3 = roomCode.substring(0, 3).toUpperCase();
+    if(first3.characters.any((c) => !Utils.ALPHABET_UPPER.contains(c))) return false;
+
+    String last2 = roomCode.substring(4);
+    if(last2.characters.any((c) => !Utils.DIGITS.contains(c))) return false;
+
+    return true;
+  }
 
 }
 

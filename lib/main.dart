@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:math' as math;
+import 'package:arrowsmith/arrowsmith.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -43,11 +45,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
 
-
     @override
     Widget build(BuildContext context) {
       return _buildApp();
   }
+
 
   bool inserted = false;
 
@@ -63,23 +65,27 @@ class MyApp extends StatelessWidget {
         ),
         home: LayoutBuilder(
           builder: (context, constraints) {
-            // TODO Remove this shit before release
-            if(devMode && !inserted) WidgetsBinding.instance!.addPostFrameCallback((_) => _insertOverlay(context));
+
+            // TODO Remove this before release
+            if(devMode && !inserted)
+              {
+                if(kReleaseMode) throw Exception('Remove all references to developer panel');
+                else WidgetsBinding.instance!.addPostFrameCallback((_) => _insertOverlay(context));
+              }
+
             return Loading();
           }
         ),
       );
-
-
 
       return RepositoryProvider(
         lazy: true,
         create: (_) => Repository(),
         child: MultiBlocProvider(
             providers: [
-              BlocProvider<LoadingBloc>(lazy: true, create: (_) => LoadingBloc()),
-
               BlocProvider<FirebaseBloc>(lazy: true, create: (_) => FirebaseBloc(repo: RepositoryProvider.of<Repository>(_))),
+
+              BlocProvider<LoadingBloc>(lazy: true, create: (_) => LoadingBloc()),
 
               BlocProvider<MainMenuBloc>(lazy: true, create: (_)
               {
@@ -98,8 +104,9 @@ class MyApp extends StatelessWidget {
   }
 
 
-    // TODO Remove all this shit before release
+    // TODO Remove all this before release
     void _insertOverlay(BuildContext context) {
+      if(kReleaseMode) throw Exception('Remove all references to developer panel');
       inserted = true;
       return Overlay.of(context)!.insert(
         OverlayEntry(builder: (context) {

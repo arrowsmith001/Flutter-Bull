@@ -52,8 +52,15 @@ class NewRoomState extends MainMenuState{
 }
 
 class GameLeftState extends MainMenuState {
-  const GameLeftState(bool success, MainMenuModel model) : super(model);
+  const GameLeftState(MainMenuModel model) : super(model);
 }
+
+class ErrorState extends MainMenuState {
+  const ErrorState(this.message, MainMenuModel model) : super(model);
+  final String message;
+}
+
+
 
 
 class LoadingState extends MainMenuState {

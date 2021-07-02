@@ -20,6 +20,7 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter_bull/classes/classes.dart';
 
 import '../widgets.dart';
+import 'exceptions.dart';
 
 // Assumes FirebaseApp has been initialized
 class FirebaseProvider {
@@ -95,24 +96,35 @@ class FirebaseProvider {
   @override
   Future<String?> createGame(String userId) async {
 
-    String? roomCode = await fs.getNewGameRoomCode();
-    if(roomCode == null) throw new Exception('Could not create room. Try again later.');
+    String? roomCode;
 
-    await fs.createNewRoom(roomCode);
+     try{
+       roomCode = await fs.getNewGameRoomCode();
+     }catch(e) {throw new Exception('Could not create a game.');}
 
-    Room room = new Room.created(roomCode, userId);
+     if(roomCode == null) throw new Exception('Could not create a game. Try again later.');
 
-    await rtd.setRoom(room);
-    await rtd.setRoomOccupancy(userId, roomCode);
+     try{
+       await fs.createNewRoom(roomCode);
+
+       Room room = new Room.created(roomCode, userId);
+
+       await rtd.setRoom(room);
+       await rtd.setRoomOccupancy(userId, roomCode);
+
+     }catch(e){throw new Exception('Could not create a game.');}
 
     return roomCode;
   }
 
   @override
-  Future<bool> joinGame(String userId, String roomCode) async {
-    bool roomExists = await fs.doesRoomExist(roomCode);
-    if(!roomExists) return false;
-    return await rtd.joinRoom(userId, roomCode);
+  Future<void> joinGame(String userId, String roomCode) async {
+      bool roomExists = await fs.doesRoomExist(roomCode);
+      if(!roomExists) {
+        String extra = Room.isCodeValid(roomCode) ? '' : ' ' + Room.CODE_FORMAT_DESCRIPTION;
+        throw new JoinRoomException('Game \'$roomCode\' does not exist.' + extra);
+      }
+      await rtd.joinRoom(userId, roomCode);
   }
 
   @override
@@ -217,7 +229,7 @@ class FirebaseDatabaseProvider {
         .map((event) => event.snapshot.value as T);
   }
 
-  Future<bool> joinRoom(String userId, String roomCode) async {
+  Future<void> joinRoom(String userId, String roomCode) async {
 
     TransactionResult transactionResult;
     bool success = false;
@@ -262,10 +274,14 @@ class FirebaseDatabaseProvider {
     }
     while(success == false && attempts < MAX_ATTEMPTS);
 
-    if(success == false) return false;
+    if(success == false) throw JoinRoomException('Failed to join game.');
 
-    await setRoomOccupancy(userId, roomCode);
-    return true;
+    try{
+      await setRoomOccupancy(userId, roomCode);
+    }catch(e)
+    {
+      throw JoinRoomException('Something went wrong. Joined game but failed to set occupancy.');
+    }
   }
 
   Stream<String> streamProfileExt(String userId) {
@@ -563,5 +579,3 @@ class FirebaseUtilities {
   }
 
 }
-
-class FirebaseUserNotFoundException implements Exception { }

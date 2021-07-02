@@ -68,18 +68,19 @@ class PrivacyPolicyStringRetrievedState extends FirebaseState {
 
 // Game creation/joining
 class GameCreatedState extends FirebaseState {
-  const GameCreatedState(this.roomCode, DataModel model) : super(model);
+  const GameCreatedState(this.roomCode, DataModel model, {this.errorMessage}) : super(model);
+  final String? errorMessage;
   final String? roomCode;
 }
 
 class GameJoinedState extends FirebaseState {
-  const GameJoinedState(this.success, DataModel model) : super(model);
-  final bool success;
+  const GameJoinedState(DataModel model, {this.errorMessage}) : super(model);
+  final String? errorMessage;
 }
 
 class GameLeftState extends FirebaseState {
-  const GameLeftState(this.success, DataModel model) : super(model);
-  final bool success;
+  const GameLeftState( DataModel model, {this.errorMessage}) : super(model);
+  final String? errorMessage;
 }
 
 // Image

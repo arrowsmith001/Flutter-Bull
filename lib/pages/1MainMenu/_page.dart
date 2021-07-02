@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'dart:math' as math;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:design/design.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +27,14 @@ import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import '../../classes/classes.dart';
 import 'package:extensions/extensions.dart';
+import 'package:design/design.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
 import '_bloc.dart';
 
 // TODO Make MainMenu impeccable. Establish style. <<<<<<<<<<<<<<<<<<<<<
+// TODO Implement notification center for error messages <<<<<<<<<<<<<<<<<<<<<<<<< line 610
 
 class MainMenu extends StatefulWidget {
 
@@ -100,6 +101,8 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     super.dispose();
   }
 
+
+  String? errorMessage;
   void _blocListen(BuildContext context, MainMenuState s) {
     //if(isInMenuState) print(s.model.userEstablished.toString() + ' ' + s.model.roomEstablished.toString());
     if(s is DialogState || s is MenuState) {
@@ -109,6 +112,12 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     if(s is NewRoomState) goToGameRoom();
     if(s is GameLeftState) _animController4.reverse(from: 1);
 
+    if(s is ErrorState){
+      // TODO Make error appear
+      setState(() {
+        errorMessage = s.message;
+      });
+    }
 
     // if(s.model.menuState is MenuState){
     //   if(!s.model.userEstablished) setLoading(true, 'Loading user account...');
@@ -599,11 +608,36 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
       onTap: () async {
         onTopBarPressed();
       },
-      child: Container( height:75,
-          decoration: BoxDecoration(
-              color: Color.fromARGB(205, 255, 116, 116),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(100), bottomRight: Radius.circular(100)))
+
+      child: Stack(
+        children: [
+          Container(
+              child: errorMessage == null ? null
+                  : AutoSizeText(errorMessage!, minFontSize: 10, style: AppStyles.defaultStyle())
+                  .xPadOnly(right: 75, left: 12, top: 4, bottom: 4),
+              height:75,
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(205, 255, 116, 116),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(100), bottomRight: Radius.circular(100)))
+          ),
+
+          Positioned(
+            right: 0,
+            child: Transform.rotate(
+              angle: math.pi,
+              child: Container(
+                height:75,
+                width:75,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: Assets.images.info),
+                      color: Color.fromARGB(159, 255, 255, 255),
+                      shape: BoxShape.circle
+                   ),
+          ),
+            )),
+
+        ],
       ),
     );
 

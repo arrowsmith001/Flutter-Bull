@@ -34,8 +34,8 @@ import 'package:flutter_bull/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
+import 'package:arrowsmith/arrowsmith.dart';
 import '../../classes/classes.dart';
-import 'package:extensions/extensions.dart';
 import 'dart:ui' as ui;
 
 import '../../routes.dart';
@@ -183,6 +183,9 @@ class _ChatPanelState extends State<ChatPanel> with TickerProviderStateMixin {
         Positioned(
           right: 0,
           child: Container(
+            child: SafeArea(
+                child: Center(
+                    child: Text('Chat messages here?', style: TextStyle(color: Colors.white),))),
               height: size.height,
               width: w,
               color: Colors.black.withOpacity(0.75)

@@ -160,8 +160,8 @@ class Repository {
     return _firebaseProvider.streamRoom(roomCode);
   }
 
-  Future<bool> joinGame(String userId, String roomCode) async {
-    return await _firebaseProvider.joinGame(userId, roomCode);
+  Future<void> joinGame(String userId, String roomCode) async {
+    await _firebaseProvider.joinGame(userId, roomCode);
   }
 
   Future<bool> setRoomLockedStatus(String roomCode, bool locked) async {

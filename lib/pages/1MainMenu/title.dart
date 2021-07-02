@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
+import 'package:flutter_bull/utilities/res.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
-import 'package:flutter_bull/utilities/res.dart';
 
 import '../../classes/classes.dart';
 import 'package:extensions/extensions.dart';
@@ -10,8 +10,8 @@ import 'package:extensions/extensions.dart';
 // TODO Investigate title (consult physical device too) <<<<<<
 class UtterBullTitle extends StatefulWidget {
   UtterBullTitle({this.size = Size.zero});
-  final Size size;
 
+  final Size size;
   final ResourceManager rm = new ResourceManager();
 
   @override
@@ -19,6 +19,9 @@ class UtterBullTitle extends StatefulWidget {
 }
 
 class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProviderStateMixin {
+
+  Size get size => widget.size;
+  ResourceManager get rm => widget.rm;
 
   late AnimationController _controller;
 
@@ -33,11 +36,11 @@ class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProvid
     // TODO: implement initState
     super.initState();
 
-    bull_image = widget.rm.getUiImage(Assets.images.transparentBullImg);
-    utter_text_image = widget.rm.getUiImage(Assets.images.transparentUtter);
-    bull_text_image = widget.rm.getUiImage(Assets.images.transparentBull);
-    spiny_1_image = widget.rm.getUiImage(Assets.images.spiny1);
-    spiny_2_image = widget.rm.getUiImage(Assets.images.spiny2);
+    bull_image = rm.getUiImage(Assets.images.transparentBullImg);
+    utter_text_image = rm.getUiImage(Assets.images.transparentUtter);
+    bull_text_image = rm.getUiImage(Assets.images.transparentBull);
+    spiny_1_image = rm.getUiImage(Assets.images.spiny1);
+    spiny_2_image = rm.getUiImage(Assets.images.spiny2);
     
     _controller = AnimationController(vsync: this);
     _controller.duration = Duration(seconds: 10);
@@ -85,7 +88,7 @@ class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProvid
   //
   //     }
   // }
-  Size get size => widget.size;
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -114,31 +117,12 @@ class _UtterBullTitleState extends State<UtterBullTitle> with SingleTickerProvid
         size: size,
         foregroundPainter: SpinyPainter2(spiny_1_image, _spiny2Fraction));
 
-
     return Stack(
       children: [
           spiny2, spiny1, utter, bullPic, bull
       ],
     );
   }
-
-  Size largestSizeOfRatio(Size screenSize, int width, int height) {
-
-    double currentWidthRatio = screenSize.width.toDouble() / screenSize.height.toDouble();
-    double desiredWidthRatio = width / height;
-
-    return Size(screenSize.width, screenSize.height);
-    if(currentWidthRatio > desiredWidthRatio)
-    {
-      return Size(screenSize.width * desiredWidthRatio, screenSize.height);
-    }
-    else
-    {
-      return Size(screenSize.width, screenSize.height * desiredWidthRatio);
-    }
-
-  }
-
 
 }
 

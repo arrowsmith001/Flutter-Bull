@@ -77,18 +77,22 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
         }
         if(state is fbState.GameCreatedState){
           model.removeLoadTask(MainMenuModel.LOAD_TASK_CREATE_GAME);
+          if(state.errorMessage != null) yield ErrorState(state.errorMessage!, model);
         }
         if(state is fbState.JoinGameStartedState){
           model.addLoadTask(MainMenuModel.LOAD_TASK_JOIN_GAME);
         }
         if(state is fbState.GameJoinedState){
           model.removeLoadTask(MainMenuModel.LOAD_TASK_JOIN_GAME);
+          if(state.errorMessage != null) yield ErrorState(state.errorMessage!, model);
         }
         if(state is fbState.LeaveGameStartedState){
           model.addLoadTask(MainMenuModel.LOAD_TASK_LEAVE_GAME);
         }
         if(state is fbState.GameLeftState){
           model.removeLoadTask(MainMenuModel.LOAD_TASK_LEAVE_GAME);
+          if(state.errorMessage != null) yield ErrorState(state.errorMessage!, model);
+          else yield GameLeftState(model);
         }
 
         if(state is fbState.ProfileImageUpdatedState)
@@ -114,28 +118,9 @@ class MainMenuBloc extends Bloc<MainMenuEvent, MainMenuState> {
           yield model.menuState;
         }
 
-        if(state is fbState.GameCreatedState)
-        {
-          //if(state.roomCode != null) yield GoToGameRoomState(model);
-          // else print('Game creation unsuccessful');
-          print(state.roomCode != null ? 'Game creation successful' : 'Game creation unsuccessful');
-        }
-
-        if(state is fbState.GameJoinedState)
-        {
-          //if(state.success) yield GoToGameRoomState(model);
-          // else print('Room join unsuccessful');
-          print(state.success ? 'Room join successful' : 'Room join unsuccessful');
-        }
-
         if(state is fbState.NewRoomState)
         {
           yield NewRoomState(model);
-        }
-
-        if(state is fbState.GameLeftState)
-        {
-          yield GameLeftState(state.success, model);
         }
 
         if(state is fbState.ImagePickedStartedState)
