@@ -7,9 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
-import 'classes/classes.dart';
+import '../classes/classes.dart';
 import 'package:extensions/extensions.dart';
-import 'gen/assets.gen.dart';
+import '../gen/assets.gen.dart';
 
 class MyLoadingIndicator extends StatefulWidget {
   MyLoadingIndicator({this.color = const Color.fromARGB(255, 0, 0, 0), this.size = DEFAULT_LOADING_SIZE});
@@ -58,7 +58,6 @@ class _MyLoadingIndicatorState extends State<MyLoadingIndicator> with SingleTick
   }
 }
 
-
 class Avatar extends StatelessWidget{
   Avatar(this.image,
       {this.borderFlashValue = 0, this.borderWidth = 5, this.loading = false,
@@ -81,7 +80,7 @@ class Avatar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    Widget loadingIndicator = MyLoadingIndicator(size: new Size(size.width, size.height)).xPadAll(size.width*0.1);
+    Widget loadingIndicator = MyLoadingIndicator(size: new Size(size.width, size.height)).xPadAll(size.width*0.25);
     loadingIndicator = Container( decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: loadingIndicator);
     //if(size != null) loadingIndicator = Container(child: loadingIndicator, width: size.width, height: size.height);
     //loadingIndicator = Column(children: [loadingIndicator.xFlexible()],);
@@ -347,33 +346,3 @@ class MyListItem extends StatelessWidget {
     );
   }
 }
-
-
-class BlueExpandedContainer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(color: Colors.blue).xExpanded();
-  }
-}
-class YellowExpandedContainer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(color: Colors.yellow).xExpanded();
-  }
-}
-class RedExpandedContainer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(color: Colors.red).xExpanded();
-  }
-}
-class GreenExpandedContainer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(color: Colors.green).xExpanded();
-  }
-}
-
-List<Widget> ColumnChildrenTest() => [
-  BlueExpandedContainer(), RedExpandedContainer(), YellowExpandedContainer()
-];

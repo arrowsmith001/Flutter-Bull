@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:extensions/extensions.dart';
 import '../utilities/local_res.dart';
-import '../widgets.dart';
+import '../widgets/misc.dart';
 
 class MainMenuButton extends StatelessWidget {
 

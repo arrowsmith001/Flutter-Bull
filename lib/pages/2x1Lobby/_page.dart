@@ -17,9 +17,11 @@ import 'package:flutter_bull/firebase/provider.dart';
 import 'package:flutter_bull/utilities/game.dart';
 import 'package:flutter_bull/utilities/misc.dart';
 import 'package:flutter_bull/utilities/res.dart';
-import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_bull/widgets/misc.dart';
+import 'package:flutter_bull/widgets/notif_center.dart';
 import 'package:flutter_circular_text/circular_text/model.dart';
 import 'package:flutter_circular_text/circular_text/widget.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:io';
@@ -40,7 +42,7 @@ import 'package:flutter_bull/pages/2GameRoom/_page.dart';
 import 'package:design/design.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
-import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_bull/widgets/misc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
@@ -145,7 +147,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
       _listKey.currentState!.insertItem(index, duration: Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS));
       _exposeStartGameButtonIfAppropriate(true);
 
-      _showNotif(userId, NotifType.PlayerAdded);
+      _showNotif(userId, LobbyNotifType.PlayerAdded);
 
       await Future.delayed(Duration(milliseconds: PLAYER_LIST_ANIMATION_DURATION_MILLISECONDS)); // TODO Make syncronous if possible
       double val = _scrollController.position.maxScrollExtent;// + AVATAR_DIM + 2 * AVATAR_PADDING;
@@ -423,9 +425,9 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     ).xPadding(EdgeInsets.all(16));
   }
 
-  BehaviorSubject<Notif> _notifStreamController = new BehaviorSubject();
-  void _showNotif(String userId, NotifType type) {
-    Notif newNotif = new Notif(userId: userId, notifType: type);
+  BehaviorSubject<LobbyNotif> _notifStreamController = new BehaviorSubject();
+  void _showNotif(String userId, LobbyNotifType type) {
+    LobbyNotif newNotif = new LobbyNotif(userId: userId, notifType: type);
     setState(() {
       _notifStreamController.add(newNotif);
     });
@@ -520,7 +522,11 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
           ),
         );
 
-        Widget notifDisplay = NotifCenter(this._notifStreamController.stream);
+        Widget notifDisplay = NotifCenter<LobbyNotif>(
+          notifStream: this._notifStreamController.stream,
+          notifWidgetBuilder: (notif) =>_buildNotification(notif),
+          animatedEntryDuration: const Duration(milliseconds: 200),
+          animatedEntryBuilder: (w, anim) => w.xScale(OvershootCurve(2).transform(anim.value)));
         //notifDisplay = Container(color: AppColors.DebugColor,);
 
         double PANEL_MAX_HEIGHT = MediaQuery.of(context).size.height - 200;
@@ -643,147 +649,94 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     );
   }
 
-}
-
-enum NotifType {
-  PlayerAdded, PlayerRemoved, SettingsChanged, MessageOnly
-}
-class Notif {
-  Notif({this.userId, this.notifType = NotifType.MessageOnly, this.customMessage = 'This is a notification'});
-  final NotifType notifType;
-  final String? userId;
-  final String? customMessage;
-}
-
-// TODO Improve whole notif system
-class NotifCenter extends StatefulWidget {
-  NotifCenter(this.notifStream);
-  final Stream<Notif> notifStream;
-
-  @override
-  _NotifCenterState createState() => _NotifCenterState();
-}
-
-class _NotifCenterState extends State<NotifCenter> {
-
-  static const int NOTIF_LIFETIME_MILLISECONDS = 3000;
-
-  List<Widget> notifWidgets = [];
-  StreamSubscription? sub;
-  @override
-  void initState() {
-    // TODO: implement initState
-    sub = widget.notifStream.listen((notif) {
-      _onNewNotif(notif);
-    });
-  }
-
-  void _onNewNotif(final Notif notif) async {
+  Widget _buildNotification(LobbyNotif notif) {
     final String? userId = notif.userId;
-    Widget? notifWidget;
+    const double BORDER_RADIUS = 20.0;
+    String message;
 
     switch(notif.notifType)
     {
-      case NotifType.PlayerAdded:
+      case LobbyNotifType.PlayerAdded:
+
+
         Widget nameWidget = BlocBuilder<GameRoomBloc, GameRoomState>(
             builder: (context, state){
               Player? player = state.model.getPlayer(userId);
               if(player == null) return EmptyWidget();
-              return Text(player.name! + ' joined the game!', style: AppStyles.defaultStyle(fontSize: 32));
+              message = player.name! + ' joined the game!';
+              message = userId!;
+              return AutoSizeText(message, minFontSize: 8.0, style: AppStyles.defaultStyle(fontSize: 32));
             }
         );
         Widget imageWidget = BlocBuilder<GameRoomBloc, GameRoomState>(
             builder: (context, state){
+              Widget image;
               Player? player = state.model.getPlayer(userId);
-              if(player == null) return EmptyWidget();
-              return player.profileImage!;
+              if(player == null || player.profileImage == null) image = MyLoadingIndicator(color: Colors.white,).xPadAll(8.0);
+              else image = Container(
+                  decoration: BoxDecoration(
+                      borderRadius: MyBorderRadii.leftOnly(BORDER_RADIUS),
+                      image: DecorationImage(image: player.profileImage!.image)));
+              return image.xSizedBox(height: 75, width: 75);
             }
         );
-        notifWidget = NotifWidget(nameWidget, imageWidget);
+
+        Color notifColor = Colors.pinkAccent;
+        double opacityValue = math.sin(_flashAnim.value*math.pi) * 0.5;
+        return GestureDetector(
+          child: Stack(
+            children: [
+
+              Container(
+              decoration: BoxDecoration(
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), spreadRadius: 0.1, blurRadius: 3.0)],
+                    color: notifColor,
+                    borderRadius: MyBorderRadii.all(BORDER_RADIUS)),
+              height: 75,
+              child: Row(
+                children: [
+                  imageWidget,
+                  nameWidget.xPadding(EdgeInsets.all(8)).xExpanded()
+                ],
+              ),
+            ),
+
+              Container(
+                height: 75,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                        stops: [0.8, 1],
+                        colors: [Colors.white.withOpacity(0), Colors.white.withOpacity(opacityValue)]),
+                    borderRadius: MyBorderRadii.all(BORDER_RADIUS)),
+              )
+
+            ],
+
+          ),
+        ).xPadSym(h: 16, v: 4);
+
         break;
-      case NotifType.PlayerRemoved:
-        // TODO: Handle this case.
+      case LobbyNotifType.PlayerRemoved:
+      // TODO: Handle this case.
         break;
-      case NotifType.SettingsChanged:
-        // TODO: Handle this case.
+      case LobbyNotifType.SettingsChanged:
+      // TODO: Handle this case.
         break;
-      case NotifType.MessageOnly:
-        // TODO: Handle this case.
+      case LobbyNotifType.MessageOnly:
+      // TODO: Handle this case.
         break;
     }
 
-    notifWidgets.add(notifWidget!);
-    await Future.delayed(Duration(milliseconds: NOTIF_LIFETIME_MILLISECONDS));
-    notifWidgets.remove(notifWidget);
+    return EmptyWidget();
   }
 
-  @override
-  void dispose() {
-    // TODO: implement disposed
-    if(sub != null) sub!.cancel();
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<Notif>(
-      stream: widget.notifStream,
-        builder: (context, snap)
-        {
-          if(!snap.hasData || snap.data == null) return EmptyWidget();
-          return IgnorePointer(
-            child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: notifWidgets.length,
-                itemBuilder: (context, i) => notifWidgets[i]),
-          );
-        });
-  }
 }
 
-class NotifWidget extends StatefulWidget {
-  NotifWidget(this.title, this.image);
-  final Widget title;
-  final Widget? image;
-
-  @override
-  _NotifWidgetState createState() => _NotifWidgetState();
-}
-
-class _NotifWidgetState extends State<NotifWidget> with SingleTickerProviderStateMixin {
-  static const int ENTRANCE_DURATION_MILLISECONDS = 350;
-
-  late AnimationController _animController;
-  @override
-  void initState() {
-    super.initState();
-    _animController = new AnimationController(vsync: this);
-    _animController.duration = Duration(milliseconds: ENTRANCE_DURATION_MILLISECONDS);
-    _animController.forward(from: 0);
-  }
-  @override
-  void dispose() {
-    _animController.dispose();
-    super.dispose();
-  }
-  @override
-  Widget build(BuildContext context) {
-    //double dx = (1-_animController.value)*MediaQuery.of(context).size.width;
-    return GestureDetector(
-      child: Container(
-        height: 75,
-        color: Colors.pinkAccent,
-        child: Row(
-          children: [
-            widget.image  == null ? EmptyWidget() : widget.image!.xSizedBox(height: 75, width: 75),
-            widget.title.xPadding(EdgeInsets.all(8)).xExpanded()
-          ],
-        ),
-      ),
-    )
-    ;
-  }
+class LobbyNotif extends Notif{
+  LobbyNotif({this.userId, this.notifType = LobbyNotifType.MessageOnly, String? message}) : super(message);
+  final String? userId;
+  final LobbyNotifType notifType;
 }
 
 class AnimatedListItem extends StatefulWidget {
@@ -803,7 +756,6 @@ class AnimatedListItem extends StatefulWidget {
   @override
   _AnimatedListItemState createState() => _AnimatedListItemState();
 }
-
 class _AnimatedListItemState extends State<AnimatedListItem> with TickerProviderStateMixin {
   late AnimationController _animController;
 

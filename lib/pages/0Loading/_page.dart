@@ -8,7 +8,7 @@ import 'package:flutter_bull/pages/0Loading/_bloc_events.dart';
 import 'package:flutter_bull/pages/1MainMenu/_bloc.dart';
 import 'package:flutter_bull/pages/1MainMenu/_page.dart';
 import 'package:flutter_bull/utilities/repository.dart';
-import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_bull/widgets/misc.dart';
 import 'package:provider/provider.dart';
 
 import 'package:extensions/extensions.dart';

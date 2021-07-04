@@ -120,6 +120,12 @@ class MyBorderRadii {
   static BorderRadius bottomRightOnly(double r) => BorderRadius.only(
       bottomRight: Radius.circular(r));
 
+  static leftOnly(double r) => BorderRadius.only(
+    bottomLeft: Radius.circular(r), topLeft: Radius.circular(r),);
+
+  static rightOnly(double r) => BorderRadius.only(
+    bottomRight: Radius.circular(r), topRight: Radius.circular(r),);
+
 }
 
 // TODO Make stricter

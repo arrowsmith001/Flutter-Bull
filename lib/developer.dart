@@ -10,7 +10,7 @@ import 'package:flutter_bull/pages/2GameRoom/_bloc.dart';
 import 'package:flutter_bull/pages/2GameRoom/_bloc_events.dart' as grEvent;
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
-import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_bull/widgets/misc.dart';
 import 'package:extensions/extensions.dart';
 import 'package:uuid/uuid.dart';
 

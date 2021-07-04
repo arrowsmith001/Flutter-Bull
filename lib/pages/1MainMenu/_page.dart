@@ -21,7 +21,7 @@ import 'package:flutter_bull/pages/1MainMenu/title.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
-import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_bull/widgets/misc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
@@ -763,10 +763,11 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
     const int TITLE_FLEX = 4;
     const int BUTTONS_FLEX = 0;
 
-    var utterBullAspectRatio = 1.25;
+    var utterBullAspectRatio = 1.5;//1.25;
     var utterBullTitle = Container(
       //color: AppColors.DebugColor,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           AspectRatio(
               aspectRatio: utterBullAspectRatio,

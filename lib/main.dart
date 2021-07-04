@@ -27,7 +27,7 @@ import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/utilities/res.dart';
 import 'package:flutter_bull/utilities/prefs.dart';
 import 'package:flutter_bull/utilities/profile.dart';
-import 'package:flutter_bull/widgets.dart';
+import 'package:flutter_bull/widgets/misc.dart';
 import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';

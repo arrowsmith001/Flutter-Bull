@@ -14,7 +14,7 @@ import 'package:flutter_bull/utilities/res.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:image/image.dart';
-import '../../widgets.dart';
+import '../../widgets/misc.dart';
 
 class MainMenuBackgroundEffect extends StatelessWidget {
 

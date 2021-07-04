@@ -19,7 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_bull/classes/classes.dart';
 
-import '../widgets.dart';
+import '../widgets/misc.dart';
 import 'exceptions.dart';
 
 // Assumes FirebaseApp has been initialized
