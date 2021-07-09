@@ -39,7 +39,6 @@ import 'package:flutter_bull/classes/firebase.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
 import 'package:flutter_bull/pages/2GameRoom/_page.dart';
-import 'package:design/design.dart';
 import 'package:flutter_bull/utilities/local_res.dart';
 import 'package:flutter_bull/utilities/repository.dart';
 import 'package:flutter_bull/widgets/misc.dart';
@@ -49,8 +48,9 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../classes/classes.dart';
-import 'package:extensions/extensions.dart';
+import 'package:arrowsmith/arrowsmith.dart';
 import 'dart:ui' as ui;
+
 
 import '../../routes.dart';
 import 'misc.dart';
@@ -522,7 +522,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
           ),
         );
 
-        Widget notifDisplay = NotifCenter<LobbyNotif>(
+        Widget notifDisplay = NotifCentre<LobbyNotif>(
           notifStream: this._notifStreamController.stream,
           notifWidgetBuilder: (notif) =>_buildNotification(notif),
           animatedEntryDuration: const Duration(milliseconds: 200),
@@ -731,6 +731,10 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     return EmptyWidget();
   }
 
+}
+
+enum LobbyNotifType {
+  PlayerAdded, PlayerRemoved, SettingsChanged, MessageOnly
 }
 
 class LobbyNotif extends Notif{

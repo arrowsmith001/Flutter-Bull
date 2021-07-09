@@ -64,10 +64,35 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
   final String thisSubPageName = WritePages.INTRO;
 
   late AnimationController _bgAnimController = new AnimationController(vsync: this);
-
   late AnimationController _routineController = new AnimationController(vsync: this);
+  late List<Animation> _routineBlocks = [
+    new CurvedAnimation(parent: _routineController, curve: Interval(0.0, 0.15)),
+    new CurvedAnimation(parent: _routineController, curve: Interval(0.15, 0.3)),
+    new CurvedAnimation(parent: _routineController, curve: Interval(0.3, 0.45)),
+    new CurvedAnimation(parent: _routineController, curve: Interval(0.45, 0.6)),
+    new CurvedAnimation(parent: _routineController, curve: Interval(0.6, 1))
+  ];
   late Animation<double> _eat1Anim;
   late Animation<double> _eat2Anim;
+
+  var inOutSeq = TweenSequence(
+    <TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 2.0, end: 1.0)
+            .chain(CurveTween(curve: OvershootCurve(1))),
+        weight: 20.0,
+      ),
+      TweenSequenceItem<double>(
+        tween: ConstantTween<double>(1.0),
+        weight: 60.0,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 1.0, end: 0.0)
+            .chain(CurveTween(curve: AnticipateCurve(1))),
+        weight: 20.0,
+      ),
+    ],
+  );
 
   @override
   void initState() {
@@ -237,19 +262,19 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
 
               });
 
-          var eat1 = EntryAnimatedText(
-              'It\'s time to get your secret role',
-              scaleAnimation: _eat1Anim, scaleStagger: 0.25,
-              style: AppStyles.defaultStyle(
-                  fontSize: 54,
-                  shadows: [AppShadows.cartoony]));
-
-          var eat2 = EntryAnimatedText(
-              'Do NOT reveal your role to anybody',
-              scaleAnimation: _eat2Anim, scaleStagger: 0.25,
-              style: AppStyles.defaultStyle(
-                  fontSize: 54,
-                  shadows: [AppShadows.cartoony]));
+          // var eat1 = EntryAnimatedText(
+          //     'It\'s time to get your secret role',
+          //     scaleAnimation: _eat1Anim, scaleStagger: 0.25,
+          //     style: AppStyles.defaultStyle(
+          //         fontSize: 54,
+          //         shadows: [AppShadows.cartoony]));
+          //
+          // var eat2 = EntryAnimatedText(
+          //     'Do NOT reveal your role to anybody',
+          //     scaleAnimation: _eat2Anim, scaleStagger: 0.25,
+          //     style: AppStyles.defaultStyle(
+          //         fontSize: 54,
+          //         shadows: [AppShadows.cartoony]));
 
           var skipButton = Align(
             alignment: Alignment.bottomRight,
@@ -259,20 +284,18 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
                 onPressed: () => _goToMain(context)),
           );
 
-          MovingGradient mg = MovingGradient(begin: Alignment.centerLeft, end: Alignment.centerRight,
-            colors: [Colors.grey.withOpacity(0.6), Colors.white, Colors.grey],
+          Color color1 = const Color.fromARGB(255, 255, 244, 201);
+          MovingGradient mg = MovingGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+            colors: [color1, Colors.white,color1, Colors.white,color1, Colors.white],
             //colors: [Color.fromARGB(75, 179, 179, 179), Color.fromARGB(75, 232, 232, 232), Color.fromARGB(75, 154, 154, 154), Color.fromARGB(75, 210, 210, 210), Color.fromARGB(75, 255, 255, 255),],
             //colors: [Colors.black,Colors.white,]
             //colors: [Colors.black, Colors.white]
           );
 
-          double v = _bgAnimController.value%1.0;
+          double v = _bgAnimController.value % 1.0;
           var boxDeco1 = BoxDecoration(gradient: mg.getGradient(v));
          // var boxDeco2 = BoxDecoration(gradient: mg2.getGradient(_bgAnimController.value));
 
-          var lg = LinearGradient(
-            transform: GradientRotation(_val*math.pi*2),
-              colors: [Colors.white, Colors.grey,Colors.white, Colors.grey,]);
 
           return Scaffold(
               backgroundColor: Colors.transparent,
@@ -285,13 +308,16 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
 
                     avatar,
 
-                    Container(child: eat1, width: 200, height: 200)
-                        .xTranslate(dy: 100)
-                        .xPadSym(h: 50, v: 0 ),
+                    _displayTextPrompts(size, state.model),
 
-                    Container(child: eat2, width: 200, height: 200)
-                        .xTranslate(dy: 200)
-                        .xPadSym(h: 50, v: 0 ),
+
+                    // Container(child: eat1, width: 200, height: 200)
+                    //     .xTranslate(dy: 100)
+                    //     .xPadSym(h: 50, v: 0 ),
+                    //
+                    // Container(child: eat2, width: 200, height: 100)
+                    //     .xTranslate(dy: 200)
+                    //     .xPadSym(h: 50, v: 0 ),
 
                     skipButton,
 
@@ -305,7 +331,7 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
 
 
                   ]
-                    ..addAll(playerSquares),
+                    //..addAll(playerSquares),
                 )
               ).xPadding(EdgeInsets.all(SAFE_AREA_PADDING))
                 .xBoxDecorContainer(boxDeco1)
@@ -321,4 +347,36 @@ class _WriteIntroState extends State<WriteIntro> with TickerProviderStateMixin {
   void _goToMain(BuildContext context) => Navigator.of(context).pushNamed(WritePages.MAIN);
 
   double _val = 0.0;
+
+  Widget _displayTextPrompts(Size size, GameRoomModel model) {
+
+    Player? target = model.dataModel.getMyTarget();
+    bool? isTargetMyself = target == null ? null : model.dataModel.isUser(target.id!);
+    bool? writeTruth = target == null ? null : model.dataModel.getTruth(target);
+
+    if(target == null || isTargetMyself == null || writeTruth == null) return EmptyWidget();
+
+    String roleRevealText = 'You\'re gonna write a ${writeTruth ? 'TRUTH about yourself' : 'LIE for ${target.name}'}';
+    String extraInfoText = writeTruth ? 'Come up with something crazy that people wont believe' : 'Come up with something other players might believe';
+
+    List<AutoSizeText> textPrompts = [
+      AppStyles.MyText('It\'s time to get your secret role', color: Colors.black),
+      AppStyles.MyText('Do NOT reveal your role to anybody!', color: Colors.black),
+      AppStyles.MyText('Ready? Here it comes...', color: Colors.black),
+      AppStyles.MyText(roleRevealText, color: Colors.black),
+      AppStyles.MyText(extraInfoText, color: Colors.black),
+    ];
+
+    Animation anim;
+     try{
+        anim = _routineBlocks.firstWhere((block) => block.value < 1.0);
+     }on StateError{
+       return EmptyWidget();
+     }
+    int i = _routineBlocks.indexOf(anim);
+    Widget text = textPrompts[i];
+    double v = anim.value;
+    double f = (v-1).abs();
+    return text.xScale(inOutSeq.transform((1-v))).xOpacity(inOutSeq.transform((1-f)));
+  }
 }

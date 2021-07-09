@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/fonts.gen.dart';
@@ -58,8 +59,8 @@ class AppStyles {
         foreground: foreground, background: background);
   }
 
-  static Text MyText(String text, {double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {
-    return Text(text, textAlign: TextAlign.center, style: defaultStyle(fontSize: fontSize, color: color, shadows: shadows));
+  static AutoSizeText MyText(String text, {double fontSize = DEFAULT_FONT_SIZE, Color color = DEFAULT_TEXT_COLOR, List<Shadow>? shadows}) {
+    return AutoSizeText(text, minFontSize: 8,  textAlign: TextAlign.center, style: defaultStyle(fontSize: fontSize, color: color, shadows: shadows));
   }
 
   static const double DEFAULT_FONT_SIZE = 32;
