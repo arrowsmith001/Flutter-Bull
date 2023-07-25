@@ -14,16 +14,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
   @override
   Widget build(BuildContext context) {
 
-    final auth = ref.watch(authNotifierProvider);
     final authNotifier = ref.watch(authNotifierProvider.notifier);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TextButton(
-            onPressed: () => authNotifier.signIn(), child: Text('Sign in')),
-        TextButton(
-            onPressed: () => ref.read(authServiceProvider).invokeListeners(), child: Text('invoke')),
+            onPressed: () => authNotifier.signIn(), child: Text('Sign in'))
 /*         TextButton(
             onPressed: () => authNotifier.signUp(),
             child: Text('Continue as guest')) */

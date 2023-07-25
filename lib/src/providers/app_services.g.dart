@@ -35,6 +35,20 @@ final dataStreamServiceProvider = Provider<DataStreamService>.internal(
 );
 
 typedef DataStreamServiceRef = ProviderRef<DataStreamService>;
+String _$dataServiceHash() => r'2134cd925ef60913eeb7a073e2a198f959537220';
+
+/// See also [dataService].
+@ProviderFor(dataService)
+final dataServiceProvider = Provider<DataService>.internal(
+  dataService,
+  name: r'dataServiceProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$dataServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef DataServiceRef = ProviderRef<DataService>;
 String _$utterBullServerHash() => r'c6fd2916149d7178c8af3f44219450db00a9c966';
 
 /// See also [utterBullServer].

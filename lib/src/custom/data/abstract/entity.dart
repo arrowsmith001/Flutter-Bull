@@ -1,18 +1,7 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 abstract class Entity {
-  Entity(this.id);
-
-  String? id;
-
+  String? get id;
   Map<String, dynamic> toJson();
-
-  Entity clone();
-
-  // TODO: To avoid repetition, consider a DTO for immutable fields (or freezed)
-  Entity cloneWithId(String newId);
-
-  Entity cloneWithUpdates(Map<String, dynamic> map);
-
-  bool isEqualTo(Entity other) {
-    return id == other.id;
-  }
 }
+

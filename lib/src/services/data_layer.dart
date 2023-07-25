@@ -1,20 +1,13 @@
-import 'dart:html';
-import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
-import 'package:flutter_bull/src/custom/tools/utilities.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
-import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
-import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class DataLayer {
-
-  Future<String> createPlayer(Player player);
+abstract class DataService {
+  Future<void> createPlayerWithID(Player player);
 
   Future<int> countRoomsByCode(String code);
 
@@ -24,69 +17,50 @@ abstract class DataLayer {
 
   Future<void> removeFromRoom(String userId, String gameRoomId);
 
-  Future<GameRoom> getRoomByCode(String code);
-
   Future<bool> doesPlayerExist(String userId);
 
   Future<void> setRoomPhase(
       String roomCode, GameRoomStatePhase newPhase, Object? newPhaseArgs);
+
+  Future<String> getRoomIdFromCode(String roomCode);
+
+  Future<void> setName(String id, String text);
 }
 
-class FakeDataLayer extends DataLayer implements DataStreamService {
-  List<BehaviorSubject<GameRoom>> gameRooms = [];
-  List<BehaviorSubject<Player>> players = [];
+class FakeDataLayer extends DataService implements DataStreamService {
+  Map<String, BehaviorSubject<GameRoom>> gameRooms = {};
+  Map<String, BehaviorSubject<Player>> players = {};
 
   @override
   Future<int> countRoomsByCode(String code) async {
-    return gameRooms.where((element) => element.value.roomCode == code).length;
-  }
-
-  @override
-  Future<String> createNewGameRoom(String code) async {
-    final newId = _newGameRoomId().toString();
-    gameRooms.add(BehaviorSubject.seeded(
-        GameRoom(newId, code, GameRoomStatePhase.lobby, null)));
-    return newId;
-  }
-
-  @override
-  Future<GameRoom> getRoomByCode(String code) async {
-    return gameRooms
+    return gameRooms.values
         .where((element) => element.value.roomCode == code)
-        .single
-        .value;
+        .length;
   }
 
   @override
   Future<void> setOccupiedRoom(String userId, String gameRoomId) async {
-    final playerStream =
-        players.where((element) => element.value.id == userId).single;
-    final gameStream =
-        gameRooms.where((element) => element.value.id == gameRoomId).single;
+    final playerStream = players[userId]!;
+    final gameStream = gameRooms[gameRoomId]!;
 
-    Player newPlayer =
-        playerStream.value.cloneWithUpdates({'occupiedRoomId': gameRoomId});
-    GameRoom newRoom = gameStream.value.cloneWithUpdates(
-        {'playerIds': List.from(gameStream.value.playerIds)..add(userId)});
+    Player newPlayer = playerStream.value.copyWith(occupiedRoomId: gameRoomId);
+    GameRoom newRoom = gameStream.value
+        .copyWith(playerIds: [...gameStream.value.playerIds, userId]);
 
-    //Logger().d('clonedPlayer: ${newPlayer.toJson()}');
     playerStream.add(newPlayer);
     gameStream.add(newRoom);
   }
 
   @override
   Future<void> removeFromRoom(String userId, String gameRoomId) async {
-    final playerStream =
-        players.where((element) => element.value.id == userId).single;
-    final gameStream =
-        gameRooms.where((element) => element.value.id == gameRoomId).single;
+    final playerStream = players[userId]!;
+    final gameStream = gameRooms[gameRoomId]!;
 
-    Player newPlayer = Player.fromJson(
-        playerStream.value.clone().toJson()..remove('occupiedRoomId'));
-    GameRoom newRoom = gameStream.value.cloneWithUpdates(
-        {'playerIds': List.from(gameStream.value.playerIds)..remove(userId)});
+    Player newPlayer = playerStream.value.copyWith(occupiedRoomId: null);
+    GameRoom newRoom = gameStream.value.copyWith(
+        playerIds:
+            gameStream.value.playerIds.where((id) => id != userId).toList());
 
-    //Logger().d('clonedPlayer: ${newPlayer.toJson()}');
     playerStream.add(newPlayer);
     gameStream.add(newRoom);
   }
@@ -101,76 +75,85 @@ class FakeDataLayer extends DataLayer implements DataStreamService {
 
   @override
   Stream<GameRoom> streamGameRoom(String? gameRoomId) {
-    return gameRooms.singleWhere((element) => element.value.id == gameRoomId);
+    return gameRooms[gameRoomId]!;
   }
 
   @override
   Stream<Player> streamPlayer(String? userId) {
-    return players.singleWhere((element) => element.value.id == userId);
+    return players[userId]!;
   }
 
   @override
-  Future<String> createPlayer(Player player) async {
-    final newId = _newPlayerId().toString();
-    players.add(BehaviorSubject.seeded(player));
-    return newId;
+  Future<void> createPlayerWithID(Player player) async {
+    final newId = player.id!;
+    // _newPlayerId().toString();
+    players.addAll({newId: BehaviorSubject.seeded(player)});
   }
 
   @override
   Future<bool> doesPlayerExist(String userId) async {
-    return players.any((element) => element.value.id == userId);
+    return players.keys.any((element) => element == userId);
   }
 
   @override
   Future<void> setRoomPhase(String gameRoomId, GameRoomStatePhase newPhase,
       Object? newPhaseArgs) async {
-    final gameRoomStream =
-        gameRooms.singleWhere((element) => element.value.id == gameRoomId);
+    final gameRoomStream = gameRooms[gameRoomId]!;
     final gameRoom = gameRoomStream.value;
-    final newGameRoom = gameRoom
-        .cloneWithUpdates({'phase': newPhase, 'phaseArgs': newPhaseArgs});
+    final newGameRoom =
+        gameRoom.copyWith(phase: newPhase, phaseArgs: newPhaseArgs);
     gameRoomStream.add(newGameRoom);
+  }
+
+  @override
+  Future<String> createNewGameRoom(String code) async {
+    final id = _newGameRoomId();
+    gameRooms.addAll({id: BehaviorSubject.seeded(GameRoom(roomCode: code))});
+    return id;
+  }
+
+  @override
+  Future<String> getRoomIdFromCode(String roomCode) async {
+    return gameRooms.keys
+        .singleWhere((k) => gameRooms[k]!.value.roomCode == roomCode);
+  }
+  
+  @override
+  Future<void> setName(String id, String text) {
+    // TODO: implement setName
+    throw UnimplementedError();
+  }
+  
+  @override
+  Stream<bool> streamPlayerExists(String? userId) {
+    throw UnimplementedError();
   }
 }
 
-class DatabaseDrivenDataLayer extends DataLayer {
-  
-  DatabaseDrivenDataLayer({required this.gameRoomRepo, required this.playerRepo});
+class DatabaseDrivenDataLayer extends DataService {
+  DatabaseDrivenDataLayer(
+      {required this.gameRoomRepo, required this.playerRepo});
 
   final Repository<GameRoom> gameRoomRepo;
   final Repository<Player> playerRepo;
-  
+
   @override
   Future<int> countRoomsByCode(String code) async {
     return await gameRoomRepo.countByEqualsCondition('roomCode', code);
   }
 
   @override
-  Future<String> createNewGameRoom(String code) async {
-    return await gameRoomRepo
-        .createItem(GameRoom(null, code, GameRoomStatePhase.lobby, null))
-        .then((value) => value.id!);
-  }
-
-  @override
   Future<void> setOccupiedRoom(String userId, String gameRoomId) async {
     await playerRepo.setField(userId, 'occupiedRoomId', gameRoomId);
 
-    final room = await gameRoomRepo!.getItemById(gameRoomId);
-    await gameRoomRepo!.setField(
+    final room = await gameRoomRepo.getItemById(gameRoomId);
+    await gameRoomRepo.setField(
         gameRoomId, 'playerIds', List.from(room.playerIds)..add(userId));
   }
 
   @override
-  Future<GameRoom> getRoomByCode(String code) async {
-    return await gameRoomRepo
-        .getItemsByField('roomCode', code)
-        .then((value) => value.single);
-  }
-
-  @override
-  Future<String> createPlayer(Player player) async {
-    return await playerRepo.createItem(player).then((value) => value.id!);
+  Future<void> createPlayerWithID(Player player) async {
+    await playerRepo.createItem(player);
   }
 
   @override
@@ -190,10 +173,28 @@ class DatabaseDrivenDataLayer extends DataLayer {
   @override
   Future<void> setRoomPhase(
       String roomId, GameRoomStatePhase newPhase, Object? newPhaseArgs) async {
-
     await Future.wait([
       gameRoomRepo.setField(roomId, 'phase', newPhase),
       gameRoomRepo.setField(roomId, 'phaseArgs', newPhaseArgs)
     ]);
+  }
+
+  @override
+  Future<String> createNewGameRoom(String code) async {
+    return await gameRoomRepo
+        .createItem(GameRoom(roomCode: code))
+        .then((value) => value.id!);
+  }
+
+  @override
+  Future<String> getRoomIdFromCode(String roomCode) async {
+    return await gameRoomRepo
+        .getItemsByField('roomCode', roomCode)
+        .then((value) => value.single.id!);
+  }
+  
+  @override
+  Future<void> setName(String id, String text) async {
+    return await playerRepo.setField(id, 'name', text);
   }
 }

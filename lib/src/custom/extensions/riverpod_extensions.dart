@@ -5,11 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 extension RiverpodExtensions<T> on AsyncValue<T> {
   R whenDefault<R>(
       R Function(T data) data,
-      {bool skipLoadingOnReload = false,
+      {
+        R Function()? loading,
+        R Function(Object, StackTrace)? error,
+        
+        bool skipLoadingOnReload = false,
       bool skipLoadingOnRefresh = true,
       bool skipError = false}) {
     return when<R>(skipLoadingOnReload: skipLoadingOnReload, skipLoadingOnRefresh: skipLoadingOnRefresh, skipError: skipError,
-      data: data, error: (e,_) => Text(e.toString()) as R, loading: () => 
+      data: data, 
+      error: error ?? (e,_) => Text(e.toString()) as R, 
+      loading: loading ?? () => 
       Center(
         child: Column(
           children: [

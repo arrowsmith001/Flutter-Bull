@@ -6,23 +6,25 @@ part of 'game_room.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-GameRoom _$GameRoomFromJson(Map<String, dynamic> json) => GameRoom(
-      json['id'] as String?,
-      json['roomCode'] as String,
-      $enumDecode(_$GameRoomStatePhaseEnumMap, json['phase']),
-      json['phaseArgs'],
+_$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
+      id: json['id'] as String?,
+      roomCode: json['roomCode'] as String,
+      phaseArgs: json['phaseArgs'],
+      phase: $enumDecodeNullable(_$GameRoomStatePhaseEnumMap, json['phase']) ??
+          GameRoomStatePhase.lobby,
       playerIds: (json['playerIds'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$GameRoomToJson(GameRoom instance) => <String, dynamic>{
+Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'roomCode': instance.roomCode,
-      'playerIds': instance.playerIds,
-      'phase': _$GameRoomStatePhaseEnumMap[instance.phase]!,
       'phaseArgs': instance.phaseArgs,
+      'phase': _$GameRoomStatePhaseEnumMap[instance.phase],
+      'playerIds': instance.playerIds,
     };
 
 const _$GameRoomStatePhaseEnumMap = {

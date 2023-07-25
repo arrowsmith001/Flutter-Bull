@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
@@ -9,16 +11,21 @@ import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
+import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
+import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
+import 'package:flutter_bull/src/views/main_view.dart';
 import 'package:flutter_bull/src/views/utter_bull_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import 'src/custom/data/implemented/firebase.dart';
+
+final bool isEmulatingFirebase = true;
 
 void main() async {
   // TODO: Generalize init
@@ -31,6 +38,17 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  if (isEmulatingFirebase) {
+    const host = '127.0.0.1';
+
+    FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+    FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+    await FirebaseAuth.instance.useAuthEmulator(host, 9099);
+    await FirebaseStorage.instance.useStorageEmulator(host, 9199);
+  }
+
+  FirebaseAuth.instance.setPersistence(Persistence.NONE);
+
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(const MyApp());
@@ -39,22 +57,23 @@ void main() async {
 // TODO: Figure out TDD
 // TODO: Containerize
 
+final int instances = 1;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return _buildMultipleInstances(4);
-    //return _buildInstance();
+    return instances > 1
+        ? _buildMultipleInstances(instances)
+        : _buildInstance();
   }
 
   // Fake auth, Fake server, Real database, Real streams
   Widget _buildMultipleInstances(int numberOfInstances) {
-
     final userIds = List.generate(numberOfInstances, (i) => 'user_$i');
     final authMap = <String, AuthService>{};
-    for (var userId in userIds) 
-    {
+    for (var userId in userIds) {
       authMap.addAll({userId: FakeAuthService(userId)});
     }
 
@@ -66,8 +85,8 @@ class MyApp extends StatelessWidget {
     );
 
     final commonStreams = FirebaseDataStreamService();
-    final commonServer = UtterBullClientSideServer(commonData,
-        authMap.values.toList(), FiveDigit3Alpha2NumericCodeGenerator());
+    final commonServer =
+        UtterBullClientSideServer(commonData, authMap.values.toList());
 
 /*     for (var userId in userIds) {
       final auth = authMap[userId]!;
@@ -76,7 +95,10 @@ class MyApp extends StatelessWidget {
       });
     } */
 
+    // TODO: Extract provisions to interface
+
     return WidgetsApp(
+        debugShowCheckedModeBanner: false,
         color: Colors.transparent,
         builder: (_, __) {
           return RowOfN<String>(
@@ -85,9 +107,10 @@ class MyApp extends StatelessWidget {
             transform: (_, userId) => ProvisionedUtterBullApp(
               authService:
                   //FirebaseAuthService(),
-                  authMap[userId],
+                  authMap[userId]!,
               server: commonServer,
               streamService: commonStreams,
+              dataService: commonData,
             ),
           );
         });
@@ -103,35 +126,39 @@ class MyApp extends StatelessWidget {
           FirebaseDatabaseService('players', Player.fromJson)),
     );
 
-    final server = UtterBullClientSideServer(
-        data, [auth], FiveDigit3Alpha2NumericCodeGenerator());
+    final server = UtterBullClientSideServer(data, [auth]);
 
     final streams = FirebaseDataStreamService();
 
     return ProvisionedUtterBullApp(
-        authService: auth, server: server, streamService: streams);
+      authService: auth,
+      server: server,
+      streamService: streams,
+      dataService: data,
+    );
   }
 }
 
 class ProvisionedUtterBullApp extends StatelessWidget {
-  final AuthService? authService;
-  final UtterBullServer? server;
-  final DataStreamService? streamService;
+  final AuthService authService;
+  final UtterBullServer server;
+  final DataStreamService streamService;
+  final DataService dataService;
 
   const ProvisionedUtterBullApp(
-      {this.authService, this.server, this.streamService});
+      {required this.authService,
+      required this.server,
+      required this.streamService,
+      required this.dataService});
 
   @override
   Widget build(BuildContext context) {
     final List<Override> overrides = [];
 
-    if (authService != null)
-      overrides.add(authServiceProvider.overrideWithValue(authService!));
-    if (server != null)
-      overrides.add(utterBullServerProvider.overrideWithValue(server!));
-    if (streamService != null)
-      overrides
-          .add(dataStreamServiceProvider.overrideWithValue(streamService!));
+    overrides.add(authServiceProvider.overrideWithValue(authService));
+    overrides.add(utterBullServerProvider.overrideWithValue(server));
+    overrides.add(dataStreamServiceProvider.overrideWithValue(streamService));
+    overrides.add(dataServiceProvider.overrideWithValue(dataService));
 
     return ProviderScope(overrides: overrides, child: UtterBullApp());
   }
@@ -144,6 +171,28 @@ class UtterBullApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: UtterBullContainer());
+    return Container(
+      color: Colors.grey,
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: _buildTestWidget()) // UtterBullContainer()),
+            ),
+      ),
+    );
+  }
+  
+  _buildTestWidget() {
+/*     return ProviderScope(
+      overrides: [
+        getSignedInPlayerIdProvider.overrideWithValue(''),
+        playerNotifierProvider('').overrideWith(() => PlayerNotifier())
+      ],
+      child: MainView()) */
   }
 }
+
+// TODO: Cascade down VALUES, NOT providers. Override everything with values!!

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:flutter_bull/src/model/game_room.dart';
+
 import 'database_service.dart';
 import 'entity.dart';
 
@@ -11,21 +13,22 @@ class Repository<T extends Entity> {
     }
   }
 
-  Cache<T> cache = Cache();
+  // TODO: Use cache
+  Cache<T> cache = EmptyCache<T>();
   int get cacheCount => cache.count;
 
   final DatabaseService<T> databaseService;
 
   Future<int> countByEqualsCondition(String field, dynamic value) {
-    return databaseService.countByEqualsCondition(field, value);
+    return databaseService.countWhere(field, value);
   }
 
-  Stream<T>? streamItemById(String id) {
+/*   Stream<T>? streamItemById(String id) {
     return databaseService.streamById(id)?.map((item) {
       cache.cache(item);
       return item;
     });
-  }
+  } */
 
   Future<void> deleteItem(String itemId) async {
     await databaseService.delete(itemId);
@@ -34,23 +37,23 @@ class Repository<T extends Entity> {
 
   Future<T> getItemById(String id) async {
     if (cache.contains(id)) return cache.get(id)!;
-    final T entity = await databaseService.fetchById(id);
+    final T entity = await databaseService.read(id);
     cache.cache(entity);
     return entity;
   }
 
-  Future<List<T>> getAll() async {
-    final fetchedItems = await databaseService.fetchAll();
+/*   Future<List<T>> getAll() async {
+    final fetchedItems = await databaseService.readAll();
     cache.cacheAll(fetchedItems);
     /*   fetchedItems.forEach((element) {
       AppLogger.log(element.serialized().toString());
     }); */
     return fetchedItems;
-  }
+  } */
 
   Future<List<T>> getItemsByField(String fieldName, String fieldValue) async {
     final fetchedItems =
-        await databaseService.fetchWhere(fieldName, fieldValue);
+        await databaseService.readWhere(fieldName, fieldValue);
     cache.cacheAll(fetchedItems);
     return fetchedItems;
   }
@@ -58,7 +61,7 @@ class Repository<T extends Entity> {
   Future<T> createItem(T item) async {
     try {
       final createdItem = await databaseService.create(item);
-      cache.cache(createdItem);
+      //cache.cache(createdItem);
       return createdItem;
     } catch (e) {
       throw Exception(e.toString());
@@ -66,17 +69,17 @@ class Repository<T extends Entity> {
   }
 
   Future<void> setField(String itemId, String fieldName, dynamic value) async {
-    await databaseService.setField(itemId, fieldName, value);
-    final updatedItem = await databaseService.fetchById(itemId);
+    await databaseService.update(itemId, fieldName, value);
+    final updatedItem = await databaseService.read(itemId);
     cache.cache(updatedItem);
   }
 
   Future<List<T>> getItemsByIds(Iterable<String> itemIds) async {
     if (itemIds.isEmpty) return [];
     final cachedItems = cache.getAsMany(itemIds);
-    final cachedItemIds = cachedItems.map((e) => e.id);
+    final cachedItemIds = []; //cachedItems.map((e) => e.id);
 
-    final uncachedItems = await databaseService.fetchByIds(
+    final uncachedItems = await databaseService.readMultiple(
         itemIds.where((element) => !cachedItemIds.contains(element)));
     cache.cacheAll(uncachedItems);
     cachedItems.addAll(uncachedItems);
@@ -86,12 +89,48 @@ class Repository<T extends Entity> {
 
   Future<bool> itemExists(String userId) async {
     try {
-      await databaseService.fetchById(userId);
+      await databaseService.read(userId);
       return true;
     } catch (e) {
       return false;
     }
   }
+
+}
+
+class EmptyCache<T extends Entity> implements Cache<T> {
+  @override
+  void cache(T? entity) {}
+
+  @override
+  void cacheAll(Iterable<T> entities) {}
+
+  @override
+  void clear() {}
+
+  @override
+  bool contains(String id) {
+    return false;
+  }
+
+  @override
+  get count => 0;
+
+  @override
+  void deleteById(String itemId) {}
+
+  @override
+  T? get(String id) {
+    return null;
+  }
+
+  @override
+  List<T> getAsMany(Iterable<String> itemIds) {
+    return [];
+  }
+
+  @override
+  HashMap<String, T> get itemIdsToItems => HashMap();
 }
 
 class Cache<T extends Entity> {
@@ -106,11 +145,11 @@ class Cache<T extends Entity> {
   bool contains(String id) => itemIdsToItems.containsKey(id);
 
   void cache(T? entity) {
-    if (entity == null || entity.id == null) return;
+/*     if (entity == null || entity.id == null) return;
     if (contains(entity.id!))
       itemIdsToItems.update(entity.id!, (_) => entity);
     else
-      itemIdsToItems.addAll({entity.id!: entity});
+      itemIdsToItems.addAll({entity.id!: entity}); */
   }
 
   void cacheAll(Iterable<T> entities) {

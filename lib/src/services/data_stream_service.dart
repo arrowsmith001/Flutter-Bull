@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
-import 'package:rxdart/rxdart.dart';
 
 abstract class DataStreamService {
   Stream<Player> streamPlayer(String? userId);
   Stream<GameRoom> streamGameRoom(String? gameRoomId);
+
+  Stream<bool> streamPlayerExists(String? userId);
 }
 
 class FirebaseDataStreamService extends DataStreamService {
@@ -34,5 +35,15 @@ class FirebaseDataStreamService extends DataStreamService {
         .doc(userId)
         .snapshots()
         .map((event) => event.data()!);
+  }
+  
+  @override
+  Stream<bool> streamPlayerExists(String? userId) async* {
+    
+    if (userId == null) yield false;
+    else yield* collection('players')
+        .doc(userId)
+        .snapshots()
+        .map((event) => event.exists);
   }
 }

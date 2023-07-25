@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:logger/logger.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../abstract/database_service.dart';
 import '../abstract/entity.dart';
@@ -25,19 +24,14 @@ class FirebaseDatabaseService<T extends Entity> implements DatabaseService<T> {
 
   T _fromFirestore(
           DocumentSnapshot<Map<String, dynamic>> d, SnapshotOptions? options) =>
-      deserializeDocument(d.data()!..addAll({'id': d.id}));
+      deserializeDocument(d.data()!);
 
   Map<String, Object?> _toFirestore(T value, SetOptions? options) =>
       value.toJson();
 
-  @override
-  Future<List<T>> fetchAll() async {
-    final q = await collectionWithConverter.get();
-    return q.docs.map((e) => e.data()).toList();
-  }
 
   @override
-  Future<T> fetchById(String id) async {
+  Future<T> read(String id) async {
     return await collectionWithConverter
         .doc(id)
         .get()
@@ -45,51 +39,31 @@ class FirebaseDatabaseService<T extends Entity> implements DatabaseService<T> {
   }
 
   @override
-  Future<List<T>> fetchByIds(Iterable<String> ids) {
-    return Future.wait(ids.map((id) => fetchById(id)));
+  Future<List<T>> readMultiple(Iterable<String> ids) {
+    return Future.wait(ids.map((id) => read(id)));
   }
 
-  // TODO: Consider separating IDed case and IDless case
   @override
   Future<T> create(T item) async {
-    if (item.id == null) {
-      final doc = await collectionWithConverter.add(item);
-      await doc.update({'id': doc.id});
-      return await doc.get().then((value) => value.data()!);
-    } else {
-      await collectionWithConverter.doc(item.id).set(item);
-      return await collectionWithConverter
-          .doc(item.id)
-          .get()
-          .then((value) => value.data()!);
-    }
+    final id = item.id ?? collection.doc().id;
+    await collectionWithConverter.doc(id).set(_setIdIfNull(item, id));
+    return await collectionWithConverter
+        .doc(id)
+        .get()
+        .then((value) => value.data()!);
   }
 
+  T _setIdIfNull(T item, String id) => deserializeDocument(item.toJson()..update('id', (_) => id));
+
   @override
-  Future<List<T>> fetchWhere(String field, String value) async {
+  Future<List<T>> readWhere(String field, dynamic value) async {
     final q =
         await collectionWithConverter.where(field, isEqualTo: value).get();
     return q.docs.map<T>((e) => e.data()).toList();
   }
 
   @override
-  Future<Map<String, List<T>>> fetchWhereMultiple(
-      String field, Iterable<String> values) async {
-    final lists = await Future.wait(values.map((value) =>
-        fetchWhere(field, value).then((results) => MapEntry(value, results))));
-    return Map.fromEntries(lists);
-  }
-
-  @override
-  Stream<T> streamById(String id) {
-    return collectionWithConverter
-        .doc(id)
-        .snapshots()
-        .map((event) => event.data()!);
-  }
-
-  @override
-  Future<void> setField(String itemId, String fieldName, dynamic value) {
+  Future<void> update(String itemId, String fieldName, dynamic value) {
     return collection.doc(itemId).update({fieldName: value});
   }
 
@@ -99,7 +73,7 @@ class FirebaseDatabaseService<T extends Entity> implements DatabaseService<T> {
   }
 
   @override
-  Future<int> countByEqualsCondition(String fieldName, value) {
+  Future<int> countWhere(String fieldName, value) {
     return collection
         .where(fieldName, isEqualTo: value)
         .count()
@@ -110,7 +84,6 @@ class FirebaseDatabaseService<T extends Entity> implements DatabaseService<T> {
 
 // TODO: Test force logout - https://stackoverflow.com/questions/53087895/how-to-force-logout-firebase-auth-user-from-app-remotely
 class FirebaseAuthService extends AuthService {
-
   FirebaseAuth get auth => FirebaseAuth.instance;
 
   FirebaseAuthService() {
@@ -121,13 +94,12 @@ class FirebaseAuthService extends AuthService {
     auth.userChanges().listen((event) {
       Logger().d('userChanges');
     });
-
   }
-
 
   @override
   Stream<String?> streamUserId() {
-    return auth.authStateChanges().map((event) => event?.uid); // auth.userChanges().map((user) => user?.uid);
+    return auth.authStateChanges().map(
+        (event) => event?.uid); // auth.userChanges().map((user) => user?.uid);
   }
 
   @override
@@ -167,9 +139,5 @@ class FirebaseLiteDatabaseService<T extends Entity>
     extends FirebaseDatabaseService<T> {
   FirebaseLiteDatabaseService(super.collectionName, super.deserializeDocument);
 
-  @override
-  Future<List<T>> fetchAll() async {
-    final q = await collectionWithConverter.limit(10).get();
-    return q.docs.map<T>((e) => e.data()).toList();
-  }
+
 }

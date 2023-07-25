@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:logger/logger.dart';
@@ -16,7 +15,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
       this.database, this.tableName, this.deserializeDocument);
 
   @override
-  Future<T> create(T item) async {
+  Future<T> create(T item, {String? idOverride}) async {
     final id = await database.rawInsert(
         "INSERT INTO $tableName(json) VALUES('${jsonEncode(item.toJson())}')");
     final query =
@@ -29,7 +28,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
   }
 
   @override
-  Future<List<T>> fetchAll() async {
+  Future<List<T>> readAll() async {
     List<Map<String, dynamic>> queryList =
         await database.rawQuery('SELECT * FROM $tableName');
     try {
@@ -47,7 +46,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
   }
 
   @override
-  Future<T> fetchById(String id) async {
+  Future<T> read(String id) async {
     List<Map<String, dynamic>> queryList =
         await database.rawQuery('SELECT * FROM $tableName WHERE id = $id');
 
@@ -64,7 +63,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
   }
 
   @override
-  Future<List<T>> fetchByIds(Iterable<String> ids) async {
+  Future<List<T>> readMultiple(Iterable<String> ids) async {
     List<Map<String, dynamic>> queryList = await database
         .rawQuery('SELECT * FROM $tableName WHERE id in (${ids.join(',')})');
 
@@ -82,18 +81,18 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
   }
 
   @override
-  Future<List<T>> fetchWhere(String field, String value) {
+  Future<List<T>> readWhere(String field, dynamic value) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, List<T>>> fetchWhereMultiple(
+  Future<Map<String, List<T>>> readAllWhere(
       String field, Iterable<String> values) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> setField(String itemId, String fieldName, value) async {
+  Future<void> update(String itemId, String fieldName, value) async {
     List<Map<String, dynamic>> queryList = await database
         .rawQuery('SELECT * FROM $tableName WHERE id = "$itemId"');
 
@@ -121,9 +120,9 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
     final count =
         await database.rawDelete('DELETE FROM $tableName WHERE id = ${itemId}');
   }
-  
+
   @override
-  Future<int> countByEqualsCondition(String fieldName, value) {
+  Future<int> countWhere(String fieldName, value) {
     throw UnimplementedError();
   }
 }

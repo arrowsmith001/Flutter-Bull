@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SurroundedAppWindow extends StatefulWidget {
   final Widget? child;

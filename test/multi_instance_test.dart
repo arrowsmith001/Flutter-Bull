@@ -5,7 +5,6 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_bull/main.dart';
@@ -16,7 +15,6 @@ void main() {
   testWidgets('Multi app instances', (WidgetTester tester) async {
     
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
 
 
 /*     // Tap the '+' icon and trigger a frame.

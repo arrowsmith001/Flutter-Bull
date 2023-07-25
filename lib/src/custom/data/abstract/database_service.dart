@@ -1,30 +1,23 @@
-import 'dart:collection';
-
 import 'entity.dart';
 
+
 abstract class DatabaseService<T extends Entity> {
+
   Future<T> create(T item);
+  Future<T> read(String id);
+  Future<void> update(String itemId, String fieldName, dynamic value);
   Future<void> delete(String itemId);
 
-  Future<List<T>> fetchAll();
+  Future<List<T>> readMultiple(Iterable<String> ids);
+  Future<List<T>> readWhere(String field, dynamic value);
 
-  Future<T> fetchById(String id);
-  Future<List<T>> fetchByIds(Iterable<String> ids);
-  Future<List<T>> fetchWhere(String field, String value);
-  Future<Map<String, List<T>>> fetchWhereMultiple(String field, Iterable<String> values);
-  
-  Future<void> setField(String itemId, String fieldName, value);
-
-  // TODO: Remove?
-  Stream<T>? streamById(String id);
-
-
-  Future<int> countByEqualsCondition(String fieldName, value);
+  Future<int> countWhere(String fieldName, dynamic value);
 }
 
 class EmptyDatabaseService<T extends Entity> extends DatabaseService<T> {
+
   @override
-  Future<T> create(T item) {
+  Future<T> create(T item, {String? idOverride}) {
     throw UnimplementedError();
   }
 
@@ -34,43 +27,32 @@ class EmptyDatabaseService<T extends Entity> extends DatabaseService<T> {
   }
 
   @override
-  Future<List<T>> fetchAll() {
+  Future<List<T>> readAll() {
     throw UnimplementedError();
   }
 
   @override
-  Future<T> fetchById(String id) {
+  Future<T> read(String id) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<T>> fetchByIds(Iterable<String> ids) {
+  Future<List<T>> readMultiple(Iterable<String> ids) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<T>> fetchWhere(String field, String value) {
+  Future<List<T>> readWhere(String field, dynamic value) {
     throw UnimplementedError();
   }
 
-  @override
-  Future<Map<String, List<T>>> fetchWhereMultiple(
-      String field, Iterable<String> values) {
-    throw UnimplementedError();
-  }
 
   @override
-  Future<void> setField(String itemId, String fieldName, value) {
+  Future<void> update(String itemId, String fieldName, value) {
     throw UnimplementedError();
   }
-
   @override
-  Stream<T>? streamById(String id) {
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<int> countByEqualsCondition(String fieldName, value) {
+  Future<int> countWhere(String fieldName, value) {
     // TODO: implement countByEqualsCondition
     throw UnimplementedError();
   }
