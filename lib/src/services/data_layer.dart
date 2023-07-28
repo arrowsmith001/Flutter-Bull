@@ -3,6 +3,7 @@ import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
+import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -28,6 +29,13 @@ abstract class DataService {
 }
 
 class FakeDataLayer extends DataService implements DataStreamService {
+  FakeDataLayer({List<GameRoom>? gameRoomsInit, List<Player>? playersInit}) {
+    gameRooms.addAll(
+        { for (GameRoom room in gameRoomsInit ?? []) room.id! : BehaviorSubject.seeded(room) });
+    players.addAll(
+        { for (Player player in playersInit ?? []) player.id! : BehaviorSubject.seeded(player) });
+  }
+
   Map<String, BehaviorSubject<GameRoom>> gameRooms = {};
   Map<String, BehaviorSubject<Player>> players = {};
 
@@ -117,25 +125,32 @@ class FakeDataLayer extends DataService implements DataStreamService {
     return gameRooms.keys
         .singleWhere((k) => gameRooms[k]!.value.roomCode == roomCode);
   }
-  
+
   @override
   Future<void> setName(String id, String text) {
     // TODO: implement setName
     throw UnimplementedError();
   }
-  
+
   @override
   Stream<bool> streamPlayerExists(String? userId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<PlayerStatus> streamPlayerStatus(String? userId) {
+    // TODO: implement streamPlayerStatus
     throw UnimplementedError();
   }
 }
 
 class DatabaseDrivenDataLayer extends DataService {
   DatabaseDrivenDataLayer(
-      {required this.gameRoomRepo, required this.playerRepo});
+      {required this.gameRoomRepo, required this.playerRepo, required this.playerStatusRepo});
 
   final Repository<GameRoom> gameRoomRepo;
   final Repository<Player> playerRepo;
+  final Repository<PlayerStatus> playerStatusRepo;
 
   @override
   Future<int> countRoomsByCode(String code) async {
@@ -192,7 +207,7 @@ class DatabaseDrivenDataLayer extends DataService {
         .getItemsByField('roomCode', roomCode)
         .then((value) => value.single.id!);
   }
-  
+
   @override
   Future<void> setName(String id, String text) async {
     return await playerRepo.setField(id, 'name', text);

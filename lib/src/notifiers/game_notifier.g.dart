@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'player_notifier.dart';
+part of 'game_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playerNotifierHash() => r'c9c421bd68465f0512b25a200b5ec440d67f08bc';
+String _$gameNotifierHash() => r'5ad1fc5531c6ba05d6e826a9e98672b564db5705';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,38 +29,44 @@ class _SystemHash {
   }
 }
 
-abstract class _$PlayerNotifier extends BuildlessStreamNotifier<Player> {
-  late final String? userId;
+abstract class _$GameNotifier
+    extends BuildlessAutoDisposeStreamNotifier<GameNotifierState> {
+  late final String userId;
+  late final String gameRoomId;
 
-  Stream<Player> build(
-    String? userId,
+  Stream<GameNotifierState> build(
+    String userId,
+    String gameRoomId,
   );
 }
 
-/// See also [PlayerNotifier].
-@ProviderFor(PlayerNotifier)
-const playerNotifierProvider = PlayerNotifierFamily();
+/// See also [GameNotifier].
+@ProviderFor(GameNotifier)
+const gameNotifierProvider = GameNotifierFamily();
 
-/// See also [PlayerNotifier].
-class PlayerNotifierFamily extends Family<AsyncValue<Player>> {
-  /// See also [PlayerNotifier].
-  const PlayerNotifierFamily();
+/// See also [GameNotifier].
+class GameNotifierFamily extends Family<AsyncValue<GameNotifierState>> {
+  /// See also [GameNotifier].
+  const GameNotifierFamily();
 
-  /// See also [PlayerNotifier].
-  PlayerNotifierProvider call(
-    String? userId,
+  /// See also [GameNotifier].
+  GameNotifierProvider call(
+    String userId,
+    String gameRoomId,
   ) {
-    return PlayerNotifierProvider(
+    return GameNotifierProvider(
       userId,
+      gameRoomId,
     );
   }
 
   @override
-  PlayerNotifierProvider getProviderOverride(
-    covariant PlayerNotifierProvider provider,
+  GameNotifierProvider getProviderOverride(
+    covariant GameNotifierProvider provider,
   ) {
     return call(
       provider.userId,
+      provider.gameRoomId,
     );
   }
 
@@ -76,49 +82,57 @@ class PlayerNotifierFamily extends Family<AsyncValue<Player>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'playerNotifierProvider';
+  String? get name => r'gameNotifierProvider';
 }
 
-/// See also [PlayerNotifier].
-class PlayerNotifierProvider
-    extends StreamNotifierProviderImpl<PlayerNotifier, Player> {
-  /// See also [PlayerNotifier].
-  PlayerNotifierProvider(
+/// See also [GameNotifier].
+class GameNotifierProvider extends AutoDisposeStreamNotifierProviderImpl<
+    GameNotifier, GameNotifierState> {
+  /// See also [GameNotifier].
+  GameNotifierProvider(
     this.userId,
+    this.gameRoomId,
   ) : super.internal(
-          () => PlayerNotifier()..userId = userId,
-          from: playerNotifierProvider,
-          name: r'playerNotifierProvider',
+          () => GameNotifier()
+            ..userId = userId
+            ..gameRoomId = gameRoomId,
+          from: gameNotifierProvider,
+          name: r'gameNotifierProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$playerNotifierHash,
-          dependencies: PlayerNotifierFamily._dependencies,
+                  : _$gameNotifierHash,
+          dependencies: GameNotifierFamily._dependencies,
           allTransitiveDependencies:
-              PlayerNotifierFamily._allTransitiveDependencies,
+              GameNotifierFamily._allTransitiveDependencies,
         );
 
-  final String? userId;
+  final String userId;
+  final String gameRoomId;
 
   @override
   bool operator ==(Object other) {
-    return other is PlayerNotifierProvider && other.userId == userId;
+    return other is GameNotifierProvider &&
+        other.userId == userId &&
+        other.gameRoomId == gameRoomId;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, userId.hashCode);
+    hash = _SystemHash.combine(hash, gameRoomId.hashCode);
 
     return _SystemHash.finish(hash);
   }
 
   @override
-  Stream<Player> runNotifierBuild(
-    covariant PlayerNotifier notifier,
+  Stream<GameNotifierState> runNotifierBuild(
+    covariant GameNotifier notifier,
   ) {
     return notifier.build(
       userId,
+      gameRoomId,
     );
   }
 }

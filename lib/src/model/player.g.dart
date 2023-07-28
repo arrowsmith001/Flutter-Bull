@@ -11,6 +11,7 @@ _$_Player _$$_PlayerFromJson(Map<String, dynamic> json) => _$_Player(
       name: json['name'] as String?,
       profilePhotoPath: json['profilePhotoPath'] as String?,
       occupiedRoomId: json['occupiedRoomId'] as String?,
+      statusId: json['statusId'] as String?,
     );
 
 Map<String, dynamic> _$$_PlayerToJson(_$_Player instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$$_PlayerToJson(_$_Player instance) => <String, dynamic>{
       'name': instance.name,
       'profilePhotoPath': instance.profilePhotoPath,
       'occupiedRoomId': instance.occupiedRoomId,
+      'statusId': instance.statusId,
     };

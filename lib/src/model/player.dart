@@ -13,6 +13,7 @@ class Player extends Entity with _$Player {
     String? name,
     String? profilePhotoPath,
     String? occupiedRoomId,
+    String? statusId,
   }) = _Player;
 
 

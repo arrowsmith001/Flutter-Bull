@@ -1,8 +1,8 @@
 {
   "functions": [
     {
-      "source": "utter-bull-codebase",
-      "codebase": "utter-bull-codebase",
+      "source": "utter-bull-functions",
+      "codebase": "utter-bull-functions",
       "ignore": [
         "node_modules",
         ".git",

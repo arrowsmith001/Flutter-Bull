@@ -1,12 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'player_notifier.dart';
+part of 'signed_in_player_status_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playerNotifierHash() => r'c9c421bd68465f0512b25a200b5ec440d67f08bc';
+String _$signedInPlayerStatusNotifierHash() =>
+    r'05d8e24b407d67c83780bdb294652e03ba60b0e3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,35 +30,38 @@ class _SystemHash {
   }
 }
 
-abstract class _$PlayerNotifier extends BuildlessStreamNotifier<Player> {
+abstract class _$SignedInPlayerStatusNotifier
+    extends BuildlessStreamNotifier<SignedInPlayerStatusNotifierState> {
   late final String? userId;
 
-  Stream<Player> build(
+  Stream<SignedInPlayerStatusNotifierState> build(
     String? userId,
   );
 }
 
-/// See also [PlayerNotifier].
-@ProviderFor(PlayerNotifier)
-const playerNotifierProvider = PlayerNotifierFamily();
+/// See also [SignedInPlayerStatusNotifier].
+@ProviderFor(SignedInPlayerStatusNotifier)
+const signedInPlayerStatusNotifierProvider =
+    SignedInPlayerStatusNotifierFamily();
 
-/// See also [PlayerNotifier].
-class PlayerNotifierFamily extends Family<AsyncValue<Player>> {
-  /// See also [PlayerNotifier].
-  const PlayerNotifierFamily();
+/// See also [SignedInPlayerStatusNotifier].
+class SignedInPlayerStatusNotifierFamily
+    extends Family<AsyncValue<SignedInPlayerStatusNotifierState>> {
+  /// See also [SignedInPlayerStatusNotifier].
+  const SignedInPlayerStatusNotifierFamily();
 
-  /// See also [PlayerNotifier].
-  PlayerNotifierProvider call(
+  /// See also [SignedInPlayerStatusNotifier].
+  SignedInPlayerStatusNotifierProvider call(
     String? userId,
   ) {
-    return PlayerNotifierProvider(
+    return SignedInPlayerStatusNotifierProvider(
       userId,
     );
   }
 
   @override
-  PlayerNotifierProvider getProviderOverride(
-    covariant PlayerNotifierProvider provider,
+  SignedInPlayerStatusNotifierProvider getProviderOverride(
+    covariant SignedInPlayerStatusNotifierProvider provider,
   ) {
     return call(
       provider.userId,
@@ -76,33 +80,34 @@ class PlayerNotifierFamily extends Family<AsyncValue<Player>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'playerNotifierProvider';
+  String? get name => r'signedInPlayerStatusNotifierProvider';
 }
 
-/// See also [PlayerNotifier].
-class PlayerNotifierProvider
-    extends StreamNotifierProviderImpl<PlayerNotifier, Player> {
-  /// See also [PlayerNotifier].
-  PlayerNotifierProvider(
+/// See also [SignedInPlayerStatusNotifier].
+class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
+    SignedInPlayerStatusNotifier, SignedInPlayerStatusNotifierState> {
+  /// See also [SignedInPlayerStatusNotifier].
+  SignedInPlayerStatusNotifierProvider(
     this.userId,
   ) : super.internal(
-          () => PlayerNotifier()..userId = userId,
-          from: playerNotifierProvider,
-          name: r'playerNotifierProvider',
+          () => SignedInPlayerStatusNotifier()..userId = userId,
+          from: signedInPlayerStatusNotifierProvider,
+          name: r'signedInPlayerStatusNotifierProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$playerNotifierHash,
-          dependencies: PlayerNotifierFamily._dependencies,
+                  : _$signedInPlayerStatusNotifierHash,
+          dependencies: SignedInPlayerStatusNotifierFamily._dependencies,
           allTransitiveDependencies:
-              PlayerNotifierFamily._allTransitiveDependencies,
+              SignedInPlayerStatusNotifierFamily._allTransitiveDependencies,
         );
 
   final String? userId;
 
   @override
   bool operator ==(Object other) {
-    return other is PlayerNotifierProvider && other.userId == userId;
+    return other is SignedInPlayerStatusNotifierProvider &&
+        other.userId == userId;
   }
 
   @override
@@ -114,8 +119,8 @@ class PlayerNotifierProvider
   }
 
   @override
-  Stream<Player> runNotifierBuild(
-    covariant PlayerNotifier notifier,
+  Stream<SignedInPlayerStatusNotifierState> runNotifierBuild(
+    covariant SignedInPlayerStatusNotifier notifier,
   ) {
     return notifier.build(
       userId,

@@ -12,27 +12,30 @@ import 'package:http/http.dart' as http;
 
 // TODO: Move to cloud
 abstract class UtterBullServer {
-  void createRoom(String userId);
-  void joinRoom(String userId, String roomCode);
+  Future<void> createRoom(String userId);
+  Future<void>  joinRoom(String userId, String roomCode);
 
-  void createPlayerWithID(Player player);
+  Future<void>  createPlayerWithID(String userId);
 
-  void removeFromRoom(String userId, String roomCode);
-  void setRoomPhase(
+  Future<void>  removeFromRoom(String userId, String roomCode);
+  Future<void>  setRoomPhase(
       String gameRoomId, GameRoomStatePhase newPhase, Object? newPhaseArgs);
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
   UtterBullClientSideServer(this.data, this.auth) {
+
     for (var a in auth) {
       if (a is FakeAuthService) {
+
         a.streamUserId().listen((userId) async {
           if (userId != null) {
             if (await data.doesPlayerExist(userId) == false) {
-              onUserCreated(userId);
+              _onUserCreated(userId);
             }
           }
         });
+
       }
     }
   }
@@ -40,39 +43,39 @@ class UtterBullClientSideServer implements UtterBullServer {
   final List<AuthService> auth;
   final DataService data;
 
-  void onUserCreated(String id) async {
-    // TODO: Actually invoke cloud function
+  void _onUserCreated(String id) async {
     final playerExists = await data.doesPlayerExist(id);
     if (!playerExists) {
-      await createPlayerWithID(Player(id: id, name: 'Bob $id'));
+      await createPlayerWithID(id);
     }
   }
 
   @override
-  Future<void> createPlayerWithID(Player player) async {
-    assert(player.id != null);
-    await data.createPlayerWithID(player);
+  Future<void> createPlayerWithID(String userId) async {
+    final func = FirebaseFunctions.instance.httpsCallable('invokeOnUserCreate');
+    await func.call(userId);
   }
 
   @override
   Future<void> createRoom(String userId) async {
     final func = FirebaseFunctions.instance.httpsCallable('createGameRoom');
-    func.call(userId);
+    await func.call(userId);
   }
 
   @override
   Future<void> joinRoom(String userId, String roomCode) async {
-    final roomId = await data.getRoomIdFromCode(roomCode);
-    await data.setOccupiedRoom(userId, roomId);
+    final func = FirebaseFunctions.instance.httpsCallable('joinGameRoom');
+    await func.call({'userId' : userId, 'roomCode' : roomCode});
   }
 
   @override
-  Future<void> removeFromRoom(String userId, String roomCode) async {
-    await data.removeFromRoom(userId, roomCode);
+  Future<void> removeFromRoom(String userId, String roomId) async {
+    final func = FirebaseFunctions.instance.httpsCallable('removeFromRoom');
+    await func.call({'userId' : userId, 'roomId' : roomId});
   }
 
   @override
-  void setRoomPhase(String roomCode, GameRoomStatePhase newPhase,
+  Future<void> setRoomPhase(String roomCode, GameRoomStatePhase newPhase,
       Object? newPhaseArgs) async {
     await data.setRoomPhase(roomCode, newPhase, newPhaseArgs);
   }

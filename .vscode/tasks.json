@@ -1,0 +1,92 @@
+{
+    "version": "2.0.0",
+    "presentation": {
+        "echo": false,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true
+    },
+    "tasks": [
+        {
+            "label": "Run app with emulators",
+            "dependsOn": [
+                "run",
+                "emulators"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run build watchers",
+            "dependsOn": [
+                "dart build watch",
+                "func npm build watch",
+            ],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "group": {
+                "kind": "none",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "flutter run",
+            "options": {
+                "shell": {
+                    "args": []
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "emulators",
+            "type": "shell",
+            "command": "firebase emulators:start --import .firebase-emu-data --export-on-exit .firebase-emu-data",
+            "options": {
+                "shell": {
+                    "args": []
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "dart build watch",
+            "type": "shell",
+            "command": "dart run build_runner watch",
+            "options": {
+                "shell": {
+                    "args": []
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "group": "build-watch"
+            }
+        },
+        {
+            "label": "func npm build watch",
+            "type": "shell",
+            "command": "npm run build:watch",
+            "options": {
+                "cwd": "${workspaceFolder}/utter-bull-functions",
+                "shell": {
+                    "args": []
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "group": "build-watch"
+            }
+        },
+    ]
+}

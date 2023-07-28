@@ -10,7 +10,9 @@ import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
+import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
+import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
@@ -18,10 +20,11 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
-import 'package:flutter_bull/src/views/main_view.dart';
-import 'package:flutter_bull/src/views/utter_bull_container.dart';
+import 'package:flutter_bull/src/views/02_main_view.dart';
+import 'package:flutter_bull/src/views/0_auth_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
+import 'package:logger/logger.dart';
 
 import 'src/custom/data/implemented/firebase.dart';
 
@@ -57,7 +60,7 @@ void main() async {
 // TODO: Figure out TDD
 // TODO: Containerize
 
-final int instances = 1;
+final int instances = 4;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -71,18 +74,19 @@ class MyApp extends StatelessWidget {
 
   // Fake auth, Fake server, Real database, Real streams
   Widget _buildMultipleInstances(int numberOfInstances) {
-    final userIds = List.generate(numberOfInstances, (i) => 'user_$i');
+    //final userIds = List.generate(numberOfInstances, (i) => 'user_$i');
+    final userIds = [
+      'fOAuepqveZKe9Ps2SLZfbHJQZGAC',
+      'oEqZPMjBXvJ9gxajAvyxDgytyazb',
+      'f7Nm88i8fXKa4shusF8Paqrke7DD',
+      'yQKWcTF1sjwHqwfIJDfNLoAnI7XD' 
+    ];
     final authMap = <String, AuthService>{};
     for (var userId in userIds) {
       authMap.addAll({userId: FakeAuthService(userId)});
     }
 
-    final commonData = DatabaseDrivenDataLayer(
-      gameRoomRepo: Repository<GameRoom>(
-          FirebaseDatabaseService('rooms', GameRoom.fromJson)),
-      playerRepo: Repository<Player>(
-          FirebaseDatabaseService('players', Player.fromJson)),
-    );
+    final commonData = _getFirebaseDataLayer();
 
     final commonStreams = FirebaseDataStreamService();
     final commonServer =
@@ -119,12 +123,9 @@ class MyApp extends StatelessWidget {
   Widget _buildInstance() {
     final auth = FirebaseAuthService();
 
-    final data = DatabaseDrivenDataLayer(
-      gameRoomRepo: Repository<GameRoom>(
-          FirebaseDatabaseService('rooms', GameRoom.fromJson)),
-      playerRepo: Repository<Player>(
-          FirebaseDatabaseService('players', Player.fromJson)),
-    );
+    //auth.signOut();
+
+    final data = _getFirebaseDataLayer();
 
     final server = UtterBullClientSideServer(data, [auth]);
 
@@ -136,6 +137,17 @@ class MyApp extends StatelessWidget {
       streamService: streams,
       dataService: data,
     );
+  }
+
+  DatabaseDrivenDataLayer _getFirebaseDataLayer() {
+    return DatabaseDrivenDataLayer(
+    gameRoomRepo: Repository<GameRoom>(
+        FirebaseDatabaseService('rooms', GameRoom.fromJson)),
+    playerRepo: Repository<Player>(
+        FirebaseDatabaseService('players', Player.fromJson)),
+    playerStatusRepo: Repository<PlayerStatus>(
+        FirebaseDatabaseService('playerStatuses', PlayerStatus.fromJson)),
+  );
   }
 }
 
@@ -176,23 +188,72 @@ class UtterBullApp extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                home: _buildTestWidget()) // UtterBullContainer()),
-            ),
+          borderRadius: BorderRadius.circular(8.0),
+          child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: false ? TestWidget() : AuthContainer()),
+        ),
       ),
     );
   }
-  
-  _buildTestWidget() {
-/*     return ProviderScope(
-      overrides: [
-        getSignedInPlayerIdProvider.overrideWithValue(''),
-        playerNotifierProvider('').overrideWith(() => PlayerNotifier())
-      ],
-      child: MainView()) */
-  }
 }
 
-// TODO: Cascade down VALUES, NOT providers. Override everything with values!!
+class TestWidget extends ConsumerStatefulWidget {
+  const TestWidget({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _TestWidgetState();
+}
+
+class _TestWidgetState extends ConsumerState<TestWidget>
+    with SingleTickerProviderStateMixin {
+  List<String> list = ['a', 'b', 'c'];
+
+  final GlobalKey<AnimatedListState> _key = GlobalKey<AnimatedListState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            TextButton(
+                onPressed: () {
+                  final i = list.length;
+                  list.insert(i, 'd');
+                  _key.currentState!
+                      .insertItem(i, duration: Duration(seconds: 1));
+                },
+                child: Text('press')),
+            Expanded(
+              child: AnimatedList(
+                controller: ScrollController(),
+                key: _key,
+                initialItemCount: list.length,
+                itemBuilder: (context, index, animation) {
+                  return _buildListItem(index, animation);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListItem(int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      key: ValueKey(index),
+      animation: animation,
+      builder: (BuildContext context, Widget? child) {
+        return Opacity(
+          opacity: animation.value,
+          child: child,
+        );
+      },
+      child: ListTile(
+        title: Text(list[index]),
+      ),
+    );
+  }
+}

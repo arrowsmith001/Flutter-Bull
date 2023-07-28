@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'game_room_state.g.dart';
 
 @JsonSerializable()
-@immutable
 class GameRoomState {
 
   final GameRoomStatePhase phase;
@@ -17,4 +15,18 @@ class GameRoomState {
       _$GameRoomStateFromJson(map);
 }
 
-enum GameRoomStatePhase { lobby, writing, selecting, reading, results }
+
+@JsonEnum()
+enum GameRoomStatePhase 
+{ 
+  @JsonValue(0)
+  lobby, 
+  @JsonValue(1)
+  writing, 
+  @JsonValue(2)
+  selecting,
+  @JsonValue(3)
+   reading, 
+  @JsonValue(4)
+   results 
+}

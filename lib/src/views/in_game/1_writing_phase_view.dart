@@ -12,6 +12,6 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Text('Writing');
   }
 }

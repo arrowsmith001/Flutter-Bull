@@ -28,9 +28,9 @@ Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
     };
 
 const _$GameRoomStatePhaseEnumMap = {
-  GameRoomStatePhase.lobby: 'lobby',
-  GameRoomStatePhase.writing: 'writing',
-  GameRoomStatePhase.selecting: 'selecting',
-  GameRoomStatePhase.reading: 'reading',
-  GameRoomStatePhase.results: 'results',
+  GameRoomStatePhase.lobby: 0,
+  GameRoomStatePhase.writing: 1,
+  GameRoomStatePhase.selecting: 2,
+  GameRoomStatePhase.reading: 3,
+  GameRoomStatePhase.results: 4,
 };

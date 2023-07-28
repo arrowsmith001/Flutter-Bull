@@ -24,6 +24,7 @@ mixin _$Player {
   String? get name => throw _privateConstructorUsedError;
   String? get profilePhotoPath => throw _privateConstructorUsedError;
   String? get occupiedRoomId => throw _privateConstructorUsedError;
+  String? get statusId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,7 +40,8 @@ abstract class $PlayerCopyWith<$Res> {
       {String? id,
       String? name,
       String? profilePhotoPath,
-      String? occupiedRoomId});
+      String? occupiedRoomId,
+      String? statusId});
 }
 
 /// @nodoc
@@ -59,6 +61,7 @@ class _$PlayerCopyWithImpl<$Res, $Val extends Player>
     Object? name = freezed,
     Object? profilePhotoPath = freezed,
     Object? occupiedRoomId = freezed,
+    Object? statusId = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -77,6 +80,10 @@ class _$PlayerCopyWithImpl<$Res, $Val extends Player>
           ? _value.occupiedRoomId
           : occupiedRoomId // ignore: cast_nullable_to_non_nullable
               as String?,
+      statusId: freezed == statusId
+          ? _value.statusId
+          : statusId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -91,7 +98,8 @@ abstract class _$$_PlayerCopyWith<$Res> implements $PlayerCopyWith<$Res> {
       {String? id,
       String? name,
       String? profilePhotoPath,
-      String? occupiedRoomId});
+      String? occupiedRoomId,
+      String? statusId});
 }
 
 /// @nodoc
@@ -108,6 +116,7 @@ class __$$_PlayerCopyWithImpl<$Res>
     Object? name = freezed,
     Object? profilePhotoPath = freezed,
     Object? occupiedRoomId = freezed,
+    Object? statusId = freezed,
   }) {
     return _then(_$_Player(
       id: freezed == id
@@ -126,6 +135,10 @@ class __$$_PlayerCopyWithImpl<$Res>
           ? _value.occupiedRoomId
           : occupiedRoomId // ignore: cast_nullable_to_non_nullable
               as String?,
+      statusId: freezed == statusId
+          ? _value.statusId
+          : statusId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -134,7 +147,11 @@ class __$$_PlayerCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_Player implements _Player {
   const _$_Player(
-      {this.id, this.name, this.profilePhotoPath, this.occupiedRoomId});
+      {this.id,
+      this.name,
+      this.profilePhotoPath,
+      this.occupiedRoomId,
+      this.statusId});
 
   factory _$_Player.fromJson(Map<String, dynamic> json) =>
       _$$_PlayerFromJson(json);
@@ -147,10 +164,12 @@ class _$_Player implements _Player {
   final String? profilePhotoPath;
   @override
   final String? occupiedRoomId;
+  @override
+  final String? statusId;
 
   @override
   String toString() {
-    return 'Player(id: $id, name: $name, profilePhotoPath: $profilePhotoPath, occupiedRoomId: $occupiedRoomId)';
+    return 'Player(id: $id, name: $name, profilePhotoPath: $profilePhotoPath, occupiedRoomId: $occupiedRoomId, statusId: $statusId)';
   }
 
   @override
@@ -163,13 +182,15 @@ class _$_Player implements _Player {
             (identical(other.profilePhotoPath, profilePhotoPath) ||
                 other.profilePhotoPath == profilePhotoPath) &&
             (identical(other.occupiedRoomId, occupiedRoomId) ||
-                other.occupiedRoomId == occupiedRoomId));
+                other.occupiedRoomId == occupiedRoomId) &&
+            (identical(other.statusId, statusId) ||
+                other.statusId == statusId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, profilePhotoPath, occupiedRoomId);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, profilePhotoPath, occupiedRoomId, statusId);
 
   @JsonKey(ignore: true)
   @override
@@ -190,7 +211,8 @@ abstract class _Player implements Player {
       {final String? id,
       final String? name,
       final String? profilePhotoPath,
-      final String? occupiedRoomId}) = _$_Player;
+      final String? occupiedRoomId,
+      final String? statusId}) = _$_Player;
 
   factory _Player.fromJson(Map<String, dynamic> json) = _$_Player.fromJson;
 
@@ -202,6 +224,8 @@ abstract class _Player implements Player {
   String? get profilePhotoPath;
   @override
   String? get occupiedRoomId;
+  @override
+  String? get statusId;
   @override
   @JsonKey(ignore: true)
   _$$_PlayerCopyWith<_$_Player> get copyWith =>

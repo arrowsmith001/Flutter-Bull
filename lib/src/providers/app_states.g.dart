@@ -7,7 +7,7 @@ part of 'app_states.dart';
 // **************************************************************************
 
 String _$getSignedInPlayerIdHash() =>
-    r'b5ff40c12d6f5c55292378c57b795d1e0171d358';
+    r'897c4a157668c2dd9571070a0dd60f0ad28d37e5';
 
 /// See also [getSignedInPlayerId].
 @ProviderFor(getSignedInPlayerId)
@@ -22,36 +22,20 @@ final getSignedInPlayerIdProvider = Provider<String>.internal(
 );
 
 typedef GetSignedInPlayerIdRef = ProviderRef<String>;
-String _$getSignedInPlayerNameHash() =>
-    r'0c1c1f7e599b4542cc05d6ad73acd4617a17fe53';
+String _$getCurrentGameRoomIdHash() =>
+    r'0ac94053e1bd273991bf81dc09c67dd79bc9030c';
 
-/// See also [getSignedInPlayerName].
-@ProviderFor(getSignedInPlayerName)
-final getSignedInPlayerNameProvider = Provider<String>.internal(
-  getSignedInPlayerName,
-  name: r'getSignedInPlayerNameProvider',
+/// See also [getCurrentGameRoomId].
+@ProviderFor(getCurrentGameRoomId)
+final getCurrentGameRoomIdProvider = Provider<String>.internal(
+  getCurrentGameRoomId,
+  name: r'getCurrentGameRoomIdProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$getSignedInPlayerNameHash,
+      : _$getCurrentGameRoomIdHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef GetSignedInPlayerNameRef = ProviderRef<String>;
-String _$getCurrentGameRoomHash() =>
-    r'e94c13d36e1705f16a5955c60de55aded7208da7';
-
-/// See also [getCurrentGameRoom].
-@ProviderFor(getCurrentGameRoom)
-final getCurrentGameRoomProvider = Provider<String>.internal(
-  getCurrentGameRoom,
-  name: r'getCurrentGameRoomProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$getCurrentGameRoomHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef GetCurrentGameRoomRef = ProviderRef<String>;
+typedef GetCurrentGameRoomIdRef = ProviderRef<String>;
 // ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions
