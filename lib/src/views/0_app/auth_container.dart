@@ -5,9 +5,9 @@ import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/01_login_view.dart';
-import 'package:flutter_bull/src/views/02_main_view.dart';
-import 'package:flutter_bull/src/views/splash_view.dart';
+import 'package:flutter_bull/src/views/0_app/splash_view.dart';
+import 'package:flutter_bull/src/views/1_auth/login_view.dart';
+import 'package:flutter_bull/src/views/1_auth/main_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -74,7 +74,6 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
         authStateAsync.whenDefault((data) => SizedBox.shrink(),
             loading: () => Positioned.fill(
                     child: Container(
-                  color: Colors.blue.withAlpha(150),
                   child: Text('loading'),
                 )))
       ],

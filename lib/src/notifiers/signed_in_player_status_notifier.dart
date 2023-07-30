@@ -22,15 +22,14 @@ class SignedInPlayerStatusNotifier extends _$SignedInPlayerStatusNotifier {
 
   @override
   Stream<SignedInPlayerStatusNotifierState> build(String? userId) {
-
     return _streamService.streamPlayerExists(userId).switchMap((exists) async* {
       if (exists) {
-
         final playerStream = _streamService.streamPlayer(userId);
         final statusStream = statusSubject;
 
         yield* CombineLatestStream.combine2(playerStream, statusStream,
             (player, status) {
+          Logger().d('SignedInPlayerStatusNotifier: $player $status');
           return SignedInPlayerStatusNotifierState(
               player: player, status: status, exists: true);
         });
@@ -43,38 +42,30 @@ class SignedInPlayerStatusNotifier extends _$SignedInPlayerStatusNotifier {
   BehaviorSubject<PlayerStatus> statusSubject =
       BehaviorSubject.seeded(PlayerStatus(busy: false, messageWhileBusy: ''));
 
-
   Future<void> createRoom() async {
+    statusSubject
+        .add(PlayerStatus(busy: true, messageWhileBusy: 'Creating Room'));
 
-      statusSubject
-          .add(PlayerStatus(busy: true, messageWhileBusy: 'Creating Room'));
+    await _server.createRoom(state.value!.player!.id!);
 
-      await _server.createRoom(state.value!.player!.id!);  
-      
-      statusSubject
-          .add(PlayerStatus(busy: false));
-    }
-
-  Future<void> joinRoom(String roomCode) async {
-
-      statusSubject
-          .add(PlayerStatus(busy: true, messageWhileBusy: 'Joining Room'));
-
-      await _server.joinRoom(state.value!.player!.id!, roomCode);  
-
-      statusSubject
-          .add(PlayerStatus(busy: false));
-
+    statusSubject.add(PlayerStatus(busy: false));
   }
 
-  Future<void> leaveRoom(String roomId) async
-  {
-      statusSubject
-          .add(PlayerStatus(busy: true, messageWhileBusy: 'Exiting Room'));
+  Future<void> joinRoom(String roomCode) async {
+    statusSubject
+        .add(PlayerStatus(busy: true, messageWhileBusy: 'Joining Room'));
 
-      await _server.removeFromRoom(state.value!.player!.id!, roomId);  
+    await _server.joinRoom(state.value!.player!.id!, roomCode);
 
-      statusSubject
-          .add(PlayerStatus(busy: false));
+    statusSubject.add(PlayerStatus(busy: false));
+  }
+
+  Future<void> leaveRoom(String roomId) async {
+    statusSubject
+        .add(PlayerStatus(busy: true, messageWhileBusy: 'Exiting Room'));
+
+    await _server.removeFromRoom(state.value!.player!.id!, roomId);
+
+    statusSubject.add(PlayerStatus(busy: false));
   }
 }

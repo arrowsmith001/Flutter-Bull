@@ -7,7 +7,7 @@ part of 'signed_in_player_status_notifier.dart';
 // **************************************************************************
 
 String _$signedInPlayerStatusNotifierHash() =>
-    r'05d8e24b407d67c83780bdb294652e03ba60b0e3';
+    r'fdd366a08d051ca31b6d3061247e420c037bb6b2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -127,4 +127,5 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
     );
   }
 }
-// ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member

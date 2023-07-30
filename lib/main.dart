@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
+import 'package:flutter_bull/src/custom/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
@@ -20,8 +21,8 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
-import 'package:flutter_bull/src/views/02_main_view.dart';
-import 'package:flutter_bull/src/views/0_auth_container.dart';
+import 'package:flutter_bull/src/views/1_auth/main_view.dart';
+import 'package:flutter_bull/src/views/0_app/auth_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:logger/logger.dart';
@@ -76,10 +77,10 @@ class MyApp extends StatelessWidget {
   Widget _buildMultipleInstances(int numberOfInstances) {
     //final userIds = List.generate(numberOfInstances, (i) => 'user_$i');
     final userIds = [
-      'fOAuepqveZKe9Ps2SLZfbHJQZGAC',
-      'oEqZPMjBXvJ9gxajAvyxDgytyazb',
-      'f7Nm88i8fXKa4shusF8Paqrke7DD',
-      'yQKWcTF1sjwHqwfIJDfNLoAnI7XD' 
+      'u1',
+      'u2',
+      'u3',
+      'u4' 
     ];
     final authMap = <String, AuthService>{};
     for (var userId in userIds) {
@@ -191,6 +192,7 @@ class UtterBullApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(8.0),
           child: MaterialApp(
               debugShowCheckedModeBanner: false,
+              theme: UtterBullTheme.theme,
               home: false ? TestWidget() : AuthContainer()),
         ),
       ),

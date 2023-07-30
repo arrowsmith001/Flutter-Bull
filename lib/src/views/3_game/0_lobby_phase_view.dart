@@ -62,7 +62,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
       return Column(
         children: [
-          Expanded(child: Text(player.id!)),
+          Expanded(child: Text(player.name!)),
           Expanded(
             child: Text(
               room.toString(),
