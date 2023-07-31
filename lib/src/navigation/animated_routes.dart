@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 abstract class SlideRoute extends PageRouteBuilder {
@@ -8,11 +7,35 @@ abstract class SlideRoute extends PageRouteBuilder {
 
   Offset get getInitialOffset;
 
+
+  Offset? exitOffset;
+
+  @override
+  RoutePageBuilder get pageBuilder => (context, animation, secondaryAnimation) 
+  {
+    const begin = Offset.zero;
+
+    // TODO: Make exit appropriate - based off previous
+    var end = getInitialOffset;
+
+    final tween = Tween(begin: begin, end: end);
+
+    final curved = CurvedAnimation(
+        parent: secondaryAnimation, curve: Curves.easeInOut);
+    final offsetAnimation = curved.drive(tween);
+
+    return SlideTransition(
+      position: offsetAnimation,
+      child: child,
+    );
+  };
+
   @override
   RouteTransitionsBuilder get transitionsBuilder =>
       ((context, animation, secondaryAnimation, child) {
         var begin = getInitialOffset;
         const end = Offset.zero;
+
         final tween = Tween(begin: begin, end: end);
 
         final curved =

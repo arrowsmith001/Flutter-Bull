@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
-abstract class NavigationHelper<T> {
-
+abstract class NavigationController<T> {
   final navigatorKey = GlobalKey<NavigatorState>();
   BuildContext? get _navigatorContext => navigatorKey.currentContext;
   bool get canNavigate => _navigatorContext != null;
+
+/*   @protected
+  SlideRoute? prevRoute; */
 
   Route onGenerateRoute(RouteSettings settings) {
     final routeNameIterable = settings.name!.split('/');
@@ -14,13 +17,19 @@ abstract class NavigationHelper<T> {
 
     PageRoute? route = resolveRoute();
 
+/*     if (route is SlideRoute && prevRoute != null) {
+      prevRoute!.exitOffset = -route.getInitialOffset;
+      prevRoute = route;
+    } */
+
     setCurrentRouteName = routeNameIterable.first;
 
     return route ?? defaultRoute;
   }
 
   @protected
-  Widget scoped(Widget child, {overrides = const <Override>[]}) => ProviderScope(child: child, overrides: overrides);
+  Widget scoped(Widget child, {overrides = const <Override>[]}) =>
+      ProviderScope(child: child, overrides: overrides);
 
   @protected
   void navigateTo(String s) {

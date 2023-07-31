@@ -9,12 +9,33 @@ class GameNotifierState with _$GameNotifierState {
   factory GameNotifierState(
       {required Player signedInPlayer,
       required GameRoom gameRoom,
-      required ListState playerListState}) = _GameNotifierState;
+      required ListState playerListState,
+      required RoundState roundState}) = _GameNotifierState;
+}
+
+@freezed
+class RoundState with _$RoundState {
+  const RoundState._();
+
+  String getWritingPhaseMessage(String userId)
+  {
+    bool isPlayerTruther = isTruther(userId);
+    return 'Write a ${isPlayerTruther ? 'TRUTH' : 'LIE'} about ${isPlayerTruther ? 'YOURSELF' : getTarget(userId)}';
+  }
+
+  int get numberOfParticipants => participants.length;
+  List<String> get participants => targets.keys.toSet().toList();
+
+  String getTarget(String id) => targets[id]!;
+  bool isTruther(String id) => targets[id] == id;
+
+  factory RoundState(
+      {@Default({}) Map<String, String> targets,
+      @Default({}) Map<String, String> texts}) = _RoundState;
 }
 
 @freezed
 class ListState with _$ListState {
-
   factory ListState.init(List<String> list) => ListState.fromLists(list, list);
 
   factory ListState.fromLists(List<String> listBefore, List<String> listNow) {
@@ -56,8 +77,7 @@ class ListState with _$ListState {
   }
 
   factory ListState(
-      {
-      required int lengthBefore,
+      {required int lengthBefore,
       required int length,
       @Default(false) bool hasChanged,
       @Default(ListChangeType.unchanged) ListChangeType listChangeType,

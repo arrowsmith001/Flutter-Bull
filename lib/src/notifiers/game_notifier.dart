@@ -28,24 +28,25 @@ class GameNotifier extends _$GameNotifier {
     final roomStream = _streamService.streamGameRoom(gameRoomId);
 
     return CombineLatestStream.combine2(playerStream, roomStream,
-        (player, room) => _buildNewState(player, room));
+        (player, room) => _buildState(player, room));
   }
 
-  GameNotifierState _buildNewState(Player player, GameRoom room) {
-
-
+  GameNotifierState _buildState(Player player, GameRoom room) {
     if (state.hasValue) {
+
       final prevRoom = state.value!.gameRoom;
 
-      final listState = ListState.fromLists(prevRoom.playerIds, room.playerIds);
+      final playerListState = ListState.fromLists(prevRoom.playerIds, room.playerIds);
+      final playerRoles = RoundState(targets: room.targets ?? {}, texts: room.texts ?? {});
 
-      return GameNotifierState(signedInPlayer: player, gameRoom: room, playerListState: listState);
-
+      return GameNotifierState(
+          signedInPlayer: player, gameRoom: room, playerListState: playerListState, roundState: playerRoles);
     } else {
       return GameNotifierState(
           signedInPlayer: player,
           gameRoom: room,
-          playerListState: ListState.init(room.playerIds));
+          playerListState: ListState.init(room.playerIds),
+          roundState: RoundState(targets: room.targets ?? {}, texts: room.texts ?? {}));
     }
   }
 }

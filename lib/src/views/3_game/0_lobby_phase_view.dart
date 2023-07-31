@@ -6,6 +6,8 @@ import 'package:flutter_bull/src/notifiers/room_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/services/game_server.dart';
+import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -33,6 +35,8 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   final _listKey = GlobalKey<AnimatedListState>();
 
   List<String> playerIdList = [];
+
+  UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
   @override
   Widget build(BuildContext context) {
@@ -88,14 +92,19 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
                 }),
           ),
           Expanded(
-            child: TextButton(
-              child: Text("leave room"),
-              onPressed: () {
-                ref
-                    .read(utterBullServerProvider)
-                    .removeFromRoom(player.id!, room.id!);
-              },
-            ),
+            child: Column(children: [
+              Flexible(
+                child: PlaceholderButton(
+                    onPressed: () =>
+                        _getServer.startGame(roomId),
+                    title: 'Start Game'),
+              ),
+              Flexible(
+                child: PlaceholderButton(
+                    onPressed: () => _getServer.removeFromRoom(player.id!, room.id!),
+                    title: 'Leave Room'),
+              ),
+            ]),
           )
         ],
       );

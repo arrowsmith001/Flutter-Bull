@@ -25,6 +25,8 @@ mixin _$GameRoom {
   Object? get phaseArgs => throw _privateConstructorUsedError;
   GameRoomStatePhase? get phase => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
+  Map<String, String> get targets => throw _privateConstructorUsedError;
+  Map<String, String> get texts => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,7 +44,9 @@ abstract class $GameRoomCopyWith<$Res> {
       String roomCode,
       Object? phaseArgs,
       GameRoomStatePhase? phase,
-      List<String> playerIds});
+      List<String> playerIds,
+      Map<String, String> targets,
+      Map<String, String> texts});
 }
 
 /// @nodoc
@@ -63,6 +67,8 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
     Object? phaseArgs = freezed,
     Object? phase = freezed,
     Object? playerIds = null,
+    Object? targets = null,
+    Object? texts = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -82,6 +88,14 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      targets: null == targets
+          ? _value.targets
+          : targets // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      texts: null == texts
+          ? _value.texts
+          : texts // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
     ) as $Val);
   }
 }
@@ -98,7 +112,9 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
       String roomCode,
       Object? phaseArgs,
       GameRoomStatePhase? phase,
-      List<String> playerIds});
+      List<String> playerIds,
+      Map<String, String> targets,
+      Map<String, String> texts});
 }
 
 /// @nodoc
@@ -117,6 +133,8 @@ class __$$_GameRoomCopyWithImpl<$Res>
     Object? phaseArgs = freezed,
     Object? phase = freezed,
     Object? playerIds = null,
+    Object? targets = null,
+    Object? texts = null,
   }) {
     return _then(_$_GameRoom(
       id: freezed == id
@@ -136,6 +154,14 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value._playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      targets: null == targets
+          ? _value._targets
+          : targets // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      texts: null == texts
+          ? _value._texts
+          : texts // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
     ));
   }
 }
@@ -148,8 +174,12 @@ class _$_GameRoom implements _GameRoom {
       required this.roomCode,
       this.phaseArgs,
       this.phase = GameRoomStatePhase.lobby,
-      final List<String> playerIds = const []})
-      : _playerIds = playerIds;
+      final List<String> playerIds = const [],
+      final Map<String, String> targets = const {},
+      final Map<String, String> texts = const {}})
+      : _playerIds = playerIds,
+        _targets = targets,
+        _texts = texts;
 
   factory _$_GameRoom.fromJson(Map<String, dynamic> json) =>
       _$$_GameRoomFromJson(json);
@@ -172,9 +202,27 @@ class _$_GameRoom implements _GameRoom {
     return EqualUnmodifiableListView(_playerIds);
   }
 
+  final Map<String, String> _targets;
+  @override
+  @JsonKey()
+  Map<String, String> get targets {
+    if (_targets is EqualUnmodifiableMapView) return _targets;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_targets);
+  }
+
+  final Map<String, String> _texts;
+  @override
+  @JsonKey()
+  Map<String, String> get texts {
+    if (_texts is EqualUnmodifiableMapView) return _texts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_texts);
+  }
+
   @override
   String toString() {
-    return 'GameRoom(id: $id, roomCode: $roomCode, phaseArgs: $phaseArgs, phase: $phase, playerIds: $playerIds)';
+    return 'GameRoom(id: $id, roomCode: $roomCode, phaseArgs: $phaseArgs, phase: $phase, playerIds: $playerIds, targets: $targets, texts: $texts)';
   }
 
   @override
@@ -188,7 +236,9 @@ class _$_GameRoom implements _GameRoom {
             const DeepCollectionEquality().equals(other.phaseArgs, phaseArgs) &&
             (identical(other.phase, phase) || other.phase == phase) &&
             const DeepCollectionEquality()
-                .equals(other._playerIds, _playerIds));
+                .equals(other._playerIds, _playerIds) &&
+            const DeepCollectionEquality().equals(other._targets, _targets) &&
+            const DeepCollectionEquality().equals(other._texts, _texts));
   }
 
   @JsonKey(ignore: true)
@@ -199,7 +249,9 @@ class _$_GameRoom implements _GameRoom {
       roomCode,
       const DeepCollectionEquality().hash(phaseArgs),
       phase,
-      const DeepCollectionEquality().hash(_playerIds));
+      const DeepCollectionEquality().hash(_playerIds),
+      const DeepCollectionEquality().hash(_targets),
+      const DeepCollectionEquality().hash(_texts));
 
   @JsonKey(ignore: true)
   @override
@@ -221,7 +273,9 @@ abstract class _GameRoom implements GameRoom {
       required final String roomCode,
       final Object? phaseArgs,
       final GameRoomStatePhase? phase,
-      final List<String> playerIds}) = _$_GameRoom;
+      final List<String> playerIds,
+      final Map<String, String> targets,
+      final Map<String, String> texts}) = _$_GameRoom;
 
   factory _GameRoom.fromJson(Map<String, dynamic> json) = _$_GameRoom.fromJson;
 
@@ -235,6 +289,10 @@ abstract class _GameRoom implements GameRoom {
   GameRoomStatePhase? get phase;
   @override
   List<String> get playerIds;
+  @override
+  Map<String, String> get targets;
+  @override
+  Map<String, String> get texts;
   @override
   @JsonKey(ignore: true)
   _$$_GameRoomCopyWith<_$_GameRoom> get copyWith =>

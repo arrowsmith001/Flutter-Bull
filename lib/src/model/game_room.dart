@@ -1,4 +1,5 @@
 import 'package:flutter_bull/src/custom/data/abstract/entity.dart';
+import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -15,7 +16,9 @@ class GameRoom extends Entity with _$GameRoom {
     required String roomCode,
     Object? phaseArgs,
     @Default(GameRoomStatePhase.lobby) GameRoomStatePhase? phase,
-    @Default([]) List<String> playerIds
+    @Default([]) List<String> playerIds,
+    @Default({}) Map<String, String> targets,
+    @Default({}) Map<String, String> texts,
   }) = _GameRoom;
 
 

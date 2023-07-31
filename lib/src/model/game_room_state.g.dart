@@ -23,5 +23,6 @@ const _$GameRoomStatePhaseEnumMap = {
   GameRoomStatePhase.writing: 1,
   GameRoomStatePhase.selecting: 2,
   GameRoomStatePhase.reading: 3,
-  GameRoomStatePhase.results: 4,
+  GameRoomStatePhase.reveals: 4,
+  GameRoomStatePhase.results: 5,
 };

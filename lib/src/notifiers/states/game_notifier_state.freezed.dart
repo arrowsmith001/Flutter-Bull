@@ -19,6 +19,7 @@ mixin _$GameNotifierState {
   Player get signedInPlayer => throw _privateConstructorUsedError;
   GameRoom get gameRoom => throw _privateConstructorUsedError;
   ListState get playerListState => throw _privateConstructorUsedError;
+  RoundState get roundState => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameNotifierStateCopyWith<GameNotifierState> get copyWith =>
@@ -32,11 +33,15 @@ abstract class $GameNotifierStateCopyWith<$Res> {
       _$GameNotifierStateCopyWithImpl<$Res, GameNotifierState>;
   @useResult
   $Res call(
-      {Player signedInPlayer, GameRoom gameRoom, ListState playerListState});
+      {Player signedInPlayer,
+      GameRoom gameRoom,
+      ListState playerListState,
+      RoundState roundState});
 
   $PlayerCopyWith<$Res> get signedInPlayer;
   $GameRoomCopyWith<$Res> get gameRoom;
   $ListStateCopyWith<$Res> get playerListState;
+  $RoundStateCopyWith<$Res> get roundState;
 }
 
 /// @nodoc
@@ -55,6 +60,7 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
     Object? signedInPlayer = null,
     Object? gameRoom = null,
     Object? playerListState = null,
+    Object? roundState = null,
   }) {
     return _then(_value.copyWith(
       signedInPlayer: null == signedInPlayer
@@ -69,6 +75,10 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
           ? _value.playerListState
           : playerListState // ignore: cast_nullable_to_non_nullable
               as ListState,
+      roundState: null == roundState
+          ? _value.roundState
+          : roundState // ignore: cast_nullable_to_non_nullable
+              as RoundState,
     ) as $Val);
   }
 
@@ -95,6 +105,14 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
       return _then(_value.copyWith(playerListState: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $RoundStateCopyWith<$Res> get roundState {
+    return $RoundStateCopyWith<$Res>(_value.roundState, (value) {
+      return _then(_value.copyWith(roundState: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -106,7 +124,10 @@ abstract class _$$_GameNotifierStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Player signedInPlayer, GameRoom gameRoom, ListState playerListState});
+      {Player signedInPlayer,
+      GameRoom gameRoom,
+      ListState playerListState,
+      RoundState roundState});
 
   @override
   $PlayerCopyWith<$Res> get signedInPlayer;
@@ -114,6 +135,8 @@ abstract class _$$_GameNotifierStateCopyWith<$Res>
   $GameRoomCopyWith<$Res> get gameRoom;
   @override
   $ListStateCopyWith<$Res> get playerListState;
+  @override
+  $RoundStateCopyWith<$Res> get roundState;
 }
 
 /// @nodoc
@@ -130,6 +153,7 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
     Object? signedInPlayer = null,
     Object? gameRoom = null,
     Object? playerListState = null,
+    Object? roundState = null,
   }) {
     return _then(_$_GameNotifierState(
       signedInPlayer: null == signedInPlayer
@@ -144,6 +168,10 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
           ? _value.playerListState
           : playerListState // ignore: cast_nullable_to_non_nullable
               as ListState,
+      roundState: null == roundState
+          ? _value.roundState
+          : roundState // ignore: cast_nullable_to_non_nullable
+              as RoundState,
     ));
   }
 }
@@ -154,7 +182,8 @@ class _$_GameNotifierState implements _GameNotifierState {
   _$_GameNotifierState(
       {required this.signedInPlayer,
       required this.gameRoom,
-      required this.playerListState});
+      required this.playerListState,
+      required this.roundState});
 
   @override
   final Player signedInPlayer;
@@ -162,10 +191,12 @@ class _$_GameNotifierState implements _GameNotifierState {
   final GameRoom gameRoom;
   @override
   final ListState playerListState;
+  @override
+  final RoundState roundState;
 
   @override
   String toString() {
-    return 'GameNotifierState(signedInPlayer: $signedInPlayer, gameRoom: $gameRoom, playerListState: $playerListState)';
+    return 'GameNotifierState(signedInPlayer: $signedInPlayer, gameRoom: $gameRoom, playerListState: $playerListState, roundState: $roundState)';
   }
 
   @override
@@ -178,12 +209,14 @@ class _$_GameNotifierState implements _GameNotifierState {
             (identical(other.gameRoom, gameRoom) ||
                 other.gameRoom == gameRoom) &&
             (identical(other.playerListState, playerListState) ||
-                other.playerListState == playerListState));
+                other.playerListState == playerListState) &&
+            (identical(other.roundState, roundState) ||
+                other.roundState == roundState));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, signedInPlayer, gameRoom, playerListState);
+  int get hashCode => Object.hash(
+      runtimeType, signedInPlayer, gameRoom, playerListState, roundState);
 
   @JsonKey(ignore: true)
   @override
@@ -197,7 +230,8 @@ abstract class _GameNotifierState implements GameNotifierState {
   factory _GameNotifierState(
       {required final Player signedInPlayer,
       required final GameRoom gameRoom,
-      required final ListState playerListState}) = _$_GameNotifierState;
+      required final ListState playerListState,
+      required final RoundState roundState}) = _$_GameNotifierState;
 
   @override
   Player get signedInPlayer;
@@ -206,8 +240,167 @@ abstract class _GameNotifierState implements GameNotifierState {
   @override
   ListState get playerListState;
   @override
+  RoundState get roundState;
+  @override
   @JsonKey(ignore: true)
   _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$RoundState {
+  Map<String, String> get targets => throw _privateConstructorUsedError;
+  Map<String, String> get texts => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $RoundStateCopyWith<RoundState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RoundStateCopyWith<$Res> {
+  factory $RoundStateCopyWith(
+          RoundState value, $Res Function(RoundState) then) =
+      _$RoundStateCopyWithImpl<$Res, RoundState>;
+  @useResult
+  $Res call({Map<String, String> targets, Map<String, String> texts});
+}
+
+/// @nodoc
+class _$RoundStateCopyWithImpl<$Res, $Val extends RoundState>
+    implements $RoundStateCopyWith<$Res> {
+  _$RoundStateCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? targets = null,
+    Object? texts = null,
+  }) {
+    return _then(_value.copyWith(
+      targets: null == targets
+          ? _value.targets
+          : targets // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      texts: null == texts
+          ? _value.texts
+          : texts // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_RoundStateCopyWith<$Res>
+    implements $RoundStateCopyWith<$Res> {
+  factory _$$_RoundStateCopyWith(
+          _$_RoundState value, $Res Function(_$_RoundState) then) =
+      __$$_RoundStateCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({Map<String, String> targets, Map<String, String> texts});
+}
+
+/// @nodoc
+class __$$_RoundStateCopyWithImpl<$Res>
+    extends _$RoundStateCopyWithImpl<$Res, _$_RoundState>
+    implements _$$_RoundStateCopyWith<$Res> {
+  __$$_RoundStateCopyWithImpl(
+      _$_RoundState _value, $Res Function(_$_RoundState) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? targets = null,
+    Object? texts = null,
+  }) {
+    return _then(_$_RoundState(
+      targets: null == targets
+          ? _value._targets
+          : targets // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      texts: null == texts
+          ? _value._texts
+          : texts // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_RoundState extends _RoundState {
+  _$_RoundState(
+      {final Map<String, String> targets = const {},
+      final Map<String, String> texts = const {}})
+      : _targets = targets,
+        _texts = texts,
+        super._();
+
+  final Map<String, String> _targets;
+  @override
+  @JsonKey()
+  Map<String, String> get targets {
+    if (_targets is EqualUnmodifiableMapView) return _targets;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_targets);
+  }
+
+  final Map<String, String> _texts;
+  @override
+  @JsonKey()
+  Map<String, String> get texts {
+    if (_texts is EqualUnmodifiableMapView) return _texts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_texts);
+  }
+
+  @override
+  String toString() {
+    return 'RoundState(targets: $targets, texts: $texts)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_RoundState &&
+            const DeepCollectionEquality().equals(other._targets, _targets) &&
+            const DeepCollectionEquality().equals(other._texts, _texts));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_targets),
+      const DeepCollectionEquality().hash(_texts));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_RoundStateCopyWith<_$_RoundState> get copyWith =>
+      __$$_RoundStateCopyWithImpl<_$_RoundState>(this, _$identity);
+}
+
+abstract class _RoundState extends RoundState {
+  factory _RoundState(
+      {final Map<String, String> targets,
+      final Map<String, String> texts}) = _$_RoundState;
+  _RoundState._() : super._();
+
+  @override
+  Map<String, String> get targets;
+  @override
+  Map<String, String> get texts;
+  @override
+  @JsonKey(ignore: true)
+  _$$_RoundStateCopyWith<_$_RoundState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

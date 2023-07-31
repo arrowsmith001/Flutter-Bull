@@ -22,7 +22,9 @@ const app = admin.initializeApp();
 const db = firestore.initializeFirestore(app);
 
 
-// TODO: Separate into files
+
+
+// TODO: Separate into files!!
 
 
 
@@ -34,7 +36,7 @@ export const createGameRoom = http.onCall(
 
         var userId = req.data as string;
 
-        await createGameRoomFirebase(userId);
+        await createGameRoomImpl(userId);
     });
 
 
@@ -45,7 +47,7 @@ export const joinGameRoom = http.onCall(
         var userId = req.data['userId'] as string;
         var roomCode = req.data['roomCode'] as string;
 
-        await joinGameRoomFirebase(userId, roomCode);
+        await joinGameRoomImpl(userId, roomCode);
 
     });
 
@@ -55,7 +57,35 @@ export const removeFromRoom = http.onCall(
         var userId = req.data['userId'] as string;
         var roomId = req.data['roomId'] as string;
 
-        removeFromRoomFirebase(userId, roomId);
+        removeFromRoomImpl(userId, roomId);
+    });
+
+
+export const startGame = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data as string;
+
+        startGameImpl(roomId);
+    });
+
+export const returnToLobby = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data as string;
+
+        returnToLobbyImpl(roomId);
+    });
+
+
+export const submitText = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var userId = req.data['userId'] as string;
+        var text = req.data['text'] as string;
+
+        submitTextImpl(roomId, userId, text);
     });
 
 
@@ -63,6 +93,10 @@ export const removeFromRoom = http.onCall(
 /* exports.onUserCreated = functionsv2.identity.beforeUserCreated(async event => {
     await createPlayerProfile('event.data.uid');
 }); */
+
+
+
+
 
 
 // For testing only
@@ -87,7 +121,7 @@ async function onUserCreateInvoked(id: string) {
 }
 
 
-async function createGameRoomFirebase(userId: string) {
+async function createGameRoomImpl(userId: string) {
 
     await _setPlayerStatus(userId, 'Creating Game Session');
     if (delaysOn) promises.setTimeout(1000);
@@ -113,7 +147,7 @@ async function createGameRoomFirebase(userId: string) {
 
 }
 
-async function joinGameRoomFirebase(userId: string, roomCode: string) {
+async function joinGameRoomImpl(userId: string, roomCode: string) {
 
     await _setPlayerStatus(userId, 'Joining Game Session');
     if (delaysOn) promises.setTimeout(1000);
@@ -154,7 +188,7 @@ async function joinGameRoomFirebase(userId: string, roomCode: string) {
 
 }
 
-async function removeFromRoomFirebase(userId: string, roomId: string) {
+async function removeFromRoomImpl(userId: string, roomId: string) {
 
     await db.runTransaction(async (txn) => {
 
@@ -175,6 +209,73 @@ async function removeFromRoomFirebase(userId: string, roomId: string) {
     });
 
 }
+
+enum GameRoomPhase {
+    lobby, writing, selecting, reading, reveals, results
+}
+
+// TODO: Ensure player cannot join while starting game
+async function startGameImpl(roomId: string) {
+    await db.runTransaction(async (txn) => {
+
+        var roomRef = db.collection('rooms').doc(roomId);
+
+        var roomQuery = await txn.get(roomRef);
+        var room = roomQuery.data();
+
+        var playerIds = room!['playerIds'];
+        var targets = _getTruthOrLieTargetMap(playerIds);
+
+
+        await txn
+            .update(roomRef, { 'targets': Object.fromEntries(targets) })
+            .update(roomRef, { 'texts': {} })
+            .update(roomRef, { 'phase': GameRoomPhase.writing });
+    });
+}
+
+
+async function returnToLobbyImpl(roomId: string) {
+    await db.runTransaction(async (txn) => {
+
+        var roomRef = db.collection('rooms').doc(roomId);
+
+        await txn.update(roomRef, { 'phase': GameRoomPhase.lobby });
+    });
+}
+
+
+async function submitTextImpl(roomId: string, userId: string, text: string) {
+    await db.runTransaction(async (txn) => {
+
+        var roomRef = db.collection('rooms').doc(roomId);
+
+        var currentRoom = await txn.get(roomRef);
+
+        var texts = currentRoom.data()!['texts'];
+        var targets = currentRoom.data()!['targets'];
+
+        texts[userId] = text;
+
+        var numberOfSubmissions = Object.keys(text).length;
+        var numberOfTargets = Object.keys(targets).length;
+
+        if (numberOfSubmissions == numberOfTargets) {
+            await txn
+                .update(roomRef, { 'texts': texts })
+                .update(roomRef, { 'phase': GameRoomPhase.selecting });
+        }
+        else {
+
+            await txn.update(roomRef, { 'texts': texts });
+        }
+
+    });
+}
+
+
+
+
 
 
 
@@ -256,3 +357,98 @@ function _getRandomCharacterFrom(s: string): string {
 function _getRandomInt(max: number): number {
     return Math.floor((Math.random() * max));
 }
+
+
+// TODO: Adjust for case where allTruthsPossible == false
+function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
+
+    var truthOrLieMap = new Map<string, boolean>();
+
+    // Assign truth/lie randomly
+    playerIds.forEach((p) => {
+        truthOrLieMap.set(p, Math.random() < 0.5);
+    });
+
+    var liars = Array.from(truthOrLieMap.keys()).filter((k) => !truthOrLieMap.get(k));
+
+    // Adjust for case where liars = 1
+    if (liars.length == 1) {
+        var truthers = Array.from(truthOrLieMap.keys()).filter((k) => truthOrLieMap.get(k));
+
+        // Convert 1 random truther into a liar
+        var randomIndex = Math.random() * truthers.length;
+        var randomPlayerId = truthers.at(randomIndex)!;
+
+        truthOrLieMap.set(randomPlayerId, false);
+    }
+
+    // Produce derangement of liars
+    var liarIds = Array.from(truthOrLieMap.keys()).filter((k) => !truthOrLieMap.get(k));
+    var numberOfLiars = liarIds.length;
+
+    var derangement = _getDerangement(liarIds.length);
+
+    var targets = new Array(numberOfLiars);
+    for (var i = 0; i < numberOfLiars; i++) {
+        targets[i] = liarIds[derangement[i]];
+    }
+
+    // Produce target map (including truth-tellers)
+    var truthers = Array.from(truthOrLieMap.keys()).filter((k) => truthOrLieMap.get(k));
+    var targetMap = new Map<string, string>();
+
+    for (var i = 0; i < liarIds.length; i++) {
+        targetMap.set(liarIds[i], targets[i]);
+    }
+    for (var i = 0; i < truthers.length; i++) {
+        var truther = truthers[i];
+        targetMap.set(truther, truther);
+    }
+
+    return targetMap;
+
+
+}
+
+// TODO: Implement derangement: https://gist.github.com/arrowsmith001/a0d1a622bdb88575d2b6189ad1cb42da
+function _getDerangement(n: number): number[] {
+    var baseList = Array.from(Array(n).keys());
+    var out = Array.from(baseList);
+
+    while (!_isDerangement(baseList, out)) {
+        out = _shuffle(out);
+    }
+
+    return out;
+}
+
+function _shuffle(array: any[]): any[] {
+    let currentIndex = array.length, randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+
+function _isDerangement(list1: any[], list2: any[]): boolean {
+    if (list1.length != list2.length) return false;
+
+    var length = list1.length;
+
+    for (var i = 0; i < length; i++) {
+        if (list1[i] == list2[i]) return false;
+    }
+
+    return true;
+}
+

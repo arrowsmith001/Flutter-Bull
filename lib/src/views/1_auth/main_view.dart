@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/navigation/animated_routes.dart';
-import 'package:flutter_bull/src/navigation/navigation_helper.dart';
+import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
@@ -26,28 +27,28 @@ class MainView extends ConsumerStatefulWidget {
 }
 
 class _MainViewState extends ConsumerState<MainView> {
-  final routeHelper = MainRouteHelper();
+  final nav = MainRouteNavigatorController();
 
   void _onPlayerNameChanged(String? prev, String? next) {
     Logger().d('name.listen: $prev $next');
     if (next != null) {
-      routeHelper.navigateToHome();
+      nav.navigateToHome();
     }
   }
 
   void _onPlayerProfileExistenceChanged(bool? prev, bool? next) {
     Logger().d('exists.listen: $prev $next');
     if (next ?? false) {
-      routeHelper.navigateToProfile();
+      nav.navigateToProfile();
     }
   }
 
   void _onOccupiedRoomChanged(String? prev, String? next) {
     Logger().d('occupiedRoomId.listen: $prev $next');
     if (next == null) {
-      routeHelper.navigateToHome();
+      nav.navigateToHome();
     } else {
-      routeHelper.navigateToGame(next);
+      nav.navigateToGame(next);
     }
   }
 
@@ -68,8 +69,8 @@ class _MainViewState extends ConsumerState<MainView> {
   Widget build(BuildContext context) {
 
     final userId = ref.watch(getSignedInPlayerIdProvider);
-    final signedInPlayer = signedInPlayerStatusNotifierProvider(userId);
 
+    final signedInPlayer = signedInPlayerStatusNotifierProvider(userId);
     final signedInPlayerAsync = ref.watch(signedInPlayer);
 
     ref.listen<PlayerStatus?>(
@@ -93,10 +94,9 @@ class _MainViewState extends ConsumerState<MainView> {
       body: signedInPlayerAsync.when(data: (playerStatus) {
         return Stack(
           children: [
-            Navigator(
-              key: routeHelper.navigatorKey,
-              initialRoute: routeHelper.initialRoute(playerStatus),
-              onGenerateRoute: routeHelper.onGenerateRoute,
+            ControlledNavigator<SignedInPlayerStatusNotifierState>(
+              data: playerStatus,
+              controller: nav,
             ),
             busy
                 ? Positioned.fill(
@@ -126,8 +126,8 @@ class _MainViewState extends ConsumerState<MainView> {
 
 
 
-class MainRouteHelper
-    extends NavigationHelper<SignedInPlayerStatusNotifierState> {
+class MainRouteNavigatorController
+    extends NavigationController<SignedInPlayerStatusNotifierState> {
 
   void navigateToProfile() => navigateTo('profile');
 
@@ -150,6 +150,7 @@ class MainRouteHelper
 
   @override
   PageRoute? resolveRoute() {
+
     switch (nextRoutePath) {
       case 'pending':
         final child = scoped(PendingView());

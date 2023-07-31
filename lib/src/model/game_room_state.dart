@@ -1,3 +1,4 @@
+import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'game_room_state.g.dart';
 
@@ -13,20 +14,4 @@ class GameRoomState {
 
   factory GameRoomState.fromJson(Map<String, dynamic> map) =>
       _$GameRoomStateFromJson(map);
-}
-
-
-@JsonEnum()
-enum GameRoomStatePhase 
-{ 
-  @JsonValue(0)
-  lobby, 
-  @JsonValue(1)
-  writing, 
-  @JsonValue(2)
-  selecting,
-  @JsonValue(3)
-   reading, 
-  @JsonValue(4)
-   results 
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
+import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
-import 'package:flutter_bull/src/navigation/navigation_helper.dart';
+import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/room_notifier.dart';
@@ -26,7 +28,7 @@ class GameView extends ConsumerStatefulWidget {
 }
 
 class _GameViewState extends ConsumerState<GameView> {
-  final GameRouteHelper routeHelper = GameRouteHelper();
+  final navController = GameRouteNavigationController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class _GameViewState extends ConsumerState<GameView> {
         (prev, next) {
       Logger().d('gameRoom.phase.listen: $prev $next');
 
-      if (prev != null && next != null) routeHelper.navigateToPhase(next);
+      if (prev != null && next != null) navController.navigateToPhase(next);
     });
 
     final stateAsync = ref.watch(roomNotifier);
@@ -45,18 +47,13 @@ class _GameViewState extends ConsumerState<GameView> {
     return Scaffold(
       backgroundColor: Colors.orange,
       floatingActionButton: FloatingActionButton(onPressed: () {
-        ref
-            .read(signedInPlayerStatusNotifierProvider(
-                    ref.read(getSignedInPlayerIdProvider))
-                .notifier)
-            .leaveRoom(ref.read(getCurrentGameRoomIdProvider));
+        ref.read(utterBullServerProvider).returnToLobby(roomId);
       }),
       body: Center(
         child: stateAsync.whenDefault((room) {
-          return Navigator(
-              key: routeHelper.navigatorKey,
-              initialRoute: routeHelper.initialRoute(room.phase!),
-              onGenerateRoute: routeHelper.onGenerateRoute);
+          return ControlledNavigator(
+            controller: navController,
+             data: room.phase);
         }),
       ),
     );
@@ -64,7 +61,7 @@ class _GameViewState extends ConsumerState<GameView> {
 }
 
 
-class GameRouteHelper extends NavigationHelper<GameRoomStatePhase> {
+class GameRouteNavigationController extends NavigationController<GameRoomStatePhase> {
   void navigateToPhase(GameRoomStatePhase phase) {
     navigateTo(_phaseToRoute(phase));
   }

@@ -16,6 +16,14 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      targets: (json['targets'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as String),
+          ) ??
+          const {},
+      texts: (json['texts'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as String),
+          ) ??
+          const {},
     );
 
 Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
@@ -25,6 +33,8 @@ Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
       'phaseArgs': instance.phaseArgs,
       'phase': _$GameRoomStatePhaseEnumMap[instance.phase],
       'playerIds': instance.playerIds,
+      'targets': instance.targets,
+      'texts': instance.texts,
     };
 
 const _$GameRoomStatePhaseEnumMap = {
@@ -32,5 +42,6 @@ const _$GameRoomStatePhaseEnumMap = {
   GameRoomStatePhase.writing: 1,
   GameRoomStatePhase.selecting: 2,
   GameRoomStatePhase.reading: 3,
-  GameRoomStatePhase.results: 4,
+  GameRoomStatePhase.reveals: 4,
+  GameRoomStatePhase.results: 5,
 };
