@@ -224,12 +224,21 @@ async function startGameImpl(roomId: string) {
         var room = roomQuery.data();
 
         var playerIds = room!['playerIds'];
+
+        // Generate targets map
         var targets = _getTruthOrLieTargetMap(playerIds);
 
+        // Generate random player order
+        var playerOrder = Array.from({ length: playerIds.length }, (_, i) => i);
+        _shuffleArray(playerOrder);
 
+
+        // Additioinally initializes: progress, texts
         await txn
             .update(roomRef, { 'targets': Object.fromEntries(targets) })
             .update(roomRef, { 'texts': {} })
+            .update(roomRef, { 'playerOrder': playerOrder })
+            .update(roomRef, { 'progress': 0 })
             .update(roomRef, { 'phase': GameRoomPhase.writing });
     });
 }
@@ -249,15 +258,17 @@ async function submitTextImpl(roomId: string, userId: string, text: string) {
     await db.runTransaction(async (txn) => {
 
         var roomRef = db.collection('rooms').doc(roomId);
-
         var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
 
-        var texts = currentRoom.data()!['texts'];
-        var targets = currentRoom.data()!['targets'];
+        // TODO: Check if phase is appropriate
+
+        var texts = currentRoomData['texts'];
+        var targets = currentRoomData['targets'];
 
         texts[userId] = text;
 
-        var numberOfSubmissions = Object.keys(text).length;
+        var numberOfSubmissions = Object.keys(texts).length;
         var numberOfTargets = Object.keys(targets).length;
 
         if (numberOfSubmissions == numberOfTargets) {
@@ -410,45 +421,70 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
 
 }
 
-// TODO: Implement derangement: https://gist.github.com/arrowsmith001/a0d1a622bdb88575d2b6189ad1cb42da
 function _getDerangement(n: number): number[] {
-    var baseList = Array.from(Array(n).keys());
-    var out = Array.from(baseList);
 
-    while (!_isDerangement(baseList, out)) {
-        out = _shuffle(out);
+    console.log('_getDerangement: n:' + n);
+
+    var baseList: number[] = Array.from({ length: n }, (_, i) => i);
+    var out: number[] = [...baseList];
+
+    function findFixedIndices(arr: number[]): number[] {
+        var fixedIndices: number[] = [];
+        for (var i = 0; i < arr.length; i++) {
+            if (i == arr[i]) fixedIndices.push()
+        }
+        return fixedIndices;
     }
 
+    _shuffleArray(out);
+
+    var fixedIndices: number[] = findFixedIndices(out);
+
+    console.log('_getDerangement: out: ' + out);
+    console.log('_getDerangement: fixedIndices: ' + fixedIndices);
+
+    if (fixedIndices.length == 0) {
+        return out; // Derangement found
+    }
+
+    if (fixedIndices.length == 1) {
+        // Swap with some other random element
+        const single = fixedIndices[0];
+        const remaining = out.filter((val) => val !== single);
+        const randomIndex = Math.floor(Math.random() * remaining.length);
+        const toSwapWith = remaining[randomIndex];
+
+        out[single] = toSwapWith;
+        out[out.indexOf(toSwapWith)] = single;
+
+        return out;
+    }
+
+    if (fixedIndices.length == 2) {
+        // Swap the 2 elements
+        [out[fixedIndices[0]], out[fixedIndices[1]]] = [out[fixedIndices[1]], out[fixedIndices[0]]];
+        return out;
+    }
+
+    // Generate a derangement of the remaining non-fixed-point elements
+    var subDerangement = _getDerangement(fixedIndices.length);
+
+    for (let i = 0; i < n; i++) {
+        if (fixedIndices.includes(i)) {
+            const indexWhere = fixedIndices.indexOf(i);
+            out[i] = subDerangement[indexWhere];
+        }
+    }
     return out;
+
 }
 
-function _shuffle(array: any[]): any[] {
-    let currentIndex = array.length, randomIndex;
 
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
+function _shuffleArray(array: any[]): void {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
-
-    return array;
 }
 
-function _isDerangement(list1: any[], list2: any[]): boolean {
-    if (list1.length != list2.length) return false;
-
-    var length = list1.length;
-
-    for (var i = 0; i < length; i++) {
-        if (list1[i] == list2[i]) return false;
-    }
-
-    return true;
-}
 

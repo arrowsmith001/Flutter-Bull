@@ -20,7 +20,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     
     final userId = ref.watch(getSignedInPlayerIdProvider);
 
-    ref.listen(playerNotifierProvider(userId).select((value) => value.value?.name), (_, next) {
+    ref.listen(playerNotifierProvider(userId).select((value) => value.value?.player.name), (_, next) {
       if (next != null) 
       {
         _nameInputController.text = next;

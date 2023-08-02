@@ -20,7 +20,7 @@ abstract class UtterBullServer {
 
   Future<void> removeFromRoom(String userId, String roomCode);
   Future<void> setRoomPhase(
-      String gameRoomId, GameRoomStatePhase newPhase, Object? newPhaseArgs);
+      String gameRoomId, GameRoomPhase newPhase, Object? newPhaseArgs);
 
   Future<void> startGame(String roomId);
 
@@ -79,7 +79,7 @@ class UtterBullClientSideServer implements UtterBullServer {
   }
 
   @override
-  Future<void> setRoomPhase(String roomCode, GameRoomStatePhase newPhase,
+  Future<void> setRoomPhase(String roomCode, GameRoomPhase newPhase,
       Object? newPhaseArgs) async {
     await data.setRoomPhase(roomCode, newPhase, newPhaseArgs);
   }

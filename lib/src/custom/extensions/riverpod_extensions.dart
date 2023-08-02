@@ -14,7 +14,7 @@ extension RiverpodExtensions<T> on AsyncValue<T> {
       bool skipError = false}) {
     return when<R>(skipLoadingOnReload: skipLoadingOnReload, skipLoadingOnRefresh: skipLoadingOnRefresh, skipError: skipError,
       data: data, 
-      error: error ?? (e,_) => Text(e.toString()) as R, 
+      error: error ?? (e,_) => Text(e.toString() + _.toString()) as R, 
       loading: loading ?? () => 
       Center(
         child: Column(

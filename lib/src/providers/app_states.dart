@@ -2,7 +2,6 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/room_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,7 +16,6 @@ String getSignedInPlayerId(Ref ref) => throw UnimplementedError('getSignedInPlay
 @Riverpod(keepAlive: true)
 String getCurrentGameRoomId(Ref ref) => throw UnimplementedError('getCurrentGameRoomId');
 
+@Riverpod(keepAlive: true)
+String getPlayerWhoseTurnId(Ref ref) => throw UnimplementedError('getPlayerWhoseTurnId');
 
-// TODO: Fix annoying wont-navigate-on-occupied-room-update bug
-// TODO: Research riverpod architecture
-// TODO: ***** Notifier for every view: Capture state FULLY *****

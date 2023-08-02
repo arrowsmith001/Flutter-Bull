@@ -1,3 +1,4 @@
+import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -7,18 +8,52 @@ part 'game_notifier_state.freezed.dart';
 @freezed
 class GameNotifierState with _$GameNotifierState {
   factory GameNotifierState(
-      {required Player signedInPlayer,
-      required GameRoom gameRoom,
+      {
+        required String roomCode,
+        required GamePhaseData phaseData,
       required ListState playerListState,
-      required RoundState roundState}) = _GameNotifierState;
+      required RolesState rolesState,
+      required RoundsState roundsState}) = _GameNotifierState;
+
 }
 
 @freezed
-class RoundState with _$RoundState {
-  const RoundState._();
+class GamePhaseData with _$GamePhaseData {
+  factory GamePhaseData({
+    required GameRoomPhase? phase,
+    @Default(null) Object? arg,
+  }) = _GamePhaseData;
+}
 
-  String getWritingPhaseMessage(String userId)
-  {
+@freezed
+class RoundsState with _$RoundsState {
+  RoundsState._();
+  factory RoundsState(
+      {required List<int> order,
+      required List<String> playerIds,
+      required int progress}) = _RoundsState;
+
+  String? get getCurrentPlayerWhoseTurn {
+    if (progress < order.length) {
+      final playerIndex = order[progress];
+      if (playerIndex < playerIds.length) {
+        return playerIds[playerIndex];
+      }
+    }
+    return null;
+  }
+
+  bool isItMyTurn(String userId) {
+    final whoseTurn = getCurrentPlayerWhoseTurn;
+    return whoseTurn != null && whoseTurn == userId;
+  }
+}
+
+@freezed
+class RolesState with _$RolesState {
+  const RolesState._();
+
+  String getWritingPhaseMessage(String userId) {
     bool isPlayerTruther = isTruther(userId);
     return 'Write a ${isPlayerTruther ? 'TRUTH' : 'LIE'} about ${isPlayerTruther ? 'YOURSELF' : getTarget(userId)}';
   }
@@ -29,16 +64,20 @@ class RoundState with _$RoundState {
   String getTarget(String id) => targets[id]!;
   bool isTruther(String id) => targets[id] == id;
 
-  factory RoundState(
+  factory RolesState(
       {@Default({}) Map<String, String> targets,
-      @Default({}) Map<String, String> texts}) = _RoundState;
+      @Default({}) Map<String, String> texts}) = _RolesState;
+
+  String getMyText(String participantId) {
+    return texts.containsKey(participantId) ? texts[participantId]! : '';
+  }
 }
 
 @freezed
 class ListState with _$ListState {
-  factory ListState.init(List<String> list) => ListState.fromLists(list, list);
+  factory ListState.fromLists(List<String>? listBefore, List<String> listNow) {
+    listBefore ??= List.from(listNow);
 
-  factory ListState.fromLists(List<String> listBefore, List<String> listNow) {
     final lengthBefore = listBefore.length;
     final lengthAfter = listNow.length;
 
@@ -56,7 +95,7 @@ class ListState with _$ListState {
     try {
       if (listChange == ListChangeType.increased) {
         changedItem =
-            listNow.singleWhere((element) => !listBefore.contains(element));
+            listNow.singleWhere((element) => !listBefore!.contains(element));
         changedItemIndex =
             listNow.indexWhere((element) => element == changedItem);
       } else if (listChange == ListChangeType.decreased) {
@@ -68,6 +107,7 @@ class ListState with _$ListState {
     } catch (e) {}
 
     return ListState(
+        list: listNow,
         lengthBefore: listBefore.length,
         length: listNow.length,
         hasChanged: listBefore != listNow,
@@ -77,7 +117,8 @@ class ListState with _$ListState {
   }
 
   factory ListState(
-      {required int lengthBefore,
+      {required List<String> list,
+      required int lengthBefore,
       required int length,
       @Default(false) bool hasChanged,
       @Default(ListChangeType.unchanged) ListChangeType listChangeType,

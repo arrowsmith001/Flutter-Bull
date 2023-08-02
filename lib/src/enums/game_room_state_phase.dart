@@ -1,20 +1,18 @@
-
-
 import 'package:json_annotation/json_annotation.dart';
 
+
 @JsonEnum()
-enum GameRoomStatePhase 
-{ 
+enum GameRoomPhase {
   @JsonValue(0)
-  lobby, 
+  lobby,
   @JsonValue(1)
-  writing, 
+  writing,
   @JsonValue(2)
   selecting,
   @JsonValue(3)
-   reading, 
+  reading,
   @JsonValue(4)
-   reveals, 
+  reveals,
   @JsonValue(5)
-   results 
+  results
 }

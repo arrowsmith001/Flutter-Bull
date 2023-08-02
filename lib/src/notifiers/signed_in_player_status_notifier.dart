@@ -14,6 +14,7 @@ part 'signed_in_player_status_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class SignedInPlayerStatusNotifier extends _$SignedInPlayerStatusNotifier {
+  
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
   UtterBullServer get _server => ref.read(utterBullServerProvider);
 
@@ -21,21 +22,15 @@ class SignedInPlayerStatusNotifier extends _$SignedInPlayerStatusNotifier {
   // TODO: Maybe make another one for network status
 
   @override
-  Stream<SignedInPlayerStatusNotifierState> build(String? userId) {
-    return _streamService.streamPlayerExists(userId).switchMap((exists) async* {
-      if (exists) {
-        final playerStream = _streamService.streamPlayer(userId);
-        final statusStream = statusSubject;
+  Stream<SignedInPlayerStatusNotifierState> build(String userId) {
+    final playerStream = _streamService.streamPlayer(userId);
+    final statusStream = statusSubject;
 
-        yield* CombineLatestStream.combine2(playerStream, statusStream,
-            (player, status) {
-          Logger().d('SignedInPlayerStatusNotifier: $player $status');
-          return SignedInPlayerStatusNotifierState(
-              player: player, status: status, exists: true);
-        });
-      } else {
-        yield SignedInPlayerStatusNotifierState(exists: false);
-      }
+    return CombineLatestStream.combine2(playerStream, statusStream,
+        (player, status) {
+      Logger().d('SignedInPlayerStatusNotifier: $player $status');
+      return SignedInPlayerStatusNotifierState(
+          player: player, status: status, exists: true);
     });
   }
 

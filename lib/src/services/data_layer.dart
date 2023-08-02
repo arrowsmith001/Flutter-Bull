@@ -22,19 +22,25 @@ abstract class DataService {
   Future<bool> doesPlayerExist(String userId);
 
   Future<void> setRoomPhase(
-      String roomCode, GameRoomStatePhase newPhase, Object? newPhaseArgs);
+      String roomCode, GameRoomPhase newPhase, Object? newPhaseArgs);
 
   Future<String> getRoomIdFromCode(String roomCode);
 
   Future<void> setName(String id, String text);
+
+  Future<void> setImagePath(String userId, String path);
 }
 
 class FakeDataLayer extends DataService implements DataStreamService {
   FakeDataLayer({List<GameRoom>? gameRoomsInit, List<Player>? playersInit}) {
-    gameRooms.addAll(
-        { for (GameRoom room in gameRoomsInit ?? []) room.id! : BehaviorSubject.seeded(room) });
-    players.addAll(
-        { for (Player player in playersInit ?? []) player.id! : BehaviorSubject.seeded(player) });
+    gameRooms.addAll({
+      for (GameRoom room in gameRoomsInit ?? [])
+        room.id!: BehaviorSubject.seeded(room)
+    });
+    players.addAll({
+      for (Player player in playersInit ?? [])
+        player.id!: BehaviorSubject.seeded(player)
+    });
   }
 
   Map<String, BehaviorSubject<GameRoom>> gameRooms = {};
@@ -105,12 +111,11 @@ class FakeDataLayer extends DataService implements DataStreamService {
   }
 
   @override
-  Future<void> setRoomPhase(String gameRoomId, GameRoomStatePhase newPhase,
-      Object? newPhaseArgs) async {
+  Future<void> setRoomPhase(
+      String gameRoomId, GameRoomPhase newPhase, Object? newPhaseArgs) async {
     final gameRoomStream = gameRooms[gameRoomId]!;
     final gameRoom = gameRoomStream.value;
-    final newGameRoom =
-        gameRoom.copyWith(phase: newPhase, phaseArgs: newPhaseArgs);
+    final newGameRoom = gameRoom.copyWith(phase: newPhase);
     gameRoomStream.add(newGameRoom);
   }
 
@@ -143,11 +148,19 @@ class FakeDataLayer extends DataService implements DataStreamService {
     // TODO: implement streamPlayerStatus
     throw UnimplementedError();
   }
+  
+  @override
+  Future<void> setImagePath(String userId, String path) {
+    // TODO: implement setImagePath
+    throw UnimplementedError();
+  }
 }
 
 class DatabaseDrivenDataLayer extends DataService {
   DatabaseDrivenDataLayer(
-      {required this.gameRoomRepo, required this.playerRepo, required this.playerStatusRepo});
+      {required this.gameRoomRepo,
+      required this.playerRepo,
+      required this.playerStatusRepo});
 
   final Repository<GameRoom> gameRoomRepo;
   final Repository<Player> playerRepo;
@@ -188,7 +201,7 @@ class DatabaseDrivenDataLayer extends DataService {
 
   @override
   Future<void> setRoomPhase(
-      String roomId, GameRoomStatePhase newPhase, Object? newPhaseArgs) async {
+      String roomId, GameRoomPhase newPhase, Object? newPhaseArgs) async {
     await Future.wait([
       gameRoomRepo.setField(roomId, 'phase', newPhase),
       gameRoomRepo.setField(roomId, 'phaseArgs', newPhaseArgs)
@@ -212,5 +225,10 @@ class DatabaseDrivenDataLayer extends DataService {
   @override
   Future<void> setName(String id, String text) async {
     return await playerRepo.setField(id, 'name', text);
+  }
+  
+  @override
+  Future<void> setImagePath(String userId, String path) async {
+    await playerRepo.setField(userId, 'profilePhotoPath', path);
   }
 }

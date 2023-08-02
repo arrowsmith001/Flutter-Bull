@@ -4,23 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 abstract class NavigationController<T> {
-  final navigatorKey = GlobalKey<NavigatorState>();
+
+  String? _initialRoute;
+  String? _currentRouteName;
+  Iterator<String>? _routeIterator;
   BuildContext? get _navigatorContext => navigatorKey.currentContext;
+
+
+  final navigatorKey = GlobalKey<NavigatorState>();
   bool get canNavigate => _navigatorContext != null;
 
-/*   @protected
-  SlideRoute? prevRoute; */
 
   Route onGenerateRoute(RouteSettings settings) {
     final routeNameIterable = settings.name!.split('/');
     _routeIterator = routeNameIterable.iterator;
 
-    PageRoute? route = resolveRoute();
-
-/*     if (route is SlideRoute && prevRoute != null) {
-      prevRoute!.exitOffset = -route.getInitialOffset;
-      prevRoute = route;
-    } */
+    PageRoute? route = generateRoute();
 
     setCurrentRouteName = routeNameIterable.first;
 
@@ -28,8 +27,18 @@ abstract class NavigationController<T> {
   }
 
   @protected
-  Widget scoped(Widget child, {overrides = const <Override>[]}) =>
-      ProviderScope(child: child, overrides: overrides);
+  PageRoute? generateRoute();
+
+
+  String getInitialRoute(T data) {
+    if (_initialRoute != null) return _initialRoute!;
+    _initialRoute = generateInitialRoute(data);
+    return _initialRoute!;
+  }
+
+  @protected
+  String generateInitialRoute(T data);
+
 
   @protected
   void navigateTo(String s) {
@@ -37,32 +46,27 @@ abstract class NavigationController<T> {
       Navigator.of(_navigatorContext!).pushReplacementNamed(s);
       Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
     } else {
-      //ogger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
+      Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
     }
   }
+
+
+  @protected
+  Route get defaultRoute;
 
   @protected
   String get nextRoutePath => (_routeIterator!..moveNext()).current;
 
   @protected
-  PageRoute? resolveRoute();
-
-  @protected
-  Route get defaultRoute;
-
-  Iterator<String>? _routeIterator;
-  String? _initialRoute;
-  String? _currentRouteName;
-
-  String initialRoute(T data) {
-    if (_initialRoute != null) return _initialRoute!;
-    _initialRoute = generateInitialRoute(data);
-    return _initialRoute!;
-  }
-
   String get getCurrentRouteName => _currentRouteName ?? '';
 
+  @protected
   set setCurrentRouteName(String s) => _currentRouteName = s;
+  
 
-  String generateInitialRoute(T data);
+  @protected
+  ProviderScope scoped(Widget child, {List<Override> overrides = const <Override>[]}) =>
+      ProviderScope(child: child, overrides: overrides);
+
+
 }

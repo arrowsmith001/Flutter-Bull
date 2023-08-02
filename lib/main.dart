@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
+import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
 import 'package:flutter_bull/src/custom/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
@@ -52,7 +53,7 @@ void main() async {
   }
 
   FirebaseAuth.instance.setPersistence(Persistence.NONE);
-
+  
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(const MyApp());
@@ -88,8 +89,8 @@ class MyApp extends StatelessWidget {
     }
 
     final commonData = _getFirebaseDataLayer();
-
     final commonStreams = FirebaseDataStreamService();
+    final commonImageService = FirebaseImageStorageService();
     final commonServer =
         UtterBullClientSideServer(commonData, authMap.values.toList());
 
@@ -116,6 +117,7 @@ class MyApp extends StatelessWidget {
               server: commonServer,
               streamService: commonStreams,
               dataService: commonData,
+              imageService: commonImageService,
             ),
           );
         });
@@ -131,12 +133,14 @@ class MyApp extends StatelessWidget {
     final server = UtterBullClientSideServer(data, [auth]);
 
     final streams = FirebaseDataStreamService();
+    final images = FirebaseImageStorageService();
 
     return ProvisionedUtterBullApp(
       authService: auth,
       server: server,
       streamService: streams,
       dataService: data,
+      imageService: images,
     );
   }
 
@@ -157,12 +161,16 @@ class ProvisionedUtterBullApp extends StatelessWidget {
   final UtterBullServer server;
   final DataStreamService streamService;
   final DataService dataService;
+  final ImageStorageService imageService;
 
   const ProvisionedUtterBullApp(
       {required this.authService,
       required this.server,
       required this.streamService,
-      required this.dataService});
+      required this.dataService,
+      required this.imageService,
+      
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -172,6 +180,7 @@ class ProvisionedUtterBullApp extends StatelessWidget {
     overrides.add(utterBullServerProvider.overrideWithValue(server));
     overrides.add(dataStreamServiceProvider.overrideWithValue(streamService));
     overrides.add(dataServiceProvider.overrideWithValue(dataService));
+    overrides.add(imageStorageServiceProvider.overrideWithValue(imageService));
 
     return ProviderScope(overrides: overrides, child: UtterBullApp());
   }
@@ -184,16 +193,19 @@ class UtterBullApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey,
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: UtterBullTheme.theme,
-              home: false ? TestWidget() : AuthContainer()),
+    return AspectRatio(
+      aspectRatio: 9/24,
+      child: Container(
+        color: Colors.grey,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: UtterBullTheme.theme,
+                home: false ? TestWidget() : AuthContainer()),
+          ),
         ),
       ),
     );
@@ -216,6 +228,7 @@ class _TestWidgetState extends ConsumerState<TestWidget>
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       home: Scaffold(
         body: Column(
           children: [

@@ -14,11 +14,12 @@ class GameRoom extends Entity with _$GameRoom {
   factory GameRoom({
     String? id,
     required String roomCode,
-    Object? phaseArgs,
-    @Default(GameRoomStatePhase.lobby) GameRoomStatePhase? phase,
+    @Default(GameRoomPhase.lobby) GameRoomPhase? phase,
     @Default([]) List<String> playerIds,
     @Default({}) Map<String, String> targets,
     @Default({}) Map<String, String> texts,
+    @Default([]) List<int> playerOrder,
+    @Default(0) int progress,
   }) = _GameRoom;
 
 

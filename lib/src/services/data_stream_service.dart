@@ -4,12 +4,10 @@ import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 
 abstract class DataStreamService {
-  Stream<Player> streamPlayer(String? userId);
-  Stream<GameRoom> streamGameRoom(String? gameRoomId);
+  Stream<Player> streamPlayer(String userId);
+  Stream<GameRoom> streamGameRoom(String gameRoomId);
 
-  Stream<bool> streamPlayerExists(String? userId);
-
-  Stream<PlayerStatus> streamPlayerStatus(String? userId);
+  Stream<PlayerStatus> streamPlayerStatus(String userId);
 }
 
 class FirebaseDataStreamService extends DataStreamService {
@@ -25,41 +23,32 @@ class FirebaseDataStreamService extends DataStreamService {
             toFirestore: (obj, _) => obj.toJson())
         .doc(gameRoomId)
         .snapshots()
+        .skipWhile((test) => !test.exists)
         .map((event) => event.data()!);
   }
 
   @override
-  Stream<Player> streamPlayer(String? userId) {
-    if (userId == null) throw Exception('streamPlayer exception');
+  Stream<Player> streamPlayer(String userId) {
     return collection('players')
         .withConverter(
             fromFirestore: (snap, _) => Player.fromJson(snap.data()!),
             toFirestore: (obj, _) => obj.toJson())
         .doc(userId)
         .snapshots()
-        .map((event) => event.data()!);
+        .skipWhile((dataMaybe) => !dataMaybe.exists)
+        .map((data) => data.data()!);
   }
 
+
   @override
-  Stream<bool> streamPlayerExists(String? userId) async* {
-    if (userId == null)
-      yield false;
-    else
-      yield* collection('players')
-          .doc(userId)
-          .snapshots()
-          .map((event) => event.exists);
-  }
-  
-  @override
-  Stream<PlayerStatus> streamPlayerStatus(String? userId) async* {
-    if (userId == null) throw Exception('streamPlayerStatus exception');
-    yield* collection('playerStatuses')
+  Stream<PlayerStatus> streamPlayerStatus(String userId) {
+    return collection('playerStatuses')
         .withConverter(
             fromFirestore: (snap, _) => PlayerStatus.fromJson(snap.data()!),
             toFirestore: (obj, _) => obj.toJson())
-          .doc(userId)
-          .snapshots()
-          .map((event) => event.data()!);
+        .doc(userId)
+        .snapshots()
+        .skipWhile((dataMaybe) => !dataMaybe.exists)
+        .map((data) => data.data()!);
   }
 }

@@ -6,7 +6,6 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/loadable.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/room_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
@@ -23,30 +22,54 @@ class GameNotifier extends _$GameNotifier {
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
 
   @override
-  Stream<GameNotifierState> build(String userId, String gameRoomId) {
-    final playerStream = _streamService.streamPlayer(userId);
+  Stream<GameNotifierState> build(String gameRoomId) {
+/*     final playerStream = _streamService.streamPlayer(userId);
     final roomStream = _streamService.streamGameRoom(gameRoomId);
 
-    return CombineLatestStream.combine2(playerStream, roomStream,
-        (player, room) => _buildState(player, room));
+    return CombineLatestStream.combine2(
+        playerStream, roomStream, (player, room) => _buildState(player, room)); */
+
+    return _streamService.streamGameRoom(gameRoomId).map((room) {
+      return _buildState(room);
+    });
   }
 
-  GameNotifierState _buildState(Player player, GameRoom room) {
-    if (state.hasValue) {
+  // TODO: Tie playerIdList changes to playerNotifier so that playerIdList updated == player with avatar loaded available :)
 
-      final prevRoom = state.value!.gameRoom;
+  GameNotifierState _buildState(GameRoom room) {
+    Logger().d(room);
 
-      final playerListState = ListState.fromLists(prevRoom.playerIds, room.playerIds);
-      final playerRoles = RoundState(targets: room.targets ?? {}, texts: room.texts ?? {});
+    final prevList = state.value?.playerListState;
 
-      return GameNotifierState(
-          signedInPlayer: player, gameRoom: room, playerListState: playerListState, roundState: playerRoles);
-    } else {
-      return GameNotifierState(
-          signedInPlayer: player,
-          gameRoom: room,
-          playerListState: ListState.init(room.playerIds),
-          roundState: RoundState(targets: room.targets ?? {}, texts: room.texts ?? {}));
-    }
+    final playerListState = ListState.fromLists(prevList?.list, room.playerIds);
+
+    final playerRoles = RolesState(targets: room.targets, texts: room.texts);
+
+    final rounds = RoundsState(
+        order: room.playerOrder,
+        playerIds: room.playerIds,
+        progress: room.progress);
+
+    final phaseData =
+        GamePhaseData(phase: room.phase, arg: rounds.getCurrentPlayerWhoseTurn);
+
+    return GameNotifierState(
+      roomCode: room.roomCode,
+        playerListState: playerListState,
+        rolesState: playerRoles,
+        roundsState: rounds,
+        phaseData: phaseData);
+  }
+
+  bool isItMyTurn(String userId) {
+    return state.requireValue.roundsState.isItMyTurn(userId);
+  }
+
+  String? get getCurrentPlayerWhoseTurn {
+    return state.requireValue.roundsState.getCurrentPlayerWhoseTurn;
+  }
+
+  String getMyText(String participantId) {
+    return state.requireValue.rolesState.getMyText(participantId);
   }
 }

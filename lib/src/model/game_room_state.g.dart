@@ -8,21 +8,21 @@ part of 'game_room_state.dart';
 
 GameRoomState _$GameRoomStateFromJson(Map<String, dynamic> json) =>
     GameRoomState(
-      $enumDecode(_$GameRoomStatePhaseEnumMap, json['phase']),
+      $enumDecode(_$GameRoomPhaseEnumMap, json['phase']),
       args: json['args'],
     );
 
 Map<String, dynamic> _$GameRoomStateToJson(GameRoomState instance) =>
     <String, dynamic>{
-      'phase': _$GameRoomStatePhaseEnumMap[instance.phase]!,
+      'phase': _$GameRoomPhaseEnumMap[instance.phase]!,
       'args': instance.args,
     };
 
-const _$GameRoomStatePhaseEnumMap = {
-  GameRoomStatePhase.lobby: 0,
-  GameRoomStatePhase.writing: 1,
-  GameRoomStatePhase.selecting: 2,
-  GameRoomStatePhase.reading: 3,
-  GameRoomStatePhase.reveals: 4,
-  GameRoomStatePhase.results: 5,
+const _$GameRoomPhaseEnumMap = {
+  GameRoomPhase.lobby: 0,
+  GameRoomPhase.writing: 1,
+  GameRoomPhase.selecting: 2,
+  GameRoomPhase.reading: 3,
+  GameRoomPhase.reveals: 4,
+  GameRoomPhase.results: 5,
 };

@@ -5,33 +5,30 @@ import 'package:shimmer/shimmer.dart';
 
 class PlaceholderButton extends StatelessWidget {
   
-  const PlaceholderButton({required this.onPressed, required this.title});
+  const PlaceholderButton({ this.onPressed, required this.title});
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String title;
 
   @override
   Widget build(BuildContext context){
       return LayoutBuilder(
         builder: (context, constraints) {
-          return AspectRatio(
-          aspectRatio: 3 / 1,
-          child: Padding(
-            padding: EdgeInsets.all(constraints.maxHeight * 0.1),
+          return Padding(
+            padding: EdgeInsets.all(8),//constraints.maxHeight * 0.1),
             child: GestureDetector(
-              onTap: () => onPressed(),
+              onTap: onPressed == null ? null : () => onPressed!(),
               child: Container(
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(32.0)),
           child: Padding(
-            padding: EdgeInsets.all(constraints.maxHeight * 0.1),
+            padding: EdgeInsets.all(8),//constraints.maxHeight * 0.1),
             child: Center(child: AutoSizeText(title, style: TextStyle(fontSize: 100),)),
           ),
     ) ,
             ),
-          ),
-    );
+          );
         }
       );
   }

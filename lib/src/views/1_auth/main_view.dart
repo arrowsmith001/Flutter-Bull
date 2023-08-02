@@ -10,6 +10,7 @@ import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/views/2_main/change_avatar_view.dart';
 import 'package:flutter_bull/src/views/2_main/game_view.dart';
 import 'package:flutter_bull/src/views/2_main/home_view.dart';
 import 'package:flutter_bull/src/views/2_main/pending_view.dart';
@@ -131,6 +132,8 @@ class MainRouteNavigatorController
 
   void navigateToProfile() => navigateTo('profile');
 
+  void navigateToAvatar() => navigateTo('avatar');
+
   void navigateToHome() => navigateTo('home');
 
   void navigateToGame(String occupiedRoomId) =>
@@ -149,7 +152,7 @@ class MainRouteNavigatorController
   }
 
   @override
-  PageRoute? resolveRoute() {
+  PageRoute? generateRoute() {
 
     switch (nextRoutePath) {
       case 'pending':
@@ -158,6 +161,10 @@ class MainRouteNavigatorController
 
       case 'profile':
         final child = scoped(ProfileView());
+        return UpwardRoute(child);
+
+      case 'avatar':
+        final child = scoped(ChangeAvatarView());
         return UpwardRoute(child);
 
       case 'home':

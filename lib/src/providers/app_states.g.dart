@@ -38,5 +38,21 @@ final getCurrentGameRoomIdProvider = Provider<String>.internal(
 );
 
 typedef GetCurrentGameRoomIdRef = ProviderRef<String>;
+String _$getPlayerWhoseTurnIdHash() =>
+    r'a9d56020a72c3059b0725333d5be0c1da61e5d50';
+
+/// See also [getPlayerWhoseTurnId].
+@ProviderFor(getPlayerWhoseTurnId)
+final getPlayerWhoseTurnIdProvider = Provider<String>.internal(
+  getPlayerWhoseTurnId,
+  name: r'getPlayerWhoseTurnIdProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$getPlayerWhoseTurnIdHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef GetPlayerWhoseTurnIdRef = ProviderRef<String>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member

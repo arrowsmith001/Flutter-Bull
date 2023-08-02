@@ -11,9 +11,10 @@ class ControlledNavigator<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
+      observers: [HeroController()],
       key: controller.navigatorKey,
       onGenerateRoute: controller.onGenerateRoute,
-      initialRoute: controller.generateInitialRoute(data),
+      initialRoute: controller.getInitialRoute(data),
     );
   }
 }

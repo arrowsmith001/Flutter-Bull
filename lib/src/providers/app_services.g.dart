@@ -49,6 +49,22 @@ final dataServiceProvider = Provider<DataService>.internal(
 );
 
 typedef DataServiceRef = ProviderRef<DataService>;
+String _$imageStorageServiceHash() =>
+    r'1527c16d4f07a93f6ad7ea8492d6e5299dfbd5cb';
+
+/// See also [imageStorageService].
+@ProviderFor(imageStorageService)
+final imageStorageServiceProvider = Provider<ImageStorageService>.internal(
+  imageStorageService,
+  name: r'imageStorageServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$imageStorageServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef ImageStorageServiceRef = ProviderRef<ImageStorageService>;
 String _$utterBullServerHash() => r'c6fd2916149d7178c8af3f44219450db00a9c966';
 
 /// See also [utterBullServer].

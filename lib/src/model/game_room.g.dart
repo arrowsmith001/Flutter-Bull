@@ -9,9 +9,8 @@ part of 'game_room.dart';
 _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
       id: json['id'] as String?,
       roomCode: json['roomCode'] as String,
-      phaseArgs: json['phaseArgs'],
-      phase: $enumDecodeNullable(_$GameRoomStatePhaseEnumMap, json['phase']) ??
-          GameRoomStatePhase.lobby,
+      phase: $enumDecodeNullable(_$GameRoomPhaseEnumMap, json['phase']) ??
+          GameRoomPhase.lobby,
       playerIds: (json['playerIds'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -24,24 +23,30 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
             (k, e) => MapEntry(k, e as String),
           ) ??
           const {},
+      playerOrder: (json['playerOrder'] as List<dynamic>?)
+              ?.map((e) => e as int)
+              .toList() ??
+          const [],
+      progress: json['progress'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
     <String, dynamic>{
       'id': instance.id,
       'roomCode': instance.roomCode,
-      'phaseArgs': instance.phaseArgs,
-      'phase': _$GameRoomStatePhaseEnumMap[instance.phase],
+      'phase': _$GameRoomPhaseEnumMap[instance.phase],
       'playerIds': instance.playerIds,
       'targets': instance.targets,
       'texts': instance.texts,
+      'playerOrder': instance.playerOrder,
+      'progress': instance.progress,
     };
 
-const _$GameRoomStatePhaseEnumMap = {
-  GameRoomStatePhase.lobby: 0,
-  GameRoomStatePhase.writing: 1,
-  GameRoomStatePhase.selecting: 2,
-  GameRoomStatePhase.reading: 3,
-  GameRoomStatePhase.reveals: 4,
-  GameRoomStatePhase.results: 5,
+const _$GameRoomPhaseEnumMap = {
+  GameRoomPhase.lobby: 0,
+  GameRoomPhase.writing: 1,
+  GameRoomPhase.selecting: 2,
+  GameRoomPhase.reading: 3,
+  GameRoomPhase.reveals: 4,
+  GameRoomPhase.results: 5,
 };

@@ -23,7 +23,7 @@ dependencies:
   firebase_auth: ^4.6.3
   cloud_firestore: ^4.8.2
   cloud_functions: ^4.3.3
-  firebase_storage: ^11.2.4
+  firebase_storage: ^11.2.5
   json_serializable: ^6.7.1
   build_runner: ^2.4.6
   freezed: ^2.4.1
@@ -37,6 +37,7 @@ dependencies:
   animated_list_plus: ^0.5.0
   auto_size_text: ^3.0.0
   shimmer: ^3.0.0
+  camera: ^0.10.5+2
 
 dev_dependencies:
   flutter_test:
@@ -54,5 +55,8 @@ flutter:
     - family: Roboto
       fonts:
         - asset: fonts/roboto.ttf
+    - family: LapsusPro
+      fonts:
+        - asset: fonts/LapsusPro-Bold.otf
 
   uses-material-design: true

@@ -5,7 +5,7 @@ part 'game_room_state.g.dart';
 @JsonSerializable()
 class GameRoomState {
 
-  final GameRoomStatePhase phase;
+  final GameRoomPhase phase;
   final Object? args;
 
   GameRoomState(this.phase, {this.args});

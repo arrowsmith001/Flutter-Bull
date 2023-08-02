@@ -22,14 +22,18 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView> {
 
   @override
   Widget build(BuildContext context) {
+
     final userId = ref.watch(getSignedInPlayerIdProvider);
     final roomId = ref.watch(getCurrentGameRoomIdProvider);
 
-    final game = gameNotifierProvider(userId, roomId);
+
+    final game = gameNotifierProvider(roomId);
     final gameState = ref.watch(game);
 
+
     return gameState.whenDefault((state) {
-      final round = state.roundState;
+
+      final round = state.rolesState;
       final myTarget = round.getTarget(userId);
       final message = myTarget == userId ? 'YOURSELF' : myTarget;
 
@@ -43,7 +47,8 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView> {
           Flexible(
             child: PlaceholderButton(
                 onPressed: () {
-                  _getServer.submitText(roomId, userId, _submissionController.text);
+                  _getServer.submitText(
+                      roomId, userId, _submissionController.text);
                 },
                 title: 'Submit Text'),
           )
@@ -54,7 +59,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView> {
     return Center(child: gameState.whenDefault((state) {
       Logger().d(state.toString());
 
-      final roles = state.roundState;
+      final roles = state.rolesState;
 
       return ListView(
         children: roles.participants.map((id) {

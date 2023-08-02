@@ -16,10 +16,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$GameNotifierState {
-  Player get signedInPlayer => throw _privateConstructorUsedError;
-  GameRoom get gameRoom => throw _privateConstructorUsedError;
+  String get roomCode => throw _privateConstructorUsedError;
+  GamePhaseData get phaseData => throw _privateConstructorUsedError;
   ListState get playerListState => throw _privateConstructorUsedError;
-  RoundState get roundState => throw _privateConstructorUsedError;
+  RolesState get rolesState => throw _privateConstructorUsedError;
+  RoundsState get roundsState => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameNotifierStateCopyWith<GameNotifierState> get copyWith =>
@@ -33,15 +34,16 @@ abstract class $GameNotifierStateCopyWith<$Res> {
       _$GameNotifierStateCopyWithImpl<$Res, GameNotifierState>;
   @useResult
   $Res call(
-      {Player signedInPlayer,
-      GameRoom gameRoom,
+      {String roomCode,
+      GamePhaseData phaseData,
       ListState playerListState,
-      RoundState roundState});
+      RolesState rolesState,
+      RoundsState roundsState});
 
-  $PlayerCopyWith<$Res> get signedInPlayer;
-  $GameRoomCopyWith<$Res> get gameRoom;
+  $GamePhaseDataCopyWith<$Res> get phaseData;
   $ListStateCopyWith<$Res> get playerListState;
-  $RoundStateCopyWith<$Res> get roundState;
+  $RolesStateCopyWith<$Res> get rolesState;
+  $RoundsStateCopyWith<$Res> get roundsState;
 }
 
 /// @nodoc
@@ -57,44 +59,41 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? signedInPlayer = null,
-    Object? gameRoom = null,
+    Object? roomCode = null,
+    Object? phaseData = null,
     Object? playerListState = null,
-    Object? roundState = null,
+    Object? rolesState = null,
+    Object? roundsState = null,
   }) {
     return _then(_value.copyWith(
-      signedInPlayer: null == signedInPlayer
-          ? _value.signedInPlayer
-          : signedInPlayer // ignore: cast_nullable_to_non_nullable
-              as Player,
-      gameRoom: null == gameRoom
-          ? _value.gameRoom
-          : gameRoom // ignore: cast_nullable_to_non_nullable
-              as GameRoom,
+      roomCode: null == roomCode
+          ? _value.roomCode
+          : roomCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      phaseData: null == phaseData
+          ? _value.phaseData
+          : phaseData // ignore: cast_nullable_to_non_nullable
+              as GamePhaseData,
       playerListState: null == playerListState
           ? _value.playerListState
           : playerListState // ignore: cast_nullable_to_non_nullable
               as ListState,
-      roundState: null == roundState
-          ? _value.roundState
-          : roundState // ignore: cast_nullable_to_non_nullable
-              as RoundState,
+      rolesState: null == rolesState
+          ? _value.rolesState
+          : rolesState // ignore: cast_nullable_to_non_nullable
+              as RolesState,
+      roundsState: null == roundsState
+          ? _value.roundsState
+          : roundsState // ignore: cast_nullable_to_non_nullable
+              as RoundsState,
     ) as $Val);
   }
 
   @override
   @pragma('vm:prefer-inline')
-  $PlayerCopyWith<$Res> get signedInPlayer {
-    return $PlayerCopyWith<$Res>(_value.signedInPlayer, (value) {
-      return _then(_value.copyWith(signedInPlayer: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $GameRoomCopyWith<$Res> get gameRoom {
-    return $GameRoomCopyWith<$Res>(_value.gameRoom, (value) {
-      return _then(_value.copyWith(gameRoom: value) as $Val);
+  $GamePhaseDataCopyWith<$Res> get phaseData {
+    return $GamePhaseDataCopyWith<$Res>(_value.phaseData, (value) {
+      return _then(_value.copyWith(phaseData: value) as $Val);
     });
   }
 
@@ -108,9 +107,17 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
 
   @override
   @pragma('vm:prefer-inline')
-  $RoundStateCopyWith<$Res> get roundState {
-    return $RoundStateCopyWith<$Res>(_value.roundState, (value) {
-      return _then(_value.copyWith(roundState: value) as $Val);
+  $RolesStateCopyWith<$Res> get rolesState {
+    return $RolesStateCopyWith<$Res>(_value.rolesState, (value) {
+      return _then(_value.copyWith(rolesState: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $RoundsStateCopyWith<$Res> get roundsState {
+    return $RoundsStateCopyWith<$Res>(_value.roundsState, (value) {
+      return _then(_value.copyWith(roundsState: value) as $Val);
     });
   }
 }
@@ -124,19 +131,20 @@ abstract class _$$_GameNotifierStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Player signedInPlayer,
-      GameRoom gameRoom,
+      {String roomCode,
+      GamePhaseData phaseData,
       ListState playerListState,
-      RoundState roundState});
+      RolesState rolesState,
+      RoundsState roundsState});
 
   @override
-  $PlayerCopyWith<$Res> get signedInPlayer;
-  @override
-  $GameRoomCopyWith<$Res> get gameRoom;
+  $GamePhaseDataCopyWith<$Res> get phaseData;
   @override
   $ListStateCopyWith<$Res> get playerListState;
   @override
-  $RoundStateCopyWith<$Res> get roundState;
+  $RolesStateCopyWith<$Res> get rolesState;
+  @override
+  $RoundsStateCopyWith<$Res> get roundsState;
 }
 
 /// @nodoc
@@ -150,28 +158,33 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? signedInPlayer = null,
-    Object? gameRoom = null,
+    Object? roomCode = null,
+    Object? phaseData = null,
     Object? playerListState = null,
-    Object? roundState = null,
+    Object? rolesState = null,
+    Object? roundsState = null,
   }) {
     return _then(_$_GameNotifierState(
-      signedInPlayer: null == signedInPlayer
-          ? _value.signedInPlayer
-          : signedInPlayer // ignore: cast_nullable_to_non_nullable
-              as Player,
-      gameRoom: null == gameRoom
-          ? _value.gameRoom
-          : gameRoom // ignore: cast_nullable_to_non_nullable
-              as GameRoom,
+      roomCode: null == roomCode
+          ? _value.roomCode
+          : roomCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      phaseData: null == phaseData
+          ? _value.phaseData
+          : phaseData // ignore: cast_nullable_to_non_nullable
+              as GamePhaseData,
       playerListState: null == playerListState
           ? _value.playerListState
           : playerListState // ignore: cast_nullable_to_non_nullable
               as ListState,
-      roundState: null == roundState
-          ? _value.roundState
-          : roundState // ignore: cast_nullable_to_non_nullable
-              as RoundState,
+      rolesState: null == rolesState
+          ? _value.rolesState
+          : rolesState // ignore: cast_nullable_to_non_nullable
+              as RolesState,
+      roundsState: null == roundsState
+          ? _value.roundsState
+          : roundsState // ignore: cast_nullable_to_non_nullable
+              as RoundsState,
     ));
   }
 }
@@ -180,23 +193,26 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
 
 class _$_GameNotifierState implements _GameNotifierState {
   _$_GameNotifierState(
-      {required this.signedInPlayer,
-      required this.gameRoom,
+      {required this.roomCode,
+      required this.phaseData,
       required this.playerListState,
-      required this.roundState});
+      required this.rolesState,
+      required this.roundsState});
 
   @override
-  final Player signedInPlayer;
+  final String roomCode;
   @override
-  final GameRoom gameRoom;
+  final GamePhaseData phaseData;
   @override
   final ListState playerListState;
   @override
-  final RoundState roundState;
+  final RolesState rolesState;
+  @override
+  final RoundsState roundsState;
 
   @override
   String toString() {
-    return 'GameNotifierState(signedInPlayer: $signedInPlayer, gameRoom: $gameRoom, playerListState: $playerListState, roundState: $roundState)';
+    return 'GameNotifierState(roomCode: $roomCode, phaseData: $phaseData, playerListState: $playerListState, rolesState: $rolesState, roundsState: $roundsState)';
   }
 
   @override
@@ -204,19 +220,21 @@ class _$_GameNotifierState implements _GameNotifierState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_GameNotifierState &&
-            (identical(other.signedInPlayer, signedInPlayer) ||
-                other.signedInPlayer == signedInPlayer) &&
-            (identical(other.gameRoom, gameRoom) ||
-                other.gameRoom == gameRoom) &&
+            (identical(other.roomCode, roomCode) ||
+                other.roomCode == roomCode) &&
+            (identical(other.phaseData, phaseData) ||
+                other.phaseData == phaseData) &&
             (identical(other.playerListState, playerListState) ||
                 other.playerListState == playerListState) &&
-            (identical(other.roundState, roundState) ||
-                other.roundState == roundState));
+            (identical(other.rolesState, rolesState) ||
+                other.rolesState == rolesState) &&
+            (identical(other.roundsState, roundsState) ||
+                other.roundsState == roundsState));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, signedInPlayer, gameRoom, playerListState, roundState);
+  int get hashCode => Object.hash(runtimeType, roomCode, phaseData,
+      playerListState, rolesState, roundsState);
 
   @JsonKey(ignore: true)
   @override
@@ -228,19 +246,22 @@ class _$_GameNotifierState implements _GameNotifierState {
 
 abstract class _GameNotifierState implements GameNotifierState {
   factory _GameNotifierState(
-      {required final Player signedInPlayer,
-      required final GameRoom gameRoom,
+      {required final String roomCode,
+      required final GamePhaseData phaseData,
       required final ListState playerListState,
-      required final RoundState roundState}) = _$_GameNotifierState;
+      required final RolesState rolesState,
+      required final RoundsState roundsState}) = _$_GameNotifierState;
 
   @override
-  Player get signedInPlayer;
+  String get roomCode;
   @override
-  GameRoom get gameRoom;
+  GamePhaseData get phaseData;
   @override
   ListState get playerListState;
   @override
-  RoundState get roundState;
+  RolesState get rolesState;
+  @override
+  RoundsState get roundsState;
   @override
   @JsonKey(ignore: true)
   _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>
@@ -248,28 +269,336 @@ abstract class _GameNotifierState implements GameNotifierState {
 }
 
 /// @nodoc
-mixin _$RoundState {
-  Map<String, String> get targets => throw _privateConstructorUsedError;
-  Map<String, String> get texts => throw _privateConstructorUsedError;
+mixin _$GamePhaseData {
+  GameRoomPhase? get phase => throw _privateConstructorUsedError;
+  Object? get arg => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $RoundStateCopyWith<RoundState> get copyWith =>
+  $GamePhaseDataCopyWith<GamePhaseData> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $RoundStateCopyWith<$Res> {
-  factory $RoundStateCopyWith(
-          RoundState value, $Res Function(RoundState) then) =
-      _$RoundStateCopyWithImpl<$Res, RoundState>;
+abstract class $GamePhaseDataCopyWith<$Res> {
+  factory $GamePhaseDataCopyWith(
+          GamePhaseData value, $Res Function(GamePhaseData) then) =
+      _$GamePhaseDataCopyWithImpl<$Res, GamePhaseData>;
+  @useResult
+  $Res call({GameRoomPhase? phase, Object? arg});
+}
+
+/// @nodoc
+class _$GamePhaseDataCopyWithImpl<$Res, $Val extends GamePhaseData>
+    implements $GamePhaseDataCopyWith<$Res> {
+  _$GamePhaseDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? phase = freezed,
+    Object? arg = freezed,
+  }) {
+    return _then(_value.copyWith(
+      phase: freezed == phase
+          ? _value.phase
+          : phase // ignore: cast_nullable_to_non_nullable
+              as GameRoomPhase?,
+      arg: freezed == arg ? _value.arg : arg,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_GamePhaseDataCopyWith<$Res>
+    implements $GamePhaseDataCopyWith<$Res> {
+  factory _$$_GamePhaseDataCopyWith(
+          _$_GamePhaseData value, $Res Function(_$_GamePhaseData) then) =
+      __$$_GamePhaseDataCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({GameRoomPhase? phase, Object? arg});
+}
+
+/// @nodoc
+class __$$_GamePhaseDataCopyWithImpl<$Res>
+    extends _$GamePhaseDataCopyWithImpl<$Res, _$_GamePhaseData>
+    implements _$$_GamePhaseDataCopyWith<$Res> {
+  __$$_GamePhaseDataCopyWithImpl(
+      _$_GamePhaseData _value, $Res Function(_$_GamePhaseData) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? phase = freezed,
+    Object? arg = freezed,
+  }) {
+    return _then(_$_GamePhaseData(
+      phase: freezed == phase
+          ? _value.phase
+          : phase // ignore: cast_nullable_to_non_nullable
+              as GameRoomPhase?,
+      arg: freezed == arg ? _value.arg : arg,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_GamePhaseData implements _GamePhaseData {
+  _$_GamePhaseData({required this.phase, this.arg = null});
+
+  @override
+  final GameRoomPhase? phase;
+  @override
+  @JsonKey()
+  final Object? arg;
+
+  @override
+  String toString() {
+    return 'GamePhaseData(phase: $phase, arg: $arg)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_GamePhaseData &&
+            (identical(other.phase, phase) || other.phase == phase) &&
+            const DeepCollectionEquality().equals(other.arg, arg));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, phase, const DeepCollectionEquality().hash(arg));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_GamePhaseDataCopyWith<_$_GamePhaseData> get copyWith =>
+      __$$_GamePhaseDataCopyWithImpl<_$_GamePhaseData>(this, _$identity);
+}
+
+abstract class _GamePhaseData implements GamePhaseData {
+  factory _GamePhaseData(
+      {required final GameRoomPhase? phase,
+      final Object? arg}) = _$_GamePhaseData;
+
+  @override
+  GameRoomPhase? get phase;
+  @override
+  Object? get arg;
+  @override
+  @JsonKey(ignore: true)
+  _$$_GamePhaseDataCopyWith<_$_GamePhaseData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$RoundsState {
+  List<int> get order => throw _privateConstructorUsedError;
+  List<String> get playerIds => throw _privateConstructorUsedError;
+  int get progress => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $RoundsStateCopyWith<RoundsState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RoundsStateCopyWith<$Res> {
+  factory $RoundsStateCopyWith(
+          RoundsState value, $Res Function(RoundsState) then) =
+      _$RoundsStateCopyWithImpl<$Res, RoundsState>;
+  @useResult
+  $Res call({List<int> order, List<String> playerIds, int progress});
+}
+
+/// @nodoc
+class _$RoundsStateCopyWithImpl<$Res, $Val extends RoundsState>
+    implements $RoundsStateCopyWith<$Res> {
+  _$RoundsStateCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? order = null,
+    Object? playerIds = null,
+    Object? progress = null,
+  }) {
+    return _then(_value.copyWith(
+      order: null == order
+          ? _value.order
+          : order // ignore: cast_nullable_to_non_nullable
+              as List<int>,
+      playerIds: null == playerIds
+          ? _value.playerIds
+          : playerIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      progress: null == progress
+          ? _value.progress
+          : progress // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_RoundsStateCopyWith<$Res>
+    implements $RoundsStateCopyWith<$Res> {
+  factory _$$_RoundsStateCopyWith(
+          _$_RoundsState value, $Res Function(_$_RoundsState) then) =
+      __$$_RoundsStateCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<int> order, List<String> playerIds, int progress});
+}
+
+/// @nodoc
+class __$$_RoundsStateCopyWithImpl<$Res>
+    extends _$RoundsStateCopyWithImpl<$Res, _$_RoundsState>
+    implements _$$_RoundsStateCopyWith<$Res> {
+  __$$_RoundsStateCopyWithImpl(
+      _$_RoundsState _value, $Res Function(_$_RoundsState) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? order = null,
+    Object? playerIds = null,
+    Object? progress = null,
+  }) {
+    return _then(_$_RoundsState(
+      order: null == order
+          ? _value._order
+          : order // ignore: cast_nullable_to_non_nullable
+              as List<int>,
+      playerIds: null == playerIds
+          ? _value._playerIds
+          : playerIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      progress: null == progress
+          ? _value.progress
+          : progress // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_RoundsState extends _RoundsState {
+  _$_RoundsState(
+      {required final List<int> order,
+      required final List<String> playerIds,
+      required this.progress})
+      : _order = order,
+        _playerIds = playerIds,
+        super._();
+
+  final List<int> _order;
+  @override
+  List<int> get order {
+    if (_order is EqualUnmodifiableListView) return _order;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_order);
+  }
+
+  final List<String> _playerIds;
+  @override
+  List<String> get playerIds {
+    if (_playerIds is EqualUnmodifiableListView) return _playerIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playerIds);
+  }
+
+  @override
+  final int progress;
+
+  @override
+  String toString() {
+    return 'RoundsState(order: $order, playerIds: $playerIds, progress: $progress)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_RoundsState &&
+            const DeepCollectionEquality().equals(other._order, _order) &&
+            const DeepCollectionEquality()
+                .equals(other._playerIds, _playerIds) &&
+            (identical(other.progress, progress) ||
+                other.progress == progress));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_order),
+      const DeepCollectionEquality().hash(_playerIds),
+      progress);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_RoundsStateCopyWith<_$_RoundsState> get copyWith =>
+      __$$_RoundsStateCopyWithImpl<_$_RoundsState>(this, _$identity);
+}
+
+abstract class _RoundsState extends RoundsState {
+  factory _RoundsState(
+      {required final List<int> order,
+      required final List<String> playerIds,
+      required final int progress}) = _$_RoundsState;
+  _RoundsState._() : super._();
+
+  @override
+  List<int> get order;
+  @override
+  List<String> get playerIds;
+  @override
+  int get progress;
+  @override
+  @JsonKey(ignore: true)
+  _$$_RoundsStateCopyWith<_$_RoundsState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$RolesState {
+  Map<String, String> get targets => throw _privateConstructorUsedError;
+  Map<String, String> get texts => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $RolesStateCopyWith<RolesState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RolesStateCopyWith<$Res> {
+  factory $RolesStateCopyWith(
+          RolesState value, $Res Function(RolesState) then) =
+      _$RolesStateCopyWithImpl<$Res, RolesState>;
   @useResult
   $Res call({Map<String, String> targets, Map<String, String> texts});
 }
 
 /// @nodoc
-class _$RoundStateCopyWithImpl<$Res, $Val extends RoundState>
-    implements $RoundStateCopyWith<$Res> {
-  _$RoundStateCopyWithImpl(this._value, this._then);
+class _$RolesStateCopyWithImpl<$Res, $Val extends RolesState>
+    implements $RolesStateCopyWith<$Res> {
+  _$RolesStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -296,22 +625,22 @@ class _$RoundStateCopyWithImpl<$Res, $Val extends RoundState>
 }
 
 /// @nodoc
-abstract class _$$_RoundStateCopyWith<$Res>
-    implements $RoundStateCopyWith<$Res> {
-  factory _$$_RoundStateCopyWith(
-          _$_RoundState value, $Res Function(_$_RoundState) then) =
-      __$$_RoundStateCopyWithImpl<$Res>;
+abstract class _$$_RolesStateCopyWith<$Res>
+    implements $RolesStateCopyWith<$Res> {
+  factory _$$_RolesStateCopyWith(
+          _$_RolesState value, $Res Function(_$_RolesState) then) =
+      __$$_RolesStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, String> targets, Map<String, String> texts});
 }
 
 /// @nodoc
-class __$$_RoundStateCopyWithImpl<$Res>
-    extends _$RoundStateCopyWithImpl<$Res, _$_RoundState>
-    implements _$$_RoundStateCopyWith<$Res> {
-  __$$_RoundStateCopyWithImpl(
-      _$_RoundState _value, $Res Function(_$_RoundState) _then)
+class __$$_RolesStateCopyWithImpl<$Res>
+    extends _$RolesStateCopyWithImpl<$Res, _$_RolesState>
+    implements _$$_RolesStateCopyWith<$Res> {
+  __$$_RolesStateCopyWithImpl(
+      _$_RolesState _value, $Res Function(_$_RolesState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -320,7 +649,7 @@ class __$$_RoundStateCopyWithImpl<$Res>
     Object? targets = null,
     Object? texts = null,
   }) {
-    return _then(_$_RoundState(
+    return _then(_$_RolesState(
       targets: null == targets
           ? _value._targets
           : targets // ignore: cast_nullable_to_non_nullable
@@ -335,8 +664,8 @@ class __$$_RoundStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_RoundState extends _RoundState {
-  _$_RoundState(
+class _$_RolesState extends _RolesState {
+  _$_RolesState(
       {final Map<String, String> targets = const {},
       final Map<String, String> texts = const {}})
       : _targets = targets,
@@ -363,14 +692,14 @@ class _$_RoundState extends _RoundState {
 
   @override
   String toString() {
-    return 'RoundState(targets: $targets, texts: $texts)';
+    return 'RolesState(targets: $targets, texts: $texts)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RoundState &&
+            other is _$_RolesState &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality().equals(other._texts, _texts));
   }
@@ -384,15 +713,15 @@ class _$_RoundState extends _RoundState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RoundStateCopyWith<_$_RoundState> get copyWith =>
-      __$$_RoundStateCopyWithImpl<_$_RoundState>(this, _$identity);
+  _$$_RolesStateCopyWith<_$_RolesState> get copyWith =>
+      __$$_RolesStateCopyWithImpl<_$_RolesState>(this, _$identity);
 }
 
-abstract class _RoundState extends RoundState {
-  factory _RoundState(
+abstract class _RolesState extends RolesState {
+  factory _RolesState(
       {final Map<String, String> targets,
-      final Map<String, String> texts}) = _$_RoundState;
-  _RoundState._() : super._();
+      final Map<String, String> texts}) = _$_RolesState;
+  _RolesState._() : super._();
 
   @override
   Map<String, String> get targets;
@@ -400,12 +729,13 @@ abstract class _RoundState extends RoundState {
   Map<String, String> get texts;
   @override
   @JsonKey(ignore: true)
-  _$$_RoundStateCopyWith<_$_RoundState> get copyWith =>
+  _$$_RolesStateCopyWith<_$_RolesState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 mixin _$ListState {
+  List<String> get list => throw _privateConstructorUsedError;
   int get lengthBefore => throw _privateConstructorUsedError;
   int get length => throw _privateConstructorUsedError;
   bool get hasChanged => throw _privateConstructorUsedError;
@@ -424,7 +754,8 @@ abstract class $ListStateCopyWith<$Res> {
       _$ListStateCopyWithImpl<$Res, ListState>;
   @useResult
   $Res call(
-      {int lengthBefore,
+      {List<String> list,
+      int lengthBefore,
       int length,
       bool hasChanged,
       ListChangeType listChangeType,
@@ -445,6 +776,7 @@ class _$ListStateCopyWithImpl<$Res, $Val extends ListState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? list = null,
     Object? lengthBefore = null,
     Object? length = null,
     Object? hasChanged = null,
@@ -453,6 +785,10 @@ class _$ListStateCopyWithImpl<$Res, $Val extends ListState>
     Object? changedItemId = freezed,
   }) {
     return _then(_value.copyWith(
+      list: null == list
+          ? _value.list
+          : list // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       lengthBefore: null == lengthBefore
           ? _value.lengthBefore
           : lengthBefore // ignore: cast_nullable_to_non_nullable
@@ -489,7 +825,8 @@ abstract class _$$_ListStateCopyWith<$Res> implements $ListStateCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {int lengthBefore,
+      {List<String> list,
+      int lengthBefore,
       int length,
       bool hasChanged,
       ListChangeType listChangeType,
@@ -508,6 +845,7 @@ class __$$_ListStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? list = null,
     Object? lengthBefore = null,
     Object? length = null,
     Object? hasChanged = null,
@@ -516,6 +854,10 @@ class __$$_ListStateCopyWithImpl<$Res>
     Object? changedItemId = freezed,
   }) {
     return _then(_$_ListState(
+      list: null == list
+          ? _value._list
+          : list // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       lengthBefore: null == lengthBefore
           ? _value.lengthBefore
           : lengthBefore // ignore: cast_nullable_to_non_nullable
@@ -548,12 +890,22 @@ class __$$_ListStateCopyWithImpl<$Res>
 
 class _$_ListState implements _ListState {
   _$_ListState(
-      {required this.lengthBefore,
+      {required final List<String> list,
+      required this.lengthBefore,
       required this.length,
       this.hasChanged = false,
       this.listChangeType = ListChangeType.unchanged,
       this.changeIndex,
-      this.changedItemId});
+      this.changedItemId})
+      : _list = list;
+
+  final List<String> _list;
+  @override
+  List<String> get list {
+    if (_list is EqualUnmodifiableListView) return _list;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_list);
+  }
 
   @override
   final int lengthBefore;
@@ -572,7 +924,7 @@ class _$_ListState implements _ListState {
 
   @override
   String toString() {
-    return 'ListState(lengthBefore: $lengthBefore, length: $length, hasChanged: $hasChanged, listChangeType: $listChangeType, changeIndex: $changeIndex, changedItemId: $changedItemId)';
+    return 'ListState(list: $list, lengthBefore: $lengthBefore, length: $length, hasChanged: $hasChanged, listChangeType: $listChangeType, changeIndex: $changeIndex, changedItemId: $changedItemId)';
   }
 
   @override
@@ -580,6 +932,7 @@ class _$_ListState implements _ListState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ListState &&
+            const DeepCollectionEquality().equals(other._list, _list) &&
             (identical(other.lengthBefore, lengthBefore) ||
                 other.lengthBefore == lengthBefore) &&
             (identical(other.length, length) || other.length == length) &&
@@ -594,8 +947,15 @@ class _$_ListState implements _ListState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, lengthBefore, length, hasChanged,
-      listChangeType, changeIndex, changedItemId);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_list),
+      lengthBefore,
+      length,
+      hasChanged,
+      listChangeType,
+      changeIndex,
+      changedItemId);
 
   @JsonKey(ignore: true)
   @override
@@ -606,13 +966,16 @@ class _$_ListState implements _ListState {
 
 abstract class _ListState implements ListState {
   factory _ListState(
-      {required final int lengthBefore,
+      {required final List<String> list,
+      required final int lengthBefore,
       required final int length,
       final bool hasChanged,
       final ListChangeType listChangeType,
       final int? changeIndex,
       final String? changedItemId}) = _$_ListState;
 
+  @override
+  List<String> get list;
   @override
   int get lengthBefore;
   @override

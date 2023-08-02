@@ -21,14 +21,16 @@ class AuthNotifier extends _$AuthNotifier {
 
   @override
   Stream<AuthNotifierState> build() {
-    return _authService.streamUserId().switchMap((userId) {
-      return _streamService.streamPlayerExists(userId).map((exists) {
+    return _authService.streamUserId().switchMap((userId) async* {
 
-        final newState = AuthNotifierState(userId : userId, playerProfileExists: exists);
-
-        return newState;
-        // (state.value == newState) ? state.value! : newState;
-      });
+      if(userId == null)
+      {
+        yield AuthNotifierState();
+      }
+      else {
+        yield* _streamService.streamPlayer(userId).map((player) => AuthNotifierState(userId : userId, playerProfileExists: true))
+        .startWith(AuthNotifierState(userId: userId, playerProfileExists: false));
+      }
     });
   }
 

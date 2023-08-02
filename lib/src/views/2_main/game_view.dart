@@ -3,20 +3,22 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
+import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/room_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
+import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/1_writing_phase_view.dart';
-import 'package:flutter_bull/src/views/3_game/2_selecting_player_phase_view.dart';
-import 'package:flutter_bull/src/views/3_game/3_voting_phase_view.dart';
-import 'package:flutter_bull/src/views/3_game/4_reveals_phase_view.dart';
-import 'package:flutter_bull/src/views/3_game/5_results_phase_view.dart';
+import 'package:flutter_bull/src/views/3_game/2_game_round_view.dart';
+import 'package:flutter_bull/src/views/4_game_round/2_selecting_player_phase_view.dart';
+import 'package:flutter_bull/src/views/4_game_round/3_voting_phase_view.dart';
+import 'package:flutter_bull/src/views/3_game/3_reveals_phase_view.dart';
+import 'package:flutter_bull/src/views/3_game/4_results_phase_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -32,73 +34,80 @@ class _GameViewState extends ConsumerState<GameView> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = ref.watch(getSignedInPlayerIdProvider);
     final roomId = ref.watch(getCurrentGameRoomIdProvider);
-    final roomNotifier = roomNotifierProvider(roomId);
 
-    ref.listen(roomNotifier.select((value) => value.value?.phase),
+    final game = gameNotifierProvider(roomId);
+
+    ref.listen(game.select((value) => value.value?.phaseData),
         (prev, next) {
-      Logger().d('gameRoom.phase.listen: $prev $next');
 
-      if (prev != null && next != null) navController.navigateToPhase(next);
+      Logger().d('gameRoom.phaseData.listen: $prev $next');
+
+      if(next != null) navController.navigateToPhaseWithArg(next);
     });
 
-    final stateAsync = ref.watch(roomNotifier);
+    final stateAsync = ref.watch(game);
 
     return Scaffold(
-      backgroundColor: Colors.orange,
       floatingActionButton: FloatingActionButton(onPressed: () {
         ref.read(utterBullServerProvider).returnToLobby(roomId);
       }),
-      body: Center(
-        child: stateAsync.whenDefault((room) {
-          return ControlledNavigator(
-            controller: navController,
-             data: room.phase);
-        }),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+          center: AlignmentDirectional.topCenter,
+          
+          radius: 2.5,
+          colors: [Colors.white, Color.fromARGB(255, 109, 221, 255)])),
+        child: Center(
+          child: stateAsync.whenDefault((room) {
+            return ControlledNavigator(
+                controller: navController, data: room.phaseData);
+          }),
+        ),
       ),
     );
   }
 }
 
-
-class GameRouteNavigationController extends NavigationController<GameRoomStatePhase> {
-  void navigateToPhase(GameRoomStatePhase phase) {
-    navigateTo(_phaseToRoute(phase));
+class GameRouteNavigationController
+    extends NavigationController<GamePhaseData> {
+  void navigateToPhaseWithArg(GamePhaseData phase) {
+    navigateTo(_phaseDataToRoute(phase));
   }
 
-  String _phaseToRoute(GameRoomStatePhase phase) =>
-      phase.toString().split('.').last;
+  String _phaseDataToRoute(GamePhaseData data) =>
+      data.phase.toString().split('.').last + (data.arg == null ? '' : '/${data.arg}');
 
   @override
   Route get defaultRoute =>
       MaterialPageRoute(builder: (context) => SplashView());
 
   @override
-  String generateInitialRoute(GameRoomStatePhase data) {
-    return _phaseToRoute(data);
+  String generateInitialRoute(GamePhaseData data) {
+    return _phaseDataToRoute(data);
   }
 
   @override
-  PageRoute? resolveRoute() {
+  PageRoute? generateRoute() {
     switch (nextRoutePath) {
       case 'lobby':
-        return MaterialPageRoute(
-            builder: (context) => scoped(LobbyPhaseView()));
+        return ForwardRoute(scoped(LobbyPhaseView()));
       case 'writing':
-        return MaterialPageRoute(
-            builder: (context) => scoped(WritingPhaseView()));
+        return ForwardRoute(scoped(WritingPhaseView()));
       case 'selecting':
-        return MaterialPageRoute(
-            builder: (context) => scoped(SelectingPlayerPhaseView()));
+        final whoseTurnOverride =
+            getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
+        return ForwardRoute(scoped(SelectingPlayerPhaseView(), overrides: [whoseTurnOverride]));
       case 'reading':
-        return MaterialPageRoute(
-            builder: (context) => scoped(VotingPhaseView()));
+        final whoseTurnOverride =
+            getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
+        return ForwardRoute(scoped(VotingPhaseView(), overrides: [whoseTurnOverride]));
       case 'reveals':
-        return MaterialPageRoute(
-            builder: (context) => scoped(RevealsPhaseView()));
+        return ForwardRoute(scoped(RevealsPhaseView()));
       case 'results':
-        return MaterialPageRoute(
-            builder: (context) => scoped(ResultsPhaseView()));
+        return ForwardRoute(scoped(ResultsPhaseView()));
     }
 
     return null;

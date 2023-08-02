@@ -6,7 +6,7 @@ part of 'player_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playerNotifierHash() => r'c9c421bd68465f0512b25a200b5ec440d67f08bc';
+String _$playerNotifierHash() => r'0a9350706b3e0176d14e5a22eb20436b1f428c87';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,11 +29,12 @@ class _SystemHash {
   }
 }
 
-abstract class _$PlayerNotifier extends BuildlessStreamNotifier<Player> {
-  late final String? userId;
+abstract class _$PlayerNotifier
+    extends BuildlessStreamNotifier<PlayerWithAvatar> {
+  late final String userId;
 
-  Stream<Player> build(
-    String? userId,
+  Stream<PlayerWithAvatar> build(
+    String userId,
   );
 }
 
@@ -42,13 +43,13 @@ abstract class _$PlayerNotifier extends BuildlessStreamNotifier<Player> {
 const playerNotifierProvider = PlayerNotifierFamily();
 
 /// See also [PlayerNotifier].
-class PlayerNotifierFamily extends Family<AsyncValue<Player>> {
+class PlayerNotifierFamily extends Family<AsyncValue<PlayerWithAvatar>> {
   /// See also [PlayerNotifier].
   const PlayerNotifierFamily();
 
   /// See also [PlayerNotifier].
   PlayerNotifierProvider call(
-    String? userId,
+    String userId,
   ) {
     return PlayerNotifierProvider(
       userId,
@@ -81,7 +82,7 @@ class PlayerNotifierFamily extends Family<AsyncValue<Player>> {
 
 /// See also [PlayerNotifier].
 class PlayerNotifierProvider
-    extends StreamNotifierProviderImpl<PlayerNotifier, Player> {
+    extends StreamNotifierProviderImpl<PlayerNotifier, PlayerWithAvatar> {
   /// See also [PlayerNotifier].
   PlayerNotifierProvider(
     this.userId,
@@ -98,7 +99,7 @@ class PlayerNotifierProvider
               PlayerNotifierFamily._allTransitiveDependencies,
         );
 
-  final String? userId;
+  final String userId;
 
   @override
   bool operator ==(Object other) {
@@ -114,7 +115,7 @@ class PlayerNotifierProvider
   }
 
   @override
-  Stream<Player> runNotifierBuild(
+  Stream<PlayerWithAvatar> runNotifierBuild(
     covariant PlayerNotifier notifier,
   ) {
     return notifier.build(
