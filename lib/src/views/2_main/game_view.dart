@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
-import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
@@ -78,7 +77,7 @@ class GameRouteNavigationController
   }
 
   String _phaseDataToRoute(GamePhaseData data) =>
-      data.phase.toString().split('.').last + (data.arg == null ? '' : '/${data.arg}');
+      data.gamePhase.toString().split('.').last + (data.arg == null ? '' : '/${data.arg}');
 
   @override
   Route get defaultRoute =>
@@ -96,14 +95,18 @@ class GameRouteNavigationController
         return ForwardRoute(scoped(LobbyPhaseView()));
       case 'writing':
         return ForwardRoute(scoped(WritingPhaseView()));
-      case 'selecting':
+      case 'round':
+        final whoseTurnOverride =
+            getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
+        return ForwardRoute(scoped(GameRoundView(), overrides: [whoseTurnOverride]));
+/*       case 'selecting':
         final whoseTurnOverride =
             getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
         return ForwardRoute(scoped(SelectingPlayerPhaseView(), overrides: [whoseTurnOverride]));
       case 'reading':
         final whoseTurnOverride =
             getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
-        return ForwardRoute(scoped(VotingPhaseView(), overrides: [whoseTurnOverride]));
+        return ForwardRoute(scoped(VotingPhaseView(), overrides: [whoseTurnOverride])); */
       case 'reveals':
         return ForwardRoute(scoped(RevealsPhaseView()));
       case 'results':

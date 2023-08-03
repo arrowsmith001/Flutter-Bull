@@ -18,6 +18,8 @@ import 'package:flutter_bull/src/views/2_main/profile_view.dart';
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:go_router_tabs/go_router_tabs.dart';
 import 'package:logger/logger.dart';
 
 class MainView extends ConsumerStatefulWidget {
@@ -98,7 +100,7 @@ class _MainViewState extends ConsumerState<MainView> {
             ControlledNavigator<SignedInPlayerStatusNotifierState>(
               data: playerStatus,
               controller: nav,
-            ),
+            ) ,
             busy
                 ? Positioned.fill(
                     child: Container(
@@ -150,6 +152,8 @@ class MainRouteNavigatorController
                 ? 'home'
                 : 'game/${player.occupiedRoomId}';
   }
+
+  // TODO: FIX WEIRD ROUTE TRANSITIONS
 
   @override
   PageRoute? generateRoute() {

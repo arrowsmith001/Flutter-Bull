@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
-import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
@@ -20,13 +20,19 @@ abstract class UtterBullServer {
 
   Future<void> removeFromRoom(String userId, String roomCode);
   Future<void> setRoomPhase(
-      String gameRoomId, GameRoomPhase newPhase, Object? newPhaseArgs);
+      String gameRoomId, GamePhase newPhase, Object? newPhaseArgs);
 
   Future<void> startGame(String roomId);
 
   Future<void> returnToLobby(String roomId);
 
   Future<void> submitText(String roomId, String userId, String text);
+
+  Future<void> startRound(String roomId, String userId);
+
+  Future<void> vote(String roomId, String userId, bool truthOrLie);
+
+  Future<void> endRound(String roomId, String userId);
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
@@ -79,8 +85,8 @@ class UtterBullClientSideServer implements UtterBullServer {
   }
 
   @override
-  Future<void> setRoomPhase(String roomCode, GameRoomPhase newPhase,
-      Object? newPhaseArgs) async {
+  Future<void> setRoomPhase(
+      String roomCode, GamePhase newPhase, Object? newPhaseArgs) async {
     await data.setRoomPhase(roomCode, newPhase, newPhaseArgs);
   }
 
@@ -95,11 +101,29 @@ class UtterBullClientSideServer implements UtterBullServer {
     final func = FirebaseFunctions.instance.httpsCallable('returnToLobby');
     await func.call(roomId);
   }
-  
+
   @override
   Future<void> submitText(String roomId, String userId, String text) async {
     final func = FirebaseFunctions.instance.httpsCallable('submitText');
-    await func.call({'roomId' : roomId, 'userId' : userId, 'text' : text});
+    await func.call({'roomId': roomId, 'userId': userId, 'text': text});
+  }
+
+  @override
+  Future<void> startRound(String roomId, String userId) async {
+    final func = FirebaseFunctions.instance.httpsCallable('startRound');
+    await func.call({'roomId': roomId, 'userId': userId});
+  }
+  
+  @override
+  Future<void> vote(String roomId, String userId, bool truthOrLie) async {
+    final func = FirebaseFunctions.instance.httpsCallable('vote');
+    await func.call({'roomId': roomId, 'userId': userId, 'truthOrLie': truthOrLie});
+  }
+  
+  @override
+  Future<void> endRound(String roomId, String userId)  async {
+    final func = FirebaseFunctions.instance.httpsCallable('endRound');
+    await func.call({'roomId': roomId, 'userId': userId});
   }
 }
 

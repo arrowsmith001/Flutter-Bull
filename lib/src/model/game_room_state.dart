@@ -1,11 +1,12 @@
-import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
-import 'package:json_annotation/json_annotation.dart';
-part 'game_room_state.g.dart';
 
+import 'package:json_annotation/json_annotation.dart';
+//part 'game_room_state.g.dart';
+/* 
 @JsonSerializable()
 class GameRoomState {
 
-  final GameRoomPhase phase;
+  final GamePhase gamePhase;
+  final RoundPhase roundPhase;
   final Object? args;
 
   GameRoomState(this.phase, {this.args});
@@ -14,4 +15,4 @@ class GameRoomState {
 
   factory GameRoomState.fromJson(Map<String, dynamic> map) =>
       _$GameRoomStateFromJson(map);
-}
+} */

@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'game_notifier.dart';
+part of 'timer_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameNotifierHash() => r'fd41284d903f7ea45109d22d3ea04eaf830bce86';
+String _$timerNotifierHash() => r'45a00b1083efbb4aaf480f32f39d270feb122fa0';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,39 +29,39 @@ class _SystemHash {
   }
 }
 
-abstract class _$GameNotifier
-    extends BuildlessAutoDisposeStreamNotifier<GameNotifierState> {
-  late final String gameRoomId;
+abstract class _$TimerNotifier
+    extends BuildlessAutoDisposeStreamNotifier<TimerState> {
+  late final int? utcEnd;
 
-  Stream<GameNotifierState> build(
-    String gameRoomId,
+  Stream<TimerState> build(
+    int? utcEnd,
   );
 }
 
-/// See also [GameNotifier].
-@ProviderFor(GameNotifier)
-const gameNotifierProvider = GameNotifierFamily();
+/// See also [TimerNotifier].
+@ProviderFor(TimerNotifier)
+const timerNotifierProvider = TimerNotifierFamily();
 
-/// See also [GameNotifier].
-class GameNotifierFamily extends Family<AsyncValue<GameNotifierState>> {
-  /// See also [GameNotifier].
-  const GameNotifierFamily();
+/// See also [TimerNotifier].
+class TimerNotifierFamily extends Family<AsyncValue<TimerState>> {
+  /// See also [TimerNotifier].
+  const TimerNotifierFamily();
 
-  /// See also [GameNotifier].
-  GameNotifierProvider call(
-    String gameRoomId,
+  /// See also [TimerNotifier].
+  TimerNotifierProvider call(
+    int? utcEnd,
   ) {
-    return GameNotifierProvider(
-      gameRoomId,
+    return TimerNotifierProvider(
+      utcEnd,
     );
   }
 
   @override
-  GameNotifierProvider getProviderOverride(
-    covariant GameNotifierProvider provider,
+  TimerNotifierProvider getProviderOverride(
+    covariant TimerNotifierProvider provider,
   ) {
     return call(
-      provider.gameRoomId,
+      provider.utcEnd,
     );
   }
 
@@ -77,49 +77,49 @@ class GameNotifierFamily extends Family<AsyncValue<GameNotifierState>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'gameNotifierProvider';
+  String? get name => r'timerNotifierProvider';
 }
 
-/// See also [GameNotifier].
-class GameNotifierProvider extends AutoDisposeStreamNotifierProviderImpl<
-    GameNotifier, GameNotifierState> {
-  /// See also [GameNotifier].
-  GameNotifierProvider(
-    this.gameRoomId,
+/// See also [TimerNotifier].
+class TimerNotifierProvider
+    extends AutoDisposeStreamNotifierProviderImpl<TimerNotifier, TimerState> {
+  /// See also [TimerNotifier].
+  TimerNotifierProvider(
+    this.utcEnd,
   ) : super.internal(
-          () => GameNotifier()..gameRoomId = gameRoomId,
-          from: gameNotifierProvider,
-          name: r'gameNotifierProvider',
+          () => TimerNotifier()..utcEnd = utcEnd,
+          from: timerNotifierProvider,
+          name: r'timerNotifierProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$gameNotifierHash,
-          dependencies: GameNotifierFamily._dependencies,
+                  : _$timerNotifierHash,
+          dependencies: TimerNotifierFamily._dependencies,
           allTransitiveDependencies:
-              GameNotifierFamily._allTransitiveDependencies,
+              TimerNotifierFamily._allTransitiveDependencies,
         );
 
-  final String gameRoomId;
+  final int? utcEnd;
 
   @override
   bool operator ==(Object other) {
-    return other is GameNotifierProvider && other.gameRoomId == gameRoomId;
+    return other is TimerNotifierProvider && other.utcEnd == utcEnd;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, gameRoomId.hashCode);
+    hash = _SystemHash.combine(hash, utcEnd.hashCode);
 
     return _SystemHash.finish(hash);
   }
 
   @override
-  Stream<GameNotifierState> runNotifierBuild(
-    covariant GameNotifier notifier,
+  Stream<TimerState> runNotifierBuild(
+    covariant TimerNotifier notifier,
   ) {
     return notifier.build(
-      gameRoomId,
+      utcEnd,
     );
   }
 }

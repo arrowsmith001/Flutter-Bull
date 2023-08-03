@@ -1,16 +1,46 @@
 import 'package:flutter/material.dart';
 
-abstract class SlideRoute extends PageRouteBuilder {
-  SlideRoute(this.child) : super(pageBuilder: (context, _, __) => child);
+abstract class ExitingRoute extends PageRouteBuilder {
+  ExitingRoute(this.child) : super(pageBuilder: (context, _, __) => child);
 
   final Widget child;
 
   Offset get getInitialOffset;
 
 
-  Offset? exitOffset;
-
+  // TODO: Generalize
   @override
+  RouteTransitionsBuilder get transitionsBuilder =>
+      ((context, animation, secondaryAnimation, child) {
+        var begin = getInitialOffset;
+        const end = Offset.zero;
+
+        final tween = Tween(begin: begin, end: end);
+        //final outTween = Tween(begin: Offset.zero, end: getExitOffset);
+
+        final curved =
+            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+        final offsetAnimation = curved.drive(tween);
+
+        final outCurved = CurvedAnimation(
+            parent: secondaryAnimation, curve: Curves.easeInOut);
+        //final outOffsetAnimation = outCurved.drive(outTween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      });
+}
+
+abstract class SlideRoute extends ExitingRoute {
+
+  SlideRoute(this.child) : super(child);
+
+  final Widget child;
+
+
+/*   @override
   RoutePageBuilder get pageBuilder => (context, animation, secondaryAnimation) 
   {
     const begin = Offset.zero;
@@ -28,7 +58,7 @@ abstract class SlideRoute extends PageRouteBuilder {
       position: offsetAnimation,
       child: child,
     );
-  };
+  }; */
 
   @override
   RouteTransitionsBuilder get transitionsBuilder =>
@@ -41,6 +71,9 @@ abstract class SlideRoute extends PageRouteBuilder {
         final curved =
             CurvedAnimation(parent: animation, curve: Curves.easeInOut);
         final offsetAnimation = curved.drive(tween);
+
+        final outCurved = CurvedAnimation(
+            parent: secondaryAnimation, curve: Curves.easeInOut);
 
         return SlideTransition(
           position: offsetAnimation,

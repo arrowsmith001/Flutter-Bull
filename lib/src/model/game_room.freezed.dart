@@ -22,12 +22,15 @@ GameRoom _$GameRoomFromJson(Map<String, dynamic> json) {
 mixin _$GameRoom {
   String? get id => throw _privateConstructorUsedError;
   String get roomCode => throw _privateConstructorUsedError;
-  GameRoomPhase? get phase => throw _privateConstructorUsedError;
+  GamePhase get phase => throw _privateConstructorUsedError;
+  RoundPhase get roundPhase => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
   Map<String, String> get targets => throw _privateConstructorUsedError;
   Map<String, String> get texts => throw _privateConstructorUsedError;
-  List<int> get playerOrder => throw _privateConstructorUsedError;
+  List<String> get playerOrder => throw _privateConstructorUsedError;
   int get progress => throw _privateConstructorUsedError;
+  int? get timeRemaining => throw _privateConstructorUsedError;
+  GameRoomSettings get settings => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,12 +46,17 @@ abstract class $GameRoomCopyWith<$Res> {
   $Res call(
       {String? id,
       String roomCode,
-      GameRoomPhase? phase,
+      GamePhase phase,
+      RoundPhase roundPhase,
       List<String> playerIds,
       Map<String, String> targets,
       Map<String, String> texts,
-      List<int> playerOrder,
-      int progress});
+      List<String> playerOrder,
+      int progress,
+      int? timeRemaining,
+      GameRoomSettings settings});
+
+  $GameRoomSettingsCopyWith<$Res> get settings;
 }
 
 /// @nodoc
@@ -66,12 +74,15 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
   $Res call({
     Object? id = freezed,
     Object? roomCode = null,
-    Object? phase = freezed,
+    Object? phase = null,
+    Object? roundPhase = null,
     Object? playerIds = null,
     Object? targets = null,
     Object? texts = null,
     Object? playerOrder = null,
     Object? progress = null,
+    Object? timeRemaining = freezed,
+    Object? settings = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -82,10 +93,14 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
-      phase: freezed == phase
+      phase: null == phase
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
-              as GameRoomPhase?,
+              as GamePhase,
+      roundPhase: null == roundPhase
+          ? _value.roundPhase
+          : roundPhase // ignore: cast_nullable_to_non_nullable
+              as RoundPhase,
       playerIds: null == playerIds
           ? _value.playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -101,12 +116,28 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
       playerOrder: null == playerOrder
           ? _value.playerOrder
           : playerOrder // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<String>,
       progress: null == progress
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
               as int,
+      timeRemaining: freezed == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as int?,
+      settings: null == settings
+          ? _value.settings
+          : settings // ignore: cast_nullable_to_non_nullable
+              as GameRoomSettings,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $GameRoomSettingsCopyWith<$Res> get settings {
+    return $GameRoomSettingsCopyWith<$Res>(_value.settings, (value) {
+      return _then(_value.copyWith(settings: value) as $Val);
+    });
   }
 }
 
@@ -120,12 +151,18 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
   $Res call(
       {String? id,
       String roomCode,
-      GameRoomPhase? phase,
+      GamePhase phase,
+      RoundPhase roundPhase,
       List<String> playerIds,
       Map<String, String> targets,
       Map<String, String> texts,
-      List<int> playerOrder,
-      int progress});
+      List<String> playerOrder,
+      int progress,
+      int? timeRemaining,
+      GameRoomSettings settings});
+
+  @override
+  $GameRoomSettingsCopyWith<$Res> get settings;
 }
 
 /// @nodoc
@@ -141,12 +178,15 @@ class __$$_GameRoomCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? roomCode = null,
-    Object? phase = freezed,
+    Object? phase = null,
+    Object? roundPhase = null,
     Object? playerIds = null,
     Object? targets = null,
     Object? texts = null,
     Object? playerOrder = null,
     Object? progress = null,
+    Object? timeRemaining = freezed,
+    Object? settings = null,
   }) {
     return _then(_$_GameRoom(
       id: freezed == id
@@ -157,10 +197,14 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
-      phase: freezed == phase
+      phase: null == phase
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
-              as GameRoomPhase?,
+              as GamePhase,
+      roundPhase: null == roundPhase
+          ? _value.roundPhase
+          : roundPhase // ignore: cast_nullable_to_non_nullable
+              as RoundPhase,
       playerIds: null == playerIds
           ? _value._playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -176,11 +220,19 @@ class __$$_GameRoomCopyWithImpl<$Res>
       playerOrder: null == playerOrder
           ? _value._playerOrder
           : playerOrder // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<String>,
       progress: null == progress
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
               as int,
+      timeRemaining: freezed == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as int?,
+      settings: null == settings
+          ? _value.settings
+          : settings // ignore: cast_nullable_to_non_nullable
+              as GameRoomSettings,
     ));
   }
 }
@@ -191,12 +243,15 @@ class _$_GameRoom implements _GameRoom {
   _$_GameRoom(
       {this.id,
       required this.roomCode,
-      this.phase = GameRoomPhase.lobby,
+      this.phase = GamePhase.lobby,
+      this.roundPhase = RoundPhase.selecting,
       final List<String> playerIds = const [],
       final Map<String, String> targets = const {},
       final Map<String, String> texts = const {},
-      final List<int> playerOrder = const [],
-      this.progress = 0})
+      final List<String> playerOrder = const [],
+      this.progress = 0,
+      this.timeRemaining,
+      this.settings = const GameRoomSettings(roundTimeSeconds: 60 * 3)})
       : _playerIds = playerIds,
         _targets = targets,
         _texts = texts,
@@ -211,7 +266,10 @@ class _$_GameRoom implements _GameRoom {
   final String roomCode;
   @override
   @JsonKey()
-  final GameRoomPhase? phase;
+  final GamePhase phase;
+  @override
+  @JsonKey()
+  final RoundPhase roundPhase;
   final List<String> _playerIds;
   @override
   @JsonKey()
@@ -239,10 +297,10 @@ class _$_GameRoom implements _GameRoom {
     return EqualUnmodifiableMapView(_texts);
   }
 
-  final List<int> _playerOrder;
+  final List<String> _playerOrder;
   @override
   @JsonKey()
-  List<int> get playerOrder {
+  List<String> get playerOrder {
     if (_playerOrder is EqualUnmodifiableListView) return _playerOrder;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_playerOrder);
@@ -251,10 +309,15 @@ class _$_GameRoom implements _GameRoom {
   @override
   @JsonKey()
   final int progress;
+  @override
+  final int? timeRemaining;
+  @override
+  @JsonKey()
+  final GameRoomSettings settings;
 
   @override
   String toString() {
-    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, playerIds: $playerIds, targets: $targets, texts: $texts, playerOrder: $playerOrder, progress: $progress)';
+    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, roundPhase: $roundPhase, playerIds: $playerIds, targets: $targets, texts: $texts, playerOrder: $playerOrder, progress: $progress, timeRemaining: $timeRemaining, settings: $settings)';
   }
 
   @override
@@ -266,6 +329,8 @@ class _$_GameRoom implements _GameRoom {
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
             (identical(other.phase, phase) || other.phase == phase) &&
+            (identical(other.roundPhase, roundPhase) ||
+                other.roundPhase == roundPhase) &&
             const DeepCollectionEquality()
                 .equals(other._playerIds, _playerIds) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
@@ -273,7 +338,11 @@ class _$_GameRoom implements _GameRoom {
             const DeepCollectionEquality()
                 .equals(other._playerOrder, _playerOrder) &&
             (identical(other.progress, progress) ||
-                other.progress == progress));
+                other.progress == progress) &&
+            (identical(other.timeRemaining, timeRemaining) ||
+                other.timeRemaining == timeRemaining) &&
+            (identical(other.settings, settings) ||
+                other.settings == settings));
   }
 
   @JsonKey(ignore: true)
@@ -283,11 +352,14 @@ class _$_GameRoom implements _GameRoom {
       id,
       roomCode,
       phase,
+      roundPhase,
       const DeepCollectionEquality().hash(_playerIds),
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_texts),
       const DeepCollectionEquality().hash(_playerOrder),
-      progress);
+      progress,
+      timeRemaining,
+      settings);
 
   @JsonKey(ignore: true)
   @override
@@ -307,12 +379,15 @@ abstract class _GameRoom implements GameRoom {
   factory _GameRoom(
       {final String? id,
       required final String roomCode,
-      final GameRoomPhase? phase,
+      final GamePhase phase,
+      final RoundPhase roundPhase,
       final List<String> playerIds,
       final Map<String, String> targets,
       final Map<String, String> texts,
-      final List<int> playerOrder,
-      final int progress}) = _$_GameRoom;
+      final List<String> playerOrder,
+      final int progress,
+      final int? timeRemaining,
+      final GameRoomSettings settings}) = _$_GameRoom;
 
   factory _GameRoom.fromJson(Map<String, dynamic> json) = _$_GameRoom.fromJson;
 
@@ -321,7 +396,9 @@ abstract class _GameRoom implements GameRoom {
   @override
   String get roomCode;
   @override
-  GameRoomPhase? get phase;
+  GamePhase get phase;
+  @override
+  RoundPhase get roundPhase;
   @override
   List<String> get playerIds;
   @override
@@ -329,11 +406,153 @@ abstract class _GameRoom implements GameRoom {
   @override
   Map<String, String> get texts;
   @override
-  List<int> get playerOrder;
+  List<String> get playerOrder;
   @override
   int get progress;
   @override
+  int? get timeRemaining;
+  @override
+  GameRoomSettings get settings;
+  @override
   @JsonKey(ignore: true)
   _$$_GameRoomCopyWith<_$_GameRoom> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+GameRoomSettings _$GameRoomSettingsFromJson(Map<String, dynamic> json) {
+  return _GameRoomSettings.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GameRoomSettings {
+  int get roundTimeSeconds => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $GameRoomSettingsCopyWith<GameRoomSettings> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GameRoomSettingsCopyWith<$Res> {
+  factory $GameRoomSettingsCopyWith(
+          GameRoomSettings value, $Res Function(GameRoomSettings) then) =
+      _$GameRoomSettingsCopyWithImpl<$Res, GameRoomSettings>;
+  @useResult
+  $Res call({int roundTimeSeconds});
+}
+
+/// @nodoc
+class _$GameRoomSettingsCopyWithImpl<$Res, $Val extends GameRoomSettings>
+    implements $GameRoomSettingsCopyWith<$Res> {
+  _$GameRoomSettingsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? roundTimeSeconds = null,
+  }) {
+    return _then(_value.copyWith(
+      roundTimeSeconds: null == roundTimeSeconds
+          ? _value.roundTimeSeconds
+          : roundTimeSeconds // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_GameRoomSettingsCopyWith<$Res>
+    implements $GameRoomSettingsCopyWith<$Res> {
+  factory _$$_GameRoomSettingsCopyWith(
+          _$_GameRoomSettings value, $Res Function(_$_GameRoomSettings) then) =
+      __$$_GameRoomSettingsCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int roundTimeSeconds});
+}
+
+/// @nodoc
+class __$$_GameRoomSettingsCopyWithImpl<$Res>
+    extends _$GameRoomSettingsCopyWithImpl<$Res, _$_GameRoomSettings>
+    implements _$$_GameRoomSettingsCopyWith<$Res> {
+  __$$_GameRoomSettingsCopyWithImpl(
+      _$_GameRoomSettings _value, $Res Function(_$_GameRoomSettings) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? roundTimeSeconds = null,
+  }) {
+    return _then(_$_GameRoomSettings(
+      roundTimeSeconds: null == roundTimeSeconds
+          ? _value.roundTimeSeconds
+          : roundTimeSeconds // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_GameRoomSettings implements _GameRoomSettings {
+  const _$_GameRoomSettings({required this.roundTimeSeconds});
+
+  factory _$_GameRoomSettings.fromJson(Map<String, dynamic> json) =>
+      _$$_GameRoomSettingsFromJson(json);
+
+  @override
+  final int roundTimeSeconds;
+
+  @override
+  String toString() {
+    return 'GameRoomSettings(roundTimeSeconds: $roundTimeSeconds)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_GameRoomSettings &&
+            (identical(other.roundTimeSeconds, roundTimeSeconds) ||
+                other.roundTimeSeconds == roundTimeSeconds));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, roundTimeSeconds);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_GameRoomSettingsCopyWith<_$_GameRoomSettings> get copyWith =>
+      __$$_GameRoomSettingsCopyWithImpl<_$_GameRoomSettings>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_GameRoomSettingsToJson(
+      this,
+    );
+  }
+}
+
+abstract class _GameRoomSettings implements GameRoomSettings {
+  const factory _GameRoomSettings({required final int roundTimeSeconds}) =
+      _$_GameRoomSettings;
+
+  factory _GameRoomSettings.fromJson(Map<String, dynamic> json) =
+      _$_GameRoomSettings.fromJson;
+
+  @override
+  int get roundTimeSeconds;
+  @override
+  @JsonKey(ignore: true)
+  _$$_GameRoomSettingsCopyWith<_$_GameRoomSettings> get copyWith =>
       throw _privateConstructorUsedError;
 }

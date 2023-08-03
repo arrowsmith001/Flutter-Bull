@@ -1,5 +1,5 @@
 import 'package:flutter_bull/src/custom/data/abstract/entity.dart';
-import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -14,15 +14,30 @@ class GameRoom extends Entity with _$GameRoom {
   factory GameRoom({
     String? id,
     required String roomCode,
-    @Default(GameRoomPhase.lobby) GameRoomPhase? phase,
+    @Default(GamePhase.lobby) GamePhase phase,
+    @Default(RoundPhase.selecting) RoundPhase roundPhase,
     @Default([]) List<String> playerIds,
     @Default({}) Map<String, String> targets,
     @Default({}) Map<String, String> texts,
-    @Default([]) List<int> playerOrder,
+    @Default([]) List<String> playerOrder,
     @Default(0) int progress,
+    int? timeRemaining,
+    @Default(GameRoomSettings(roundTimeSeconds: 60*3)) GameRoomSettings settings,
   }) = _GameRoom;
 
 
   factory GameRoom.fromJson(Map<String, dynamic> map) =>
       _$GameRoomFromJson(map);
+}
+
+@freezed
+class GameRoomSettings with _$GameRoomSettings {
+
+  const factory GameRoomSettings({
+    required int roundTimeSeconds
+  }) = _GameRoomSettings;
+
+
+  factory GameRoomSettings.fromJson(Map<String, dynamic> map) =>
+      _$GameRoomSettingsFromJson(map);
 }

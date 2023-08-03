@@ -27,7 +27,6 @@ const db = firestore.initializeFirestore(app);
 // TODO: Separate into files!!
 
 
-
 export const onUserCreated = functionsv1.auth.user().onCreate(handleCreatedUser);
 
 
@@ -89,6 +88,36 @@ export const submitText = http.onCall(
     });
 
 
+
+export const startRound = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var userId = req.data['userId'] as string;
+
+        await startRoundImpl(roomId, userId);
+    });
+
+export const vote = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var userId = req.data['userId'] as string;
+        var truthOrLie = req.data['truthOrLie'] as boolean;
+
+        await voteImpl(roomId, userId, truthOrLie);
+    });
+
+export const endRound = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var userId = req.data['userId'] as string;
+
+        await endRoundImpl(roomId, userId);
+    });
+
+
 // Blocking
 /* exports.onUserCreated = functionsv2.identity.beforeUserCreated(async event => {
     await createPlayerProfile('event.data.uid');
@@ -133,7 +162,17 @@ async function createGameRoomImpl(userId: string) {
         var newRoomDoc = db.collection('rooms').doc();
         var playerDoc = db.collection('players').doc(userId);
 
-        var newRoom = { 'id': newRoomDoc.id, 'roomCode': newCode, 'playerIds': [userId], 'phase': 0 };
+        var newRoom = {
+            'id': newRoomDoc.id,
+            'roomCode': newCode,
+            'playerIds': [userId],
+            'phase': 0,
+            'roundPhase': 0,
+            'settings':
+            {
+                'roundTimeSeconds': 60 * 3
+            }
+        };
         var playerUpdates = { 'occupiedRoomId': newRoomDoc.id };
 
         await txn
@@ -223,23 +262,30 @@ async function startGameImpl(roomId: string) {
         var roomQuery = await txn.get(roomRef);
         var room = roomQuery.data();
 
-        var playerIds = room!['playerIds'];
+        // TODO: Allow for spectators
+        var playerIds = room!['playerIds'] as string[];
 
         // Generate targets map
         var targets = _getTruthOrLieTargetMap(playerIds);
 
+        // Generate empty texts
+        var texts = new Map<String, String>();
+
         // Generate random player order
-        var playerOrder = Array.from({ length: playerIds.length }, (_, i) => i);
+        var playerOrder = Array.from(playerIds);
         _shuffleArray(playerOrder);
 
+        // Generate empty votes
+        var votes = new Map<String, String>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? 'p' : '-').join('')]));
 
-        // Additioinally initializes: progress, texts
-        await txn
+        txn
             .update(roomRef, { 'targets': Object.fromEntries(targets) })
-            .update(roomRef, { 'texts': {} })
+            .update(roomRef, { 'votes': Object.fromEntries(votes) })
+            .update(roomRef, { 'texts': Object.fromEntries(texts) })
             .update(roomRef, { 'playerOrder': playerOrder })
             .update(roomRef, { 'progress': 0 })
-            .update(roomRef, { 'phase': GameRoomPhase.writing });
+            .update(roomRef, { 'phase': GameRoomPhase.writing })
+            .update(roomRef, { 'roundPhase': 0 });
     });
 }
 
@@ -272,16 +318,115 @@ async function submitTextImpl(roomId: string, userId: string, text: string) {
         var numberOfTargets = Object.keys(targets).length;
 
         if (numberOfSubmissions == numberOfTargets) {
-            await txn
+            txn
                 .update(roomRef, { 'texts': texts })
                 .update(roomRef, { 'phase': GameRoomPhase.selecting });
         }
         else {
 
-            await txn.update(roomRef, { 'texts': texts });
+            txn.update(roomRef, { 'texts': texts });
         }
 
     });
+}
+
+
+async function startRoundImpl(roomId: string, userId: string) {
+
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn) => {
+
+        var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
+
+        var totalTime = currentRoomData['settings']['roundTimeSeconds'];
+
+        // TODO: Account for time zones!!
+        var roundEndTime = Date.now().valueOf() + (totalTime * 1000);
+
+        await txn.update(roomRef, { 'timeRemaining': roundEndTime, 'roundPhase': 1 });
+
+    });
+
+}
+
+async function voteImpl(roomId: string, userId: string, truthOrLie: boolean) {
+
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn): Promise<void> => {
+
+        var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
+
+        var thisPlayersVotes = currentRoomData['votes'][userId];
+
+        var progress = currentRoomData['progress'] as number;
+        var symbolAtProgress = thisPlayersVotes.charAt(progress);
+
+        if (symbolAtProgress == '-') {
+
+            var voteSymbol = truthOrLie ? 't' : 'l';
+            var newVoteString = _substituteCharAt(thisPlayersVotes, progress, voteSymbol);
+            currentRoomData['votes'][userId] = newVoteString;
+
+            console.log('Adding vote ' + voteSymbol + ' for ' + userId + ' in ' + roomId);
+
+            txn.update(roomRef, { 'votes': currentRoomData['votes'] });
+        }
+        else if (symbolAtProgress == 'p') {
+            console.log('Error voting: ' + userId + ' cant vote for self');
+
+        }
+        else {
+            console.log('Error voting: ' + userId + ' in ' + roomId + ' - already voted ' + symbolAtProgress);
+        }
+
+
+    });
+
+}
+
+
+async function endRoundImpl(roomId: string, userId: string) {
+
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn) => {
+
+        var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
+
+        var playerOrder = currentRoomData['playerOrder'] as string[];
+        var progress = currentRoomData['progress'] as number;
+
+        for (var id in currentRoomData['votes']) {
+            var v = currentRoomData['votes'][id] as string;
+            if (v.charAt(progress) == '-') {
+                var newVoteString = _substituteCharAt(v, progress, 'n');
+                currentRoomData['votes'][id] = newVoteString;
+            }
+        }
+
+        progress += 1;
+
+        if (playerOrder.length <= progress) {
+            txn
+                .update(roomRef, { 'votes': currentRoomData['votes'] })
+                .update(roomRef, { 'progress': 0, 'phase': GameRoomPhase.reveals });
+        }
+        else {
+
+            txn
+                .update(roomRef, { 'votes': currentRoomData['votes'] })
+                .update(roomRef, { 'progress': progress, 'roundPhase': 0 });
+        }
+
+
+
+    });
+
 }
 
 
@@ -487,4 +632,8 @@ function _shuffleArray(array: any[]): void {
     }
 }
 
+
+function _substituteCharAt(str: string, pos: number, char: string): string {
+    return str.substring(0, pos) + char + str.substring(pos + 1);
+}
 

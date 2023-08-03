@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
+import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SelectingPlayerPhaseView extends ConsumerStatefulWidget {
@@ -25,17 +27,27 @@ class _SelectingPlayerPhaseViewState
     final gameNotifier = ref.watch(gameProvider.notifier);
 
     return gameState.whenDefault((state) {
-      bool myTurn = gameNotifier.isItMyTurn(participantId);
+      bool myTurn = state.isTurnOf(participantId);
 
       String text;
       if (myTurn) {
-        text = gameNotifier.getMyText(participantId);
+        text = state.getStatement(participantId);
       } else
         text = whoseTurn + ' is about to read';
 
         
       return Center(
-        child: Text(text),
+        child: Column(
+          children: [
+            Text(text),
+           !myTurn ? Container() : PlaceholderButton(
+              title: 'Advance',
+              onPressed: () {
+                ref.read(utterBullServerProvider).startRound(ref.read(getCurrentGameRoomIdProvider), ref.read(getSignedInPlayerIdProvider));
+              },
+              )
+          ],
+        ),
       );
     });
 

@@ -1,6 +1,6 @@
 import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
-import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
@@ -22,7 +22,7 @@ abstract class DataService {
   Future<bool> doesPlayerExist(String userId);
 
   Future<void> setRoomPhase(
-      String roomCode, GameRoomPhase newPhase, Object? newPhaseArgs);
+      String roomCode, GamePhase newPhase, Object? newPhaseArgs);
 
   Future<String> getRoomIdFromCode(String roomCode);
 
@@ -112,7 +112,7 @@ class FakeDataLayer extends DataService implements DataStreamService {
 
   @override
   Future<void> setRoomPhase(
-      String gameRoomId, GameRoomPhase newPhase, Object? newPhaseArgs) async {
+      String gameRoomId, GamePhase newPhase, Object? newPhaseArgs) async {
     final gameRoomStream = gameRooms[gameRoomId]!;
     final gameRoom = gameRoomStream.value;
     final newGameRoom = gameRoom.copyWith(phase: newPhase);
@@ -201,7 +201,7 @@ class DatabaseDrivenDataLayer extends DataService {
 
   @override
   Future<void> setRoomPhase(
-      String roomId, GameRoomPhase newPhase, Object? newPhaseArgs) async {
+      String roomId, GamePhase newPhase, Object? newPhaseArgs) async {
     await Future.wait([
       gameRoomRepo.setField(roomId, 'phase', newPhase),
       gameRoomRepo.setField(roomId, 'phaseArgs', newPhaseArgs)

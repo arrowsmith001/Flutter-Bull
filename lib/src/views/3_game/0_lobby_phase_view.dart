@@ -36,16 +36,15 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   List<String> playerIdList = [];
 
+  String get roomId => ref.watch(getCurrentGameRoomIdProvider);
+  String get userId => ref.watch(getSignedInPlayerIdProvider);
+
+  GameNotifierProvider get game => gameNotifierProvider(roomId);
+
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
   @override
   Widget build(BuildContext context) {
-    final signedInPlayerId = ref.watch(getSignedInPlayerIdProvider);
-    final signedInPlayer = playerNotifierProvider(signedInPlayerId);
-    final signedInPlayerState = ref.watch(signedInPlayer);
-
-    final roomId = ref.watch(getCurrentGameRoomIdProvider);
-    final game = gameNotifierProvider(roomId);
     final gameState = ref.watch(game);
 
     ref.listen(game.select((state) => state.value?.playerListState), (_, next) {
@@ -88,8 +87,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
               Flexible(
                 child: PlaceholderButton(
                     onPressed: () => _getServer.removeFromRoom(
-                        ref.read(signedInPlayer).requireValue.player.id!,
-                        roomId), // TODO: Holy null check
+                        userId, roomId), // TODO: Holy null check
                     title: 'Leave Room'),
               ),
             ]),
@@ -99,23 +97,24 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     }));
   }
 
-  AnimatedBuilder _buildAnimatedListItem(
-      Animation<double> animation, String playerId) {
-    final asyncOtherPlayer = ref.watch(playerNotifierProvider(playerId));
-    return AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) {
-          return Opacity(
-              key: ValueKey(playerId), opacity: animation.value, child: child);
-        },
+  Widget _buildAnimatedListItem(Animation<double> animation, String playerId) {
+    final curvedAnim =
+        CurvedAnimation(parent: animation, curve: Curves.elasticOut);
 
-        child: asyncOtherPlayer.when(
-          loading: () => Container(), error:(error, stackTrace) => Container(),
-          data: (data) {
-            return ListTile(
-                title: Text(data.player.name!),
-                leading: UtterBullPlayerAvatar(data.avatarData));
-          }));
+    final playerWithAvatar = ref
+        .watch(gameNotifierProvider(roomId))
+        .requireValue
+        .getAvatar(playerId);
+
+    return AnimatedBuilder(
+        animation: curvedAnim,
+        builder: (context, child) {
+          return Transform.scale(
+              key: ValueKey(playerId), scale: animation.value, child: child);
+        },
+        child: ListTile(
+            title: Text(playerWithAvatar.player.name!),
+            leading: UtterBullPlayerAvatar(playerWithAvatar.avatarData)));
   }
 
   void _insertIntoPlayerList(String? changedItemId, int? changeIndex) {
@@ -130,10 +129,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     if (changedItemId == null || changeIndex == null) return;
 
     _listKey.currentState!.removeItem(changeIndex, (context, animation) {
-      return ListTile(
-        tileColor: Colors.red,
-        title: Text(changedItemId),
-      );
+      return _buildAnimatedListItem(animation, changedItemId);
     });
   }
 }

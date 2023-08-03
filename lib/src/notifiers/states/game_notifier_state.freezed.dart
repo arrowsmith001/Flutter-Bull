@@ -16,11 +16,16 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$GameNotifierState {
+  String get roomId => throw _privateConstructorUsedError;
   String get roomCode => throw _privateConstructorUsedError;
+  int? get endTime => throw _privateConstructorUsedError;
   GamePhaseData get phaseData => throw _privateConstructorUsedError;
   ListState get playerListState => throw _privateConstructorUsedError;
   RolesState get rolesState => throw _privateConstructorUsedError;
   RoundsState get roundsState => throw _privateConstructorUsedError;
+  List<PlayerWithAvatar> get playerAvatars =>
+      throw _privateConstructorUsedError;
+  List<String> get allPlayersThisSession => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameNotifierStateCopyWith<GameNotifierState> get copyWith =>
@@ -34,11 +39,15 @@ abstract class $GameNotifierStateCopyWith<$Res> {
       _$GameNotifierStateCopyWithImpl<$Res, GameNotifierState>;
   @useResult
   $Res call(
-      {String roomCode,
+      {String roomId,
+      String roomCode,
+      int? endTime,
       GamePhaseData phaseData,
       ListState playerListState,
       RolesState rolesState,
-      RoundsState roundsState});
+      RoundsState roundsState,
+      List<PlayerWithAvatar> playerAvatars,
+      List<String> allPlayersThisSession});
 
   $GamePhaseDataCopyWith<$Res> get phaseData;
   $ListStateCopyWith<$Res> get playerListState;
@@ -59,17 +68,29 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? roomId = null,
     Object? roomCode = null,
+    Object? endTime = freezed,
     Object? phaseData = null,
     Object? playerListState = null,
     Object? rolesState = null,
     Object? roundsState = null,
+    Object? playerAvatars = null,
+    Object? allPlayersThisSession = null,
   }) {
     return _then(_value.copyWith(
+      roomId: null == roomId
+          ? _value.roomId
+          : roomId // ignore: cast_nullable_to_non_nullable
+              as String,
       roomCode: null == roomCode
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
+      endTime: freezed == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as int?,
       phaseData: null == phaseData
           ? _value.phaseData
           : phaseData // ignore: cast_nullable_to_non_nullable
@@ -86,6 +107,14 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
           ? _value.roundsState
           : roundsState // ignore: cast_nullable_to_non_nullable
               as RoundsState,
+      playerAvatars: null == playerAvatars
+          ? _value.playerAvatars
+          : playerAvatars // ignore: cast_nullable_to_non_nullable
+              as List<PlayerWithAvatar>,
+      allPlayersThisSession: null == allPlayersThisSession
+          ? _value.allPlayersThisSession
+          : allPlayersThisSession // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 
@@ -131,11 +160,15 @@ abstract class _$$_GameNotifierStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String roomCode,
+      {String roomId,
+      String roomCode,
+      int? endTime,
       GamePhaseData phaseData,
       ListState playerListState,
       RolesState rolesState,
-      RoundsState roundsState});
+      RoundsState roundsState,
+      List<PlayerWithAvatar> playerAvatars,
+      List<String> allPlayersThisSession});
 
   @override
   $GamePhaseDataCopyWith<$Res> get phaseData;
@@ -158,17 +191,29 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? roomId = null,
     Object? roomCode = null,
+    Object? endTime = freezed,
     Object? phaseData = null,
     Object? playerListState = null,
     Object? rolesState = null,
     Object? roundsState = null,
+    Object? playerAvatars = null,
+    Object? allPlayersThisSession = null,
   }) {
     return _then(_$_GameNotifierState(
+      roomId: null == roomId
+          ? _value.roomId
+          : roomId // ignore: cast_nullable_to_non_nullable
+              as String,
       roomCode: null == roomCode
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
+      endTime: freezed == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as int?,
       phaseData: null == phaseData
           ? _value.phaseData
           : phaseData // ignore: cast_nullable_to_non_nullable
@@ -185,22 +230,41 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
           ? _value.roundsState
           : roundsState // ignore: cast_nullable_to_non_nullable
               as RoundsState,
+      playerAvatars: null == playerAvatars
+          ? _value._playerAvatars
+          : playerAvatars // ignore: cast_nullable_to_non_nullable
+              as List<PlayerWithAvatar>,
+      allPlayersThisSession: null == allPlayersThisSession
+          ? _value._allPlayersThisSession
+          : allPlayersThisSession // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_GameNotifierState implements _GameNotifierState {
+class _$_GameNotifierState extends _GameNotifierState {
   _$_GameNotifierState(
-      {required this.roomCode,
+      {required this.roomId,
+      required this.roomCode,
+      required this.endTime,
       required this.phaseData,
       required this.playerListState,
       required this.rolesState,
-      required this.roundsState});
+      required this.roundsState,
+      required final List<PlayerWithAvatar> playerAvatars,
+      required final List<String> allPlayersThisSession})
+      : _playerAvatars = playerAvatars,
+        _allPlayersThisSession = allPlayersThisSession,
+        super._();
 
   @override
+  final String roomId;
+  @override
   final String roomCode;
+  @override
+  final int? endTime;
   @override
   final GamePhaseData phaseData;
   @override
@@ -209,10 +273,26 @@ class _$_GameNotifierState implements _GameNotifierState {
   final RolesState rolesState;
   @override
   final RoundsState roundsState;
+  final List<PlayerWithAvatar> _playerAvatars;
+  @override
+  List<PlayerWithAvatar> get playerAvatars {
+    if (_playerAvatars is EqualUnmodifiableListView) return _playerAvatars;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playerAvatars);
+  }
+
+  final List<String> _allPlayersThisSession;
+  @override
+  List<String> get allPlayersThisSession {
+    if (_allPlayersThisSession is EqualUnmodifiableListView)
+      return _allPlayersThisSession;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allPlayersThisSession);
+  }
 
   @override
   String toString() {
-    return 'GameNotifierState(roomCode: $roomCode, phaseData: $phaseData, playerListState: $playerListState, rolesState: $rolesState, roundsState: $roundsState)';
+    return 'GameNotifierState(roomId: $roomId, roomCode: $roomCode, endTime: $endTime, phaseData: $phaseData, playerListState: $playerListState, rolesState: $rolesState, roundsState: $roundsState, playerAvatars: $playerAvatars, allPlayersThisSession: $allPlayersThisSession)';
   }
 
   @override
@@ -220,8 +300,10 @@ class _$_GameNotifierState implements _GameNotifierState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_GameNotifierState &&
+            (identical(other.roomId, roomId) || other.roomId == roomId) &&
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.phaseData, phaseData) ||
                 other.phaseData == phaseData) &&
             (identical(other.playerListState, playerListState) ||
@@ -229,12 +311,25 @@ class _$_GameNotifierState implements _GameNotifierState {
             (identical(other.rolesState, rolesState) ||
                 other.rolesState == rolesState) &&
             (identical(other.roundsState, roundsState) ||
-                other.roundsState == roundsState));
+                other.roundsState == roundsState) &&
+            const DeepCollectionEquality()
+                .equals(other._playerAvatars, _playerAvatars) &&
+            const DeepCollectionEquality()
+                .equals(other._allPlayersThisSession, _allPlayersThisSession));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, roomCode, phaseData,
-      playerListState, rolesState, roundsState);
+  int get hashCode => Object.hash(
+      runtimeType,
+      roomId,
+      roomCode,
+      endTime,
+      phaseData,
+      playerListState,
+      rolesState,
+      roundsState,
+      const DeepCollectionEquality().hash(_playerAvatars),
+      const DeepCollectionEquality().hash(_allPlayersThisSession));
 
   @JsonKey(ignore: true)
   @override
@@ -244,16 +339,26 @@ class _$_GameNotifierState implements _GameNotifierState {
           this, _$identity);
 }
 
-abstract class _GameNotifierState implements GameNotifierState {
+abstract class _GameNotifierState extends GameNotifierState {
   factory _GameNotifierState(
-      {required final String roomCode,
-      required final GamePhaseData phaseData,
-      required final ListState playerListState,
-      required final RolesState rolesState,
-      required final RoundsState roundsState}) = _$_GameNotifierState;
+          {required final String roomId,
+          required final String roomCode,
+          required final int? endTime,
+          required final GamePhaseData phaseData,
+          required final ListState playerListState,
+          required final RolesState rolesState,
+          required final RoundsState roundsState,
+          required final List<PlayerWithAvatar> playerAvatars,
+          required final List<String> allPlayersThisSession}) =
+      _$_GameNotifierState;
+  _GameNotifierState._() : super._();
 
   @override
+  String get roomId;
+  @override
   String get roomCode;
+  @override
+  int? get endTime;
   @override
   GamePhaseData get phaseData;
   @override
@@ -263,6 +368,10 @@ abstract class _GameNotifierState implements GameNotifierState {
   @override
   RoundsState get roundsState;
   @override
+  List<PlayerWithAvatar> get playerAvatars;
+  @override
+  List<String> get allPlayersThisSession;
+  @override
   @JsonKey(ignore: true)
   _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>
       throw _privateConstructorUsedError;
@@ -270,7 +379,8 @@ abstract class _GameNotifierState implements GameNotifierState {
 
 /// @nodoc
 mixin _$GamePhaseData {
-  GameRoomPhase? get phase => throw _privateConstructorUsedError;
+  GamePhase get gamePhase => throw _privateConstructorUsedError;
+  RoundPhase get roundPhase => throw _privateConstructorUsedError;
   Object? get arg => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -284,7 +394,7 @@ abstract class $GamePhaseDataCopyWith<$Res> {
           GamePhaseData value, $Res Function(GamePhaseData) then) =
       _$GamePhaseDataCopyWithImpl<$Res, GamePhaseData>;
   @useResult
-  $Res call({GameRoomPhase? phase, Object? arg});
+  $Res call({GamePhase gamePhase, RoundPhase roundPhase, Object? arg});
 }
 
 /// @nodoc
@@ -300,14 +410,19 @@ class _$GamePhaseDataCopyWithImpl<$Res, $Val extends GamePhaseData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? phase = freezed,
+    Object? gamePhase = null,
+    Object? roundPhase = null,
     Object? arg = freezed,
   }) {
     return _then(_value.copyWith(
-      phase: freezed == phase
-          ? _value.phase
-          : phase // ignore: cast_nullable_to_non_nullable
-              as GameRoomPhase?,
+      gamePhase: null == gamePhase
+          ? _value.gamePhase
+          : gamePhase // ignore: cast_nullable_to_non_nullable
+              as GamePhase,
+      roundPhase: null == roundPhase
+          ? _value.roundPhase
+          : roundPhase // ignore: cast_nullable_to_non_nullable
+              as RoundPhase,
       arg: freezed == arg ? _value.arg : arg,
     ) as $Val);
   }
@@ -321,7 +436,7 @@ abstract class _$$_GamePhaseDataCopyWith<$Res>
       __$$_GamePhaseDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GameRoomPhase? phase, Object? arg});
+  $Res call({GamePhase gamePhase, RoundPhase roundPhase, Object? arg});
 }
 
 /// @nodoc
@@ -335,14 +450,19 @@ class __$$_GamePhaseDataCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? phase = freezed,
+    Object? gamePhase = null,
+    Object? roundPhase = null,
     Object? arg = freezed,
   }) {
     return _then(_$_GamePhaseData(
-      phase: freezed == phase
-          ? _value.phase
-          : phase // ignore: cast_nullable_to_non_nullable
-              as GameRoomPhase?,
+      gamePhase: null == gamePhase
+          ? _value.gamePhase
+          : gamePhase // ignore: cast_nullable_to_non_nullable
+              as GamePhase,
+      roundPhase: null == roundPhase
+          ? _value.roundPhase
+          : roundPhase // ignore: cast_nullable_to_non_nullable
+              as RoundPhase,
       arg: freezed == arg ? _value.arg : arg,
     ));
   }
@@ -351,17 +471,20 @@ class __$$_GamePhaseDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_GamePhaseData implements _GamePhaseData {
-  _$_GamePhaseData({required this.phase, this.arg = null});
+  _$_GamePhaseData(
+      {required this.gamePhase, required this.roundPhase, this.arg = null});
 
   @override
-  final GameRoomPhase? phase;
+  final GamePhase gamePhase;
+  @override
+  final RoundPhase roundPhase;
   @override
   @JsonKey()
   final Object? arg;
 
   @override
   String toString() {
-    return 'GamePhaseData(phase: $phase, arg: $arg)';
+    return 'GamePhaseData(gamePhase: $gamePhase, roundPhase: $roundPhase, arg: $arg)';
   }
 
   @override
@@ -369,13 +492,16 @@ class _$_GamePhaseData implements _GamePhaseData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_GamePhaseData &&
-            (identical(other.phase, phase) || other.phase == phase) &&
+            (identical(other.gamePhase, gamePhase) ||
+                other.gamePhase == gamePhase) &&
+            (identical(other.roundPhase, roundPhase) ||
+                other.roundPhase == roundPhase) &&
             const DeepCollectionEquality().equals(other.arg, arg));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, phase, const DeepCollectionEquality().hash(arg));
+  int get hashCode => Object.hash(runtimeType, gamePhase, roundPhase,
+      const DeepCollectionEquality().hash(arg));
 
   @JsonKey(ignore: true)
   @override
@@ -386,11 +512,14 @@ class _$_GamePhaseData implements _GamePhaseData {
 
 abstract class _GamePhaseData implements GamePhaseData {
   factory _GamePhaseData(
-      {required final GameRoomPhase? phase,
+      {required final GamePhase gamePhase,
+      required final RoundPhase roundPhase,
       final Object? arg}) = _$_GamePhaseData;
 
   @override
-  GameRoomPhase? get phase;
+  GamePhase get gamePhase;
+  @override
+  RoundPhase get roundPhase;
   @override
   Object? get arg;
   @override
@@ -401,7 +530,7 @@ abstract class _GamePhaseData implements GamePhaseData {
 
 /// @nodoc
 mixin _$RoundsState {
-  List<int> get order => throw _privateConstructorUsedError;
+  List<String> get order => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
   int get progress => throw _privateConstructorUsedError;
 
@@ -416,7 +545,7 @@ abstract class $RoundsStateCopyWith<$Res> {
           RoundsState value, $Res Function(RoundsState) then) =
       _$RoundsStateCopyWithImpl<$Res, RoundsState>;
   @useResult
-  $Res call({List<int> order, List<String> playerIds, int progress});
+  $Res call({List<String> order, List<String> playerIds, int progress});
 }
 
 /// @nodoc
@@ -440,7 +569,7 @@ class _$RoundsStateCopyWithImpl<$Res, $Val extends RoundsState>
       order: null == order
           ? _value.order
           : order // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<String>,
       playerIds: null == playerIds
           ? _value.playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -461,7 +590,7 @@ abstract class _$$_RoundsStateCopyWith<$Res>
       __$$_RoundsStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<int> order, List<String> playerIds, int progress});
+  $Res call({List<String> order, List<String> playerIds, int progress});
 }
 
 /// @nodoc
@@ -483,7 +612,7 @@ class __$$_RoundsStateCopyWithImpl<$Res>
       order: null == order
           ? _value._order
           : order // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<String>,
       playerIds: null == playerIds
           ? _value._playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -500,16 +629,16 @@ class __$$_RoundsStateCopyWithImpl<$Res>
 
 class _$_RoundsState extends _RoundsState {
   _$_RoundsState(
-      {required final List<int> order,
+      {required final List<String> order,
       required final List<String> playerIds,
       required this.progress})
       : _order = order,
         _playerIds = playerIds,
         super._();
 
-  final List<int> _order;
+  final List<String> _order;
   @override
-  List<int> get order {
+  List<String> get order {
     if (_order is EqualUnmodifiableListView) return _order;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_order);
@@ -559,13 +688,13 @@ class _$_RoundsState extends _RoundsState {
 
 abstract class _RoundsState extends RoundsState {
   factory _RoundsState(
-      {required final List<int> order,
+      {required final List<String> order,
       required final List<String> playerIds,
       required final int progress}) = _$_RoundsState;
   _RoundsState._() : super._();
 
   @override
-  List<int> get order;
+  List<String> get order;
   @override
   List<String> get playerIds;
   @override
@@ -573,6 +702,124 @@ abstract class _RoundsState extends RoundsState {
   @override
   @JsonKey(ignore: true)
   _$$_RoundsStateCopyWith<_$_RoundsState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$RoundState {
+  int? get timeRemaining => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $RoundStateCopyWith<RoundState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RoundStateCopyWith<$Res> {
+  factory $RoundStateCopyWith(
+          RoundState value, $Res Function(RoundState) then) =
+      _$RoundStateCopyWithImpl<$Res, RoundState>;
+  @useResult
+  $Res call({int? timeRemaining});
+}
+
+/// @nodoc
+class _$RoundStateCopyWithImpl<$Res, $Val extends RoundState>
+    implements $RoundStateCopyWith<$Res> {
+  _$RoundStateCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? timeRemaining = freezed,
+  }) {
+    return _then(_value.copyWith(
+      timeRemaining: freezed == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as int?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_RoundStateCopyWith<$Res>
+    implements $RoundStateCopyWith<$Res> {
+  factory _$$_RoundStateCopyWith(
+          _$_RoundState value, $Res Function(_$_RoundState) then) =
+      __$$_RoundStateCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int? timeRemaining});
+}
+
+/// @nodoc
+class __$$_RoundStateCopyWithImpl<$Res>
+    extends _$RoundStateCopyWithImpl<$Res, _$_RoundState>
+    implements _$$_RoundStateCopyWith<$Res> {
+  __$$_RoundStateCopyWithImpl(
+      _$_RoundState _value, $Res Function(_$_RoundState) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? timeRemaining = freezed,
+  }) {
+    return _then(_$_RoundState(
+      timeRemaining: freezed == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as int?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_RoundState implements _RoundState {
+  _$_RoundState({required this.timeRemaining});
+
+  @override
+  final int? timeRemaining;
+
+  @override
+  String toString() {
+    return 'RoundState(timeRemaining: $timeRemaining)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_RoundState &&
+            (identical(other.timeRemaining, timeRemaining) ||
+                other.timeRemaining == timeRemaining));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, timeRemaining);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_RoundStateCopyWith<_$_RoundState> get copyWith =>
+      __$$_RoundStateCopyWithImpl<_$_RoundState>(this, _$identity);
+}
+
+abstract class _RoundState implements RoundState {
+  factory _RoundState({required final int? timeRemaining}) = _$_RoundState;
+
+  @override
+  int? get timeRemaining;
+  @override
+  @JsonKey(ignore: true)
+  _$$_RoundStateCopyWith<_$_RoundState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

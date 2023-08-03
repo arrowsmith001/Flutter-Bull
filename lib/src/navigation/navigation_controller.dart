@@ -7,28 +7,26 @@ abstract class NavigationController<T> {
 
   String? _initialRoute;
   String? _currentRouteName;
-  Iterator<String>? _routeIterator;
+  Iterator<String>? _routePathIterator;
   BuildContext? get _navigatorContext => navigatorKey.currentContext;
-
 
   final navigatorKey = GlobalKey<NavigatorState>();
   bool get canNavigate => _navigatorContext != null;
 
+  PageRoute? _previousRoute;
 
   Route onGenerateRoute(RouteSettings settings) {
-    final routeNameIterable = settings.name!.split('/');
-    _routeIterator = routeNameIterable.iterator;
+    final routePathIterable = settings.name!.split('/');
+    _routePathIterator = routePathIterable.iterator;
 
     PageRoute? route = generateRoute();
 
-    setCurrentRouteName = routeNameIterable.first;
-
+    setCurrentRouteName = routePathIterable.first;
     return route ?? defaultRoute;
   }
 
   @protected
   PageRoute? generateRoute();
-
 
   String getInitialRoute(T data) {
     if (_initialRoute != null) return _initialRoute!;
@@ -38,7 +36,6 @@ abstract class NavigationController<T> {
 
   @protected
   String generateInitialRoute(T data);
-
 
   @protected
   void navigateTo(String s) {
@@ -50,23 +47,20 @@ abstract class NavigationController<T> {
     }
   }
 
-
   @protected
   Route get defaultRoute;
 
   @protected
-  String get nextRoutePath => (_routeIterator!..moveNext()).current;
+  String get nextRoutePath => (_routePathIterator!..moveNext()).current;
 
   @protected
   String get getCurrentRouteName => _currentRouteName ?? '';
 
   @protected
   set setCurrentRouteName(String s) => _currentRouteName = s;
-  
 
   @protected
-  ProviderScope scoped(Widget child, {List<Override> overrides = const <Override>[]}) =>
+  ProviderScope scoped(Widget child,
+          {List<Override> overrides = const <Override>[]}) =>
       ProviderScope(child: child, overrides: overrides);
-
-
 }

@@ -24,7 +24,7 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
         if (wasSynchronouslyLoaded) return CropCircled(child: child);
         return frame != null
             ? CropCircled(child: child)
-            : SizedBox(
+            : const SizedBox(
                 height: 60,
                 width: 60,
                 child: CircularProgressIndicator(strokeWidth: 6),

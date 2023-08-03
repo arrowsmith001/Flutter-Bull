@@ -1,26 +1,41 @@
-import 'package:flutter_bull/src/enums/game_room_state_phase.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
+import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'dart:math' as Math;
 
 part 'game_notifier_state.freezed.dart';
 
 @freezed
 class GameNotifierState with _$GameNotifierState {
+  GameNotifierState._();
+
   factory GameNotifierState(
-      {
-        required String roomCode,
-        required GamePhaseData phaseData,
+      {required String roomId,
+      required String roomCode,
+      required int? endTime,
+      required GamePhaseData phaseData,
       required ListState playerListState,
       required RolesState rolesState,
-      required RoundsState roundsState}) = _GameNotifierState;
+      required RoundsState roundsState,
+      required List<PlayerWithAvatar> playerAvatars,
+      required List<String> allPlayersThisSession}) = _GameNotifierState;
 
+  PlayerWithAvatar getAvatar(String id) =>
+      playerAvatars.where((element) => element.player.id == id).single;
+
+  String getStatement(String id) => rolesState.texts[id] ?? '';
+
+  bool isTurnOf(String participantId) =>
+      roundsState.getCurrentPlayerWhoseTurn == participantId;
 }
 
 @freezed
 class GamePhaseData with _$GamePhaseData {
   factory GamePhaseData({
-    required GameRoomPhase? phase,
+    required GamePhase gamePhase,
+    required RoundPhase roundPhase,
     @Default(null) Object? arg,
   }) = _GamePhaseData;
 }
@@ -29,16 +44,13 @@ class GamePhaseData with _$GamePhaseData {
 class RoundsState with _$RoundsState {
   RoundsState._();
   factory RoundsState(
-      {required List<int> order,
+      {required List<String> order,
       required List<String> playerIds,
       required int progress}) = _RoundsState;
 
   String? get getCurrentPlayerWhoseTurn {
     if (progress < order.length) {
-      final playerIndex = order[progress];
-      if (playerIndex < playerIds.length) {
-        return playerIds[playerIndex];
-      }
+      return order[progress];
     }
     return null;
   }
@@ -47,6 +59,11 @@ class RoundsState with _$RoundsState {
     final whoseTurn = getCurrentPlayerWhoseTurn;
     return whoseTurn != null && whoseTurn == userId;
   }
+}
+
+@freezed
+class RoundState with _$RoundState {
+  factory RoundState({required int? timeRemaining}) = _RoundState;
 }
 
 @freezed

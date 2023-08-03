@@ -62,7 +62,7 @@ void main() async {
 // TODO: Figure out TDD
 // TODO: Containerize
 
-final int instances = 4;
+final int instances = 1;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -194,7 +194,7 @@ class UtterBullApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 9/24,
+      aspectRatio: 9/20,
       child: Container(
         color: Colors.grey,
         child: Padding(
