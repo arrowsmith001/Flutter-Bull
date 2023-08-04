@@ -4,6 +4,7 @@ import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
+import 'package:flutter_bull/src/navigation/utter_bull_router.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/4_game_round/2_selecting_player_phase_view.dart';
@@ -29,7 +30,10 @@ class _GameRoundViewState extends ConsumerState<GameRoundView> {
         game.select((state) => state.value?.phaseData.roundPhase);
 
     ref.listen(roundPhaseListenable, (prev, next) {
-      if (next != null) navController.navigate(next);
+      if (next != null) 
+      {
+        UtterBullRouter.navigate(context, next.name);
+      }
     });
 
     final gameAsync = ref.watch(game);

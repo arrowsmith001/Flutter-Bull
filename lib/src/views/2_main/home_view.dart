@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/navigation/utter_bull_router.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -75,8 +77,7 @@ class _MyHomePageState extends ConsumerState<HomeView> {
               ),
             ),
             TextButton(
-                onPressed: () =>
-                    Navigator.of(context).pushReplacementNamed('profile'),
+                onPressed: () => UtterBullRouter.navigate(context, 'profile'),
                 child: Text('Edit Profile')),
             TextButton(
                 onPressed: () => authNotifier.signOut(),

@@ -12,7 +12,7 @@ import 'package:logger/logger.dart';
 part 'auth_notifier.g.dart';
 
 
-@Riverpod(keepAlive: false)
+@Riverpod(keepAlive: true)
 class AuthNotifier extends _$AuthNotifier {
 
   AuthService get _authService => ref.read(authServiceProvider);

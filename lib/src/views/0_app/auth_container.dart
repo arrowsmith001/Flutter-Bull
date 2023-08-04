@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/navigation/utter_bull_router.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_bull/src/views/1_auth/login_view.dart';
 import 'package:flutter_bull/src/views/1_auth/main_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 
 class AuthContainer extends ConsumerStatefulWidget {
@@ -20,7 +22,6 @@ class AuthContainer extends ConsumerStatefulWidget {
 }
 
 class _UtterBullContainerState extends ConsumerState<AuthContainer> {
-
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
@@ -36,9 +37,9 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
       Logger().d('userId.listen: $prev $next');
 
       if (next != null) {
-        _navigateToMain(next);
+        UtterBullRouter.navigate(context, 'main', {'userId' : next});
       } else {
-        _navigateBackToLogin();
+        UtterBullRouter.navigate(context, 'login');
       }
     });
 
@@ -58,8 +59,9 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
           case 'main':
             final userId = segments.elementAt(1);
             return MaterialPageRoute(
-                builder: (context) => ProviderScope(
-                    overrides: [getSignedInPlayerIdProvider.overrideWithValue(userId)], child: MainView()));
+                builder: (context) => ProviderScope(overrides: [
+                      getSignedInPlayerIdProvider.overrideWithValue(userId)
+                    ], child: MainView()));
         }
 
         return MaterialPageRoute(builder: (context) => SplashView());
@@ -80,7 +82,6 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
     ));
   }
 
-  
   bool get canNavigate => navigatorContext != null;
   BuildContext? get navigatorContext => _navigatorKey.currentContext;
 
@@ -91,8 +92,7 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
 
   void _navigateTo(String s) {
     if (canNavigate) {
-      Navigator.of(navigatorContext!)
-          .pushReplacementNamed(s);
+      Navigator.of(navigatorContext!).pushReplacementNamed(s);
 
       Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
     } else {

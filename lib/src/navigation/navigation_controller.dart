@@ -39,12 +39,12 @@ abstract class NavigationController<T> {
 
   @protected
   void navigateTo(String s) {
-    if (canNavigate) {
+/*     if (canNavigate) {
       Navigator.of(_navigatorContext!).pushReplacementNamed(s);
       Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
     } else {
       Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
-    }
+    } */
   }
 
   @protected

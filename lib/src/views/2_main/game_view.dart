@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
+import 'package:flutter_bull/src/navigation/utter_bull_router.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
@@ -36,14 +38,22 @@ class _GameViewState extends ConsumerState<GameView> {
     final userId = ref.watch(getSignedInPlayerIdProvider);
     final roomId = ref.watch(getCurrentGameRoomIdProvider);
 
+    return Text(roomId);
+
     final game = gameNotifierProvider(roomId);
 
-    ref.listen(game.select((value) => value.value?.phaseData),
-        (prev, next) {
-
+    ref.listen(game.select((value) => value.value?.phaseData), (prev, next) {
       Logger().d('gameRoom.phaseData.listen: $prev $next');
 
-      if(next != null) navController.navigateToPhaseWithArg(next);
+      if (next != null) {
+        final phase = next.gamePhase;
+        if (phase == GamePhase.round) {
+          final whoseTurn = next.arg;
+          //UtterBullRouter.navigate(context, 'round', whoseTurn);
+        } else {
+          //UtterBullRouter.navigate(context, phase.name);
+        }
+      }
     });
 
     final stateAsync = ref.watch(game);
@@ -54,11 +64,10 @@ class _GameViewState extends ConsumerState<GameView> {
       }),
       body: Container(
         decoration: BoxDecoration(
-          gradient: RadialGradient(
-          center: AlignmentDirectional.topCenter,
-          
-          radius: 2.5,
-          colors: [Colors.white, Color.fromARGB(255, 109, 221, 255)])),
+            gradient: RadialGradient(
+                center: AlignmentDirectional.topCenter,
+                radius: 2.5,
+                colors: [Colors.white, Color.fromARGB(255, 109, 221, 255)])),
         child: Center(
           child: stateAsync.whenDefault((room) {
             return ControlledNavigator(
@@ -77,7 +86,8 @@ class GameRouteNavigationController
   }
 
   String _phaseDataToRoute(GamePhaseData data) =>
-      data.gamePhase.toString().split('.').last + (data.arg == null ? '' : '/${data.arg}');
+      data.gamePhase.toString().split('.').last +
+      (data.arg == null ? '' : '/${data.arg}');
 
   @override
   Route get defaultRoute =>
@@ -98,7 +108,8 @@ class GameRouteNavigationController
       case 'round':
         final whoseTurnOverride =
             getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
-        return ForwardRoute(scoped(GameRoundView(), overrides: [whoseTurnOverride]));
+        return ForwardRoute(
+            scoped(GameRoundView(), overrides: [whoseTurnOverride]));
 /*       case 'selecting':
         final whoseTurnOverride =
             getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);

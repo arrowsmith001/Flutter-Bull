@@ -15,6 +15,7 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
+import 'package:flutter_bull/src/navigation/utter_bull_router.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
@@ -22,9 +23,12 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
+import 'package:flutter_bull/src/views/1_auth/login_view.dart';
 import 'package:flutter_bull/src/views/1_auth/main_view.dart';
 import 'package:flutter_bull/src/views/0_app/auth_container.dart';
+import 'package:flutter_bull/utter_bull_router_layer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:logger/logger.dart';
 
@@ -186,13 +190,13 @@ class ProvisionedUtterBullApp extends StatelessWidget {
   }
 }
 
-class UtterBullApp extends StatelessWidget {
+class UtterBullApp extends ConsumerWidget {
   const UtterBullApp({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AspectRatio(
       aspectRatio: 9/20,
       child: Container(
@@ -201,16 +205,34 @@ class UtterBullApp extends StatelessWidget {
           padding: const EdgeInsets.all(4.0),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                theme: UtterBullTheme.theme,
-                home: false ? TestWidget() : AuthContainer()),
+
+            child: MaterialApp.router(
+      routerConfig: ref.watch(routerProvider),
+      debugShowCheckedModeBanner: false,
+      theme: UtterBullTheme.theme,
+      //home: false ? TestWidget() : AuthContainer()
+    ),
           ),
         ),
       ),
     );
   }
 }
+
+/* class NoRouteInformationProvider extends RouteInformationProvider {
+  @override
+  void addListener(VoidCallback listener) {
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+  }
+
+  @override
+  // TODO: implement value
+  RouteInformation get value => throw UnimplementedError();
+
+} */
 
 class TestWidget extends ConsumerStatefulWidget {
   const TestWidget({super.key});

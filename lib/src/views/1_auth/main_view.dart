@@ -5,6 +5,7 @@ import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
+import 'package:flutter_bull/src/navigation/utter_bull_router.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
@@ -31,27 +32,28 @@ class MainView extends ConsumerStatefulWidget {
 
 class _MainViewState extends ConsumerState<MainView> {
   final nav = MainRouteNavigatorController();
+  String get userId => ref.watch(getSignedInPlayerIdProvider);
 
   void _onPlayerNameChanged(String? prev, String? next) {
     Logger().d('name.listen: $prev $next');
     if (next != null) {
-      nav.navigateToHome();
+      UtterBullRouter.navigate(context, '$userId/home');
     }
   }
 
   void _onPlayerProfileExistenceChanged(bool? prev, bool? next) {
     Logger().d('exists.listen: $prev $next');
     if (next ?? false) {
-      nav.navigateToProfile();
+      UtterBullRouter.navigate(context, '$userId/profile');
     }
   }
 
   void _onOccupiedRoomChanged(String? prev, String? next) {
     Logger().d('occupiedRoomId.listen: $prev $next');
     if (next == null) {
-      nav.navigateToHome();
+      UtterBullRouter.navigate(context, '$userId/home');
     } else {
-      nav.navigateToGame(next);
+      UtterBullRouter.navigate(context, 'game');
     }
   }
 
@@ -70,7 +72,6 @@ class _MainViewState extends ConsumerState<MainView> {
 
   @override
   Widget build(BuildContext context) {
-
     final userId = ref.watch(getSignedInPlayerIdProvider);
 
     final signedInPlayer = signedInPlayerStatusNotifierProvider(userId);
@@ -90,7 +91,6 @@ class _MainViewState extends ConsumerState<MainView> {
     ref.listen<String?>(
         signedInPlayer.select((state) => state.value?.player?.name),
         _onPlayerNameChanged);
-    
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -100,7 +100,7 @@ class _MainViewState extends ConsumerState<MainView> {
             ControlledNavigator<SignedInPlayerStatusNotifierState>(
               data: playerStatus,
               controller: nav,
-            ) ,
+            ),
             busy
                 ? Positioned.fill(
                     child: Container(
@@ -124,14 +124,10 @@ class _MainViewState extends ConsumerState<MainView> {
       }),
     );
   }
-
 }
-
-
 
 class MainRouteNavigatorController
     extends NavigationController<SignedInPlayerStatusNotifierState> {
-
   void navigateToProfile() => navigateTo('profile');
 
   void navigateToAvatar() => navigateTo('avatar');
@@ -157,7 +153,6 @@ class MainRouteNavigatorController
 
   @override
   PageRoute? generateRoute() {
-
     switch (nextRoutePath) {
       case 'pending':
         final child = scoped(PendingView());

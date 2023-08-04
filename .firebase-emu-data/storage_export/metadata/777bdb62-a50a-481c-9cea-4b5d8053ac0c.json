@@ -1,0 +1,20 @@
+{
+  "name": "pp/u1/2023-08-03 10:47:23.980Z.jpg",
+  "bucket": "flutter-bull.appspot.com",
+  "metageneration": 1,
+  "generation": 1691059644010,
+  "contentType": "application/octet-stream",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "cacheControl": "public, max-age=3600, s-maxage=600",
+  "downloadTokens": [
+    "fd2d73ef-fafb-4140-8b45-469535af7168"
+  ],
+  "etag": "8lVjmlsglw9e+V097TLOhXFNNZs",
+  "customMetadata": {},
+  "timeCreated": "2023-08-03T10:47:24.010Z",
+  "updated": "2023-08-03T10:47:24.010Z",
+  "size": 141413,
+  "md5Hash": "2eogVaOhUJXCQlZIke8cVQ==",
+  "crc32c": "136729762"
+}
