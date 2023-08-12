@@ -3,7 +3,6 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
-import 'package:flutter_bull/src/navigation/animated_routes.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
@@ -21,6 +20,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:go_router_tabs/go_router_tabs.dart';
 import 'package:logger/logger.dart';
+import 'package:coordinated_page_route/coordinated_page_route.dart';
 
 class MainView extends ConsumerStatefulWidget {
   MainView({super.key});
@@ -70,7 +70,6 @@ class _MainViewState extends ConsumerState<MainView> {
 
   @override
   Widget build(BuildContext context) {
-
     final userId = ref.watch(getSignedInPlayerIdProvider);
 
     final signedInPlayer = signedInPlayerStatusNotifierProvider(userId);
@@ -90,7 +89,6 @@ class _MainViewState extends ConsumerState<MainView> {
     ref.listen<String?>(
         signedInPlayer.select((state) => state.value?.player?.name),
         _onPlayerNameChanged);
-    
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -98,9 +96,10 @@ class _MainViewState extends ConsumerState<MainView> {
         return Stack(
           children: [
             ControlledNavigator<SignedInPlayerStatusNotifierState>(
+              observers: [CoordinatedRouteObserver(), HeroController()],
               data: playerStatus,
               controller: nav,
-            ) ,
+            ),
             busy
                 ? Positioned.fill(
                     child: Container(
@@ -124,14 +123,10 @@ class _MainViewState extends ConsumerState<MainView> {
       }),
     );
   }
-
 }
-
-
 
 class MainRouteNavigatorController
     extends NavigationController<SignedInPlayerStatusNotifierState> {
-
   void navigateToProfile() => navigateTo('profile');
 
   void navigateToAvatar() => navigateTo('avatar');
@@ -157,38 +152,36 @@ class MainRouteNavigatorController
 
   @override
   PageRoute? generateRoute() {
-
     switch (nextRoutePath) {
       case 'pending':
         final child = scoped(PendingView());
-        return ForwardRoute(child);
+        return ForwardPushRoute((context) => child);
 
       case 'profile':
         final child = scoped(ProfileView());
-        return UpwardRoute(child);
+        return UpwardPushRoute((context) =>child);
 
       case 'avatar':
         final child = scoped(ChangeAvatarView());
-        return UpwardRoute(child);
+        return UpwardPushRoute((context) =>child);
 
       case 'home':
-        final child = scoped(HomeView());
+        final child = ProviderScope(child: HomeView());
         return getCurrentRouteName == 'profile'
-            ? DownwardRoute(child)
-            : BackwardRoute(child);
+            ? DownwardPushRoute((context) => child)
+            : BackwardPushRoute((context) => child);
 
       case 'game':
         final roomId = nextRoutePath;
         final roomOverride =
             getCurrentGameRoomIdProvider.overrideWithValue(roomId);
-
-        final child = scoped(GameView(), overrides: [roomOverride]);
-        return ForwardRoute(child);
+        final child = ProviderScope(child: GameView(), overrides: [roomOverride],);
+        return ForwardPushRoute((context) => child);
     }
 
     return null;
   }
 
   @override
-  Route get defaultRoute => ForwardRoute(SplashView());
+  Route get defaultRoute => ForwardPushRoute((context) => SplashView());
 }

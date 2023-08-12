@@ -17,70 +17,44 @@ import 'package:rxdart/rxdart.dart';
 
 part 'game_notifier.g.dart';
 
-@Riverpod(keepAlive: false)
+@Riverpod(keepAlive: true)
 class GameNotifier extends _$GameNotifier {
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
   UtterBullServer get _server => ref.read(utterBullServerProvider);
 
   @override
-  Stream<GameNotifierState> build(String gameRoomId) {
-/*     final playerStream = _streamService.streamPlayer(userId);
-    final roomStream = _streamService.streamGameRoom(gameRoomId);
-
-    return CombineLatestStream.combine2(
-        playerStream, roomStream, (player, room) => _buildState(player, room)); */
-
-    return _streamService.streamGameRoom(gameRoomId).asyncMap((room) async {
-      return await _buildState(room);
-    });
+  Stream<GameNotifierState> build(String? gameRoomId) {
+    if (gameRoomId == null) return Stream.empty();
+    return _streamService.streamGameRoom(gameRoomId)
+      .asyncMap((room)
+      {
+        return _buildState(room);
+      });
+    
   }
 
   Future<GameNotifierState> _buildState(GameRoom room) async {
-    Logger().d(room);
+    final playerAvatars = await _getPlayerAvatars(room.playerIds);
 
-    final playerList = room.playerIds;
+    return GameNotifierState(players: playerAvatars, gameRoom: room);
+  }
 
-    final prevList = state.valueOrNull?.playerListState.list;
-    final prevAllPlayers = state.valueOrNull?.allPlayersThisSession;
+  Future<List<PlayerWithAvatar>> _getPlayerAvatars(
+      List<String> playerIds) async {
+    final prevList = state.valueOrNull?.players.map((e) => e.player.id!) ?? [];
+    final allPlayers = {...playerIds, ...prevList}.toList();
 
-    final allPlayers = {...playerList, ...(prevAllPlayers ?? [])}.toList();
-    final playerFutureAvatars = allPlayers.map((p) {
-      return ref.read(playerNotifierProvider(p).future);
-    });
+    final playerFutureAvatars =
+        allPlayers.map((p) => ref.read(playerNotifierProvider(p).future));
 
-    final playerAvatars = await Future.wait(playerFutureAvatars);
-
-    final playerListState = ListState.fromLists(prevList, playerList);
-
-    final playerRoles = RolesState(targets: room.targets, texts: room.texts);
-
-    final rounds = RoundsState(
-        order: room.playerOrder,
-        playerIds: room.playerIds,
-        progress: room.progress);
-
-    final phaseData = GamePhaseData(
-        gamePhase: room.phase,
-        roundPhase: room.roundPhase,
-        arg: rounds.getCurrentPlayerWhoseTurn);
-
-    return GameNotifierState(
-        roomId: room.id!,
-        roomCode: room.roomCode,
-        endTime: room.timeRemaining,
-        allPlayersThisSession: allPlayers,
-        playerAvatars: playerAvatars,
-        playerListState: playerListState,
-        rolesState: playerRoles,
-        roundsState: rounds,
-        phaseData: phaseData);
+    return await Future.wait(playerFutureAvatars);
   }
 
   Future<void> vote(String userId, bool truthOrLie) async {
-    await _server.vote(state.value!.roomId, userId, truthOrLie);
+    await _server.vote(state.value!.gameRoom.id!, userId, truthOrLie);
   }
 
   Future<void> endRound(String userId) async {
-    await _server.endRound(state.value!.roomId, userId);
+    await _server.endRound(state.value!.gameRoom.id!, userId);
   }
 }

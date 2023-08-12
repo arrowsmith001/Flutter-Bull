@@ -7,6 +7,7 @@ class UtterBullTheme {
   static ThemeData theme = ThemeData(
       scaffoldBackgroundColor: Colors.transparent,
       shadowColor: backgroundDark,
+      fontFamily: 'LapsusPro',
       colorScheme: ColorScheme.light(
           background: Color.fromARGB(255, 133, 206, 255),
           primary: Color.fromARGB(255, 255, 239, 96),

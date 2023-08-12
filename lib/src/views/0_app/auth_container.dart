@@ -1,3 +1,4 @@
+import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
@@ -45,6 +46,7 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
     final authStateAsync = ref.watch(authNotifierProvider);
 
     final mainBody = Navigator(
+      observers: [CoordinatedRouteObserver()],
       key: _navigatorKey,
       initialRoute: 'login',
       onGenerateRoute: (settings) {
@@ -53,12 +55,13 @@ class _UtterBullContainerState extends ConsumerState<AuthContainer> {
 
         switch (route) {
           case 'login':
-            return MaterialPageRoute(builder: (context) => LoginView());
+            return BackwardPushRoute((context) => LoginView());
 
           case 'main':
             final userId = segments.elementAt(1);
-            return MaterialPageRoute(
-                builder: (context) => ProviderScope(
+            return ForwardPushRoute(
+      
+                (context) => ProviderScope(
                     overrides: [getSignedInPlayerIdProvider.overrideWithValue(userId)], child: MainView()));
         }
 

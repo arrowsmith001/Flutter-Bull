@@ -23,13 +23,14 @@ mixin _$GameRoom {
   String? get id => throw _privateConstructorUsedError;
   String get roomCode => throw _privateConstructorUsedError;
   GamePhase get phase => throw _privateConstructorUsedError;
-  RoundPhase get roundPhase => throw _privateConstructorUsedError;
+  int get subPhase => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
   Map<String, String> get targets => throw _privateConstructorUsedError;
   Map<String, String> get texts => throw _privateConstructorUsedError;
+  Map<String, String> get votes => throw _privateConstructorUsedError;
   List<String> get playerOrder => throw _privateConstructorUsedError;
   int get progress => throw _privateConstructorUsedError;
-  int? get timeRemaining => throw _privateConstructorUsedError;
+  int? get roundEndUTC => throw _privateConstructorUsedError;
   GameRoomSettings get settings => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,13 +48,14 @@ abstract class $GameRoomCopyWith<$Res> {
       {String? id,
       String roomCode,
       GamePhase phase,
-      RoundPhase roundPhase,
+      int subPhase,
       List<String> playerIds,
       Map<String, String> targets,
       Map<String, String> texts,
+      Map<String, String> votes,
       List<String> playerOrder,
       int progress,
-      int? timeRemaining,
+      int? roundEndUTC,
       GameRoomSettings settings});
 
   $GameRoomSettingsCopyWith<$Res> get settings;
@@ -75,13 +77,14 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
     Object? id = freezed,
     Object? roomCode = null,
     Object? phase = null,
-    Object? roundPhase = null,
+    Object? subPhase = null,
     Object? playerIds = null,
     Object? targets = null,
     Object? texts = null,
+    Object? votes = null,
     Object? playerOrder = null,
     Object? progress = null,
-    Object? timeRemaining = freezed,
+    Object? roundEndUTC = freezed,
     Object? settings = null,
   }) {
     return _then(_value.copyWith(
@@ -97,10 +100,10 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
               as GamePhase,
-      roundPhase: null == roundPhase
-          ? _value.roundPhase
-          : roundPhase // ignore: cast_nullable_to_non_nullable
-              as RoundPhase,
+      subPhase: null == subPhase
+          ? _value.subPhase
+          : subPhase // ignore: cast_nullable_to_non_nullable
+              as int,
       playerIds: null == playerIds
           ? _value.playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -113,6 +116,10 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.texts
           : texts // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
+      votes: null == votes
+          ? _value.votes
+          : votes // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
       playerOrder: null == playerOrder
           ? _value.playerOrder
           : playerOrder // ignore: cast_nullable_to_non_nullable
@@ -121,9 +128,9 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
               as int,
-      timeRemaining: freezed == timeRemaining
-          ? _value.timeRemaining
-          : timeRemaining // ignore: cast_nullable_to_non_nullable
+      roundEndUTC: freezed == roundEndUTC
+          ? _value.roundEndUTC
+          : roundEndUTC // ignore: cast_nullable_to_non_nullable
               as int?,
       settings: null == settings
           ? _value.settings
@@ -152,13 +159,14 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
       {String? id,
       String roomCode,
       GamePhase phase,
-      RoundPhase roundPhase,
+      int subPhase,
       List<String> playerIds,
       Map<String, String> targets,
       Map<String, String> texts,
+      Map<String, String> votes,
       List<String> playerOrder,
       int progress,
-      int? timeRemaining,
+      int? roundEndUTC,
       GameRoomSettings settings});
 
   @override
@@ -179,13 +187,14 @@ class __$$_GameRoomCopyWithImpl<$Res>
     Object? id = freezed,
     Object? roomCode = null,
     Object? phase = null,
-    Object? roundPhase = null,
+    Object? subPhase = null,
     Object? playerIds = null,
     Object? targets = null,
     Object? texts = null,
+    Object? votes = null,
     Object? playerOrder = null,
     Object? progress = null,
-    Object? timeRemaining = freezed,
+    Object? roundEndUTC = freezed,
     Object? settings = null,
   }) {
     return _then(_$_GameRoom(
@@ -201,10 +210,10 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
               as GamePhase,
-      roundPhase: null == roundPhase
-          ? _value.roundPhase
-          : roundPhase // ignore: cast_nullable_to_non_nullable
-              as RoundPhase,
+      subPhase: null == subPhase
+          ? _value.subPhase
+          : subPhase // ignore: cast_nullable_to_non_nullable
+              as int,
       playerIds: null == playerIds
           ? _value._playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -217,6 +226,10 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value._texts
           : texts // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
+      votes: null == votes
+          ? _value._votes
+          : votes // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
       playerOrder: null == playerOrder
           ? _value._playerOrder
           : playerOrder // ignore: cast_nullable_to_non_nullable
@@ -225,9 +238,9 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
               as int,
-      timeRemaining: freezed == timeRemaining
-          ? _value.timeRemaining
-          : timeRemaining // ignore: cast_nullable_to_non_nullable
+      roundEndUTC: freezed == roundEndUTC
+          ? _value.roundEndUTC
+          : roundEndUTC // ignore: cast_nullable_to_non_nullable
               as int?,
       settings: null == settings
           ? _value.settings
@@ -244,17 +257,19 @@ class _$_GameRoom implements _GameRoom {
       {this.id,
       required this.roomCode,
       this.phase = GamePhase.lobby,
-      this.roundPhase = RoundPhase.selecting,
+      this.subPhase = 0,
       final List<String> playerIds = const [],
       final Map<String, String> targets = const {},
       final Map<String, String> texts = const {},
+      final Map<String, String> votes = const {},
       final List<String> playerOrder = const [],
       this.progress = 0,
-      this.timeRemaining,
+      this.roundEndUTC,
       this.settings = const GameRoomSettings(roundTimeSeconds: 60 * 3)})
       : _playerIds = playerIds,
         _targets = targets,
         _texts = texts,
+        _votes = votes,
         _playerOrder = playerOrder;
 
   factory _$_GameRoom.fromJson(Map<String, dynamic> json) =>
@@ -269,7 +284,7 @@ class _$_GameRoom implements _GameRoom {
   final GamePhase phase;
   @override
   @JsonKey()
-  final RoundPhase roundPhase;
+  final int subPhase;
   final List<String> _playerIds;
   @override
   @JsonKey()
@@ -297,6 +312,15 @@ class _$_GameRoom implements _GameRoom {
     return EqualUnmodifiableMapView(_texts);
   }
 
+  final Map<String, String> _votes;
+  @override
+  @JsonKey()
+  Map<String, String> get votes {
+    if (_votes is EqualUnmodifiableMapView) return _votes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_votes);
+  }
+
   final List<String> _playerOrder;
   @override
   @JsonKey()
@@ -310,14 +334,14 @@ class _$_GameRoom implements _GameRoom {
   @JsonKey()
   final int progress;
   @override
-  final int? timeRemaining;
+  final int? roundEndUTC;
   @override
   @JsonKey()
   final GameRoomSettings settings;
 
   @override
   String toString() {
-    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, roundPhase: $roundPhase, playerIds: $playerIds, targets: $targets, texts: $texts, playerOrder: $playerOrder, progress: $progress, timeRemaining: $timeRemaining, settings: $settings)';
+    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, subPhase: $subPhase, playerIds: $playerIds, targets: $targets, texts: $texts, votes: $votes, playerOrder: $playerOrder, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
   }
 
   @override
@@ -329,18 +353,19 @@ class _$_GameRoom implements _GameRoom {
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
             (identical(other.phase, phase) || other.phase == phase) &&
-            (identical(other.roundPhase, roundPhase) ||
-                other.roundPhase == roundPhase) &&
+            (identical(other.subPhase, subPhase) ||
+                other.subPhase == subPhase) &&
             const DeepCollectionEquality()
                 .equals(other._playerIds, _playerIds) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality().equals(other._texts, _texts) &&
+            const DeepCollectionEquality().equals(other._votes, _votes) &&
             const DeepCollectionEquality()
                 .equals(other._playerOrder, _playerOrder) &&
             (identical(other.progress, progress) ||
                 other.progress == progress) &&
-            (identical(other.timeRemaining, timeRemaining) ||
-                other.timeRemaining == timeRemaining) &&
+            (identical(other.roundEndUTC, roundEndUTC) ||
+                other.roundEndUTC == roundEndUTC) &&
             (identical(other.settings, settings) ||
                 other.settings == settings));
   }
@@ -352,13 +377,14 @@ class _$_GameRoom implements _GameRoom {
       id,
       roomCode,
       phase,
-      roundPhase,
+      subPhase,
       const DeepCollectionEquality().hash(_playerIds),
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_texts),
+      const DeepCollectionEquality().hash(_votes),
       const DeepCollectionEquality().hash(_playerOrder),
       progress,
-      timeRemaining,
+      roundEndUTC,
       settings);
 
   @JsonKey(ignore: true)
@@ -380,13 +406,14 @@ abstract class _GameRoom implements GameRoom {
       {final String? id,
       required final String roomCode,
       final GamePhase phase,
-      final RoundPhase roundPhase,
+      final int subPhase,
       final List<String> playerIds,
       final Map<String, String> targets,
       final Map<String, String> texts,
+      final Map<String, String> votes,
       final List<String> playerOrder,
       final int progress,
-      final int? timeRemaining,
+      final int? roundEndUTC,
       final GameRoomSettings settings}) = _$_GameRoom;
 
   factory _GameRoom.fromJson(Map<String, dynamic> json) = _$_GameRoom.fromJson;
@@ -398,7 +425,7 @@ abstract class _GameRoom implements GameRoom {
   @override
   GamePhase get phase;
   @override
-  RoundPhase get roundPhase;
+  int get subPhase;
   @override
   List<String> get playerIds;
   @override
@@ -406,11 +433,13 @@ abstract class _GameRoom implements GameRoom {
   @override
   Map<String, String> get texts;
   @override
+  Map<String, String> get votes;
+  @override
   List<String> get playerOrder;
   @override
   int get progress;
   @override
-  int? get timeRemaining;
+  int? get roundEndUTC;
   @override
   GameRoomSettings get settings;
   @override

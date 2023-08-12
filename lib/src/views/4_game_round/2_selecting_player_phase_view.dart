@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/notifiers/game_notifier.dart';
+import 'package:flutter_bull/src/notifiers/view_models/selecting_player_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
@@ -15,41 +15,36 @@ class SelectingPlayerPhaseView extends ConsumerStatefulWidget {
 }
 
 class _SelectingPlayerPhaseViewState
-    extends ConsumerState<SelectingPlayerPhaseView> {
+    extends ConsumerState<SelectingPlayerPhaseView>
+    with RoomID, WhoseTurnID, UserID {
   @override
   Widget build(BuildContext context) {
-    final roomId = ref.watch(getCurrentGameRoomIdProvider);
-    final participantId = ref.watch(getSignedInPlayerIdProvider);
-    final whoseTurn = ref.watch(getPlayerWhoseTurnIdProvider);
 
-    final gameProvider = gameNotifierProvider(roomId);
-    final gameState = ref.watch(gameProvider);
-    final gameNotifier = ref.watch(gameProvider.notifier);
+    final vmProvider =
+        selectingPlayerPhaseViewNotifierProvider(roomId, userId, whoseTurnId);
+    final vmAsync = ref.watch(vmProvider);
 
-    return gameState.whenDefault((state) {
-      bool myTurn = state.isTurnOf(participantId);
-
-      String text;
-      if (myTurn) {
-        text = state.getStatement(participantId);
-      } else
-        text = whoseTurn + ' is about to read';
-
+    return Scaffold(
+      body: vmAsync.whenDefault((vm) {
         
-      return Center(
-        child: Column(
-          children: [
-            Text(text),
-           !myTurn ? Container() : PlaceholderButton(
-              title: 'Advance',
-              onPressed: () {
-                ref.read(utterBullServerProvider).startRound(ref.read(getCurrentGameRoomIdProvider), ref.read(getSignedInPlayerIdProvider));
-              },
-              )
-          ],
-        ),
-      );
-    });
-
+        return Center(
+          child: Column(
+            children: [
+              Text(vm.roleDescriptionString),
+              !vm.isMyTurn
+                  ? Container()
+                  : PlaceholderButton(
+                      title: 'Advance',
+                      onPressed: () {
+                        ref.read(utterBullServerProvider).startRound(
+                            ref.read(getCurrentGameRoomIdProvider),
+                            ref.read(getSignedInPlayerIdProvider));
+                      },
+                    )
+            ],
+          ),
+        );
+      }),
+    );
   }
 }

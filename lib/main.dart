@@ -1,5 +1,8 @@
+import 'dart:js';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -11,6 +14,7 @@ import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
 import 'package:flutter_bull/src/custom/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
+import 'package:flutter_bull/src/developer/utter_bull_developer_panel.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
@@ -30,7 +34,14 @@ import 'package:logger/logger.dart';
 
 import 'src/custom/data/implemented/firebase.dart';
 
+// TODO: Reveals phase to end
+// TODO: Formalize events in UI layer
+// TODO: Developer UI
+// TODO: Consider firebase function listeners...
+
+final int instances = 1;
 final bool isEmulatingFirebase = true;
+final bool devToolsOn = true;
 
 void main() async {
   // TODO: Generalize init
@@ -53,19 +64,16 @@ void main() async {
   }
 
   FirebaseAuth.instance.setPersistence(Persistence.NONE);
-  
+
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 // TODO: Figure out TDD
-// TODO: Containerize
-
-final int instances = 1;
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,25 +82,30 @@ class MyApp extends StatelessWidget {
         : _buildInstance();
   }
 
+
   // Fake auth, Fake server, Real database, Real streams
   Widget _buildMultipleInstances(int numberOfInstances) {
     //final userIds = List.generate(numberOfInstances, (i) => 'user_$i');
-    final userIds = [
-      'u1',
-      'u2',
-      'u3',
-      'u4' 
-    ];
-    final authMap = <String, AuthService>{};
-    for (var userId in userIds) {
-      authMap.addAll({userId: FakeAuthService(userId)});
-    }
+    final userIds = List.generate(numberOfInstances, (i) => 'u${i + 1}');
 
-    final commonData = _getFirebaseDataLayer();
+    final authMap =
+        Map.fromEntries(userIds.map((e) => MapEntry(e, FakeAuthService(e))));
+    final dataMap = Map.fromEntries(
+        userIds.map((e) => MapEntry(e, _getFirebaseDataLayer())));
+    final streamMap = Map.fromEntries(
+        userIds.map((e) => MapEntry(e, FirebaseDataStreamService())));
+    final imgMap = Map.fromEntries(
+        userIds.map((e) => MapEntry(e, FirebaseImageStorageService())));
+    final serverMap = Map.fromEntries(userIds.map((e) => MapEntry(
+        e,
+        UtterBullClientSideServer(
+            dataMap[e] as DataService, [authMap[e] as AuthService]))));
+
+/*     final commonData = _getFirebaseDataLayer();
     final commonStreams = FirebaseDataStreamService();
     final commonImageService = FirebaseImageStorageService();
     final commonServer =
-        UtterBullClientSideServer(commonData, authMap.values.toList());
+        UtterBullClientSideServer(commonData, authMap.values.toList()); */
 
 /*     for (var userId in userIds) {
       final auth = authMap[userId]!;
@@ -110,79 +123,96 @@ class MyApp extends StatelessWidget {
           return RowOfN<String>(
             length: numberOfInstances,
             data: userIds,
-            transform: (_, userId) => ProvisionedUtterBullApp(
+            transform: (_, userId) => ProvisionedUtterBullFunctionUser(
+              UtterBullApp(),
               authService:
                   //FirebaseAuthService(),
                   authMap[userId]!,
-              server: commonServer,
-              streamService: commonStreams,
-              dataService: commonData,
-              imageService: commonImageService,
+              server: serverMap[userId]!,
+              streamService: streamMap[userId]!,
+              dataService: dataMap[userId]!,
+              imageService: imgMap[userId]!,
             ),
           );
         });
   }
 
   Widget _buildInstance() {
-    final auth = FirebaseAuthService();
+
 
     //auth.signOut();
 
+    final auth = FirebaseAuthService();
     final data = _getFirebaseDataLayer();
-
     final server = UtterBullClientSideServer(data, [auth]);
-
     final streams = FirebaseDataStreamService();
     final images = FirebaseImageStorageService();
 
-    return ProvisionedUtterBullApp(
-      authService: auth,
-      server: server,
-      streamService: streams,
-      dataService: data,
-      imageService: images,
+    return WidgetsApp(
+      builder: (context, _) => Row(
+        children: 
+      [
+        ProvisionedUtterBullFunctionUser(
+          UtterBullApp(),
+          authService: auth,
+          server: server,
+          streamService: streams,
+          dataService: data,
+          imageService: images,
+          ),
+        Expanded(child: ProvisionedUtterBullFunctionUser(
+            UtterBullDeveloperPanel(),
+            authService: auth,
+            server: server,
+            streamService: streams,
+            dataService: data,
+            imageService: images,
+            ))
+    
+      ],), color: Colors.black,
     );
   }
 
   DatabaseDrivenDataLayer _getFirebaseDataLayer() {
     return DatabaseDrivenDataLayer(
-    gameRoomRepo: Repository<GameRoom>(
-        FirebaseDatabaseService('rooms', GameRoom.fromJson)),
-    playerRepo: Repository<Player>(
-        FirebaseDatabaseService('players', Player.fromJson)),
-    playerStatusRepo: Repository<PlayerStatus>(
-        FirebaseDatabaseService('playerStatuses', PlayerStatus.fromJson)),
-  );
+      gameRoomRepo: Repository<GameRoom>(
+          FirebaseDatabaseService('rooms', GameRoom.fromJson)),
+      playerRepo: Repository<Player>(
+          FirebaseDatabaseService('players', Player.fromJson)),
+      playerStatusRepo: Repository<PlayerStatus>(
+          FirebaseDatabaseService('playerStatuses', PlayerStatus.fromJson)),
+    );
   }
 }
 
-class ProvisionedUtterBullApp extends StatelessWidget {
+class ProvisionedUtterBullFunctionUser extends StatelessWidget {
   final AuthService authService;
   final UtterBullServer server;
   final DataStreamService streamService;
   final DataService dataService;
   final ImageStorageService imageService;
+  final Widget child;
 
-  const ProvisionedUtterBullApp(
-      {required this.authService,
-      required this.server,
-      required this.streamService,
-      required this.dataService,
-      required this.imageService,
-      
-      });
+  const ProvisionedUtterBullFunctionUser(this.child, {
+    required this.authService,
+    required this.server,
+    required this.streamService,
+    required this.dataService,
+    required this.imageService,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final List<Override> overrides = [];
-
-    overrides.add(authServiceProvider.overrideWithValue(authService));
-    overrides.add(utterBullServerProvider.overrideWithValue(server));
-    overrides.add(dataStreamServiceProvider.overrideWithValue(streamService));
-    overrides.add(dataServiceProvider.overrideWithValue(dataService));
-    overrides.add(imageStorageServiceProvider.overrideWithValue(imageService));
-
-    return ProviderScope(overrides: overrides, child: UtterBullApp());
+    return ProviderScope(
+        overrides: 
+        [
+          authServiceProvider.overrideWithValue(authService),
+          utterBullServerProvider.overrideWithValue(server),
+          dataStreamServiceProvider.overrideWithValue(streamService),
+          dataServiceProvider.overrideWithValue(dataService),
+          imageStorageServiceProvider.overrideWithValue(imageService)
+        ], 
+        child: child);
   }
 }
 
@@ -194,7 +224,7 @@ class UtterBullApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 9/20,
+      aspectRatio: 9 / 20,
       child: Container(
         color: Colors.grey,
         child: Padding(
@@ -204,7 +234,7 @@ class UtterBullApp extends StatelessWidget {
             child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 theme: UtterBullTheme.theme,
-                home: false ? TestWidget() : AuthContainer()),
+                home: false ? TestWidget2() : AuthContainer()),
           ),
         ),
       ),
@@ -228,7 +258,7 @@ class _TestWidgetState extends ConsumerState<TestWidget>
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
+      navigatorObservers: [CoordinatedRouteObserver()],
       home: Scaffold(
         body: Column(
           children: [
@@ -270,5 +300,44 @@ class _TestWidgetState extends ConsumerState<TestWidget>
         title: Text(list[index]),
       ),
     );
+  }
+}
+
+class TestWidget2 extends ConsumerStatefulWidget {
+  const TestWidget2({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _TestWidget2State();
+}
+
+class _TestWidget2State extends ConsumerState<TestWidget2> {
+  final key = GlobalKey<NavigatorState>();
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        navigatorKey: key,
+        navigatorObservers: [CoordinatedRouteObserver()],
+        initialRoute: '/foo',
+        onGenerateRoute: (settings) {
+          if (settings.name == '/foo') {
+            return ForwardPushRoute((p0) => Scaffold(
+                  body: Center(
+                    child: TextButton(
+                        child: Text('1'),
+                        onPressed: () => Navigator.of(key.currentContext!)
+                            .pushNamed('/bar')),
+                  ),
+                ));
+          } else {
+            return BackwardPushRoute((p0) => Scaffold(
+                  body: Center(
+                    child: TextButton(
+                        child: Text('2'),
+                        onPressed: () => Navigator.of(key.currentContext!)
+                            .pushNamed('/foo')),
+                  ),
+                ));
+          }
+        });
   }
 }

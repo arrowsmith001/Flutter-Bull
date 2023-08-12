@@ -4,16 +4,18 @@ import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifi
 import 'package:logger/logger.dart';
 
 class ControlledNavigator<T> extends StatelessWidget {
-  const ControlledNavigator({required this.controller, required this.data});
+
+  const ControlledNavigator({required this.controller, required this.data, this.observers = const []});
 
   final NavigationController<T> controller;
   final T data;
-
+  final List<NavigatorObserver> observers;
+  
   @override
   Widget build(BuildContext context) {
 
     return Navigator(
-      observers: [HeroController()],
+      observers: observers,
       key: controller.navigatorKey,
       onGenerateRoute: controller.onGenerateRoute,
       initialRoute: controller.getInitialRoute(data),

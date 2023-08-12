@@ -15,13 +15,14 @@ class GameRoom extends Entity with _$GameRoom {
     String? id,
     required String roomCode,
     @Default(GamePhase.lobby) GamePhase phase,
-    @Default(RoundPhase.selecting) RoundPhase roundPhase,
+    @Default(0) int subPhase,
     @Default([]) List<String> playerIds,
     @Default({}) Map<String, String> targets,
     @Default({}) Map<String, String> texts,
+    @Default({}) Map<String, String> votes,
     @Default([]) List<String> playerOrder,
     @Default(0) int progress,
-    int? timeRemaining,
+    int? roundEndUTC,
     @Default(GameRoomSettings(roundTimeSeconds: 60*3)) GameRoomSettings settings,
   }) = _GameRoom;
 

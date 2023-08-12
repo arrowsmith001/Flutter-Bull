@@ -11,9 +11,7 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
       roomCode: json['roomCode'] as String,
       phase: $enumDecodeNullable(_$GamePhaseEnumMap, json['phase']) ??
           GamePhase.lobby,
-      roundPhase:
-          $enumDecodeNullable(_$RoundPhaseEnumMap, json['roundPhase']) ??
-              RoundPhase.selecting,
+      subPhase: json['subPhase'] as int? ?? 0,
       playerIds: (json['playerIds'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -26,12 +24,16 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
             (k, e) => MapEntry(k, e as String),
           ) ??
           const {},
+      votes: (json['votes'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as String),
+          ) ??
+          const {},
       playerOrder: (json['playerOrder'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
       progress: json['progress'] as int? ?? 0,
-      timeRemaining: json['timeRemaining'] as int?,
+      roundEndUTC: json['roundEndUTC'] as int?,
       settings: json['settings'] == null
           ? const GameRoomSettings(roundTimeSeconds: 60 * 3)
           : GameRoomSettings.fromJson(json['settings'] as Map<String, dynamic>),
@@ -42,13 +44,14 @@ Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
       'id': instance.id,
       'roomCode': instance.roomCode,
       'phase': _$GamePhaseEnumMap[instance.phase]!,
-      'roundPhase': _$RoundPhaseEnumMap[instance.roundPhase]!,
+      'subPhase': instance.subPhase,
       'playerIds': instance.playerIds,
       'targets': instance.targets,
       'texts': instance.texts,
+      'votes': instance.votes,
       'playerOrder': instance.playerOrder,
       'progress': instance.progress,
-      'timeRemaining': instance.timeRemaining,
+      'roundEndUTC': instance.roundEndUTC,
       'settings': instance.settings,
     };
 
@@ -58,11 +61,6 @@ const _$GamePhaseEnumMap = {
   GamePhase.round: 2,
   GamePhase.reveals: 3,
   GamePhase.results: 4,
-};
-
-const _$RoundPhaseEnumMap = {
-  RoundPhase.selecting: 0,
-  RoundPhase.voting: 1,
 };
 
 _$_GameRoomSettings _$$_GameRoomSettingsFromJson(Map<String, dynamic> json) =>

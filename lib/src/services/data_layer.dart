@@ -9,7 +9,7 @@ import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class DataService {
-  Future<void> createPlayerWithID(Player player);
+  Future<void> createPlayer(Player player);
 
   Future<int> countRoomsByCode(String code);
 
@@ -22,13 +22,14 @@ abstract class DataService {
   Future<bool> doesPlayerExist(String userId);
 
   Future<void> setRoomPhase(
-      String roomCode, GamePhase newPhase, Object? newPhaseArgs);
+      String roomCode, GamePhase newPhase);
 
   Future<String> getRoomIdFromCode(String roomCode);
 
   Future<void> setName(String id, String text);
 
   Future<void> setImagePath(String userId, String path);
+
 }
 
 class FakeDataLayer extends DataService implements DataStreamService {
@@ -99,7 +100,7 @@ class FakeDataLayer extends DataService implements DataStreamService {
   }
 
   @override
-  Future<void> createPlayerWithID(Player player) async {
+  Future<void> createPlayer(Player player) async {
     final newId = player.id!;
     // _newPlayerId().toString();
     players.addAll({newId: BehaviorSubject.seeded(player)});
@@ -112,7 +113,7 @@ class FakeDataLayer extends DataService implements DataStreamService {
 
   @override
   Future<void> setRoomPhase(
-      String gameRoomId, GamePhase newPhase, Object? newPhaseArgs) async {
+      String gameRoomId, GamePhase newPhase) async {
     final gameRoomStream = gameRooms[gameRoomId]!;
     final gameRoom = gameRoomStream.value;
     final newGameRoom = gameRoom.copyWith(phase: newPhase);
@@ -154,6 +155,7 @@ class FakeDataLayer extends DataService implements DataStreamService {
     // TODO: implement setImagePath
     throw UnimplementedError();
   }
+  
 }
 
 class DatabaseDrivenDataLayer extends DataService {
@@ -181,7 +183,7 @@ class DatabaseDrivenDataLayer extends DataService {
   }
 
   @override
-  Future<void> createPlayerWithID(Player player) async {
+  Future<void> createPlayer(Player player) async {
     await playerRepo.createItem(player);
   }
 
@@ -201,10 +203,9 @@ class DatabaseDrivenDataLayer extends DataService {
 
   @override
   Future<void> setRoomPhase(
-      String roomId, GamePhase newPhase, Object? newPhaseArgs) async {
+      String roomId, GamePhase newPhase) async {
     await Future.wait([
-      gameRoomRepo.setField(roomId, 'phase', newPhase),
-      gameRoomRepo.setField(roomId, 'phaseArgs', newPhaseArgs)
+      gameRoomRepo.setField(roomId, 'phase', newPhase)
     ]);
   }
 
@@ -231,4 +232,5 @@ class DatabaseDrivenDataLayer extends DataService {
   Future<void> setImagePath(String userId, String path) async {
     await playerRepo.setField(userId, 'profilePhotoPath', path);
   }
+  
 }

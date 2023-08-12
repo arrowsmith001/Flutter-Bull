@@ -9,7 +9,7 @@ extension RiverpodExtensions<T> on AsyncValue<T> {
         R Function()? loading,
         R Function(Object, StackTrace)? error,
         
-        bool skipLoadingOnReload = false,
+        bool skipLoadingOnReload = true,
       bool skipLoadingOnRefresh = true,
       bool skipError = false}) {
     return when<R>(skipLoadingOnReload: skipLoadingOnReload, skipLoadingOnRefresh: skipLoadingOnRefresh, skipError: skipError,

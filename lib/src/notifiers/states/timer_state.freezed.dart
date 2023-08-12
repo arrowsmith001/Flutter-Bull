@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$TimerState {
-  int? get remainingTimeMilliseconds => throw _privateConstructorUsedError;
+  Duration get timeRemaining => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TimerStateCopyWith<TimerState> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $TimerStateCopyWith<$Res> {
           TimerState value, $Res Function(TimerState) then) =
       _$TimerStateCopyWithImpl<$Res, TimerState>;
   @useResult
-  $Res call({int? remainingTimeMilliseconds});
+  $Res call({Duration timeRemaining});
 }
 
 /// @nodoc
@@ -45,13 +45,13 @@ class _$TimerStateCopyWithImpl<$Res, $Val extends TimerState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? remainingTimeMilliseconds = freezed,
+    Object? timeRemaining = null,
   }) {
     return _then(_value.copyWith(
-      remainingTimeMilliseconds: freezed == remainingTimeMilliseconds
-          ? _value.remainingTimeMilliseconds
-          : remainingTimeMilliseconds // ignore: cast_nullable_to_non_nullable
-              as int?,
+      timeRemaining: null == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as Duration,
     ) as $Val);
   }
 }
@@ -64,7 +64,7 @@ abstract class _$$_TimerStateCopyWith<$Res>
       __$$_TimerStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? remainingTimeMilliseconds});
+  $Res call({Duration timeRemaining});
 }
 
 /// @nodoc
@@ -78,13 +78,13 @@ class __$$_TimerStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? remainingTimeMilliseconds = freezed,
+    Object? timeRemaining = null,
   }) {
     return _then(_$_TimerState(
-      remainingTimeMilliseconds: freezed == remainingTimeMilliseconds
-          ? _value.remainingTimeMilliseconds
-          : remainingTimeMilliseconds // ignore: cast_nullable_to_non_nullable
-              as int?,
+      timeRemaining: null == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as Duration,
     ));
   }
 }
@@ -92,14 +92,15 @@ class __$$_TimerStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_TimerState extends _TimerState {
-  _$_TimerState({this.remainingTimeMilliseconds}) : super._();
+  _$_TimerState({this.timeRemaining = Duration.zero}) : super._();
 
   @override
-  final int? remainingTimeMilliseconds;
+  @JsonKey()
+  final Duration timeRemaining;
 
   @override
   String toString() {
-    return 'TimerState(remainingTimeMilliseconds: $remainingTimeMilliseconds)';
+    return 'TimerState(timeRemaining: $timeRemaining)';
   }
 
   @override
@@ -107,13 +108,12 @@ class _$_TimerState extends _TimerState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_TimerState &&
-            (identical(other.remainingTimeMilliseconds,
-                    remainingTimeMilliseconds) ||
-                other.remainingTimeMilliseconds == remainingTimeMilliseconds));
+            (identical(other.timeRemaining, timeRemaining) ||
+                other.timeRemaining == timeRemaining));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, remainingTimeMilliseconds);
+  int get hashCode => Object.hash(runtimeType, timeRemaining);
 
   @JsonKey(ignore: true)
   @override
@@ -123,11 +123,11 @@ class _$_TimerState extends _TimerState {
 }
 
 abstract class _TimerState extends TimerState {
-  factory _TimerState({final int? remainingTimeMilliseconds}) = _$_TimerState;
+  factory _TimerState({final Duration timeRemaining}) = _$_TimerState;
   _TimerState._() : super._();
 
   @override
-  int? get remainingTimeMilliseconds;
+  Duration get timeRemaining;
   @override
   @JsonKey(ignore: true)
   _$$_TimerStateCopyWith<_$_TimerState> get copyWith =>

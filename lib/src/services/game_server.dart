@@ -18,9 +18,9 @@ abstract class UtterBullServer {
 
   Future<void> createPlayerWithID(String userId);
 
-  Future<void> removeFromRoom(String userId, String roomCode);
+  Future<void> removeFromRoom(String userId, String roomId);
   Future<void> setRoomPhase(
-      String gameRoomId, GamePhase newPhase, Object? newPhaseArgs);
+      String gameRoomId, GamePhase newPhase);
 
   Future<void> startGame(String roomId);
 
@@ -33,6 +33,8 @@ abstract class UtterBullServer {
   Future<void> vote(String roomId, String userId, bool truthOrLie);
 
   Future<void> endRound(String roomId, String userId);
+
+  Future<void> setSubPhase(String roomId, int phaseNum);
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
@@ -86,8 +88,8 @@ class UtterBullClientSideServer implements UtterBullServer {
 
   @override
   Future<void> setRoomPhase(
-      String roomCode, GamePhase newPhase, Object? newPhaseArgs) async {
-    await data.setRoomPhase(roomCode, newPhase, newPhaseArgs);
+      String roomCode, GamePhase newPhase) async {
+    await data.setRoomPhase(roomCode, newPhase);
   }
 
   @override
@@ -124,6 +126,12 @@ class UtterBullClientSideServer implements UtterBullServer {
   Future<void> endRound(String roomId, String userId)  async {
     final func = FirebaseFunctions.instance.httpsCallable('endRound');
     await func.call({'roomId': roomId, 'userId': userId});
+  }
+  
+  @override
+  Future<void> setSubPhase(String roomId, int phaseNum) async {
+    final func = FirebaseFunctions.instance.httpsCallable('setSubPhase');
+    await func.call({'roomId': roomId, 'phaseNum': phaseNum});
   }
 }
 

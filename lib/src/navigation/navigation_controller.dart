@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/navigation/animated_routes.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 abstract class NavigationController<T> {
-
   String? _initialRoute;
   String? _currentRouteName;
   Iterator<String>? _routePathIterator;
@@ -39,12 +38,13 @@ abstract class NavigationController<T> {
 
   @protected
   void navigateTo(String s) {
-    if (canNavigate) {
-      Navigator.of(_navigatorContext!).pushReplacementNamed(s);
-      Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
-    } else {
-      Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
-    }
+      if (canNavigate) {
+        Navigator.of(_navigatorContext!).pushReplacementNamed(s);
+        Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
+      } else {
+        Logger()
+            .d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
+      }
   }
 
   @protected

@@ -7,7 +7,7 @@ part of 'signed_in_player_status_notifier.dart';
 // **************************************************************************
 
 String _$signedInPlayerStatusNotifierHash() =>
-    r'7cee6c4c754aa4b9639a198117ddac25d7ecfb53';
+    r'f128cac4f60a34f77c3753aadcb49bfc8a966e79';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,10 +32,10 @@ class _SystemHash {
 
 abstract class _$SignedInPlayerStatusNotifier
     extends BuildlessStreamNotifier<SignedInPlayerStatusNotifierState> {
-  late final String userId;
+  late final String? userId;
 
   Stream<SignedInPlayerStatusNotifierState> build(
-    String userId,
+    String? userId,
   );
 }
 
@@ -52,7 +52,7 @@ class SignedInPlayerStatusNotifierFamily
 
   /// See also [SignedInPlayerStatusNotifier].
   SignedInPlayerStatusNotifierProvider call(
-    String userId,
+    String? userId,
   ) {
     return SignedInPlayerStatusNotifierProvider(
       userId,
@@ -102,7 +102,7 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
               SignedInPlayerStatusNotifierFamily._allTransitiveDependencies,
         );
 
-  final String userId;
+  final String? userId;
 
   @override
   bool operator ==(Object other) {

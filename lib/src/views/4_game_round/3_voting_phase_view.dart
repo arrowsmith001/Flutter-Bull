@@ -8,6 +8,7 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/timer_state.dart';
 import 'package:flutter_bull/src/notifiers/timer_notifier.dart';
+import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,16 +20,6 @@ class VotingPhaseView extends ConsumerStatefulWidget {
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _VotingPhaseViewState();
-}
-
-mixin RoomID<T extends ConsumerStatefulWidget> on ConsumerState<T> {
-  String get roomId => ref.watch(getCurrentGameRoomIdProvider);
-}
-mixin UserID<T extends ConsumerStatefulWidget> on ConsumerState<T> {
-  String get userId => ref.watch(getSignedInPlayerIdProvider);
-}
-mixin WhoseTurnID<T extends ConsumerStatefulWidget> on ConsumerState<T> {
-  String get whoseTurn => ref.watch(getPlayerWhoseTurnIdProvider);
 }
 
 class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
@@ -52,40 +43,39 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   @override
   Widget build(BuildContext context) {
-    final game = gameNotifierProvider(roomId);
-    final gameStateAsync = ref.watch(game);
+    final vmProvider =
+        votingPhaseViewNotifierProvider(roomId, userId, whoseTurnId);
+    final vmAsync = ref.watch(vmProvider);
 
-    final endTime = ref.watch(game.select((value) => value.value?.endTime));
-    final timer = ref.watch(timerNotifierProvider(endTime));
-
-    return gameStateAsync.whenDefault((g) {
-      final whoseTurnAvatar = g.getAvatar(whoseTurn);
-      final statement = g.getStatement(whoseTurn);
-      final isMyTurn = g.isTurnOf(userId);
-
-      return Column(
-        children: [
-          Flexible(
-            flex: 3,
-            child: Column(children: [
-              Expanded(child: _buildStatementTextBox(statement)),
-              Expanded(
-                  child: UtterBullPlayerAvatar(whoseTurnAvatar.avatarData)),
-            ]),
-          ),
-          !timer.hasValue ? SizedBox.shrink() : Flexible(child: Text(timer.value!.timeString)),
-          Flexible(flex: 5, child: _buildVoteButtons()),
-          !isMyTurn
-              ? SizedBox.shrink()
-              : Flexible(
-                  flex: 1,
-                  child: TextButton(
-                    child: Text('End Round'),
-                    onPressed: () => onEndRound(),
-                  )),
-        ],
-      );
-    });
+    return Scaffold(
+      body: vmAsync.whenDefault((vm) {
+        return Column(
+          children: [
+            Flexible(
+              flex: 3,
+              child: Column(children: [
+                Expanded(
+                    child:
+                        _buildStatementTextBox(vm.playersWhoseTurnStatement)),
+                Expanded(
+                    child:
+                        UtterBullPlayerAvatar(vm.playerWhoseTurn.avatarData)),
+              ]),
+            ),
+            Flexible(child: _buildTimer(vm.timeString)),
+            Flexible(flex: 5, child: _buildVoteButtons()),
+            vm.isReading && vm.isRoundInProgress == false
+                ? SizedBox.shrink()
+                : Flexible(
+                    flex: 1,
+                    child: TextButton(
+                      child: Text('End Round'),
+                      onPressed: () => onEndRound(),
+                    )),
+          ],
+        );
+      }),
+    );
   }
 
   Widget _buildStatementTextBox(String statement) {
@@ -112,6 +102,10 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
           child: TextButton(
               onPressed: () => onVoteBull(), child: Text(voteBullButtonLabel))),
     ]);
+  }
+
+  Widget _buildTimer(String timeString) {
+    return Text(timeString);
   }
 }
 

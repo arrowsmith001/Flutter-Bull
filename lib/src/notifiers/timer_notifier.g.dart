@@ -6,7 +6,7 @@ part of 'timer_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$timerNotifierHash() => r'45a00b1083efbb4aaf480f32f39d270feb122fa0';
+String _$timerNotifierHash() => r'586b4d47e6e55ae9c8ea2619eb36b0d3de08dce6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,8 +29,7 @@ class _SystemHash {
   }
 }
 
-abstract class _$TimerNotifier
-    extends BuildlessAutoDisposeStreamNotifier<TimerState> {
+abstract class _$TimerNotifier extends BuildlessStreamNotifier<TimerState> {
   late final int? utcEnd;
 
   Stream<TimerState> build(
@@ -82,7 +81,7 @@ class TimerNotifierFamily extends Family<AsyncValue<TimerState>> {
 
 /// See also [TimerNotifier].
 class TimerNotifierProvider
-    extends AutoDisposeStreamNotifierProviderImpl<TimerNotifier, TimerState> {
+    extends StreamNotifierProviderImpl<TimerNotifier, TimerState> {
   /// See also [TimerNotifier].
   TimerNotifierProvider(
     this.utcEnd,

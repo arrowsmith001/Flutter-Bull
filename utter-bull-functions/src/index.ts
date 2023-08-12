@@ -22,6 +22,14 @@ const app = admin.initializeApp();
 const db = firestore.initializeFirestore(app);
 
 
+// TODO: Listeners
+// Listen for text changes
+functionsv1.firestore.document('rooms/aBXFsSNDr5WAGFjX6gQ0').onUpdate((snapshot) => {
+    console.log('hello!');
+});
+
+
+
 
 
 // TODO: Separate into files!!
@@ -137,6 +145,14 @@ export const invokeOnUserCreate = http.onCall(
         onUserCreateInvoked(id);
     });
 
+export const setSubPhase = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var phaseNum = req.data['phaseNum'] as number;
+
+        await setSubPhaseImpl(roomId, phaseNum);
+    });
 
 
 
@@ -152,7 +168,7 @@ async function onUserCreateInvoked(id: string) {
 
 async function createGameRoomImpl(userId: string) {
 
-    await _setPlayerStatus(userId, 'Creating Game Session');
+    await _trySetPlayerStatus(userId, 'Creating Game Session');
     if (delaysOn) promises.setTimeout(1000);
 
     await db.runTransaction(async (txn) => {
@@ -167,7 +183,7 @@ async function createGameRoomImpl(userId: string) {
             'roomCode': newCode,
             'playerIds': [userId],
             'phase': 0,
-            'roundPhase': 0,
+            'subPhase': 0,
             'settings':
             {
                 'roundTimeSeconds': 60 * 3
@@ -182,13 +198,13 @@ async function createGameRoomImpl(userId: string) {
 
     });
 
-    await _setPlayerStatus(userId, null);
+    await _trySetPlayerStatus(userId, null);
 
 }
 
 async function joinGameRoomImpl(userId: string, roomCode: string) {
 
-    await _setPlayerStatus(userId, 'Joining Game Session');
+    await _trySetPlayerStatus(userId, 'Joining Game Session');
     if (delaysOn) promises.setTimeout(1000);
 
     await db.runTransaction(async (txn) => {
@@ -223,7 +239,7 @@ async function joinGameRoomImpl(userId: string, roomCode: string) {
 
     });
 
-    await _setPlayerStatus(userId, null);
+    await _trySetPlayerStatus(userId, null);
 
 }
 
@@ -285,17 +301,21 @@ async function startGameImpl(roomId: string) {
             .update(roomRef, { 'playerOrder': playerOrder })
             .update(roomRef, { 'progress': 0 })
             .update(roomRef, { 'phase': GameRoomPhase.writing })
-            .update(roomRef, { 'roundPhase': 0 });
-    });
-}
+            .update(roomRef, { 'subPhase': 0 });
 
+
+    });
+
+
+
+}
 
 async function returnToLobbyImpl(roomId: string) {
     await db.runTransaction(async (txn) => {
 
         var roomRef = db.collection('rooms').doc(roomId);
 
-        await txn.update(roomRef, { 'phase': GameRoomPhase.lobby });
+        txn.update(roomRef, { 'phase': GameRoomPhase.lobby, 'subPhase': 0 });
     });
 }
 
@@ -307,24 +327,22 @@ async function submitTextImpl(roomId: string, userId: string, text: string) {
         var currentRoom = await txn.get(roomRef);
         var currentRoomData = currentRoom.data()!;
 
-        // TODO: Check if phase is appropriate
+        // TODO: Check if phase is appropriate!!
 
         var texts = currentRoomData['texts'];
         var targets = currentRoomData['targets'];
 
-        texts[userId] = text;
+        var target = targets[userId];
+        texts[target] = text;
 
+        txn.update(roomRef, { 'texts': texts });
+
+        // Check text submission progress
         var numberOfSubmissions = Object.keys(texts).length;
         var numberOfTargets = Object.keys(targets).length;
 
         if (numberOfSubmissions == numberOfTargets) {
-            txn
-                .update(roomRef, { 'texts': texts })
-                .update(roomRef, { 'phase': GameRoomPhase.selecting });
-        }
-        else {
-
-            txn.update(roomRef, { 'texts': texts });
+            txn.update(roomRef, { 'phase': GameRoomPhase.selecting });
         }
 
     });
@@ -345,7 +363,7 @@ async function startRoundImpl(roomId: string, userId: string) {
         // TODO: Account for time zones!!
         var roundEndTime = Date.now().valueOf() + (totalTime * 1000);
 
-        await txn.update(roomRef, { 'timeRemaining': roundEndTime, 'roundPhase': 1 });
+        txn.update(roomRef, { 'roundEndUTC': roundEndTime, 'subPhase': 1 });
 
     });
 
@@ -377,16 +395,26 @@ async function voteImpl(roomId: string, userId: string, truthOrLie: boolean) {
         }
         else if (symbolAtProgress == 'p') {
             console.log('Error voting: ' + userId + ' cant vote for self');
-
         }
         else {
             console.log('Error voting: ' + userId + ' in ' + roomId + ' - already voted ' + symbolAtProgress);
+        }
+
+        // Check votes progress
+        var votes = Object.values<string>(currentRoomData['votes']);
+        console.log(votes);
+
+        var allVoted = votes.every((v) => v.charAt(progress) != '-');
+        if (allVoted) {
+            // End round
+            txn.update(roomRef, { 'roundEndUTC': 0 });
         }
 
 
     });
 
 }
+
 
 
 async function endRoundImpl(roomId: string, userId: string) {
@@ -420,7 +448,7 @@ async function endRoundImpl(roomId: string, userId: string) {
 
             txn
                 .update(roomRef, { 'votes': currentRoomData['votes'] })
-                .update(roomRef, { 'progress': progress, 'roundPhase': 0 });
+                .update(roomRef, { 'progress': progress, 'subPhase': 0 });
         }
 
 
@@ -430,6 +458,29 @@ async function endRoundImpl(roomId: string, userId: string) {
 }
 
 
+async function setSubPhaseImpl(roomId: string, phaseNum: number) {
+
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn) => {
+
+        var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
+
+        var currentSubPhase = currentRoomData['subPhase'] as number;
+
+        if (currentSubPhase != phaseNum) {
+
+            txn
+                .update(roomRef, { 'subPhase': phaseNum });
+        }
+
+
+
+
+    });
+
+}
 
 
 
@@ -452,13 +503,20 @@ async function _createPlayerProfile(uid: string) {
 }
 
 
-async function _setPlayerStatus(userId: string, message: string | null): Promise<void> {
+// TODO: Decide how important this is
+async function _trySetPlayerStatus(userId: string, message: string | null): Promise<void> {
+
     var updates;
 
     if (message == null) updates = { 'busy': false };
     else updates = { 'busy': true, 'messageWhileBusy': message };
 
-    await db.collection('playerStatuses').doc(userId).update(updates);
+    try {
+        await db.collection('playerStatuses').doc(userId).update(updates);
+    }
+    catch (e) {
+
+    }
 }
 
 

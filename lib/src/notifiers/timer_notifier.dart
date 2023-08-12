@@ -13,27 +13,32 @@ import 'package:logger/logger.dart';
 
 part 'timer_notifier.g.dart';
 
-@Riverpod(keepAlive: false)
+@Riverpod(keepAlive: true)
 class TimerNotifier extends _$TimerNotifier {
 
   
   
   @override
-  Stream<TimerState> build(int? utcEnd) async* {
-    if (utcEnd == null) yield TimerState(remainingTimeMilliseconds: 0);
+  Stream<TimerState> build(int? utcEnd) {
 
-    final remainingMs = utcEnd! - DateTime.now().millisecondsSinceEpoch;
-    if (remainingMs <= 0) yield TimerState(remainingTimeMilliseconds: 0);
+    Logger().d('utcEnd $utcEnd');
 
-// TODO: Check that this cancels
-    yield* Stream.periodic(Duration(milliseconds: 23), (_) {
+    if (utcEnd == null) return Stream.value(TimerState());
+
+    final remainingMs = utcEnd - DateTime.now().millisecondsSinceEpoch;
+    if (remainingMs <= 0) return Stream.value(TimerState());
+
+    Logger().d('remainingMs $remainingMs');
+
+    // TODO: Check that this cancels
+    return Stream.periodic(Duration(seconds: 1), (_) {
       return _buildState(utcEnd);
     });
   }
 
   TimerState _buildState(int utcEnd) {
     final remainingMs = utcEnd - DateTime.now().millisecondsSinceEpoch;
-    if (remainingMs <= 0) return TimerState(remainingTimeMilliseconds: 0);
-    return TimerState(remainingTimeMilliseconds: remainingMs);
+    if (remainingMs <= 0) return TimerState();
+    return TimerState(timeRemaining: Duration(milliseconds: remainingMs));
   }
 }

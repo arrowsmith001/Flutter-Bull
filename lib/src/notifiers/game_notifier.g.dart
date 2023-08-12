@@ -6,7 +6,7 @@ part of 'game_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameNotifierHash() => r'fd41284d903f7ea45109d22d3ea04eaf830bce86';
+String _$gameNotifierHash() => r'7557bf30153234caa98c889139cbf5985f164da4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,11 +30,11 @@ class _SystemHash {
 }
 
 abstract class _$GameNotifier
-    extends BuildlessAutoDisposeStreamNotifier<GameNotifierState> {
-  late final String gameRoomId;
+    extends BuildlessStreamNotifier<GameNotifierState> {
+  late final String? gameRoomId;
 
   Stream<GameNotifierState> build(
-    String gameRoomId,
+    String? gameRoomId,
   );
 }
 
@@ -49,7 +49,7 @@ class GameNotifierFamily extends Family<AsyncValue<GameNotifierState>> {
 
   /// See also [GameNotifier].
   GameNotifierProvider call(
-    String gameRoomId,
+    String? gameRoomId,
   ) {
     return GameNotifierProvider(
       gameRoomId,
@@ -81,8 +81,8 @@ class GameNotifierFamily extends Family<AsyncValue<GameNotifierState>> {
 }
 
 /// See also [GameNotifier].
-class GameNotifierProvider extends AutoDisposeStreamNotifierProviderImpl<
-    GameNotifier, GameNotifierState> {
+class GameNotifierProvider
+    extends StreamNotifierProviderImpl<GameNotifier, GameNotifierState> {
   /// See also [GameNotifier].
   GameNotifierProvider(
     this.gameRoomId,
@@ -99,7 +99,7 @@ class GameNotifierProvider extends AutoDisposeStreamNotifierProviderImpl<
               GameNotifierFamily._allTransitiveDependencies,
         );
 
-  final String gameRoomId;
+  final String? gameRoomId;
 
   @override
   bool operator ==(Object other) {
