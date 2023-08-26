@@ -1,8 +1,6 @@
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'dart:math' as Math;
 
 class UtterBullPlayerAvatar extends StatefulWidget {
   const UtterBullPlayerAvatar(this.data);

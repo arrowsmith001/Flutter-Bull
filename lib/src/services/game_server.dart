@@ -1,15 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
-import 'package:flutter_bull/src/model/game_room_state.dart';
-import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
-import 'package:logger/logger.dart';
-import 'package:http/http.dart' as http;
 
 // TODO: Move to cloud
 abstract class UtterBullServer {
@@ -19,8 +13,7 @@ abstract class UtterBullServer {
   Future<void> createPlayerWithID(String userId);
 
   Future<void> removeFromRoom(String userId, String roomId);
-  Future<void> setRoomPhase(
-      String gameRoomId, GamePhase newPhase);
+  Future<void> setRoomPhase(String gameRoomId, GamePhase newPhase);
 
   Future<void> startGame(String roomId);
 
@@ -35,6 +28,12 @@ abstract class UtterBullServer {
   Future<void> endRound(String roomId, String userId);
 
   Future<void> setSubPhase(String roomId, int phaseNum);
+
+  Future<void> reveal(String roomId, String userId);
+
+  Future<void> revealNext(String roomId, String userId);
+
+  Future<void> calculateResults(String s);
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
@@ -87,8 +86,7 @@ class UtterBullClientSideServer implements UtterBullServer {
   }
 
   @override
-  Future<void> setRoomPhase(
-      String roomCode, GamePhase newPhase) async {
+  Future<void> setRoomPhase(String roomCode, GamePhase newPhase) async {
     await data.setRoomPhase(roomCode, newPhase);
   }
 
@@ -115,23 +113,43 @@ class UtterBullClientSideServer implements UtterBullServer {
     final func = FirebaseFunctions.instance.httpsCallable('startRound');
     await func.call({'roomId': roomId, 'userId': userId});
   }
-  
+
   @override
   Future<void> vote(String roomId, String userId, bool truthOrLie) async {
     final func = FirebaseFunctions.instance.httpsCallable('vote');
-    await func.call({'roomId': roomId, 'userId': userId, 'truthOrLie': truthOrLie});
+    await func
+        .call({'roomId': roomId, 'userId': userId, 'truthOrLie': truthOrLie});
   }
-  
+
   @override
-  Future<void> endRound(String roomId, String userId)  async {
+  Future<void> endRound(String roomId, String userId) async {
     final func = FirebaseFunctions.instance.httpsCallable('endRound');
     await func.call({'roomId': roomId, 'userId': userId});
   }
-  
+
+  // TODO: Deprecate?
   @override
   Future<void> setSubPhase(String roomId, int phaseNum) async {
     final func = FirebaseFunctions.instance.httpsCallable('setSubPhase');
     await func.call({'roomId': roomId, 'phaseNum': phaseNum});
+  }
+
+  @override
+  Future<void> reveal(String roomId, String userId) async {
+    final func = FirebaseFunctions.instance.httpsCallable('reveal');
+    await func.call({'roomId': roomId, 'userId': userId});
+  }
+
+  @override
+  Future<void> revealNext(String roomId, String userId) async {
+    final func = FirebaseFunctions.instance.httpsCallable('revealNext');
+    await func.call({'roomId': roomId, 'userId': userId});
+  }
+  
+  @override
+  Future<void> calculateResults(String roomId) async {
+    final func = FirebaseFunctions.instance.httpsCallable('calculateResults');
+    await func.call({'roomId': roomId});
   }
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter_bull/src/custom/data/abstract/entity.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
-import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,13 +12,16 @@ class GameRoom extends Entity with _$GameRoom {
 
   factory GameRoom({
     String? id,
+    String? resultId,
     required String roomCode,
     @Default(GamePhase.lobby) GamePhase phase,
     @Default(0) int subPhase,
     @Default([]) List<String> playerIds,
     @Default({}) Map<String, String> targets,
+    @Default({}) Map<String, bool> truths,
     @Default({}) Map<String, String> texts,
-    @Default({}) Map<String, String> votes,
+    @Default({}) Map<String, List<String>> votes,
+    @Default({}) Map<String, List<int>> voteTimes,
     @Default([]) List<String> playerOrder,
     @Default(0) int progress,
     int? roundEndUTC,

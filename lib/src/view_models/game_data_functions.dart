@@ -6,9 +6,11 @@ class GameDataFunctions {
           List<PlayerWithAvatar> players, String whoseTurnId) =>
       players.singleWhere((p) => p.player.id == whoseTurnId);
 
-  static PlayerWithAvatar Function(String id) playerFromId(
-      List<PlayerWithAvatar> players) {
-    return (id) => players.singleWhere((p) => p.player.id == id);
+  static PlayerWithAvatar playerFromId(
+      String id, List<PlayerWithAvatar> players) {
+    return players.singleWhere((p) {
+      return p.player.id == id;
+    });
   }
 
   static String playersWhoseTurnStatement(GameRoom game, String whoseTurnId) =>
@@ -32,10 +34,10 @@ class GameDataFunctions {
   static List<String> _playersVotedX(
       GameRoom game, String whoseTurnId, String vote) {
     int index = _indexOfWhoseTurn(game, whoseTurnId);
-    return game.votes.entries
-        .map((e) => e.value[index].toUpperCase())
-        .where((v) => v == vote)
-        .toList();
+    return game.votes.entries.where((entry) {
+      final v = entry.value[index].toUpperCase();
+      return v == vote;
+    }).map((e) => e.key).toList();
   }
 
   static int playersVoted(GameRoom game, String whoseTurnId) {

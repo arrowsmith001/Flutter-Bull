@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
-import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
-import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
-import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -16,12 +11,9 @@ import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/1_writing_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/2_game_round_view.dart';
-import 'package:flutter_bull/src/views/4_game_round/2_selecting_player_phase_view.dart';
-import 'package:flutter_bull/src/views/4_game_round/3_voting_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/3_reveals_phase_view.dart';
-import 'package:flutter_bull/src/views/3_game/4_results_phase_view.dart';
+import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 class GameView extends ConsumerStatefulWidget {
   const GameView({super.key});
@@ -50,7 +42,6 @@ class _GameViewState extends ConsumerState<GameView> with RoomID {
 
 
     final vmAsync = ref.watch(vmProvider);
-    Logger().d('vmAsync: ${vmAsync.runtimeType}');
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(onPressed: () {
@@ -109,7 +100,7 @@ class GameRouteNavigationController
       case 'reveals':
         return ForwardPushRoute((context) => scoped(RevealsPhaseView()));
       case 'results':
-        return ForwardPushRoute((context) => scoped(ResultsPhaseView()));
+        return ForwardPushRoute((context) => scoped(ResultView()));
     }
 
     return null;

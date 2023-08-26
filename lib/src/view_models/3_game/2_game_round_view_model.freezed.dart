@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$GameRoundViewModel {
-  String get path => throw _privateConstructorUsedError;
+  RoundPhase get roundPhase => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameRoundViewModelCopyWith<GameRoundViewModel> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $GameRoundViewModelCopyWith<$Res> {
           GameRoundViewModel value, $Res Function(GameRoundViewModel) then) =
       _$GameRoundViewModelCopyWithImpl<$Res, GameRoundViewModel>;
   @useResult
-  $Res call({String path});
+  $Res call({RoundPhase roundPhase});
 }
 
 /// @nodoc
@@ -45,13 +45,13 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = null,
+    Object? roundPhase = null,
   }) {
     return _then(_value.copyWith(
-      path: null == path
-          ? _value.path
-          : path // ignore: cast_nullable_to_non_nullable
-              as String,
+      roundPhase: null == roundPhase
+          ? _value.roundPhase
+          : roundPhase // ignore: cast_nullable_to_non_nullable
+              as RoundPhase,
     ) as $Val);
   }
 }
@@ -64,7 +64,7 @@ abstract class _$$_GameViewModelCopyWith<$Res>
       __$$_GameViewModelCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String path});
+  $Res call({RoundPhase roundPhase});
 }
 
 /// @nodoc
@@ -78,13 +78,13 @@ class __$$_GameViewModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = null,
+    Object? roundPhase = null,
   }) {
     return _then(_$_GameViewModel(
-      path: null == path
-          ? _value.path
-          : path // ignore: cast_nullable_to_non_nullable
-              as String,
+      roundPhase: null == roundPhase
+          ? _value.roundPhase
+          : roundPhase // ignore: cast_nullable_to_non_nullable
+              as RoundPhase,
     ));
   }
 }
@@ -92,14 +92,14 @@ class __$$_GameViewModelCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_GameViewModel implements _GameViewModel {
-  _$_GameViewModel({required this.path});
+  _$_GameViewModel({required this.roundPhase});
 
   @override
-  final String path;
+  final RoundPhase roundPhase;
 
   @override
   String toString() {
-    return 'GameRoundViewModel(path: $path)';
+    return 'GameRoundViewModel(roundPhase: $roundPhase)';
   }
 
   @override
@@ -107,11 +107,12 @@ class _$_GameViewModel implements _GameViewModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_GameViewModel &&
-            (identical(other.path, path) || other.path == path));
+            (identical(other.roundPhase, roundPhase) ||
+                other.roundPhase == roundPhase));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, path);
+  int get hashCode => Object.hash(runtimeType, roundPhase);
 
   @JsonKey(ignore: true)
   @override
@@ -121,10 +122,11 @@ class _$_GameViewModel implements _GameViewModel {
 }
 
 abstract class _GameViewModel implements GameRoundViewModel {
-  factory _GameViewModel({required final String path}) = _$_GameViewModel;
+  factory _GameViewModel({required final RoundPhase roundPhase}) =
+      _$_GameViewModel;
 
   @override
-  String get path;
+  RoundPhase get roundPhase;
   @override
   @JsonKey(ignore: true)
   _$$_GameViewModelCopyWith<_$_GameViewModel> get copyWith =>

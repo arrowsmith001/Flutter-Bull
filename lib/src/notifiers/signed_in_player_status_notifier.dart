@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
-import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

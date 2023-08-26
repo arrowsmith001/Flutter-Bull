@@ -4,13 +4,10 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
-import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
@@ -21,8 +18,6 @@ import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/view_models/game_data_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
-import 'package:rxdart/rxdart.dart';
 
 class UtterBullDeveloperPanel extends ConsumerStatefulWidget {
   const UtterBullDeveloperPanel({super.key});
@@ -118,7 +113,7 @@ class _UtterBullDeveloperPanelState
     if (id == null) return Container();
     return Column(children: [
       ElevatedButton(
-          onPressed: roomId == null || _playerIsInRoom(id)
+          onPressed: roomId == null || !_playerIsInRoom(id)
               ? null
               : () => _server.removeFromRoom(id, roomId!),
           child: Text('Remove from room')),
@@ -167,8 +162,22 @@ class _UtterBullDeveloperPanelState
               onPressed:
                   roomId == null ? null : () => _server.endRound(roomId!, ''),
               child: Text('End Round')),
+          ElevatedButton(
+              onPressed:
+                  roomId == null ? null : () => _server.reveal(roomId!, ''),
+              child: Text('Reveal')),
+          ElevatedButton(
+              onPressed:
+                  roomId == null ? null : () => _server.revealNext(roomId!, ''),
+              child: Text('Next Reveal')),
+          ElevatedButton(
+              onPressed:
+                  roomId == null ? null : () => _server.calculateResults(roomId!),
+              child: Text('Calculate results')),
         ]),
-        // TODO: Test with arbitrary phase changing
+    
+  
+    // TODO: Test with arbitrary phase changing
 /*       
 Row(children: [
           ElevatedButton(

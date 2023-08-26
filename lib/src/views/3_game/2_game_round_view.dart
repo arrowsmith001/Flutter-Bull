@@ -2,9 +2,7 @@ import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
-import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
-import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
@@ -19,18 +17,18 @@ class GameRoundView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _GameRoundViewState();
 }
 
-class _GameRoundViewState extends ConsumerState<GameRoundView> with RoomID {
+class _GameRoundViewState extends ConsumerState<GameRoundView> with RoomID, WhoseTurnID {
   final navController = GameRoundNavigationController();
 
   @override
   Widget build(BuildContext context) {
     
     final vmProvider =
-        gameRoundViewNotifierProvider(roomId);
+        gameRoundViewNotifierProvider(roomId, whoseTurnId);
 
 
-    ref.listen(vmProvider.select((value) => value.value?.path), (_, next) {
-      if(next != null) navController.navigateTo(next);
+    ref.listen(vmProvider.select((value) => value.value), (_, next) {
+      if(next != null) navController.navigate(next);
     });
 
     final vmAsync = ref.watch(vmProvider);
@@ -41,21 +39,22 @@ class _GameRoundViewState extends ConsumerState<GameRoundView> with RoomID {
 }
 
 class GameRoundNavigationController extends NavigationController<GameRoundViewModel> {
-  void navigate(GameRoundViewModel data) => navigateTo(data.path);
+
+  void navigate(GameRoundViewModel data) => navigateTo(data.roundPhase.name);
 
   @override
   Route get defaultRoute => throw UnimplementedError();
 
   @override
   String generateInitialRoute(GameRoundViewModel data) {
-    return data.path;
+    return data.roundPhase.name;
   }
 
   @override
   PageRoute? generateRoute() {
     switch (nextRoutePath) {
       case 'selecting':
-        return ForwardPushRoute((context) => scoped(SelectingPlayerPhaseView()));
+        return ForwardPushRoute((context) => scoped(SelectingPlayerPhaseView())); 
       case 'voting':
         return ForwardPushRoute((context) => scoped(VotingPhaseView()));
     }

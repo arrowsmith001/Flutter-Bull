@@ -1,12 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
-import 'package:flutter_bull/src/providers/app_services.dart';
-import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final int timeoutSeconds = 3;

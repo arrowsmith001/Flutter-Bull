@@ -1,10 +1,6 @@
-import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
-import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'dart:math' as Math;
 
 part 'game_notifier_state.freezed.dart';
 

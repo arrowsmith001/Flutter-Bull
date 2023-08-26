@@ -1,4 +1,3 @@
-import 'dart:js';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -6,7 +5,6 @@ import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
@@ -16,27 +14,19 @@ import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/developer/utter_bull_developer_panel.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
-import 'package:flutter_bull/src/model/game_room_state.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
-import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
-import 'package:flutter_bull/src/views/1_auth/main_view.dart';
 import 'package:flutter_bull/src/views/0_app/auth_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
-import 'package:logger/logger.dart';
 
 import 'src/custom/data/implemented/firebase.dart';
 
-// TODO: Reveals phase to end
 // TODO: Formalize events in UI layer
-// TODO: Developer UI
 // TODO: Consider firebase function listeners...
 
 final int instances = 1;
@@ -44,7 +34,6 @@ final bool isEmulatingFirebase = true;
 final bool devToolsOn = true;
 
 void main() async {
-  // TODO: Generalize init
 
   FlutterError.demangleStackTrace = (StackTrace stack) {
     if (stack is Trace) return stack.vmTrace;
@@ -69,8 +58,6 @@ void main() async {
 
   runApp(MyApp());
 }
-
-// TODO: Figure out TDD
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});

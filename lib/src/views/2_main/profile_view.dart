@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

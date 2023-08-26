@@ -73,7 +73,13 @@ export const startGame = http.onCall(
 
         var roomId = req.data as string;
 
-        startGameImpl(roomId);
+        try {
+
+            await startGameImpl(roomId);
+        }
+        catch (e) {
+            console.log(e);
+        }
     });
 
 export const returnToLobby = http.onCall(
@@ -125,6 +131,24 @@ export const endRound = http.onCall(
         await endRoundImpl(roomId, userId);
     });
 
+export const reveal = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var userId = req.data['userId'] as string;
+
+        await revealImpl(roomId, userId);
+    });
+
+export const revealNext = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+        var userId = req.data['userId'] as string;
+
+        await revealNextImpl(roomId, userId);
+    });
+
 
 // Blocking
 /* exports.onUserCreated = functionsv2.identity.beforeUserCreated(async event => {
@@ -152,6 +176,14 @@ export const setSubPhase = http.onCall(
         var phaseNum = req.data['phaseNum'] as number;
 
         await setSubPhaseImpl(roomId, phaseNum);
+    });
+
+export const calculateResults = http.onCall(
+    async (req: http.CallableRequest) => {
+
+        var roomId = req.data['roomId'] as string;
+
+        await _calculateResults(roomId);
     });
 
 
@@ -266,11 +298,12 @@ async function removeFromRoomImpl(userId: string, roomId: string) {
 }
 
 enum GameRoomPhase {
-    lobby, writing, selecting, reading, reveals, results
+    lobby, writing, round, reveals, results
 }
 
 // TODO: Ensure player cannot join while starting game
 async function startGameImpl(roomId: string) {
+
     await db.runTransaction(async (txn) => {
 
         var roomRef = db.collection('rooms').doc(roomId);
@@ -283,6 +316,7 @@ async function startGameImpl(roomId: string) {
 
         // Generate targets map
         var targets = _getTruthOrLieTargetMap(playerIds);
+        var truths = new Map(Array.from(targets).map((([k, v]) => [k, k == v])));
 
         // Generate empty texts
         var texts = new Map<String, String>();
@@ -291,19 +325,20 @@ async function startGameImpl(roomId: string) {
         var playerOrder = Array.from(playerIds);
         _shuffleArray(playerOrder);
 
-        // Generate empty votes
-        var votes = new Map<String, String>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? 'p' : '-').join('')]));
+        // Generate empty votes & vote times
+        var votes = new Map<String, String[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? 'p' : '-')]));
+        var voteTimes = new Map<String, Number[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? -999 : -1)]));
 
         txn
             .update(roomRef, { 'targets': Object.fromEntries(targets) })
+            .update(roomRef, { 'truths': Object.fromEntries(truths) })
             .update(roomRef, { 'votes': Object.fromEntries(votes) })
+            .update(roomRef, { 'voteTimes': Object.fromEntries(voteTimes) })
             .update(roomRef, { 'texts': Object.fromEntries(texts) })
             .update(roomRef, { 'playerOrder': playerOrder })
             .update(roomRef, { 'progress': 0 })
             .update(roomRef, { 'phase': GameRoomPhase.writing })
             .update(roomRef, { 'subPhase': 0 });
-
-
     });
 
 
@@ -342,7 +377,7 @@ async function submitTextImpl(roomId: string, userId: string, text: string) {
         var numberOfTargets = Object.keys(targets).length;
 
         if (numberOfSubmissions == numberOfTargets) {
-            txn.update(roomRef, { 'phase': GameRoomPhase.selecting });
+            txn.update(roomRef, { 'phase': GameRoomPhase.round });
         }
 
     });
@@ -378,20 +413,33 @@ async function voteImpl(roomId: string, userId: string, truthOrLie: boolean) {
         var currentRoom = await txn.get(roomRef);
         var currentRoomData = currentRoom.data()!;
 
-        var thisPlayersVotes = currentRoomData['votes'][userId];
+        // Calculate time taken to vote
+        var roundEndUTC = currentRoomData['roundEndUTC'];
+        var roundTimeSeconds: number = currentRoomData['settings']['roundTimeSeconds'];
+        var timeTakenToVoteMilliseconds: number = (roundTimeSeconds * 1000) - (roundEndUTC - Date.now().valueOf());
+        var timeTakenToVoteSeconds = Math.floor(timeTakenToVoteMilliseconds / 1000);
 
+        // Clamp time value
+        timeTakenToVoteSeconds = Math.max(timeTakenToVoteSeconds, 0);
+        timeTakenToVoteSeconds = Math.min(timeTakenToVoteSeconds, roundTimeSeconds);
+
+        // Get appropriate vote entry symbol
         var progress = currentRoomData['progress'] as number;
-        var symbolAtProgress = thisPlayersVotes.charAt(progress);
+        var thisPlayersVotes = currentRoomData['votes'][userId];
+        var symbolAtProgress = thisPlayersVotes[progress];
 
+        // If player is able to vote
         if (symbolAtProgress == '-') {
 
             var voteSymbol = truthOrLie ? 't' : 'l';
-            var newVoteString = _substituteCharAt(thisPlayersVotes, progress, voteSymbol);
-            currentRoomData['votes'][userId] = newVoteString;
+
+            currentRoomData['votes'][userId][progress] = voteSymbol;
+            currentRoomData['voteTimes'][userId][progress] = timeTakenToVoteSeconds;
 
             console.log('Adding vote ' + voteSymbol + ' for ' + userId + ' in ' + roomId);
 
             txn.update(roomRef, { 'votes': currentRoomData['votes'] });
+            txn.update(roomRef, { 'voteTimes': currentRoomData['voteTimes'] });
         }
         else if (symbolAtProgress == 'p') {
             console.log('Error voting: ' + userId + ' cant vote for self');
@@ -401,10 +449,10 @@ async function voteImpl(roomId: string, userId: string, truthOrLie: boolean) {
         }
 
         // Check votes progress
-        var votes = Object.values<string>(currentRoomData['votes']);
+        var votes = Object.values<Array<String>>(currentRoomData['votes']);
         console.log(votes);
 
-        var allVoted = votes.every((v) => v.charAt(progress) != '-');
+        var allVoted = votes.every((v) => v[progress] != '-');
         if (allVoted) {
             // End round
             txn.update(roomRef, { 'roundEndUTC': 0 });
@@ -426,14 +474,20 @@ async function endRoundImpl(roomId: string, userId: string) {
         var currentRoom = await txn.get(roomRef);
         var currentRoomData = currentRoom.data()!;
 
-        var playerOrder = currentRoomData['playerOrder'] as string[];
-        var progress = currentRoomData['progress'] as number;
+        var playerOrder = Array.from(currentRoomData['playerOrder']);
+        var progress = currentRoomData['progress'];
 
-        for (var id in currentRoomData['votes']) {
-            var v = currentRoomData['votes'][id] as string;
-            if (v.charAt(progress) == '-') {
-                var newVoteString = _substituteCharAt(v, progress, 'n');
-                currentRoomData['votes'][id] = newVoteString;
+        var votes = currentRoomData['votes'];
+
+        for (var key in Object.keys(votes)) {
+
+            // I don't know why this is returning an integer array index as a String, and not a playerId
+            var index = Number.parseInt(key);
+
+            var voteArray = Object.values(votes).at(index) as String[];
+
+            if (voteArray[progress] == '-') {
+                voteArray[progress] = 'n';
             }
         }
 
@@ -442,7 +496,12 @@ async function endRoundImpl(roomId: string, userId: string) {
         if (playerOrder.length <= progress) {
             txn
                 .update(roomRef, { 'votes': currentRoomData['votes'] })
-                .update(roomRef, { 'progress': 0, 'phase': GameRoomPhase.reveals });
+                .update(roomRef, { 'progress': 0, 'subPhase': 0, 'phase': GameRoomPhase.reveals });
+
+
+            // All data should be ready at this point
+            _calculateResults(roomId);
+
         }
         else {
 
@@ -455,6 +514,57 @@ async function endRoundImpl(roomId: string, userId: string) {
 
     });
 
+}
+
+// TODO: Add more validation
+// If subPhase == 0 -> subPhase set to 1
+async function revealImpl(roomId: string, userId: string) {
+
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn) => {
+
+        var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
+
+        var currentSubPhase = currentRoomData['subPhase'] as number;
+
+        if (currentSubPhase == 0) {
+
+            txn
+                .update(roomRef, { 'subPhase': 1 });
+        }
+
+    });
+}
+
+// Check progress. If appropriate, increment progress. Else, advance phase to Results.
+async function revealNextImpl(roomId: string, userId: string) {
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn) => {
+
+        var currentRoom = await txn.get(roomRef);
+        var currentRoomData = currentRoom.data()!;
+
+        var playerOrder = currentRoomData['playerOrder'] as [];
+
+        var numberOfPlayers = playerOrder.length;
+
+        var progress = currentRoomData['progress'] as number;
+        progress++;
+
+        if (numberOfPlayers <= progress) {
+            txn
+                .update(roomRef, { 'phase': GameRoomPhase.results });
+        }
+        else {
+            txn
+                .update(roomRef, { 'progress': progress, 'subPhase': 0 });
+
+        }
+
+    });
 }
 
 
@@ -475,15 +585,8 @@ async function setSubPhaseImpl(roomId: string, phaseNum: number) {
                 .update(roomRef, { 'subPhase': phaseNum });
         }
 
-
-
-
     });
-
 }
-
-
-
 
 
 async function handleCreatedUser(user: auth.UserRecord) {
@@ -691,7 +794,112 @@ function _shuffleArray(array: any[]): void {
 }
 
 
-function _substituteCharAt(str: string, pos: number, char: string): string {
-    return str.substring(0, pos) + char + str.substring(pos + 1);
+
+async function _calculateResults(roomId: string) {
+
+    var roomRef = db.collection('rooms').doc(roomId);
+
+    await db.runTransaction(async (txn) => {
+
+        var roomQuery = await txn.get(roomRef);
+        var room = roomQuery.data()!;
+
+        // TODO: Calculate
+
+        const order = room['playerOrder'] as string[];
+        const votes = room['votes'];
+        const truths = room['truths'];
+
+        console.log(order);
+        console.log(votes);
+        console.log(truths);
+
+        const scores = new Map(Array.from(order).map((playerId => [playerId, 0])));
+
+        const numberOfRounds = order.length;
+
+
+        // For each round...
+        for (let roundNum = 0; roundNum < numberOfRounds; roundNum++) {
+
+
+            var playerWhoseTurn = order[roundNum];
+            var truthThisRound = room['truths'][playerWhoseTurn];
+
+            var numberVotedTrue = 0;
+            var numberVotedFalse = 0;
+            var numberOfEligibleVoters = 0;
+
+            // Count votes & voters
+            order.forEach((playerId) => {
+
+                var vote = votes[playerId][roundNum];
+
+                if (vote != 'p') {
+                    numberOfEligibleVoters++;
+                }
+
+                switch (vote) {
+                    case 't':
+                        numberVotedTrue++;
+                        break;
+                    case 'l':
+                        numberVotedFalse++;
+                        break;
+                }
+            });
+
+            var proportionVoteTrue = numberVotedTrue / numberOfEligibleVoters;
+            var proportionVoteFalse = numberVotedFalse / numberOfEligibleVoters;
+
+            var proportionVotedCorrectly = truthThisRound ? proportionVoteTrue : proportionVoteFalse;
+
+            console.log(numberVotedTrue);
+            console.log(numberVotedFalse);
+            console.log(numberOfEligibleVoters);
+
+            // For each player...
+            order.forEach((playerId) => {
+
+                var vote = votes[playerId][roundNum];
+
+                switch (vote) {
+                    case 't':
+                        if (truthThisRound) {
+                            scores.set(playerId, scores.get(playerId)! + 10)
+                        }
+                        break;
+                    case 'l':
+                        if (!truthThisRound) {
+                            scores.set(playerId, scores.get(playerId)! + 10)
+                        }
+                        break;
+                    case 'p':
+
+                        // More people voted incorrectly than not
+                        if (proportionVotedCorrectly < 0.5) {
+                            scores.set(playerId, scores.get(playerId)! + 25);
+                        }
+
+                        break;
+                }
+
+            });
+
+
+        }
+
+        console.log(scores);
+
+
+    })
+
+
+
+
+
 }
+/* function _substituteCharAt(str: string, pos: number, char: string): string {
+    return str.substring(0, pos) + char + str.substring(pos + 1);
+} */
 

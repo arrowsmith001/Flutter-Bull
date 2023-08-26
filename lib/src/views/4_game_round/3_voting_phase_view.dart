@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -6,13 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/states/timer_state.dart';
-import 'package:flutter_bull/src/notifiers/timer_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 class VotingPhaseView extends ConsumerStatefulWidget {
   const VotingPhaseView({super.key});
@@ -27,17 +23,18 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 
+  get gameNotifier => ref.read(gameNotifierProvider(roomId).notifier);
+  
   void onVoteTrue() => vote(true);
+
 
   void onVoteBull() => vote(false);
 
   void onEndRound() {
-    final gameNotifier = ref.read(gameNotifierProvider(roomId).notifier);
     gameNotifier.endRound(userId);
   }
 
   void vote(bool trueOrFalse) {
-    final gameNotifier = ref.read(gameNotifierProvider(roomId).notifier);
     gameNotifier.vote(userId, trueOrFalse);
   }
 

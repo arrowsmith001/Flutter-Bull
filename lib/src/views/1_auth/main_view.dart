@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
-import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/change_avatar_view.dart';
@@ -16,9 +12,6 @@ import 'package:flutter_bull/src/views/2_main/pending_view.dart';
 import 'package:flutter_bull/src/views/2_main/profile_view.dart';
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:go_router/go_router.dart';
-import 'package:go_router_tabs/go_router_tabs.dart';
 import 'package:logger/logger.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 

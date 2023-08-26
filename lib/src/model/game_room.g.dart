@@ -8,6 +8,7 @@ part of 'game_room.dart';
 
 _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
       id: json['id'] as String?,
+      resultId: json['resultId'] as String?,
       roomCode: json['roomCode'] as String,
       phase: $enumDecodeNullable(_$GamePhaseEnumMap, json['phase']) ??
           GamePhase.lobby,
@@ -20,12 +21,22 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
             (k, e) => MapEntry(k, e as String),
           ) ??
           const {},
+      truths: (json['truths'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as bool),
+          ) ??
+          const {},
       texts: (json['texts'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(k, e as String),
           ) ??
           const {},
       votes: (json['votes'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(k, e as String),
+            (k, e) => MapEntry(
+                k, (e as List<dynamic>).map((e) => e as String).toList()),
+          ) ??
+          const {},
+      voteTimes: (json['voteTimes'] as Map<String, dynamic>?)?.map(
+            (k, e) =>
+                MapEntry(k, (e as List<dynamic>).map((e) => e as int).toList()),
           ) ??
           const {},
       playerOrder: (json['playerOrder'] as List<dynamic>?)
@@ -42,13 +53,16 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
 Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'resultId': instance.resultId,
       'roomCode': instance.roomCode,
       'phase': _$GamePhaseEnumMap[instance.phase]!,
       'subPhase': instance.subPhase,
       'playerIds': instance.playerIds,
       'targets': instance.targets,
+      'truths': instance.truths,
       'texts': instance.texts,
       'votes': instance.votes,
+      'voteTimes': instance.voteTimes,
       'playerOrder': instance.playerOrder,
       'progress': instance.progress,
       'roundEndUTC': instance.roundEndUTC,

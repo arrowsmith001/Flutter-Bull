@@ -1,8 +1,10 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
+// ignore: unused_import
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
@@ -80,7 +82,7 @@ class _MyHomePageState extends ConsumerState<HomeView> {
                 child: Text('Edit Profile')),
             TextButton(
                 onPressed: () => authNotifier.signOut(),
-                child: Text('Sign out'))
+                child: Text('Sign out')),
           ],
         ),
       ),

@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/timer_notifier.dart';
 import 'package:flutter_bull/src/view_models/4_game_round/2_selecting_player_phase_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:logger/logger.dart';
 
 part 'selecting_player_phase_view_notifier.g.dart';
 

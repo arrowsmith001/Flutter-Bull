@@ -1,19 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
-import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
-import 'package:flutter_bull/src/providers/app_services.dart';
-import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
-import 'package:flutter_bull/src/views/5_reveals_phase/reveal_view.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:logger/logger.dart';
 
 part 'reveal_view_notifier.g.dart';
 

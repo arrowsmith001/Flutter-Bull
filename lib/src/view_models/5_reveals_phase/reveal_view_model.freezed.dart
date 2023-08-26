@@ -24,6 +24,7 @@ mixin _$RevealViewModel {
   List<PlayerWithAvatar> get playersVotedTruth =>
       throw _privateConstructorUsedError;
   bool get isRevealed => throw _privateConstructorUsedError;
+  bool get isMyTurn => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $RevealViewModelCopyWith<RevealViewModel> get copyWith =>
@@ -42,7 +43,8 @@ abstract class $RevealViewModelCopyWith<$Res> {
       bool isStatementTruth,
       List<PlayerWithAvatar> playersVotedLie,
       List<PlayerWithAvatar> playersVotedTruth,
-      bool isRevealed});
+      bool isRevealed,
+      bool isMyTurn});
 }
 
 /// @nodoc
@@ -64,6 +66,7 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
     Object? playersVotedLie = null,
     Object? playersVotedTruth = null,
     Object? isRevealed = null,
+    Object? isMyTurn = null,
   }) {
     return _then(_value.copyWith(
       playerWhoseTurn: null == playerWhoseTurn
@@ -90,6 +93,10 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
           ? _value.isRevealed
           : isRevealed // ignore: cast_nullable_to_non_nullable
               as bool,
+      isMyTurn: null == isMyTurn
+          ? _value.isMyTurn
+          : isMyTurn // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -108,7 +115,8 @@ abstract class _$$_RevealViewModelCopyWith<$Res>
       bool isStatementTruth,
       List<PlayerWithAvatar> playersVotedLie,
       List<PlayerWithAvatar> playersVotedTruth,
-      bool isRevealed});
+      bool isRevealed,
+      bool isMyTurn});
 }
 
 /// @nodoc
@@ -128,6 +136,7 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
     Object? playersVotedLie = null,
     Object? playersVotedTruth = null,
     Object? isRevealed = null,
+    Object? isMyTurn = null,
   }) {
     return _then(_$_RevealViewModel(
       playerWhoseTurn: null == playerWhoseTurn
@@ -154,6 +163,10 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
           ? _value.isRevealed
           : isRevealed // ignore: cast_nullable_to_non_nullable
               as bool,
+      isMyTurn: null == isMyTurn
+          ? _value.isMyTurn
+          : isMyTurn // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -167,7 +180,8 @@ class _$_RevealViewModel implements _RevealViewModel {
       required this.isStatementTruth,
       required final List<PlayerWithAvatar> playersVotedLie,
       required final List<PlayerWithAvatar> playersVotedTruth,
-      required this.isRevealed})
+      required this.isRevealed,
+      required this.isMyTurn})
       : _playersVotedLie = playersVotedLie,
         _playersVotedTruth = playersVotedTruth;
 
@@ -196,10 +210,12 @@ class _$_RevealViewModel implements _RevealViewModel {
 
   @override
   final bool isRevealed;
+  @override
+  final bool isMyTurn;
 
   @override
   String toString() {
-    return 'RevealViewModel._(playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, isStatementTruth: $isStatementTruth, playersVotedLie: $playersVotedLie, playersVotedTruth: $playersVotedTruth, isRevealed: $isRevealed)';
+    return 'RevealViewModel._(playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, isStatementTruth: $isStatementTruth, playersVotedLie: $playersVotedLie, playersVotedTruth: $playersVotedTruth, isRevealed: $isRevealed, isMyTurn: $isMyTurn)';
   }
 
   @override
@@ -219,7 +235,9 @@ class _$_RevealViewModel implements _RevealViewModel {
             const DeepCollectionEquality()
                 .equals(other._playersVotedTruth, _playersVotedTruth) &&
             (identical(other.isRevealed, isRevealed) ||
-                other.isRevealed == isRevealed));
+                other.isRevealed == isRevealed) &&
+            (identical(other.isMyTurn, isMyTurn) ||
+                other.isMyTurn == isMyTurn));
   }
 
   @override
@@ -230,7 +248,8 @@ class _$_RevealViewModel implements _RevealViewModel {
       isStatementTruth,
       const DeepCollectionEquality().hash(_playersVotedLie),
       const DeepCollectionEquality().hash(_playersVotedTruth),
-      isRevealed);
+      isRevealed,
+      isMyTurn);
 
   @JsonKey(ignore: true)
   @override
@@ -246,7 +265,8 @@ abstract class _RevealViewModel implements RevealViewModel {
       required final bool isStatementTruth,
       required final List<PlayerWithAvatar> playersVotedLie,
       required final List<PlayerWithAvatar> playersVotedTruth,
-      required final bool isRevealed}) = _$_RevealViewModel;
+      required final bool isRevealed,
+      required final bool isMyTurn}) = _$_RevealViewModel;
 
   @override
   PlayerWithAvatar get playerWhoseTurn;
@@ -260,6 +280,8 @@ abstract class _RevealViewModel implements RevealViewModel {
   List<PlayerWithAvatar> get playersVotedTruth;
   @override
   bool get isRevealed;
+  @override
+  bool get isMyTurn;
   @override
   @JsonKey(ignore: true)
   _$$_RevealViewModelCopyWith<_$_RevealViewModel> get copyWith =>
