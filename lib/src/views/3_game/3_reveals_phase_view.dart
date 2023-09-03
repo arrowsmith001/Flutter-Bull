@@ -30,6 +30,7 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
 
 /*    final vmProvider = revealsPhaseViewNotifierProvider(roomId);
    final vmAsync = ref.watch(vmProvider); */
+   
     ref.listen(vmProvider.select((value) => value.valueOrNull?.path),
         (_, next) {
       if (next != null) navController.navigateTo(next);
@@ -59,6 +60,7 @@ class RevealsPhaseNavigationController
 
   @override
   PageRoute? generateRoute() {
+
     final whoseTurn = nextRoutePath;
 
     return ForwardPushRoute((context) => ProviderScope(

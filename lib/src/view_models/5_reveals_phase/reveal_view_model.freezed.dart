@@ -25,6 +25,8 @@ mixin _$RevealViewModel {
       throw _privateConstructorUsedError;
   bool get isRevealed => throw _privateConstructorUsedError;
   bool get isMyTurn => throw _privateConstructorUsedError;
+  List<AchievementWithIcon> get achievements =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $RevealViewModelCopyWith<RevealViewModel> get copyWith =>
@@ -44,7 +46,8 @@ abstract class $RevealViewModelCopyWith<$Res> {
       List<PlayerWithAvatar> playersVotedLie,
       List<PlayerWithAvatar> playersVotedTruth,
       bool isRevealed,
-      bool isMyTurn});
+      bool isMyTurn,
+      List<AchievementWithIcon> achievements});
 }
 
 /// @nodoc
@@ -67,6 +70,7 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
     Object? playersVotedTruth = null,
     Object? isRevealed = null,
     Object? isMyTurn = null,
+    Object? achievements = null,
   }) {
     return _then(_value.copyWith(
       playerWhoseTurn: null == playerWhoseTurn
@@ -97,6 +101,10 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
           ? _value.isMyTurn
           : isMyTurn // ignore: cast_nullable_to_non_nullable
               as bool,
+      achievements: null == achievements
+          ? _value.achievements
+          : achievements // ignore: cast_nullable_to_non_nullable
+              as List<AchievementWithIcon>,
     ) as $Val);
   }
 }
@@ -116,7 +124,8 @@ abstract class _$$_RevealViewModelCopyWith<$Res>
       List<PlayerWithAvatar> playersVotedLie,
       List<PlayerWithAvatar> playersVotedTruth,
       bool isRevealed,
-      bool isMyTurn});
+      bool isMyTurn,
+      List<AchievementWithIcon> achievements});
 }
 
 /// @nodoc
@@ -137,6 +146,7 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
     Object? playersVotedTruth = null,
     Object? isRevealed = null,
     Object? isMyTurn = null,
+    Object? achievements = null,
   }) {
     return _then(_$_RevealViewModel(
       playerWhoseTurn: null == playerWhoseTurn
@@ -167,6 +177,10 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
           ? _value.isMyTurn
           : isMyTurn // ignore: cast_nullable_to_non_nullable
               as bool,
+      achievements: null == achievements
+          ? _value._achievements
+          : achievements // ignore: cast_nullable_to_non_nullable
+              as List<AchievementWithIcon>,
     ));
   }
 }
@@ -181,9 +195,11 @@ class _$_RevealViewModel implements _RevealViewModel {
       required final List<PlayerWithAvatar> playersVotedLie,
       required final List<PlayerWithAvatar> playersVotedTruth,
       required this.isRevealed,
-      required this.isMyTurn})
+      required this.isMyTurn,
+      required final List<AchievementWithIcon> achievements})
       : _playersVotedLie = playersVotedLie,
-        _playersVotedTruth = playersVotedTruth;
+        _playersVotedTruth = playersVotedTruth,
+        _achievements = achievements;
 
   @override
   final PlayerWithAvatar playerWhoseTurn;
@@ -212,10 +228,17 @@ class _$_RevealViewModel implements _RevealViewModel {
   final bool isRevealed;
   @override
   final bool isMyTurn;
+  final List<AchievementWithIcon> _achievements;
+  @override
+  List<AchievementWithIcon> get achievements {
+    if (_achievements is EqualUnmodifiableListView) return _achievements;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_achievements);
+  }
 
   @override
   String toString() {
-    return 'RevealViewModel._(playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, isStatementTruth: $isStatementTruth, playersVotedLie: $playersVotedLie, playersVotedTruth: $playersVotedTruth, isRevealed: $isRevealed, isMyTurn: $isMyTurn)';
+    return 'RevealViewModel._(playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, isStatementTruth: $isStatementTruth, playersVotedLie: $playersVotedLie, playersVotedTruth: $playersVotedTruth, isRevealed: $isRevealed, isMyTurn: $isMyTurn, achievements: $achievements)';
   }
 
   @override
@@ -237,7 +260,9 @@ class _$_RevealViewModel implements _RevealViewModel {
             (identical(other.isRevealed, isRevealed) ||
                 other.isRevealed == isRevealed) &&
             (identical(other.isMyTurn, isMyTurn) ||
-                other.isMyTurn == isMyTurn));
+                other.isMyTurn == isMyTurn) &&
+            const DeepCollectionEquality()
+                .equals(other._achievements, _achievements));
   }
 
   @override
@@ -249,7 +274,8 @@ class _$_RevealViewModel implements _RevealViewModel {
       const DeepCollectionEquality().hash(_playersVotedLie),
       const DeepCollectionEquality().hash(_playersVotedTruth),
       isRevealed,
-      isMyTurn);
+      isMyTurn,
+      const DeepCollectionEquality().hash(_achievements));
 
   @JsonKey(ignore: true)
   @override
@@ -260,13 +286,15 @@ class _$_RevealViewModel implements _RevealViewModel {
 
 abstract class _RevealViewModel implements RevealViewModel {
   factory _RevealViewModel(
-      {required final PlayerWithAvatar playerWhoseTurn,
-      required final String playerWhoseTurnStatement,
-      required final bool isStatementTruth,
-      required final List<PlayerWithAvatar> playersVotedLie,
-      required final List<PlayerWithAvatar> playersVotedTruth,
-      required final bool isRevealed,
-      required final bool isMyTurn}) = _$_RevealViewModel;
+          {required final PlayerWithAvatar playerWhoseTurn,
+          required final String playerWhoseTurnStatement,
+          required final bool isStatementTruth,
+          required final List<PlayerWithAvatar> playersVotedLie,
+          required final List<PlayerWithAvatar> playersVotedTruth,
+          required final bool isRevealed,
+          required final bool isMyTurn,
+          required final List<AchievementWithIcon> achievements}) =
+      _$_RevealViewModel;
 
   @override
   PlayerWithAvatar get playerWhoseTurn;
@@ -282,6 +310,8 @@ abstract class _RevealViewModel implements RevealViewModel {
   bool get isRevealed;
   @override
   bool get isMyTurn;
+  @override
+  List<AchievementWithIcon> get achievements;
   @override
   @JsonKey(ignore: true)
   _$$_RevealViewModelCopyWith<_$_RevealViewModel> get copyWith =>

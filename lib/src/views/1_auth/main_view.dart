@@ -11,6 +11,8 @@ import 'package:flutter_bull/src/views/2_main/home_view.dart';
 import 'package:flutter_bull/src/views/2_main/pending_view.dart';
 import 'package:flutter_bull/src/views/2_main/profile_view.dart';
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
+import 'package:flutter_bull/src/widgets/common/error_popup.dart';
+import 'package:flutter_bull/src/widgets/common/loading_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
@@ -84,35 +86,18 @@ class _MainViewState extends ConsumerState<MainView> {
         _onPlayerNameChanged);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       body: signedInPlayerAsync.when(data: (playerStatus) {
-        return Stack(
-          children: [
-            ControlledNavigator<SignedInPlayerStatusNotifierState>(
-              observers: [CoordinatedRouteObserver(), HeroController()],
+        return ControlledNavigator<SignedInPlayerStatusNotifierState>(
+              observers: [
+                CoordinatedRouteObserver(), 
+                HeroController()],
               data: playerStatus,
               controller: nav,
-            ),
-            busy
-                ? Positioned.fill(
-                    child: Container(
-                    color: Colors.grey.withAlpha(175),
-                    child: Center(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(messageWhileBusy),
-                        CircularProgressIndicator()
-                      ],
-                    )),
-                  ))
-                : SizedBox.shrink()
-          ],
-        );
+            );
       }, loading: () {
-        return Center(child: Text('Provisioning player profile'));
-      }, error: (_, __) {
-        return Text('There was an error');
+        return LoadingWidget();
+      }, error: (e, _) {
+        return ErrorPopup(e.toString());
       }),
     );
   }

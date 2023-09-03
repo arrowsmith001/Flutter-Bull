@@ -11,6 +11,7 @@ part 'player_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class PlayerNotifier extends _$PlayerNotifier {
+  
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
   DataService get _dbService => ref.read(dataServiceProvider);
   ImageStorageService get _imgService => ref.read(imageStorageServiceProvider);

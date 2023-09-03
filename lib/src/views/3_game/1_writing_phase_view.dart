@@ -4,7 +4,7 @@ import 'package:flutter_bull/src/notifiers/view_models/writing_phase_view_notifi
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WritingPhaseView extends ConsumerStatefulWidget {

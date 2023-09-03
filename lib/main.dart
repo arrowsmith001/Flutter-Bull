@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
@@ -9,33 +8,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
-import 'package:flutter_bull/src/custom/style/utter_bull_theme.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/developer/utter_bull_developer_panel.dart';
+import 'package:flutter_bull/src/model/achievement.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
+import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/views/0_app/auth_container.dart';
+import 'package:flutter_bull/src/widgets/utter_bull_app.dart';
+import 'package:flutter_bull/src/widgets/utter_bull_master_background.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
+import 'package:logger/logger.dart';
 
 import 'src/custom/data/implemented/firebase.dart';
 
 // TODO: Formalize events in UI layer
-// TODO: Consider firebase function listeners...
+// TODO: Consider firebase function listeners in TS file
 
 final int instances = 1;
 final bool isEmulatingFirebase = true;
 final bool devToolsOn = true;
 
 void main() async {
-
   FlutterError.demangleStackTrace = (StackTrace stack) {
+
     if (stack is Trace) return stack.vmTrace;
     if (stack is Chain) return stack.toTrace().vmTrace;
     return stack;
@@ -59,6 +63,7 @@ void main() async {
   runApp(MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
@@ -68,7 +73,6 @@ class MyApp extends StatelessWidget {
         ? _buildMultipleInstances(instances)
         : _buildInstance();
   }
-
 
   // Fake auth, Fake server, Real database, Real streams
   Widget _buildMultipleInstances(int numberOfInstances) {
@@ -111,7 +115,7 @@ class MyApp extends StatelessWidget {
             length: numberOfInstances,
             data: userIds,
             transform: (_, userId) => ProvisionedUtterBullFunctionUser(
-              UtterBullApp(),
+              const UtterBullApp(),
               authService:
                   //FirebaseAuthService(),
                   authMap[userId]!,
@@ -125,8 +129,6 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _buildInstance() {
-
-
     //auth.signOut();
 
     final auth = FirebaseAuthService();
@@ -135,28 +137,47 @@ class MyApp extends StatelessWidget {
     final streams = FirebaseDataStreamService();
     final images = FirebaseImageStorageService();
 
+    // data.achievementRepo.createItem(Achievement(id: 'fooledAll', title: 'Fooled All', description: '* fooled the whole room', score: 30, iconPath: 'icons/achievements/default.png'));
+    // data.achievementRepo.createItem(Achievement(id: 'fooledMost', title: 'Fooled Most', description: '* fooled most of the room', score: 20, iconPath: 'icons/achievements/default.png'));
+    // data.achievementRepo.createItem(Achievement(id: 'fooledSome', title: 'Fooled Some', description: '* fooled some of the room', score: 10, iconPath: 'icons/achievements/default.png'));
+    // data.achievementRepo.createItem(Achievement(id: 'votedCorrectly', title: 'Voted Correctly', description: '* voted correctly', score: 10, iconPath: 'icons/achievements/default.png'));
+    // data.achievementRepo.createItem(Achievement(id: 'votedCorrectlyQuickest', title: 'Quickest Correct Vote', description: '* voted correctly in the quickest time', score: 20, iconPath: 'icons/achievements/default.png'));
+
     return WidgetsApp(
       builder: (context, _) => Row(
-        children: 
-      [
-        ProvisionedUtterBullFunctionUser(
-          UtterBullApp(),
-          authService: auth,
-          server: server,
-          streamService: streams,
-          dataService: data,
-          imageService: images,
+        children: [
+          ProvisionedUtterBullFunctionUser(
+            Container(
+              color: Colors.black,
+              child: AspectRatio(
+                aspectRatio: 9 / 20,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: const UtterBullApp(),
+                  ),
+                ),
+              ),
+            ),
+            authService: auth,
+            server: server,
+            streamService: streams,
+            dataService: data,
+            imageService: images,
           ),
-        Expanded(child: ProvisionedUtterBullFunctionUser(
+          Expanded(
+              child: ProvisionedUtterBullFunctionUser(
             UtterBullDeveloperPanel(),
             authService: auth,
             server: server,
             streamService: streams,
             dataService: data,
             imageService: images,
-            ))
-    
-      ],), color: Colors.black,
+          ))
+        ],
+      ),
+      color: Colors.black,
     );
   }
 
@@ -168,6 +189,10 @@ class MyApp extends StatelessWidget {
           FirebaseDatabaseService('players', Player.fromJson)),
       playerStatusRepo: Repository<PlayerStatus>(
           FirebaseDatabaseService('playerStatuses', PlayerStatus.fromJson)),
+      resultRepo: Repository<GameResult>(
+          FirebaseDatabaseService('results', GameResult.fromJson)),
+      achievementRepo: Repository<Achievement>(
+          FirebaseDatabaseService('achievements', Achievement.fromJson)),
     );
   }
 }
@@ -180,7 +205,8 @@ class ProvisionedUtterBullFunctionUser extends StatelessWidget {
   final ImageStorageService imageService;
   final Widget child;
 
-  const ProvisionedUtterBullFunctionUser(this.child, {
+  const ProvisionedUtterBullFunctionUser(
+    this.child, {
     required this.authService,
     required this.server,
     required this.streamService,
@@ -190,141 +216,13 @@ class ProvisionedUtterBullFunctionUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-        overrides: 
-        [
-          authServiceProvider.overrideWithValue(authService),
-          utterBullServerProvider.overrideWithValue(server),
-          dataStreamServiceProvider.overrideWithValue(streamService),
-          dataServiceProvider.overrideWithValue(dataService),
-          imageStorageServiceProvider.overrideWithValue(imageService)
-        ], 
-        child: child);
+    return ProviderScope(overrides: [
+      authServiceProvider.overrideWithValue(authService),
+      utterBullServerProvider.overrideWithValue(server),
+      dataStreamServiceProvider.overrideWithValue(streamService),
+      dataServiceProvider.overrideWithValue(dataService),
+      imageStorageServiceProvider.overrideWithValue(imageService)
+    ], child: child);
   }
 }
 
-class UtterBullApp extends StatelessWidget {
-  const UtterBullApp({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 9 / 20,
-      child: Container(
-        color: Colors.grey,
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                theme: UtterBullTheme.theme,
-                home: false ? TestWidget2() : AuthContainer()),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TestWidget extends ConsumerStatefulWidget {
-  const TestWidget({super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TestWidgetState();
-}
-
-class _TestWidgetState extends ConsumerState<TestWidget>
-    with SingleTickerProviderStateMixin {
-  List<String> list = ['a', 'b', 'c'];
-
-  final GlobalKey<AnimatedListState> _key = GlobalKey<AnimatedListState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorObservers: [CoordinatedRouteObserver()],
-      home: Scaffold(
-        body: Column(
-          children: [
-            TextButton(
-                onPressed: () {
-                  final i = list.length;
-                  list.insert(i, 'd');
-                  _key.currentState!
-                      .insertItem(i, duration: Duration(seconds: 1));
-                },
-                child: Text('press')),
-            Expanded(
-              child: AnimatedList(
-                controller: ScrollController(),
-                key: _key,
-                initialItemCount: list.length,
-                itemBuilder: (context, index, animation) {
-                  return _buildListItem(index, animation);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildListItem(int index, Animation<double> animation) {
-    return AnimatedBuilder(
-      key: ValueKey(index),
-      animation: animation,
-      builder: (BuildContext context, Widget? child) {
-        return Opacity(
-          opacity: animation.value,
-          child: child,
-        );
-      },
-      child: ListTile(
-        title: Text(list[index]),
-      ),
-    );
-  }
-}
-
-class TestWidget2 extends ConsumerStatefulWidget {
-  const TestWidget2({super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TestWidget2State();
-}
-
-class _TestWidget2State extends ConsumerState<TestWidget2> {
-  final key = GlobalKey<NavigatorState>();
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        navigatorKey: key,
-        navigatorObservers: [CoordinatedRouteObserver()],
-        initialRoute: '/foo',
-        onGenerateRoute: (settings) {
-          if (settings.name == '/foo') {
-            return ForwardPushRoute((p0) => Scaffold(
-                  body: Center(
-                    child: TextButton(
-                        child: Text('1'),
-                        onPressed: () => Navigator.of(key.currentContext!)
-                            .pushNamed('/bar')),
-                  ),
-                ));
-          } else {
-            return BackwardPushRoute((p0) => Scaffold(
-                  body: Center(
-                    child: TextButton(
-                        child: Text('2'),
-                        onPressed: () => Navigator.of(key.currentContext!)
-                            .pushNamed('/foo')),
-                  ),
-                ));
-          }
-        });
-  }
-}

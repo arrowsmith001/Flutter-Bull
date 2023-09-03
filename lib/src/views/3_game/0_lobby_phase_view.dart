@@ -6,8 +6,8 @@ import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 

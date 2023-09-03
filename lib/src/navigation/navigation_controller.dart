@@ -11,8 +11,6 @@ abstract class NavigationController<T> {
   final navigatorKey = GlobalKey<NavigatorState>();
   bool get canNavigate => _navigatorContext != null;
 
-  PageRoute? _previousRoute;
-
   Route onGenerateRoute(RouteSettings settings) {
     final routePathIterable = settings.name!.split('/');
     _routePathIterator = routePathIterable.iterator;
@@ -37,13 +35,12 @@ abstract class NavigationController<T> {
 
   @protected
   void navigateTo(String s) {
-      if (canNavigate) {
-        Navigator.of(_navigatorContext!).pushReplacementNamed(s);
-        Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
-      } else {
-        Logger()
-            .d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
-      }
+    if (canNavigate) {
+      Navigator.of(_navigatorContext!).pushReplacementNamed(s);
+      Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
+    } else {
+      Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
+    }
   }
 
   @protected
@@ -51,6 +48,15 @@ abstract class NavigationController<T> {
 
   @protected
   String get nextRoutePath => (_routePathIterator!..moveNext()).current;
+
+  @protected
+  String? get tryNextRoutePath {
+    try {
+      return nextRoutePath;
+    } catch (e) {
+      return null;
+    }
+  }
 
   @protected
   String get getCurrentRouteName => _currentRouteName ?? '';

@@ -5,7 +5,7 @@ import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,17 +29,22 @@ class _RevealViewState extends ConsumerState<RevealView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: vmAsync.whenDefault((vm) {
-      return Column(children: [
+      return Column(
+        children: [
         _buildPlayerStatementPreamble(
             vm.playerWhoseTurn, vm.playerWhoseTurnStatement),
       
         vm.isRevealed ? Text(vm.isStatementTruth ? "TRUE" : "BULL", style: Theme.of(context).textTheme.displayMedium) : Container(),
+
+        vm.isRevealed ? Flexible(child: ListView(
+          shrinkWrap: true,
+          children: vm.achievements.map((e) => ListTile(title: Text(e.achievement.title), leading: Image.memory(e.iconData!),)).toList())) : Container(),
         
         Expanded(
             child: Row(
           children: [
-            Flexible(child: _buildVoteList(true, vm.playersVotedTruth)),
-            Flexible(child: _buildVoteList(false, vm.playersVotedLie)),
+            Expanded(child: _buildVoteList(true, vm.playersVotedTruth)),
+            Expanded(child: _buildVoteList(false, vm.playersVotedLie)),
           ],
         )),
         vm.isMyTurn
@@ -70,9 +75,8 @@ class _RevealViewState extends ConsumerState<RevealView>
   Widget _buildVoteList(bool truthOrLie, List<PlayerWithAvatar> playersVoted) {
     return Column(children: [
       Text(truthOrLie ? 'TRUE' : 'BULL'),
-      Flexible(
+      Expanded(
         child: ListView(
-          shrinkWrap: true,
           children: playersVoted
               .map((p) => UtterBullPlayerAvatar(p.avatarData))
               .toList(),

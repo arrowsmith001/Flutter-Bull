@@ -7,8 +7,8 @@ import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart
 // ignore: unused_import
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_button.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeView extends ConsumerStatefulWidget {

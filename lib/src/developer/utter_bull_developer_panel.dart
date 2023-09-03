@@ -64,6 +64,7 @@ class _UtterBullDeveloperPanelState
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(mainAxisSize: MainAxisSize.min, children: [
+            ElevatedButton(onPressed: () => authNotifier.signOut(), child: Text("Sign out")),
             LabelledAsyncData('userId', authAsync.valueOrNull,
                 stringifyValue: (data) => data?.userId),
             Row(

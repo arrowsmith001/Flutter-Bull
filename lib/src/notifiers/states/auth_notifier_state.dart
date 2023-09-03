@@ -7,7 +7,6 @@ class AuthNotifierState with _$AuthNotifierState {
   factory AuthNotifierState({
     String? userId,
     @Default(false) bool playerProfileExists,
-    @Default(false) bool isLoading,
     @Default('') String message,
   }) = _AuthNotifierState;
 

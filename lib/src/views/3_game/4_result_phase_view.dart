@@ -13,13 +13,20 @@ class ResultView extends ConsumerStatefulWidget {
 
 class _ResultViewViewState extends ConsumerState<ResultView>
     with RoomID, UserID {
+
   @override
   Widget build(BuildContext context) {
     final vmProvider = resultViewNotifierProvider(roomId, userId);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(body: vmAsync.whenDefault((vm) {
-      return Text('Result for $userId in $roomId');
+
+      return Text(vm.playerBreakdown.toString());
     }));
   }
+  
 }
+
+// TODO: Display results
+// TODO: Figure out what ResultView/ResultViewModel needs
+// TODO: Separate gameRoomData??

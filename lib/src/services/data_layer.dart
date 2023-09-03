@@ -1,8 +1,10 @@
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/model/achievement.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
+import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -19,8 +21,7 @@ abstract class DataService {
 
   Future<bool> doesPlayerExist(String userId);
 
-  Future<void> setRoomPhase(
-      String roomCode, GamePhase newPhase);
+  Future<void> setRoomPhase(String roomCode, GamePhase newPhase);
 
   Future<String> getRoomIdFromCode(String roomCode);
 
@@ -28,6 +29,98 @@ abstract class DataService {
 
   Future<void> setImagePath(String userId, String path);
 
+  Future<GameResult?> getResult(String resultId);
+
+  Future<Achievement> getAchievement(String achievementId);
+}
+
+class DatabaseDrivenDataLayer extends DataService {
+  
+  DatabaseDrivenDataLayer({
+    required this.gameRoomRepo,
+    required this.playerRepo,
+    required this.playerStatusRepo,
+    required this.resultRepo,
+    required this.achievementRepo,
+  });
+
+  final Repository<GameRoom> gameRoomRepo;
+  final Repository<Player> playerRepo;
+  final Repository<PlayerStatus> playerStatusRepo;
+  final Repository<GameResult> resultRepo;
+  final Repository<Achievement> achievementRepo;
+
+  @override
+  Future<int> countRoomsByCode(String code) async {
+    return await gameRoomRepo.countByEqualsCondition('roomCode', code);
+  }
+
+  @override
+  Future<void> setOccupiedRoom(String userId, String gameRoomId) async {
+    await playerRepo.setField(userId, 'occupiedRoomId', gameRoomId);
+
+    final room = await gameRoomRepo.getItemById(gameRoomId);
+    await gameRoomRepo.setField(
+        gameRoomId, 'playerIds', List.from(room.playerIds)..add(userId));
+  }
+
+  @override
+  Future<void> createPlayer(Player player) async {
+    await playerRepo.createItem(player);
+  }
+
+  @override
+  Future<bool> doesPlayerExist(String userId) async {
+    return await playerRepo.itemExists(userId);
+  }
+
+  @override
+  Future<void> removeFromRoom(String userId, String gameRoomId) async {
+    await playerRepo.setField(userId, 'occupiedRoomId', null);
+
+    final room = await gameRoomRepo!.getItemById(gameRoomId);
+    await gameRoomRepo.setField(
+        gameRoomId, 'playerIds', List.from(room.playerIds)..remove(userId));
+  }
+
+  @override
+  Future<void> setRoomPhase(String roomId, GamePhase newPhase) async {
+    await Future.wait([gameRoomRepo.setField(roomId, 'phase', newPhase)]);
+  }
+
+  @override
+  Future<String> createNewGameRoom(String code) async {
+    return await gameRoomRepo
+        .createItem(GameRoom(roomCode: code))
+        .then((value) => value.id!);
+  }
+
+  @override
+  Future<String> getRoomIdFromCode(String roomCode) async {
+    return await gameRoomRepo
+        .getItemsByField('roomCode', roomCode)
+        .then((value) => value.single.id!);
+  }
+
+  @override
+  Future<void> setName(String id, String text) async {
+    return await playerRepo.setField(id, 'name', text);
+  }
+
+  @override
+  Future<void> setImagePath(String userId, String path) async {
+    await playerRepo.setField(userId, 'profilePhotoPath', path);
+  }
+
+  @override
+  Future<GameResult?> getResult(String resultId) async {
+    return await resultRepo.getItemById(resultId);
+  }
+
+  @override
+  Future<Achievement> getAchievement(String achievementId) async {
+    return await achievementRepo.getItemById(achievementId);
+  }
 }
 
 class FakeDataLayer extends DataService implements DataStreamService {
@@ -110,8 +203,7 @@ class FakeDataLayer extends DataService implements DataStreamService {
   }
 
   @override
-  Future<void> setRoomPhase(
-      String gameRoomId, GamePhase newPhase) async {
+  Future<void> setRoomPhase(String gameRoomId, GamePhase newPhase) async {
     final gameRoomStream = gameRooms[gameRoomId]!;
     final gameRoom = gameRoomStream.value;
     final newGameRoom = gameRoom.copyWith(phase: newPhase);
@@ -147,88 +239,22 @@ class FakeDataLayer extends DataService implements DataStreamService {
     // TODO: implement streamPlayerStatus
     throw UnimplementedError();
   }
-  
+
   @override
   Future<void> setImagePath(String userId, String path) {
     // TODO: implement setImagePath
     throw UnimplementedError();
   }
-  
-}
-
-class DatabaseDrivenDataLayer extends DataService {
-  DatabaseDrivenDataLayer(
-      {required this.gameRoomRepo,
-      required this.playerRepo,
-      required this.playerStatusRepo});
-
-  final Repository<GameRoom> gameRoomRepo;
-  final Repository<Player> playerRepo;
-  final Repository<PlayerStatus> playerStatusRepo;
 
   @override
-  Future<int> countRoomsByCode(String code) async {
-    return await gameRoomRepo.countByEqualsCondition('roomCode', code);
+  Future<GameResult?> getResult(String resultId) {
+    // TODO: implement getResult
+    throw UnimplementedError();
   }
 
   @override
-  Future<void> setOccupiedRoom(String userId, String gameRoomId) async {
-    await playerRepo.setField(userId, 'occupiedRoomId', gameRoomId);
-
-    final room = await gameRoomRepo.getItemById(gameRoomId);
-    await gameRoomRepo.setField(
-        gameRoomId, 'playerIds', List.from(room.playerIds)..add(userId));
+  Future<Achievement> getAchievement(String achievementId) {
+    // TODO: implement getAchievement
+    throw UnimplementedError();
   }
-
-  @override
-  Future<void> createPlayer(Player player) async {
-    await playerRepo.createItem(player);
-  }
-
-  @override
-  Future<bool> doesPlayerExist(String userId) async {
-    return await playerRepo.itemExists(userId);
-  }
-
-  @override
-  Future<void> removeFromRoom(String userId, String gameRoomId) async {
-    await playerRepo.setField(userId, 'occupiedRoomId', null);
-
-    final room = await gameRoomRepo!.getItemById(gameRoomId);
-    await gameRoomRepo.setField(
-        gameRoomId, 'playerIds', List.from(room.playerIds)..remove(userId));
-  }
-
-  @override
-  Future<void> setRoomPhase(
-      String roomId, GamePhase newPhase) async {
-    await Future.wait([
-      gameRoomRepo.setField(roomId, 'phase', newPhase)
-    ]);
-  }
-
-  @override
-  Future<String> createNewGameRoom(String code) async {
-    return await gameRoomRepo
-        .createItem(GameRoom(roomCode: code))
-        .then((value) => value.id!);
-  }
-
-  @override
-  Future<String> getRoomIdFromCode(String roomCode) async {
-    return await gameRoomRepo
-        .getItemsByField('roomCode', roomCode)
-        .then((value) => value.single.id!);
-  }
-
-  @override
-  Future<void> setName(String id, String text) async {
-    return await playerRepo.setField(id, 'name', text);
-  }
-  
-  @override
-  Future<void> setImagePath(String userId, String path) async {
-    await playerRepo.setField(userId, 'profilePhotoPath', path);
-  }
-  
 }

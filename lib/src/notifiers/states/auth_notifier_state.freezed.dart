@@ -18,7 +18,6 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AuthNotifierState {
   String? get userId => throw _privateConstructorUsedError;
   bool get playerProfileExists => throw _privateConstructorUsedError;
-  bool get isLoading => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -32,11 +31,7 @@ abstract class $AuthNotifierStateCopyWith<$Res> {
           AuthNotifierState value, $Res Function(AuthNotifierState) then) =
       _$AuthNotifierStateCopyWithImpl<$Res, AuthNotifierState>;
   @useResult
-  $Res call(
-      {String? userId,
-      bool playerProfileExists,
-      bool isLoading,
-      String message});
+  $Res call({String? userId, bool playerProfileExists, String message});
 }
 
 /// @nodoc
@@ -54,7 +49,6 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
   $Res call({
     Object? userId = freezed,
     Object? playerProfileExists = null,
-    Object? isLoading = null,
     Object? message = null,
   }) {
     return _then(_value.copyWith(
@@ -65,10 +59,6 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
       playerProfileExists: null == playerProfileExists
           ? _value.playerProfileExists
           : playerProfileExists // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isLoading: null == isLoading
-          ? _value.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
       message: null == message
           ? _value.message
@@ -86,11 +76,7 @@ abstract class _$$_AuthNotifierStateCopyWith<$Res>
       __$$_AuthNotifierStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String? userId,
-      bool playerProfileExists,
-      bool isLoading,
-      String message});
+  $Res call({String? userId, bool playerProfileExists, String message});
 }
 
 /// @nodoc
@@ -106,7 +92,6 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
   $Res call({
     Object? userId = freezed,
     Object? playerProfileExists = null,
-    Object? isLoading = null,
     Object? message = null,
   }) {
     return _then(_$_AuthNotifierState(
@@ -117,10 +102,6 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
       playerProfileExists: null == playerProfileExists
           ? _value.playerProfileExists
           : playerProfileExists // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isLoading: null == isLoading
-          ? _value.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
       message: null == message
           ? _value.message
@@ -134,10 +115,7 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
 
 class _$_AuthNotifierState implements _AuthNotifierState {
   _$_AuthNotifierState(
-      {this.userId,
-      this.playerProfileExists = false,
-      this.isLoading = false,
-      this.message = ''});
+      {this.userId, this.playerProfileExists = false, this.message = ''});
 
   @override
   final String? userId;
@@ -146,14 +124,11 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   final bool playerProfileExists;
   @override
   @JsonKey()
-  final bool isLoading;
-  @override
-  @JsonKey()
   final String message;
 
   @override
   String toString() {
-    return 'AuthNotifierState(userId: $userId, playerProfileExists: $playerProfileExists, isLoading: $isLoading, message: $message)';
+    return 'AuthNotifierState(userId: $userId, playerProfileExists: $playerProfileExists, message: $message)';
   }
 
   @override
@@ -164,14 +139,12 @@ class _$_AuthNotifierState implements _AuthNotifierState {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.playerProfileExists, playerProfileExists) ||
                 other.playerProfileExists == playerProfileExists) &&
-            (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading) &&
             (identical(other.message, message) || other.message == message));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, userId, playerProfileExists, isLoading, message);
+      Object.hash(runtimeType, userId, playerProfileExists, message);
 
   @JsonKey(ignore: true)
   @override
@@ -185,15 +158,12 @@ abstract class _AuthNotifierState implements AuthNotifierState {
   factory _AuthNotifierState(
       {final String? userId,
       final bool playerProfileExists,
-      final bool isLoading,
       final String message}) = _$_AuthNotifierState;
 
   @override
   String? get userId;
   @override
   bool get playerProfileExists;
-  @override
-  bool get isLoading;
   @override
   String get message;
   @override

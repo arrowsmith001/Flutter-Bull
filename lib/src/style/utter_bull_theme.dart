@@ -9,8 +9,8 @@ class UtterBullTheme {
       shadowColor: backgroundDark,
       fontFamily: 'LapsusPro',
       colorScheme: ColorScheme.light(
-          background: Color.fromARGB(255, 133, 206, 255),
-          primary: Color.fromARGB(255, 255, 239, 96),
+          primary: Color.fromARGB(255, 133, 206, 255),
+         // primary: Color.fromARGB(255, 255, 239, 96),
           secondary: Color.fromARGB(237, 196, 255, 173),
           tertiary: Color.fromARGB(235, 255, 255, 255),));
 

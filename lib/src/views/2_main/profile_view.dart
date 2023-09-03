@@ -25,14 +25,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       }
     });
 
-    return Scaffold(
-      body: Center(
-          child: Column(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('Enter your name:'), TextField(controller: _nameInputController),
           TextButton(onPressed: () => ref.read(playerNotifierProvider(userId).notifier).setName(_nameInputController.text), child: Text('Set Name'))
         ],
-      )),
-    );
+      );
   }
 }

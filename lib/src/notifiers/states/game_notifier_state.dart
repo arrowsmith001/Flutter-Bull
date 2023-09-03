@@ -1,4 +1,6 @@
+import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
+import 'package:flutter_bull/src/notifiers/achievement_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -9,8 +11,12 @@ class GameNotifierState with _$GameNotifierState {
   GameNotifierState._();
 
   factory GameNotifierState(
-      {required GameRoom gameRoom,
-      required List<PlayerWithAvatar> players}) = _GameNotifierState;
+      {
+        required GameRoom gameRoom,
+        required List<PlayerWithAvatar> players,
+        GameResult? result, 
+        @Default([]) List<AchievementWithIcon> achievementsWithIcons
+        }) = _GameNotifierState;
 
 
 }

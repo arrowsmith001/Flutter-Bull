@@ -23,8 +23,11 @@ class RevealsPhaseViewNotifier extends _$RevealsPhaseViewNotifier {
     final phase = game.phase;
 
     if (phase == GamePhase.reveals) {
-      final path = game.playerOrder[game.progress];
-      yield RevealsPhaseViewModel(path: path, progress: game.progress);
+
+        final path = game.playerOrder[game.progress];
+        yield RevealsPhaseViewModel(path: path, progress: game.progress);
+      
+
     }
 
   }

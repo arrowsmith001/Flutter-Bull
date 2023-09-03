@@ -7,7 +7,7 @@ part of 'result_view_notifier.dart';
 // **************************************************************************
 
 String _$resultViewNotifierHash() =>
-    r'cdf437ca591151a341491d9b4c63d66a13789676';
+    r'007e55d739c12ceba022f7ebafc0c770ae6b5ac1';
 
 /// Copied from Dart SDK
 class _SystemHash {

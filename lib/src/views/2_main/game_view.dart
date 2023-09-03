@@ -27,7 +27,7 @@ class _GameViewState extends ConsumerState<GameView> with RoomID {
 
   @override
   void dispose() {
-    ref.invalidate(vmProvider);
+    ref.invalidate(vmProvider); // TODO: Is this necessary?
     super.dispose();
   }
 
@@ -44,11 +44,8 @@ class _GameViewState extends ConsumerState<GameView> with RoomID {
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        ref.read(utterBullServerProvider).returnToLobby(roomId);
-      }),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             gradient: RadialGradient(
                 center: AlignmentDirectional.topCenter,
                 radius: 2.5,
@@ -81,7 +78,7 @@ class GameRouteNavigationController
   PageRoute? generateRoute() {
     switch (nextRoutePath) {
       case 'lobby':
-        return ForwardPushRoute((context) => scoped(LobbyPhaseView()));
+        return BackwardPushRoute((context) => scoped(LobbyPhaseView()));
       case 'writing':
         return ForwardPushRoute((context) => scoped(WritingPhaseView()));
       case 'round':
@@ -89,14 +86,6 @@ class GameRouteNavigationController
             getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
         return ForwardPushRoute((context) =>
             scoped(GameRoundView(), overrides: [whoseTurnOverride]));
-/*       case 'selecting':
-        final whoseTurnOverride =
-            getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
-        return ForwardRoute(scoped(SelectingPlayerPhaseView(), overrides: [whoseTurnOverride]));
-      case 'reading':
-        final whoseTurnOverride =
-            getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
-        return ForwardRoute(scoped(VotingPhaseView(), overrides: [whoseTurnOverride])); */
       case 'reveals':
         return ForwardPushRoute((context) => scoped(RevealsPhaseView()));
       case 'results':

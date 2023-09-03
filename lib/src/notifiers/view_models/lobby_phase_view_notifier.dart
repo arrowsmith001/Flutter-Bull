@@ -23,6 +23,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
 
   LobbyPhaseViewModel _buildViewModel(
       GameRoom game, List<PlayerWithAvatar> players, String userId) {
+        
     final prevPlayers =
         state.value?.presentPlayers.map((e) => e.player.id!).toList() ?? [];
     final nextPlayers = game.playerIds;
