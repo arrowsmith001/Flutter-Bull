@@ -4,6 +4,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '0_lobby_phase_view_model.freezed.dart';
 
+
+// TODO: Outsource variable
+const int numberOfPlayersNeededForGame = 3;
+
 enum ListChangeType { unchanged, add, remove }
 
 class ListChangeData<T> {
@@ -20,23 +24,41 @@ class ListChangeData<T> {
 }
 
 @freezed
-class LobbyPhaseViewModel with _$LobbyPhaseViewModel {
+class LobbyPhaseViewModel with _$LobbyPhaseViewModel 
+{
   factory LobbyPhaseViewModel({
     required GameRoom game,
     required List<PlayerWithAvatar> players,
     required String userId,
     required ListChangeData<PlayerWithAvatar> listChangeData,
-  }) =>
-      LobbyPhaseViewModel._(
+  }) {
+
+    final presentPlayers = players
+              .where((p) => game.playerIds.contains(p.player.id))
+              .toList();
+
+    final absentPlayers = players
+              .where((p) => !game.playerIds.contains(p.player.id))
+              .toSet();
+
+    final int numberOfPlayersPresent = presentPlayers.length;
+    final int playerDiff = numberOfPlayersNeededForGame - numberOfPlayersPresent;
+    String numberOfPlayersString = '$numberOfPlayersPresent players in game';
+    if(playerDiff > 0)
+    {
+      numberOfPlayersString += ' ($playerDiff more needed)';
+    }
+      
+    return LobbyPhaseViewModel._(
           roomCode: game.roomCode,
           listChangeData: listChangeData,
-          presentPlayers: players
-              .where((p) => game.playerIds.contains(p.player.id))
-              .toList(),
-          absentPlayers: players
-              .where((p) => !game.playerIds.contains(p.player.id))
-              .toSet(),
-          playerReadies: {});
+          presentPlayers: presentPlayers,
+          absentPlayers: absentPlayers,
+          playerReadies: {},
+          numberOfPlayersString: numberOfPlayersString,
+          enoughPlayers: numberOfPlayersPresent >= numberOfPlayersNeededForGame,
+          isStartingGame : game.state == 'startingGame');
+  }
 
   factory LobbyPhaseViewModel._({
     required String roomCode,
@@ -44,5 +66,9 @@ class LobbyPhaseViewModel with _$LobbyPhaseViewModel {
     required Set<PlayerWithAvatar> absentPlayers,
     required ListChangeData<PlayerWithAvatar> listChangeData,
     required Map<String, bool> playerReadies,
+    required String numberOfPlayersString,
+    required bool enoughPlayers,
+    required bool isStartingGame,
   }) = _LobbyPhaseViewModel;
+
 }

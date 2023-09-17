@@ -8,8 +8,9 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/change_avatar_view.dart';
 import 'package:flutter_bull/src/views/2_main/game_view.dart';
 import 'package:flutter_bull/src/views/2_main/home_view.dart';
+import 'package:flutter_bull/src/views/2_main/join_game_view.dart';
 import 'package:flutter_bull/src/views/2_main/pending_view.dart';
-import 'package:flutter_bull/src/views/2_main/profile_view.dart';
+import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_bull/src/widgets/common/error_popup.dart';
 import 'package:flutter_bull/src/widgets/common/loading_widget.dart';
@@ -88,14 +89,12 @@ class _MainViewState extends ConsumerState<MainView> {
     return Scaffold(
       body: signedInPlayerAsync.when(data: (playerStatus) {
         return ControlledNavigator<SignedInPlayerStatusNotifierState>(
-              observers: [
-                CoordinatedRouteObserver(), 
-                HeroController()],
-              data: playerStatus,
-              controller: nav,
-            );
+          observers: [CoordinatedRouteObserver(), HeroController()],
+          data: playerStatus,
+          controller: nav,
+        );
       }, loading: () {
-        return LoadingWidget();
+        return LoadingWidget(message: 'hello');
       }, error: (e, _) {
         return ErrorPopup(e.toString());
       }),
@@ -126,8 +125,6 @@ class MainRouteNavigatorController
                 : 'game/${player.occupiedRoomId}';
   }
 
-  // TODO: FIX WEIRD ROUTE TRANSITIONS
-
   @override
   PageRoute? generateRoute() {
     switch (nextRoutePath) {
@@ -136,12 +133,13 @@ class MainRouteNavigatorController
         return ForwardPushRoute((context) => child);
 
       case 'profile':
-        final child = scoped(ProfileView());
-        return UpwardPushRoute((context) =>child);
+        final child = scoped(ProfileSetupView());
+        return UpwardPushRoute((context) => child);
 
       case 'avatar':
-        final child = scoped(ChangeAvatarView());
-        return UpwardPushRoute((context) =>child);
+        const child = Text('Implement');
+       // scoped(ChangeAvatarView());
+        return UpwardPushRoute((context) => child);
 
       case 'home':
         final child = ProviderScope(child: HomeView());
@@ -149,11 +147,18 @@ class MainRouteNavigatorController
             ? DownwardPushRoute((context) => child)
             : BackwardPushRoute((context) => child);
 
+      case 'join':
+        final child = ProviderScope(child: JoinGameView());
+        return ForwardPushRoute((context) => child);
+
       case 'game':
         final roomId = nextRoutePath;
         final roomOverride =
             getCurrentGameRoomIdProvider.overrideWithValue(roomId);
-        final child = ProviderScope(child: GameView(), overrides: [roomOverride],);
+        final child = ProviderScope(
+          child: GameView(),
+          overrides: [roomOverride],
+        );
         return ForwardPushRoute((context) => child);
     }
 

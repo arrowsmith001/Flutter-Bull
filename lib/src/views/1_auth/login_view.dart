@@ -26,8 +26,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+
     ref.listen(authNotifierProvider.select((value) => value), (prev, next) {
-      final wasLoading = prev?.isLoading;
+
+      final wasLoading = prev?.isLoading ?? false;
       final isLoading = next.isLoading;
 
       Logger().d(wasLoading.toString() +
@@ -36,7 +38,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           " " +
           next.toString());
 
-      if (wasLoading != null && (!wasLoading && isLoading)) {
+      if (!wasLoading && isLoading) {
         _navController.navigateToLoading(next.valueOrNull?.message);
       }
     });
@@ -48,7 +50,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           observers: [CoordinatedRouteObserver()],
           controller: _navController,
           data: data),
-      loading: () => const LoadingWidget(),
+      loading: () => LoadingWidget(),
       error: (e, _) => ErrorPopup(
         e.toString(),
         escape: () => Logger().d("message"),

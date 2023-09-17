@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 
@@ -34,10 +36,13 @@ class GameDataFunctions {
   static List<String> _playersVotedX(
       GameRoom game, String whoseTurnId, String vote) {
     int index = _indexOfWhoseTurn(game, whoseTurnId);
-    return game.votes.entries.where((entry) {
-      final v = entry.value[index].toUpperCase();
-      return v == vote;
-    }).map((e) => e.key).toList();
+    return game.votes.entries
+        .where((entry) {
+          final v = entry.value[index].toUpperCase();
+          return v == vote;
+        })
+        .map((e) => e.key)
+        .toList();
   }
 
   static int playersVoted(GameRoom game, String whoseTurnId) {
@@ -62,5 +67,24 @@ class GameDataFunctions {
       return 'Write a TRUTH about yourself!';
     } else
       return 'Write a LIE about $target';
+  }
+
+  static String? getTargetText(GameRoom game, String userId) {
+    return game.texts[game.targets[userId]];
+  }
+
+  static List<String> getShuffledIds(GameRoom game) {
+    
+    final pseudoShuffledIds = List<String>.from(game.playerOrder);
+
+    // Remove ids of players who have had their turn
+    pseudoShuffledIds
+        .removeWhere((id) => game.playerOrder.indexOf(id) < game.progress);
+
+    // 'Random' seed = sum of the lengths of the text entries
+    final int seed =
+        game.texts.values.map((s) => s?.length ?? 0).reduce((v, e) => v + e);
+
+    return pseudoShuffledIds..shuffle(Random(seed));
   }
 }

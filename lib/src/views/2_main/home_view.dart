@@ -9,6 +9,7 @@ import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -18,24 +19,25 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<HomeView> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends ConsumerState<HomeView> {
+class _MyHomePageState extends ConsumerState<HomeView> with UserID {
   final TextEditingController _roomCodeTextEditController =
       TextEditingController();
 
   AuthNotifier get authNotifier => ref.read(authNotifierProvider.notifier);
   SignedInPlayerStatusNotifier get signedInPlayerNotifier =>
-      ref.read(signedInPlayerStatusNotifierProvider(readUserId).notifier);
-
-  String get readUserId => ref.read(getSignedInPlayerIdProvider);
-  String get watchUserId => ref.watch(getSignedInPlayerIdProvider);
-
-  void onJoinRoom() async {
-    signedInPlayerNotifier
-        .joinRoom(_roomCodeTextEditController.text.toUpperCase());
-  }
+      ref.read(signedInPlayerStatusNotifierProvider(userId).notifier);
 
   void onCreateRoom() async {
     signedInPlayerNotifier.createRoom();
+  }
+
+  void onJoinRoomPressed() async {
+    Navigator.of(context).pushNamed('join');
+  }
+
+  void onJoinRoom() {
+    signedInPlayerNotifier
+        .joinRoom(_roomCodeTextEditController.text.trim().toUpperCase());
   }
 
   @override
@@ -55,84 +57,61 @@ class _MyHomePageState extends ConsumerState<HomeView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Flexible(child: avatarAsync.whenDefault((avatar) {
-              final data = avatar.avatarData;
-              return Hero(
-                tag: 'avatar',
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pushReplacementNamed('avatar'),
-                  child: UtterBullPlayerAvatar(data!)));
-            })),
-            Flexible(
-              child: playerAsync.hasValue
-                  ? Text(playerAsync.requireValue.player!.toJson().toString())
-                  : CircularProgressIndicator(),
-            ),
-            Expanded(child: _buildUtterBullTitle()),
+            Flexible(child: _buildPlayerAvatar(avatarAsync)),
+            const Expanded(child: UtterBullTitle()),
             Expanded(
               child: Row(
                 children: [
-                  Flexible(flex: 3, child: _buildMainButtons()),
+                  Flexible(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: _buildMainButtons(),
+                      )),
                 ],
               ),
             ),
-            TextButton(
-                onPressed: () =>
-                    Navigator.of(context).pushReplacementNamed('profile'),
-                child: Text('Edit Profile')),
-            TextButton(
-                onPressed: () => authNotifier.signOut(),
-                child: Text('Sign out')),
           ],
         ),
       ),
     );
   }
 
-  Column _buildMainButtons() {
+  Widget _buildSignOutButton() {
+    return TextButton(
+        onPressed: () => authNotifier.signOut(), child: const Text('Sign out'));
+  }
+
+  Widget _buildPlayerAvatar(AsyncValue<PlayerWithAvatar> avatarAsync) {
+    return SizedBox(
+      height: 250,
+      child: avatarAsync.whenDefault((avatar) {
+        final data = avatar.avatarData;
+        return Hero(
+            tag: 'avatar',
+            child: GestureDetector(
+                onTap: () =>
+                    Navigator.of(context).pushReplacementNamed('avatar'),
+                child: UtterBullPlayerAvatar(data!)));
+      }),
+    );
+  }
+
+  Widget _buildMainButtons() {
     return Column(
       children: [
         Flexible(
             child: Padding(
-          padding: const EdgeInsets.all(2.0),
+          padding: const EdgeInsets.all(4.0),
+          child: UtterBullButton(onPressed: onCreateRoom, title: 'Create Game'),
+        )),
+        Flexible(
+            child: Padding(
+          padding: const EdgeInsets.all(4.0),
           child:
-              PlaceholderButton(onPressed: onCreateRoom, title: 'Create Game'),
-        )),
-        Flexible(
-            child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: PlaceholderButton(onPressed: onJoinRoom, title: 'Join Game'),
-        )),
-        Flexible(
-            child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Container(
-              color: Colors.white.withAlpha(150),
-              child: TextField(controller: _roomCodeTextEditController)),
+              UtterBullButton(onPressed: onJoinRoomPressed, title: 'Join Game'),
         )),
       ],
-    );
-  }
-
-  ElevatedButton _buildCreateGameButton() {
-    return ElevatedButton(
-        onPressed: () {
-          onCreateRoom();
-        },
-        child: Text("Create Room"));
-  }
-
-  ElevatedButton _buildJoinGameButton() {
-    return ElevatedButton(
-        onPressed: () {
-          onJoinRoom();
-        },
-        child: Text("Join Room"));
-  }
-
-  Widget _buildUtterBullTitle() {
-    return UglyOutlinedText(
-      'Utter Bull',
     );
   }
 }

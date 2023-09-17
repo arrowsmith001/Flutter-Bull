@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:logger/logger.dart';
 
@@ -34,12 +35,23 @@ class PlaceholderButton extends StatelessWidget {
   }
 }
 
+// TODO: Make buttons react to click
+
 class UtterBullButton extends StatefulWidget {
-  const UtterBullButton({this.onPressed, required this.title, this.leading});
+  const UtterBullButton(
+      {this.onPressed,
+      required this.title,
+      this.leading,
+      this.maxHeight,
+      this.isLoading = false, 
+      this.isShimmering = true});
 
   final VoidCallback? onPressed;
   final String title;
   final Widget? leading;
+  final double? maxHeight;
+  final bool isLoading;
+  final bool isShimmering;
 
   @override
   _UtterBullButtonState createState() => _UtterBullButtonState();
@@ -70,7 +82,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
     });
 
     if (isEnabled) {
-      animController.repeat(reverse: true);
+      //animController.repeat(reverse: true);
     }
   }
 
@@ -86,14 +98,16 @@ class _UtterBullButtonState extends State<UtterBullButton>
 
   @override
   Widget build(BuildContext context) {
-
     final main = GestureDetector(
       onTap: isEnabled ? () => widget.onPressed!() : null,
-      child: AspectRatio(
-        aspectRatio: 3,
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: _buildOuterEdge(),
+      child: SizedBox(
+        height: widget.maxHeight,
+        child: AspectRatio(
+          aspectRatio: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: _buildOuterEdge(),
+          ),
         ),
       ),
     );
@@ -141,7 +155,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
     return Stack(
       children: [
         Shimmer.fromColors(
-            enabled: isEnabled,
+            enabled: isEnabled && widget.isShimmering,
             baseColor: color,
             highlightColor: Colors.white,
             child: _buildInnerLayer()),
@@ -187,7 +201,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLeading(),
+              widget.isLoading ? UtterBullCircularProgressIndicator() : _buildLeading(),
               Expanded(child: UglyOutlinedText(widget.title))
             ],
           ),
@@ -203,11 +217,11 @@ class _UtterBullButtonState extends State<UtterBullButton>
 }
 
 class UglyOutlinedText extends StatelessWidget {
-  const UglyOutlinedText(
-    this.text,
-  );
+  const UglyOutlinedText(this.text, {this.outlineColor, this.fillColor});
 
   final String text;
+  final Color? fillColor;
+  final Color? outlineColor;
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +237,7 @@ class UglyOutlinedText extends StatelessWidget {
               foreground: Paint()
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = 4
-                ..color = Colors.grey.withAlpha(150)),
+                ..color = outlineColor ?? Colors.grey.withAlpha(150)),
           textAlign: TextAlign.center,
         ),
         AutoSizeText(
@@ -234,7 +248,7 @@ class UglyOutlinedText extends StatelessWidget {
               fontWeight: FontWeight.bold,
               foreground: Paint()
                 ..style = PaintingStyle.fill
-                ..color = Colors.white),
+                ..color = fillColor ?? Colors.white),
           textAlign: TextAlign.center,
         )
       ],

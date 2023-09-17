@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
@@ -36,6 +38,7 @@ import 'src/custom/data/implemented/firebase.dart';
 final int instances = 1;
 final bool isEmulatingFirebase = true;
 final bool devToolsOn = true;
+final bool overrideMediaQuery = true;
 
 void main() async {
   FlutterError.demangleStackTrace = (StackTrace stack) {
@@ -137,12 +140,12 @@ class MyApp extends StatelessWidget {
     final streams = FirebaseDataStreamService();
     final images = FirebaseImageStorageService();
 
-    // data.achievementRepo.createItem(Achievement(id: 'fooledAll', title: 'Fooled All', description: '* fooled the whole room', score: 30, iconPath: 'icons/achievements/default.png'));
-    // data.achievementRepo.createItem(Achievement(id: 'fooledMost', title: 'Fooled Most', description: '* fooled most of the room', score: 20, iconPath: 'icons/achievements/default.png'));
-    // data.achievementRepo.createItem(Achievement(id: 'fooledSome', title: 'Fooled Some', description: '* fooled some of the room', score: 10, iconPath: 'icons/achievements/default.png'));
-    // data.achievementRepo.createItem(Achievement(id: 'votedCorrectly', title: 'Voted Correctly', description: '* voted correctly', score: 10, iconPath: 'icons/achievements/default.png'));
-    // data.achievementRepo.createItem(Achievement(id: 'votedCorrectlyQuickest', title: 'Quickest Correct Vote', description: '* voted correctly in the quickest time', score: 20, iconPath: 'icons/achievements/default.png'));
-
+    data.achievementRepo.createItem(Achievement(id: 'fooledAll', title: 'Fooled All', description: '* fooled the whole room', score: 30, iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(id: 'fooledMost', title: 'Fooled Most', description: '* fooled most of the room', score: 20, iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(id: 'fooledSome', title: 'Fooled Some', description: '* fooled some of the room', score: 10, iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(id: 'votedCorrectly', title: 'Voted Correctly', description: '* voted correctly', score: 10, iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(id: 'votedCorrectlyQuickest', title: 'Quickest Correct Vote', description: '* voted correctly in the quickest time', score: 20, iconPath: 'icons/achievements/default.png'));
+//builder: (context, constraints) => 
     return WidgetsApp(
       builder: (context, _) => Row(
         children: [
@@ -151,12 +154,19 @@ class MyApp extends StatelessWidget {
               color: Colors.black,
               child: AspectRatio(
                 aspectRatio: 9 / 20,
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: const UtterBullApp(),
-                  ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return MediaQuery(
+                      data: MediaQueryData(size: constraints.biggest),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: const UtterBullApp(),
+                        ),
+                      ),
+                    );
+                  }
                 ),
               ),
             ),

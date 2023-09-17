@@ -12,21 +12,48 @@ class WritingPhaseViewModel with _$WritingPhaseViewModel {
       {required GameRoom game,
       required List<PlayerWithAvatar> players,
       required String userId}) {
-    final isWritingTruth = game.targets[userId] == userId;
+    final targetId = game.targets[userId];
+    final isWritingTruth = targetId == userId;
+
     final targetPlayer =
         GameDataFunctions.getTargetPlayer(game, players, userId);
-    final targetName = isWritingTruth ? 'YOURSELF' : targetPlayer.player.name!;
+    final targetText = GameDataFunctions.getTargetText(game, userId);
+    final targetName = isWritingTruth ? null : targetPlayer.player.name!;
+
+
+    final playersSubmitted =
+        game.texts.entries.where((element) => element.value != null).length;
+    final playerCount = game.playerOrder.length;
+    final playersSubmittedTextPrompt =
+        '$playersSubmitted/$playerCount players ready';
 
     return WritingPhaseViewModel._(
-        playerWritingFor: targetPlayer,
-        writingTruthOrLie: isWritingTruth,
-        writingPromptString:
-            'Write a ${isWritingTruth ? 'TRUTH' : 'LIE'} about $targetName');
+      playerWritingFor: targetPlayer,
+      writingTruthOrLie: isWritingTruth,
+      writingPrompt: WritingPrompt(targetName),
+      hasSubmitted: targetText != null,
+      playersSubmitted: playersSubmitted,
+      playersSubmittedTextPrompt: playersSubmittedTextPrompt,
+    );
   }
 
-  factory WritingPhaseViewModel._({
-    required PlayerWithAvatar playerWritingFor,
-    required bool writingTruthOrLie,
-    required String writingPromptString,
-  }) = _WritingPhaseViewModel;
+  factory WritingPhaseViewModel._(
+      {required PlayerWithAvatar playerWritingFor,
+      required bool writingTruthOrLie,
+      required WritingPrompt writingPrompt,
+      required bool hasSubmitted,
+      required int playersSubmitted,
+      required String playersSubmittedTextPrompt}) = _WritingPhaseViewModel;
+}
+
+class WritingPrompt {
+  WritingPrompt([this._target]);
+
+  final String? _target;
+  bool get isTruth => _target == null;
+
+  static const String writeA = 'Write a';
+  String get truthOrLie => isTruth ? 'TRUTH' : 'LIE';
+  String get forOrAbout => isTruth ? 'about' : 'for';
+  String get target => isTruth ? 'yourself' : _target!;
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 abstract class NavigationController<T> {
+
   String? _initialRoute;
   String? _currentRouteName;
   Iterator<String>? _routePathIterator;
@@ -13,11 +14,12 @@ abstract class NavigationController<T> {
 
   Route onGenerateRoute(RouteSettings settings) {
     final routePathIterable = settings.name!.split('/');
+    final nextRoute = routePathIterable.first;
     _routePathIterator = routePathIterable.iterator;
 
     PageRoute? route = generateRoute();
 
-    setCurrentRouteName = routePathIterable.first;
+    setCurrentRouteName = nextRoute;
     return route ?? defaultRoute;
   }
 

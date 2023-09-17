@@ -15,30 +15,36 @@ class _LoadingWidgetState extends State<LoadingWidget> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-      Spacer(),
-
-      Flexible(child: 
-      Center(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 500),
+        Spacer(),
+        Flexible(
+            child: Center(
           child: Container(
-            color: Colors.white.withOpacity(0.5),
-            
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                widget.message == null ? const SizedBox.shrink() : Text(widget.message!),
-                const SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: CircularProgressIndicator()),
-              ],),
-            )),),
-      )),
-
-      Spacer()
-    ],);
+              decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        layoutBuilder: (child, prev) {
+                          return widget.message == null
+                              ? const SizedBox.shrink()
+                              : Text(widget.message!,
+                                  style: Theme.of(context).textTheme.bodyLarge);
+                        }),
+                    const SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator()),
+                  ],
+                ),
+              )),
+        )),
+        Spacer()
+      ],
+    );
   }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "pp/default/avatar.jpg",
+  "bucket": "flutter-bull.appspot.com",
+  "metageneration": 1,
+  "generation": 1694366617889,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "79e794d7-0bed-4299-b63b-55732934f156"
+  ],
+  "etag": "eKBNudZI2wgefjIARHy6qFdDjVo",
+  "customMetadata": {},
+  "timeCreated": "2023-09-10T17:23:37.889Z",
+  "updated": "2023-09-10T17:23:37.889Z",
+  "size": 7922,
+  "md5Hash": "z3fa8PjEnvzg4bhW61tEOw==",
+  "crc32c": "899541283"
+}

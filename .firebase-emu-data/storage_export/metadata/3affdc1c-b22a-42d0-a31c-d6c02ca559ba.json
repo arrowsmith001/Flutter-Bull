@@ -1,0 +1,19 @@
+{
+  "name": "pp/default/female5.jpg",
+  "bucket": "flutter-bull.appspot.com",
+  "metageneration": 1,
+  "generation": 1694366641174,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "2223a9ad-2b1a-427b-b891-2af2e7b71e78"
+  ],
+  "etag": "i5mMTTuNe6L1HYS+AI6kxGJyuno",
+  "customMetadata": {},
+  "timeCreated": "2023-09-10T17:24:01.174Z",
+  "updated": "2023-09-10T17:24:01.174Z",
+  "size": 651875,
+  "md5Hash": "kN4xLhZnInY9Ic30qWGxaA==",
+  "crc32c": "3321704553"
+}

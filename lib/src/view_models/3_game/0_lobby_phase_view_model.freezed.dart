@@ -23,6 +23,9 @@ mixin _$LobbyPhaseViewModel {
   ListChangeData<PlayerWithAvatar> get listChangeData =>
       throw _privateConstructorUsedError;
   Map<String, bool> get playerReadies => throw _privateConstructorUsedError;
+  String get numberOfPlayersString => throw _privateConstructorUsedError;
+  bool get enoughPlayers => throw _privateConstructorUsedError;
+  bool get isStartingGame => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LobbyPhaseViewModelCopyWith<LobbyPhaseViewModel> get copyWith =>
@@ -40,7 +43,10 @@ abstract class $LobbyPhaseViewModelCopyWith<$Res> {
       List<PlayerWithAvatar> presentPlayers,
       Set<PlayerWithAvatar> absentPlayers,
       ListChangeData<PlayerWithAvatar> listChangeData,
-      Map<String, bool> playerReadies});
+      Map<String, bool> playerReadies,
+      String numberOfPlayersString,
+      bool enoughPlayers,
+      bool isStartingGame});
 }
 
 /// @nodoc
@@ -61,6 +67,9 @@ class _$LobbyPhaseViewModelCopyWithImpl<$Res, $Val extends LobbyPhaseViewModel>
     Object? absentPlayers = null,
     Object? listChangeData = null,
     Object? playerReadies = null,
+    Object? numberOfPlayersString = null,
+    Object? enoughPlayers = null,
+    Object? isStartingGame = null,
   }) {
     return _then(_value.copyWith(
       roomCode: null == roomCode
@@ -83,6 +92,18 @@ class _$LobbyPhaseViewModelCopyWithImpl<$Res, $Val extends LobbyPhaseViewModel>
           ? _value.playerReadies
           : playerReadies // ignore: cast_nullable_to_non_nullable
               as Map<String, bool>,
+      numberOfPlayersString: null == numberOfPlayersString
+          ? _value.numberOfPlayersString
+          : numberOfPlayersString // ignore: cast_nullable_to_non_nullable
+              as String,
+      enoughPlayers: null == enoughPlayers
+          ? _value.enoughPlayers
+          : enoughPlayers // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isStartingGame: null == isStartingGame
+          ? _value.isStartingGame
+          : isStartingGame // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -100,7 +121,10 @@ abstract class _$$_LobbyPhaseViewModelCopyWith<$Res>
       List<PlayerWithAvatar> presentPlayers,
       Set<PlayerWithAvatar> absentPlayers,
       ListChangeData<PlayerWithAvatar> listChangeData,
-      Map<String, bool> playerReadies});
+      Map<String, bool> playerReadies,
+      String numberOfPlayersString,
+      bool enoughPlayers,
+      bool isStartingGame});
 }
 
 /// @nodoc
@@ -119,6 +143,9 @@ class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
     Object? absentPlayers = null,
     Object? listChangeData = null,
     Object? playerReadies = null,
+    Object? numberOfPlayersString = null,
+    Object? enoughPlayers = null,
+    Object? isStartingGame = null,
   }) {
     return _then(_$_LobbyPhaseViewModel(
       roomCode: null == roomCode
@@ -141,6 +168,18 @@ class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
           ? _value._playerReadies
           : playerReadies // ignore: cast_nullable_to_non_nullable
               as Map<String, bool>,
+      numberOfPlayersString: null == numberOfPlayersString
+          ? _value.numberOfPlayersString
+          : numberOfPlayersString // ignore: cast_nullable_to_non_nullable
+              as String,
+      enoughPlayers: null == enoughPlayers
+          ? _value.enoughPlayers
+          : enoughPlayers // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isStartingGame: null == isStartingGame
+          ? _value.isStartingGame
+          : isStartingGame // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -153,7 +192,10 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
       required final List<PlayerWithAvatar> presentPlayers,
       required final Set<PlayerWithAvatar> absentPlayers,
       required this.listChangeData,
-      required final Map<String, bool> playerReadies})
+      required final Map<String, bool> playerReadies,
+      required this.numberOfPlayersString,
+      required this.enoughPlayers,
+      required this.isStartingGame})
       : _presentPlayers = presentPlayers,
         _absentPlayers = absentPlayers,
         _playerReadies = playerReadies;
@@ -187,8 +229,15 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
   }
 
   @override
+  final String numberOfPlayersString;
+  @override
+  final bool enoughPlayers;
+  @override
+  final bool isStartingGame;
+
+  @override
   String toString() {
-    return 'LobbyPhaseViewModel._(roomCode: $roomCode, presentPlayers: $presentPlayers, absentPlayers: $absentPlayers, listChangeData: $listChangeData, playerReadies: $playerReadies)';
+    return 'LobbyPhaseViewModel._(roomCode: $roomCode, presentPlayers: $presentPlayers, absentPlayers: $absentPlayers, listChangeData: $listChangeData, playerReadies: $playerReadies, numberOfPlayersString: $numberOfPlayersString, enoughPlayers: $enoughPlayers, isStartingGame: $isStartingGame)';
   }
 
   @override
@@ -205,7 +254,13 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
             (identical(other.listChangeData, listChangeData) ||
                 other.listChangeData == listChangeData) &&
             const DeepCollectionEquality()
-                .equals(other._playerReadies, _playerReadies));
+                .equals(other._playerReadies, _playerReadies) &&
+            (identical(other.numberOfPlayersString, numberOfPlayersString) ||
+                other.numberOfPlayersString == numberOfPlayersString) &&
+            (identical(other.enoughPlayers, enoughPlayers) ||
+                other.enoughPlayers == enoughPlayers) &&
+            (identical(other.isStartingGame, isStartingGame) ||
+                other.isStartingGame == isStartingGame));
   }
 
   @override
@@ -215,7 +270,10 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
       const DeepCollectionEquality().hash(_presentPlayers),
       const DeepCollectionEquality().hash(_absentPlayers),
       listChangeData,
-      const DeepCollectionEquality().hash(_playerReadies));
+      const DeepCollectionEquality().hash(_playerReadies),
+      numberOfPlayersString,
+      enoughPlayers,
+      isStartingGame);
 
   @JsonKey(ignore: true)
   @override
@@ -231,7 +289,10 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
       required final List<PlayerWithAvatar> presentPlayers,
       required final Set<PlayerWithAvatar> absentPlayers,
       required final ListChangeData<PlayerWithAvatar> listChangeData,
-      required final Map<String, bool> playerReadies}) = _$_LobbyPhaseViewModel;
+      required final Map<String, bool> playerReadies,
+      required final String numberOfPlayersString,
+      required final bool enoughPlayers,
+      required final bool isStartingGame}) = _$_LobbyPhaseViewModel;
 
   @override
   String get roomCode;
@@ -243,6 +304,12 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
   ListChangeData<PlayerWithAvatar> get listChangeData;
   @override
   Map<String, bool> get playerReadies;
+  @override
+  String get numberOfPlayersString;
+  @override
+  bool get enoughPlayers;
+  @override
+  bool get isStartingGame;
   @override
   @JsonKey(ignore: true)
   _$$_LobbyPhaseViewModelCopyWith<_$_LobbyPhaseViewModel> get copyWith =>

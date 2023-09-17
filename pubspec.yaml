@@ -40,6 +40,7 @@ dependencies:
   go_router: ^10.0.0
   go_router_tabs: ^0.5.0
   coordinated_page_route: ^0.0.3
+  auto_size_text_field: ^2.2.1
 
 dev_dependencies:
   flutter_test:

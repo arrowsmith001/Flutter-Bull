@@ -31,6 +31,7 @@ class AuthNotifier extends _$AuthNotifier {
     });
   }
 
+
   Future<void> signIn() async {
   
     state = const AsyncLoading<AuthNotifierState>()

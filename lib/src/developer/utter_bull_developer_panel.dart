@@ -64,7 +64,9 @@ class _UtterBullDeveloperPanelState
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            ElevatedButton(onPressed: () => authNotifier.signOut(), child: Text("Sign out")),
+            ElevatedButton(
+                onPressed: () => authNotifier.signOut(),
+                child: Text("Sign out")),
             LabelledAsyncData('userId', authAsync.valueOrNull,
                 stringifyValue: (data) => data?.userId),
             Row(
@@ -172,13 +174,13 @@ class _UtterBullDeveloperPanelState
                   roomId == null ? null : () => _server.revealNext(roomId!, ''),
               child: Text('Next Reveal')),
           ElevatedButton(
-              onPressed:
-                  roomId == null ? null : () => _server.calculateResults(roomId!),
+              onPressed: roomId == null
+                  ? null
+                  : () => _server.calculateResults(roomId!),
               child: Text('Calculate results')),
         ]),
-    
-  
-    // TODO: Test with arbitrary phase changing
+
+        // TODO: Test with arbitrary phase changing
 /*       
 Row(children: [
           ElevatedButton(
@@ -204,14 +206,21 @@ Row(children: [
 
   void addRandomPlayer() async {
     final id = FirebaseFirestore.instance.collection('players').doc().id;
-    final newPlayer =
-        Player(id: id, name: _getRandomName(id), occupiedRoomId: roomId);
+    final name = _getRandomName(id);
+    final newPlayer = Player(
+        id: id,
+        name: name,
+        profilePhotoPath: _getPhotoFromName(name),
+        occupiedRoomId: roomId);
     await _data.createPlayer(newPlayer);
     await _server.joinRoom(id, roomAsync.requireValue.gameRoom.roomCode);
   }
 
   String _getRandomName([String? seed]) {
-    return seed ?? 'Name';
+    final stringSeedToInt =
+        seed?.codeUnits.reduce((value, element) => value + element);
+    final index = Random(stringSeedToInt).nextInt(randomFirstNames.length);
+    return randomFirstNames.keys.toList()[index];
   }
 
   String _generateText(String id) {
@@ -229,22 +238,27 @@ Row(children: [
   }
 
   Color? _getColorCode(String? id) {
-    try{
-
-    if (_playerIsInRoom(id) == false) return Colors.grey;
-    if (_isPlayersTurn(id)) return Colors.yellow[900];
-    }    
-    catch(e) {}
+    try {
+      if (_playerIsInRoom(id) == false) return Colors.grey;
+      if (_isPlayersTurn(id)) return Colors.yellow[900];
+    } catch (e) {}
     return null;
   }
 
   bool _isPlayersTurn(String? id) {
-    try
-    {
+    try {
       final room = roomAsync.requireValue.gameRoom;
-    return room.playerOrder[room.progress] == id;
-    }catch(e) {}
+      return room.playerOrder[room.progress] == id;
+    } catch (e) {}
     return false;
+  }
+
+  String _getPhotoFromName(String name) {
+    final Gender gender = randomFirstNames[name]!;
+    List<String> photos = gender == Gender.male ? malePhotos : femalePhotos;
+    final index =
+        Random(name.codeUnits.reduce((v, e) => v + e)).nextInt(photos.length);
+    return photos[index];
   }
 }
 
@@ -319,7 +333,8 @@ class ListedLabelledAsyncData<T, S> extends StatelessWidget {
                       final str = _getString(s);
                       final child = buildTextColor == null
                           ? Text(str)
-                          : Text(str, style: TextStyle(color:  buildTextColor!(s, str)));
+                          : Text(str,
+                              style: TextStyle(color: buildTextColor!(s, str)));
                       if (buildTrailing == null) return child;
                       return Row(
                         children: [child, buildTrailing!(s)],
@@ -339,3 +354,43 @@ class ListedLabelledAsyncData<T, S> extends StatelessWidget {
     return stringifyValue!(value) ?? '<null>';
   }
 }
+
+enum Gender { male, female }
+
+const Map<String, Gender> randomFirstNames = {
+  "Alice": Gender.female,
+  "Bob": Gender.male,
+  "Carol": Gender.female,
+  "David": Gender.male,
+  "Eve": Gender.female,
+  "Frank": Gender.male,
+  "Grace": Gender.female,
+  "Henry": Gender.male,
+  "Ivy": Gender.female,
+  "Jack": Gender.male,
+  "Katherine": Gender.female,
+  "Liam": Gender.male,
+  "Mia": Gender.female,
+  "Noah": Gender.male,
+  "Olivia": Gender.female,
+  "Penelope": Gender.female,
+  "Quinn": Gender.male,
+  "Ryan": Gender.male,
+  "Sophia": Gender.female,
+  "Thomas": Gender.male,
+  "Uma": Gender.female,
+  "Violet": Gender.female,
+  "William": Gender.male,
+  "Xander": Gender.male,
+  "Yasmine": Gender.female,
+  "Zoe": Gender.female,
+};
+
+final femalePhotos = [
+  ...List.generate(8, (i) => 'pp/default/female${i+1}.jpg'),  
+  'pp/default/beauty.png'
+  ];
+
+final malePhotos = [
+  ...List.generate(7, (i) => 'pp/default/male${i+1}.jpg')
+  ];

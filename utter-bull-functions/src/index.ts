@@ -96,7 +96,7 @@ export const submitText = http.onCall(
 
         var roomId = req.data['roomId'] as string;
         var userId = req.data['userId'] as string;
-        var text = req.data['text'] as string;
+        var text = req.data['text'];
 
         submitTextImpl(roomId, userId, text);
     });
@@ -304,6 +304,8 @@ enum GameRoomPhase {
 // TODO: Ensure player cannot join while starting game
 async function startGameImpl(roomId: string) {
 
+    await db.collection('rooms').doc(roomId).update({ 'state': 'startingGame' });
+
     await db.runTransaction(async (txn) => {
 
         var roomRef = db.collection('rooms').doc(roomId);
@@ -342,6 +344,7 @@ async function startGameImpl(roomId: string) {
     });
 
 
+    await db.collection('rooms').doc(roomId).update({ 'state': null });
 
 }
 
@@ -358,6 +361,7 @@ async function returnToLobbyImpl(roomId: string) {
 async function submitTextImpl(roomId: string, userId: string, text: string) {
     await db.runTransaction(async (txn) => {
 
+
         var roomRef = db.collection('rooms').doc(roomId);
         var currentRoom = await txn.get(roomRef);
         var currentRoomData = currentRoom.data()!;
@@ -373,7 +377,7 @@ async function submitTextImpl(roomId: string, userId: string, text: string) {
         txn.update(roomRef, { 'texts': texts });
 
         // Check text submission progress
-        var numberOfSubmissions = Object.keys(texts).length;
+        var numberOfSubmissions = Object.values(texts).filter(t => t != null).length;
         var numberOfTargets = Object.keys(targets).length;
 
         if (numberOfSubmissions == numberOfTargets) {
@@ -685,13 +689,29 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
 
     // Assign truth/lie randomly
     playerIds.forEach((p) => {
-        truthOrLieMap.set(p, Math.random() < 0.5);
+        var isTruth = Math.random() < 0.5;
+        truthOrLieMap.set(p, isTruth);
     });
 
     var liars = Array.from(truthOrLieMap.keys()).filter((k) => !truthOrLieMap.get(k));
 
+
+    // TODO: Tie this to an optional setting ("All Truths Allowed")
+    if (liars.length == 0) {
+        // Switch 2 to liars
+        var playersTemp = Array.from(playerIds);
+        var randomIndex1 = Math.random() * playersTemp.length;
+        var firstToSwitch = playersTemp[randomIndex1];
+
+        playersTemp.filter(id => id != firstToSwitch);
+        var randomIndex2 = Math.random() * playersTemp.length;
+        var secondToSwitch = playersTemp[randomIndex2];
+
+        truthOrLieMap.set(firstToSwitch, false);
+        truthOrLieMap.set(secondToSwitch, false);
+    }
     // Adjust for case where liars = 1
-    if (liars.length == 1) {
+    else if (liars.length == 1) {
         var truthers = Array.from(truthOrLieMap.keys()).filter((k) => truthOrLieMap.get(k));
 
         // Convert 1 random truther into a liar
@@ -723,6 +743,8 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
         var truther = truthers[i];
         targetMap.set(truther, truther);
     }
+
+    console.log('Returning target map: ' + JSON.stringify(targetMap));
 
     return targetMap;
 

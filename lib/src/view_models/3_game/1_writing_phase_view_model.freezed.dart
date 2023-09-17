@@ -18,7 +18,10 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$WritingPhaseViewModel {
   PlayerWithAvatar get playerWritingFor => throw _privateConstructorUsedError;
   bool get writingTruthOrLie => throw _privateConstructorUsedError;
-  String get writingPromptString => throw _privateConstructorUsedError;
+  WritingPrompt get writingPrompt => throw _privateConstructorUsedError;
+  bool get hasSubmitted => throw _privateConstructorUsedError;
+  int get playersSubmitted => throw _privateConstructorUsedError;
+  String get playersSubmittedTextPrompt => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WritingPhaseViewModelCopyWith<WritingPhaseViewModel> get copyWith =>
@@ -34,7 +37,10 @@ abstract class $WritingPhaseViewModelCopyWith<$Res> {
   $Res call(
       {PlayerWithAvatar playerWritingFor,
       bool writingTruthOrLie,
-      String writingPromptString});
+      WritingPrompt writingPrompt,
+      bool hasSubmitted,
+      int playersSubmitted,
+      String playersSubmittedTextPrompt});
 }
 
 /// @nodoc
@@ -53,7 +59,10 @@ class _$WritingPhaseViewModelCopyWithImpl<$Res,
   $Res call({
     Object? playerWritingFor = null,
     Object? writingTruthOrLie = null,
-    Object? writingPromptString = null,
+    Object? writingPrompt = null,
+    Object? hasSubmitted = null,
+    Object? playersSubmitted = null,
+    Object? playersSubmittedTextPrompt = null,
   }) {
     return _then(_value.copyWith(
       playerWritingFor: null == playerWritingFor
@@ -64,9 +73,21 @@ class _$WritingPhaseViewModelCopyWithImpl<$Res,
           ? _value.writingTruthOrLie
           : writingTruthOrLie // ignore: cast_nullable_to_non_nullable
               as bool,
-      writingPromptString: null == writingPromptString
-          ? _value.writingPromptString
-          : writingPromptString // ignore: cast_nullable_to_non_nullable
+      writingPrompt: null == writingPrompt
+          ? _value.writingPrompt
+          : writingPrompt // ignore: cast_nullable_to_non_nullable
+              as WritingPrompt,
+      hasSubmitted: null == hasSubmitted
+          ? _value.hasSubmitted
+          : hasSubmitted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      playersSubmitted: null == playersSubmitted
+          ? _value.playersSubmitted
+          : playersSubmitted // ignore: cast_nullable_to_non_nullable
+              as int,
+      playersSubmittedTextPrompt: null == playersSubmittedTextPrompt
+          ? _value.playersSubmittedTextPrompt
+          : playersSubmittedTextPrompt // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -83,7 +104,10 @@ abstract class _$$_WritingPhaseViewModelCopyWith<$Res>
   $Res call(
       {PlayerWithAvatar playerWritingFor,
       bool writingTruthOrLie,
-      String writingPromptString});
+      WritingPrompt writingPrompt,
+      bool hasSubmitted,
+      int playersSubmitted,
+      String playersSubmittedTextPrompt});
 }
 
 /// @nodoc
@@ -99,7 +123,10 @@ class __$$_WritingPhaseViewModelCopyWithImpl<$Res>
   $Res call({
     Object? playerWritingFor = null,
     Object? writingTruthOrLie = null,
-    Object? writingPromptString = null,
+    Object? writingPrompt = null,
+    Object? hasSubmitted = null,
+    Object? playersSubmitted = null,
+    Object? playersSubmittedTextPrompt = null,
   }) {
     return _then(_$_WritingPhaseViewModel(
       playerWritingFor: null == playerWritingFor
@@ -110,9 +137,21 @@ class __$$_WritingPhaseViewModelCopyWithImpl<$Res>
           ? _value.writingTruthOrLie
           : writingTruthOrLie // ignore: cast_nullable_to_non_nullable
               as bool,
-      writingPromptString: null == writingPromptString
-          ? _value.writingPromptString
-          : writingPromptString // ignore: cast_nullable_to_non_nullable
+      writingPrompt: null == writingPrompt
+          ? _value.writingPrompt
+          : writingPrompt // ignore: cast_nullable_to_non_nullable
+              as WritingPrompt,
+      hasSubmitted: null == hasSubmitted
+          ? _value.hasSubmitted
+          : hasSubmitted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      playersSubmitted: null == playersSubmitted
+          ? _value.playersSubmitted
+          : playersSubmitted // ignore: cast_nullable_to_non_nullable
+              as int,
+      playersSubmittedTextPrompt: null == playersSubmittedTextPrompt
+          ? _value.playersSubmittedTextPrompt
+          : playersSubmittedTextPrompt // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -124,18 +163,27 @@ class _$_WritingPhaseViewModel implements _WritingPhaseViewModel {
   _$_WritingPhaseViewModel(
       {required this.playerWritingFor,
       required this.writingTruthOrLie,
-      required this.writingPromptString});
+      required this.writingPrompt,
+      required this.hasSubmitted,
+      required this.playersSubmitted,
+      required this.playersSubmittedTextPrompt});
 
   @override
   final PlayerWithAvatar playerWritingFor;
   @override
   final bool writingTruthOrLie;
   @override
-  final String writingPromptString;
+  final WritingPrompt writingPrompt;
+  @override
+  final bool hasSubmitted;
+  @override
+  final int playersSubmitted;
+  @override
+  final String playersSubmittedTextPrompt;
 
   @override
   String toString() {
-    return 'WritingPhaseViewModel._(playerWritingFor: $playerWritingFor, writingTruthOrLie: $writingTruthOrLie, writingPromptString: $writingPromptString)';
+    return 'WritingPhaseViewModel._(playerWritingFor: $playerWritingFor, writingTruthOrLie: $writingTruthOrLie, writingPrompt: $writingPrompt, hasSubmitted: $hasSubmitted, playersSubmitted: $playersSubmitted, playersSubmittedTextPrompt: $playersSubmittedTextPrompt)';
   }
 
   @override
@@ -147,13 +195,27 @@ class _$_WritingPhaseViewModel implements _WritingPhaseViewModel {
                 other.playerWritingFor == playerWritingFor) &&
             (identical(other.writingTruthOrLie, writingTruthOrLie) ||
                 other.writingTruthOrLie == writingTruthOrLie) &&
-            (identical(other.writingPromptString, writingPromptString) ||
-                other.writingPromptString == writingPromptString));
+            (identical(other.writingPrompt, writingPrompt) ||
+                other.writingPrompt == writingPrompt) &&
+            (identical(other.hasSubmitted, hasSubmitted) ||
+                other.hasSubmitted == hasSubmitted) &&
+            (identical(other.playersSubmitted, playersSubmitted) ||
+                other.playersSubmitted == playersSubmitted) &&
+            (identical(other.playersSubmittedTextPrompt,
+                    playersSubmittedTextPrompt) ||
+                other.playersSubmittedTextPrompt ==
+                    playersSubmittedTextPrompt));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, playerWritingFor, writingTruthOrLie, writingPromptString);
+      runtimeType,
+      playerWritingFor,
+      writingTruthOrLie,
+      writingPrompt,
+      hasSubmitted,
+      playersSubmitted,
+      playersSubmittedTextPrompt);
 
   @JsonKey(ignore: true)
   @override
@@ -165,16 +227,26 @@ class _$_WritingPhaseViewModel implements _WritingPhaseViewModel {
 
 abstract class _WritingPhaseViewModel implements WritingPhaseViewModel {
   factory _WritingPhaseViewModel(
-      {required final PlayerWithAvatar playerWritingFor,
-      required final bool writingTruthOrLie,
-      required final String writingPromptString}) = _$_WritingPhaseViewModel;
+          {required final PlayerWithAvatar playerWritingFor,
+          required final bool writingTruthOrLie,
+          required final WritingPrompt writingPrompt,
+          required final bool hasSubmitted,
+          required final int playersSubmitted,
+          required final String playersSubmittedTextPrompt}) =
+      _$_WritingPhaseViewModel;
 
   @override
   PlayerWithAvatar get playerWritingFor;
   @override
   bool get writingTruthOrLie;
   @override
-  String get writingPromptString;
+  WritingPrompt get writingPrompt;
+  @override
+  bool get hasSubmitted;
+  @override
+  int get playersSubmitted;
+  @override
+  String get playersSubmittedTextPrompt;
   @override
   @JsonKey(ignore: true)
   _$$_WritingPhaseViewModelCopyWith<_$_WritingPhaseViewModel> get copyWith =>

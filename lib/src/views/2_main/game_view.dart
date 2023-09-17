@@ -25,12 +25,6 @@ class GameView extends ConsumerStatefulWidget {
 class _GameViewState extends ConsumerState<GameView> with RoomID {
   final navController = GameRouteNavigationController();
 
-  @override
-  void dispose() {
-    ref.invalidate(vmProvider); // TODO: Is this necessary?
-    super.dispose();
-  }
-
   late final vmProvider = gameViewNotifierProvider(roomId);
 
   @override

@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
@@ -7,6 +10,7 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -32,12 +36,11 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     }); */
   }
 
-  final _listKey = GlobalKey<AnimatedListState>();
+  final _listKey = GlobalKey<AnimatedGridState>();
 
   List<String> playerIdList = [];
 
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
-
 
   late final vmProvider = lobbyPhaseViewNotifierProvider(roomId, userId);
 
@@ -59,42 +62,104 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     });
 
     return Scaffold(body: vmAsync.whenDefault((vm) {
-      return Column(
+      return Stack(
         children: [
-          Text(vm.roomCode,
-              style: TextStyle(fontFamily: 'LapsusPro', fontSize: 54)),
-          Expanded(child: _buildList(vm) //_buildAnimatedList(vm),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white, Colors.white.withOpacity(0)])),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Column(children: [
+                    Text(
+                      'Game Code:',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    AutoSizeText(vm.roomCode,
+                        maxLines: 1, style: TextStyle(fontSize: 64))
+                  ]),
+                ),
               ),
-          Flexible(
-            child: Column(children: [
-              Flexible(
-                child: PlaceholderButton(
-                    onPressed: () => _getServer.startGame(roomId),
-                    title: 'Start Game'),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.45), borderRadius: BorderRadius.circular(16.0)),
+                    child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Players',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          Expanded(child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: _buildAnimatedList(vm),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              Flexible(
-                child: PlaceholderButton(
-                    onPressed: () => _getServer.removeFromRoom(
-                        userId, roomId), // TODO: Holy null check
-                    title: 'Leave Room'),
-              ),
-            ]),
+              Container(
+                color: Colors.white.withOpacity(0.75),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Text(vm.numberOfPlayersString),
+                    Flexible(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                                onPressed: () =>
+                                    _getServer.removeFromRoom(userId, roomId),
+                                icon: Transform.flip(
+                                    flipX: true,
+                                    child: Icon(Icons.exit_to_app_rounded))),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: SizedBox(
+                                height: 85,
+                                child: vm.isStartingGame ? UtterBullCircularProgressIndicator() : UtterBullButton(
+                                    onPressed: vm.enoughPlayers
+                                        ? () => _getServer.startGame(roomId)
+                                        : null,
+                                    title: 'Start Game'),
+                              ),
+                            )
+                          ]),
+                    ),
+                  ]),
+                ),
+              )
+            ],
           )
         ],
       );
     }));
   }
 
-  AnimatedList _buildAnimatedList(LobbyPhaseViewModel vm) {
-    return AnimatedList(
+  final ScrollController _scrollController = ScrollController();
+
+  Widget _buildAnimatedList(LobbyPhaseViewModel vm) {
+    return AnimatedGrid(
+      controller: _scrollController,
         key: _listKey,
-        shrinkWrap: true,
         initialItemCount: vm.presentPlayers.length,
-        itemBuilder: (context, index, animation) {
+        itemBuilder: (context, index, animation)
+        {
           final player = vm.presentPlayers[index];
 
           return _buildAnimatedListItem(animation, player);
-        });
+      
+        }, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.15),);
   }
 
   Widget _buildAnimatedListItem(
@@ -107,16 +172,35 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
         builder: (context, child) {
           return Transform.scale(
               key: ValueKey(playerWithAvatar.player.id),
-              scale: animation.value,
+              scale: curvedAnim.value,
               child: child);
         },
         child: _buildListItem(playerWithAvatar));
   }
 
-  ListTile _buildListItem(PlayerWithAvatar playerWithAvatar) {
-    return ListTile(
-        title: Text(playerWithAvatar.player.name!),
-        leading: UtterBullPlayerAvatar(playerWithAvatar.avatarData));
+  Widget _buildListItem(PlayerWithAvatar playerWithAvatar) {
+    return Stack(
+      alignment: Alignment.center, 
+      children: [
+      SizedBox(
+          height: 120,
+          child: UtterBullPlayerAvatar(playerWithAvatar.avatarData)),
+      SizedBox(
+        height: 150,
+        child: Stack(
+      alignment: Alignment.center, 
+        
+          children: 
+        [
+          PositionedDirectional(
+            bottom: 0,
+            child: SizedBox(
+            height: 35, 
+            child: UglyOutlinedText(playerWithAvatar.player.name!, outlineColor: Color.lerp(Theme.of(context).colorScheme.primary, Colors.black, 0.4))),
+          )
+        ]),
+      )
+    ]);
   }
 
   void _insertIntoPlayerList(String? changedItemId, int? changeIndex) {

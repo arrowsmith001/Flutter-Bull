@@ -25,10 +25,11 @@ mixin _$GameRoom {
   String get roomCode => throw _privateConstructorUsedError;
   GamePhase get phase => throw _privateConstructorUsedError;
   int get subPhase => throw _privateConstructorUsedError;
+  String? get state => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
   Map<String, String> get targets => throw _privateConstructorUsedError;
   Map<String, bool> get truths => throw _privateConstructorUsedError;
-  Map<String, String> get texts => throw _privateConstructorUsedError;
+  Map<String, String?> get texts => throw _privateConstructorUsedError;
   Map<String, List<String>> get votes => throw _privateConstructorUsedError;
   Map<String, List<int>> get voteTimes => throw _privateConstructorUsedError;
   List<String> get playerOrder => throw _privateConstructorUsedError;
@@ -53,10 +54,11 @@ abstract class $GameRoomCopyWith<$Res> {
       String roomCode,
       GamePhase phase,
       int subPhase,
+      String? state,
       List<String> playerIds,
       Map<String, String> targets,
       Map<String, bool> truths,
-      Map<String, String> texts,
+      Map<String, String?> texts,
       Map<String, List<String>> votes,
       Map<String, List<int>> voteTimes,
       List<String> playerOrder,
@@ -85,6 +87,7 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
     Object? roomCode = null,
     Object? phase = null,
     Object? subPhase = null,
+    Object? state = freezed,
     Object? playerIds = null,
     Object? targets = null,
     Object? truths = null,
@@ -117,6 +120,10 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.subPhase
           : subPhase // ignore: cast_nullable_to_non_nullable
               as int,
+      state: freezed == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String?,
       playerIds: null == playerIds
           ? _value.playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -132,7 +139,7 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
       texts: null == texts
           ? _value.texts
           : texts // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>,
+              as Map<String, String?>,
       votes: null == votes
           ? _value.votes
           : votes // ignore: cast_nullable_to_non_nullable
@@ -182,10 +189,11 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
       String roomCode,
       GamePhase phase,
       int subPhase,
+      String? state,
       List<String> playerIds,
       Map<String, String> targets,
       Map<String, bool> truths,
-      Map<String, String> texts,
+      Map<String, String?> texts,
       Map<String, List<String>> votes,
       Map<String, List<int>> voteTimes,
       List<String> playerOrder,
@@ -213,6 +221,7 @@ class __$$_GameRoomCopyWithImpl<$Res>
     Object? roomCode = null,
     Object? phase = null,
     Object? subPhase = null,
+    Object? state = freezed,
     Object? playerIds = null,
     Object? targets = null,
     Object? truths = null,
@@ -245,6 +254,10 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value.subPhase
           : subPhase // ignore: cast_nullable_to_non_nullable
               as int,
+      state: freezed == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String?,
       playerIds: null == playerIds
           ? _value._playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
@@ -260,7 +273,7 @@ class __$$_GameRoomCopyWithImpl<$Res>
       texts: null == texts
           ? _value._texts
           : texts // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>,
+              as Map<String, String?>,
       votes: null == votes
           ? _value._votes
           : votes // ignore: cast_nullable_to_non_nullable
@@ -298,10 +311,11 @@ class _$_GameRoom implements _GameRoom {
       required this.roomCode,
       this.phase = GamePhase.lobby,
       this.subPhase = 0,
+      this.state,
       final List<String> playerIds = const [],
       final Map<String, String> targets = const {},
       final Map<String, bool> truths = const {},
-      final Map<String, String> texts = const {},
+      final Map<String, String?> texts = const {},
       final Map<String, List<String>> votes = const {},
       final Map<String, List<int>> voteTimes = const {},
       final List<String> playerOrder = const [],
@@ -331,6 +345,8 @@ class _$_GameRoom implements _GameRoom {
   @override
   @JsonKey()
   final int subPhase;
+  @override
+  final String? state;
   final List<String> _playerIds;
   @override
   @JsonKey()
@@ -358,10 +374,10 @@ class _$_GameRoom implements _GameRoom {
     return EqualUnmodifiableMapView(_truths);
   }
 
-  final Map<String, String> _texts;
+  final Map<String, String?> _texts;
   @override
   @JsonKey()
-  Map<String, String> get texts {
+  Map<String, String?> get texts {
     if (_texts is EqualUnmodifiableMapView) return _texts;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_texts);
@@ -405,7 +421,7 @@ class _$_GameRoom implements _GameRoom {
 
   @override
   String toString() {
-    return 'GameRoom(id: $id, resultId: $resultId, roomCode: $roomCode, phase: $phase, subPhase: $subPhase, playerIds: $playerIds, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, playerOrder: $playerOrder, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
+    return 'GameRoom(id: $id, resultId: $resultId, roomCode: $roomCode, phase: $phase, subPhase: $subPhase, state: $state, playerIds: $playerIds, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, playerOrder: $playerOrder, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
   }
 
   @override
@@ -421,6 +437,7 @@ class _$_GameRoom implements _GameRoom {
             (identical(other.phase, phase) || other.phase == phase) &&
             (identical(other.subPhase, subPhase) ||
                 other.subPhase == subPhase) &&
+            (identical(other.state, state) || other.state == state) &&
             const DeepCollectionEquality()
                 .equals(other._playerIds, _playerIds) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
@@ -448,6 +465,7 @@ class _$_GameRoom implements _GameRoom {
       roomCode,
       phase,
       subPhase,
+      state,
       const DeepCollectionEquality().hash(_playerIds),
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_truths),
@@ -480,10 +498,11 @@ abstract class _GameRoom implements GameRoom {
       required final String roomCode,
       final GamePhase phase,
       final int subPhase,
+      final String? state,
       final List<String> playerIds,
       final Map<String, String> targets,
       final Map<String, bool> truths,
-      final Map<String, String> texts,
+      final Map<String, String?> texts,
       final Map<String, List<String>> votes,
       final Map<String, List<int>> voteTimes,
       final List<String> playerOrder,
@@ -504,13 +523,15 @@ abstract class _GameRoom implements GameRoom {
   @override
   int get subPhase;
   @override
+  String? get state;
+  @override
   List<String> get playerIds;
   @override
   Map<String, String> get targets;
   @override
   Map<String, bool> get truths;
   @override
-  Map<String, String> get texts;
+  Map<String, String?> get texts;
   @override
   Map<String, List<String>> get votes;
   @override

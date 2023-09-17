@@ -7,7 +7,7 @@ part of 'game_round_view_notifier.dart';
 // **************************************************************************
 
 String _$gameRoundViewNotifierHash() =>
-    r'de94d59d0223f17a398db06c45e2545114b74f5c';
+    r'85e577cc6ab4934aca7fc42f5780fba788d2b4d8';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,10 +32,12 @@ class _SystemHash {
 
 abstract class _$GameRoundViewNotifier
     extends BuildlessStreamNotifier<GameRoundViewModel> {
+  late final String userId;
   late final String roomId;
   late final String whoseTurnId;
 
   Stream<GameRoundViewModel> build(
+    String userId,
     String roomId,
     String whoseTurnId,
   );
@@ -53,10 +55,12 @@ class GameRoundViewNotifierFamily
 
   /// See also [GameRoundViewNotifier].
   GameRoundViewNotifierProvider call(
+    String userId,
     String roomId,
     String whoseTurnId,
   ) {
     return GameRoundViewNotifierProvider(
+      userId,
       roomId,
       whoseTurnId,
     );
@@ -67,6 +71,7 @@ class GameRoundViewNotifierFamily
     covariant GameRoundViewNotifierProvider provider,
   ) {
     return call(
+      provider.userId,
       provider.roomId,
       provider.whoseTurnId,
     );
@@ -92,10 +97,12 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
     GameRoundViewNotifier, GameRoundViewModel> {
   /// See also [GameRoundViewNotifier].
   GameRoundViewNotifierProvider(
+    this.userId,
     this.roomId,
     this.whoseTurnId,
   ) : super.internal(
           () => GameRoundViewNotifier()
+            ..userId = userId
             ..roomId = roomId
             ..whoseTurnId = whoseTurnId,
           from: gameRoundViewNotifierProvider,
@@ -109,12 +116,14 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
               GameRoundViewNotifierFamily._allTransitiveDependencies,
         );
 
+  final String userId;
   final String roomId;
   final String whoseTurnId;
 
   @override
   bool operator ==(Object other) {
     return other is GameRoundViewNotifierProvider &&
+        other.userId == userId &&
         other.roomId == roomId &&
         other.whoseTurnId == whoseTurnId;
   }
@@ -122,6 +131,7 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
     hash = _SystemHash.combine(hash, roomId.hashCode);
     hash = _SystemHash.combine(hash, whoseTurnId.hashCode);
 
@@ -133,6 +143,7 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
     covariant GameRoundViewNotifier notifier,
   ) {
     return notifier.build(
+      userId,
       roomId,
       whoseTurnId,
     );

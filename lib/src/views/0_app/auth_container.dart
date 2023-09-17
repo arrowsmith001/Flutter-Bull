@@ -48,7 +48,7 @@ class _AuthContainerState extends ConsumerState<AuthContainer> {
                   data: data),
 
       //data: (e) => ErrorPopup(e.toString(), escape: () => Logger().d("message"),),
-      loading: () => const LoadingWidget(),
+      loading: () => LoadingWidget(),
       error: (e, _) => ErrorPopup(
         e.toString(),
         escape: () => Logger().d("message"),

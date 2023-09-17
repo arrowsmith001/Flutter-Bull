@@ -19,7 +19,7 @@ abstract class UtterBullServer {
 
   Future<void> returnToLobby(String roomId);
 
-  Future<void> submitText(String roomId, String userId, String text);
+  Future<void> submitText(String roomId, String userId, String? text);
 
   Future<void> startRound(String roomId, String userId);
 
@@ -103,7 +103,7 @@ class UtterBullClientSideServer implements UtterBullServer {
   }
 
   @override
-  Future<void> submitText(String roomId, String userId, String text) async {
+  Future<void> submitText(String roomId, String userId, String? text) async {
     final func = FirebaseFunctions.instance.httpsCallable('submitText');
     await func.call({'roomId': roomId, 'userId': userId, 'text': text});
   }

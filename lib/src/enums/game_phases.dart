@@ -20,5 +20,13 @@ enum RoundPhase {
   @JsonValue(0)
   selecting,
   @JsonValue(1)
-  voting
+  shuffling,
+  @JsonValue(2)
+  reader,
+  @JsonValue(3)
+  reading,
+  @JsonValue(4)
+  voting,
+  @JsonValue(5)
+  votingEnd,
 }

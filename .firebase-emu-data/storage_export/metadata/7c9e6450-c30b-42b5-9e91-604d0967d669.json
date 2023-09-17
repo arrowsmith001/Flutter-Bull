@@ -1,0 +1,19 @@
+{
+  "name": "pp/default/male7.jpg",
+  "bucket": "flutter-bull.appspot.com",
+  "metageneration": 1,
+  "generation": 1694366640998,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "0feab2cd-ff6f-456b-b92c-8c72cd42a785"
+  ],
+  "etag": "SCMBz/3Hq1NtaYCVKJAVDE1XdJQ",
+  "customMetadata": {},
+  "timeCreated": "2023-09-10T17:24:00.998Z",
+  "updated": "2023-09-10T17:24:00.998Z",
+  "size": 532046,
+  "md5Hash": "IlwBBGuRvPgG+YFdYv5xhQ==",
+  "crc32c": "2150771954"
+}

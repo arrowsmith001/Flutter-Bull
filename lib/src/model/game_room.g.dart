@@ -13,6 +13,7 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
       phase: $enumDecodeNullable(_$GamePhaseEnumMap, json['phase']) ??
           GamePhase.lobby,
       subPhase: json['subPhase'] as int? ?? 0,
+      state: json['state'] as String?,
       playerIds: (json['playerIds'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -26,7 +27,7 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
           ) ??
           const {},
       texts: (json['texts'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(k, e as String),
+            (k, e) => MapEntry(k, e as String?),
           ) ??
           const {},
       votes: (json['votes'] as Map<String, dynamic>?)?.map(
@@ -57,6 +58,7 @@ Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
       'roomCode': instance.roomCode,
       'phase': _$GamePhaseEnumMap[instance.phase]!,
       'subPhase': instance.subPhase,
+      'state': instance.state,
       'playerIds': instance.playerIds,
       'targets': instance.targets,
       'truths': instance.truths,
