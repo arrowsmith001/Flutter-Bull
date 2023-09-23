@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
-import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,6 +18,7 @@ class _SelectingPlayerPhaseViewState
     extends ConsumerState<SelectingPlayerPhaseView>
     with RoomID, WhoseTurnID, UserID {
   late Timer _timer;
+
   static const int timerDurationMs = 100; // 1500;
   int seconds = 0;
 

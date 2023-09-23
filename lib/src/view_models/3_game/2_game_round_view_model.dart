@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:flutter_bull/src/enums/game_phases.dart';
@@ -14,15 +13,23 @@ enum PlayerRole { reading, voting, saboteur }
 @freezed
 class GameRoundViewModel with _$GameRoundViewModel {
   factory GameRoundViewModel(
-      {
-        required RoundPhase roundPhase,
+      {required RoundPhase roundPhase,
       required GameRoom game,
       required List<PlayerWithAvatar> players,
       required String userId,
       required String whoseTurnId}) {
-    final isMyTurn = userId == whoseTurnId;
-    final isSaboteur = GameDataFunctions.isSaboteur(game, userId, whoseTurnId);
-    final role = isMyTurn
+
+    final int progress = game.progress; // TODO: Define progress in terms of whoseTurnId?
+
+    final PlayerWithAvatar playerWhoseTurn =
+        players.where((element) => element.player.id == whoseTurnId).single;
+
+    final bool isTruth = game.truths[whoseTurnId] ?? false;
+
+    final bool isMyTurn = userId == whoseTurnId;
+    final bool isSaboteur =
+        GameDataFunctions.isSaboteur(game, userId, whoseTurnId);
+    final PlayerRole role = isMyTurn
         ? PlayerRole.reading
         : isSaboteur
             ? PlayerRole.saboteur
@@ -32,39 +39,73 @@ class GameRoundViewModel with _$GameRoundViewModel {
     final List<String> pseudoShuffledIds =
         GameDataFunctions.getShuffledIds(game);
 
-    final int whoseTurnIndex = pseudoShuffledIds.indexOf(whoseTurnId);
+    final List<String> playersLeftToPlay = pseudoShuffledIds
+        .where((id) => game.progress <= game.playerOrder.indexOf(id))
+        .toList();
+    final int whoseTurnIndex = playersLeftToPlay.indexOf(whoseTurnId);
+    
+    final String statement =
+        GameDataFunctions.playersWhoseTurnStatement(game, whoseTurnId);
+
 
     return GameRoundViewModel._(
-        roundPhase : roundPhase,
-        pseudoShuffledPlayerIds: pseudoShuffledIds,
+        roundPhase: roundPhase,
+        playersLeftToPlayIds: playersLeftToPlay,
         whoseTurnIndex: whoseTurnIndex,
         players: players,
-        playerWhoseTurnStatement:
-            GameDataFunctions.playersWhoseTurnStatement(game, whoseTurnId),
-        roleDescriptionString: getRoleDescriptionString(role),
+        playerWhoseTurn: playerWhoseTurn,
+        playerWhoseTurnStatement: statement,
+        roleDescriptionStrings:
+            getRoleDescriptionStrings(role, isTruth, playerWhoseTurn),
         isMyTurn: userId == whoseTurnId,
-        isSaboteur: isSaboteur);
+        isSaboteur: isSaboteur,
+        timeToReadOut: GameDataFunctions.calculateTimeToReadOut(statement),
+        isTruth: isTruth);
   }
 
   const factory GameRoundViewModel._({
-        required RoundPhase roundPhase,
-    required List<String> pseudoShuffledPlayerIds,
+    required RoundPhase roundPhase,
+    required List<String> playersLeftToPlayIds,
     required List<PlayerWithAvatar> players,
+    required PlayerWithAvatar playerWhoseTurn,
     required String playerWhoseTurnStatement,
-    required String roleDescriptionString,
+    required List<String> roleDescriptionStrings,
     required bool isMyTurn,
     required bool isSaboteur,
+    required bool isTruth,
     required int whoseTurnIndex,
+    required int timeToReadOut,
   }) = _GameRoundViewModel;
 
-  static String getRoleDescriptionString(PlayerRole role) {
+  static List<String> getRoleDescriptionStrings(
+      PlayerRole role, bool isTruth, PlayerWithAvatar playerWhoseTurn) {
     switch (role) {
       case PlayerRole.reading:
-        return 'Reading role';
+        return [
+          'Get ready to read out your statement...',
+          'You\'re about to read out a ${isTruth ? 'truth' : 'lie'}. Convince people it\'s a ${!isTruth ? 'truth' : 'lie'}!'
+        ];
       case PlayerRole.voting:
-        return 'Voting role';
+        return [
+          '${playerWhoseTurn.player.name} will now read out their statement.',
+          'Get ready to vote!'
+        ];
       case PlayerRole.saboteur:
-        return 'Saboteur role';
+        return [
+          '${playerWhoseTurn.player.name} will now read out their statement.',
+          'Try and persuade people to vote TRUE this round...'
+        ];
     }
   }
+
+  // static String getRoleIcon(PlayerRole role) {
+  //   switch (role) {
+  //     case PlayerRole.reading:
+  //       return 'Reading role';
+  //     case PlayerRole.voting:
+  //       return 'Voting role';
+  //     case PlayerRole.saboteur:
+  //       return 'Saboteur role';
+  //   }
+  // }
 }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:logger/logger.dart';
+import 'package:image/image.dart';
 //import 'package:path_provider/path_provider.dart';
 
 abstract class ImageStorageService {
@@ -24,11 +25,16 @@ class FirebaseImageStorageService implements ImageStorageService {
 
     Logger().d('attempting image download at $path at ${DateTime.now()}');
     final ref = storage.ref(path);
-    final data = await ref.getData();
+    final fetchedData = await ref.getData();
 
     Logger().d('downloaded image at $path at ${DateTime.now()}');
 
-    cachedImages[path] = data!;
+    // final Image img =
+    //     Image.fromBytes(width: 200, height: 200, bytes: fetchedData!.buffer);
+    // final data = img.data!.toUint8List();
+    final data = fetchedData!;
+
+    cachedImages[path] = data;
     return data;
 
     //frameBuilder:(context, child, frame, wasSynchronouslyLoaded) => CircularProgressIndicator(),

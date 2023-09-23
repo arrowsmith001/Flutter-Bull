@@ -17,7 +17,8 @@ class GameRoundViewNotifier extends _$GameRoundViewNotifier {
       String userId, String roomId, String whoseTurnId) async* {
     final game = ref.watch(gameNotifierProvider(roomId));
 
-    if (game is AsyncData) {
+    if (game is AsyncData) 
+    {
       yield* _buildViewModel(userId, game.requireValue.gameRoom, game.requireValue.players, whoseTurnId);
     }
   }

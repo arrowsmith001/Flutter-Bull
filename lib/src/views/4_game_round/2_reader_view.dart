@@ -1,10 +1,15 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/src/consumer.dart';
+
 
 class ReaderView extends ConsumerStatefulWidget {
   const ReaderView({super.key});
@@ -15,16 +20,104 @@ class ReaderView extends ConsumerStatefulWidget {
 
 class _ReaderViewState extends ConsumerState<ReaderView>
     with RoomID, WhoseTurnID, UserID {
+  get vmProvider => gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
+
+  AsyncValue<GameRoundViewModel> get vmAsync => ref.watch(vmProvider);
+
+  Future<void> onRevealStatement() async 
+  {
+    Navigator.of(context).pushReplacementNamed(RoundPhase.reading.name);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final vmProvider =
-        gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
-    final vmAsync = ref.watch(vmProvider);
-
     return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {
+
       final playerWhoseTurn =
           vm.players.firstWhere((p) => p.player.id == whoseTurnId);
-      return Hero(tag: 'avatar', child: UtterBullPlayerAvatar(playerWhoseTurn.avatarData));
+
+      Widget avatar = Hero(
+          tag: 'avatar',
+          child: UtterBullPlayerAvatar(playerWhoseTurn.avatarData));
+
+      Widget prompt = Hero(
+        tag: 'prompt',
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(16.0)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              
+              children: [
+              Flexible(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: AutoSizeText(
+                      vm.roleDescriptionStrings.first,
+                        textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                  ),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: AutoSizeText(
+                      vm.roleDescriptionStrings.last,
+                        textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                  ),
+                ),
+              ),
+            ]),
+          ),
+        ),
+      );
+
+      Widget bottomWidget = vm.isMyTurn
+          ? UtterBullButton(
+              title: 'Reveal Statement',
+              onPressed: () => onRevealStatement(),
+            )
+          : Text('Waiting for ${vm.playerWhoseTurn.player.name}...',
+              style: Theme.of(context).textTheme.headlineMedium);
+
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.75,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: avatar,
+            ),
+          ),
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: prompt,
+            ),
+          ),
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: bottomWidget,
+            ),
+          )
+        ],
+      );
     })));
   }
 }

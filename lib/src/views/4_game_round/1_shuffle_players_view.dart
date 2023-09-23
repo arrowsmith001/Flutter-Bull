@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class _ShufflePlayersAnimationViewState
       final PlayerSelector playerSelector = LinearScrollingPlayerSelector(
           width: MediaQuery.of(context).size.width,
           maxDuration: Duration(milliseconds: animationTimerMs),
-          shuffledPlayerIds: vm.pseudoShuffledPlayerIds,
+          shuffledPlayerIds: vm.playersLeftToPlayIds,
           playerAvatars: vm.players,
           selectedIndex: vm.whoseTurnIndex,
           onAnimationEnd: () => _onTimerEnd());
@@ -113,24 +114,23 @@ class _LinearScrollingPlayerSelectorState
   }
 
   void _initializeList() {
-    final list = widget.shuffledPlayerIds;
-    final targetIndex = list.length - 2;
-    final shift = targetIndex - widget.selectedIndex;
-    final shiftedIds =
-        List.generate(list.length, (i) => list[(i + shift) % list.length]);
+    final shuffledIds = widget.shuffledPlayerIds;
+    final whoseTurn = widget.shuffledPlayerIds[widget.selectedIndex];
 
-    int i = n;
-    int j = shiftedIds.length - 2;
+    List<String> idsForward = List.empty(growable: true);
 
-    final List<String> idsForward = List.empty(growable: true);
-
-    while (i > 0) {
-      idsForward.add(shiftedIds[j % shiftedIds.length]);
-      i--;
-      j++;
+    int i = 0;
+    while (i < n) {
+      idsForward.add(shuffledIds[i % shuffledIds.length]);
+      i++;
     }
 
-    ids = idsForward.reversed.toList();
+    while (idsForward[n - 2] != whoseTurn) {
+      final String removedId = idsForward.removeAt(n - 1);
+      idsForward = [removedId, ...idsForward];
+    }
+
+    ids = List.from(idsForward);
   }
 
   void _onScrollAnimTick() {
@@ -207,8 +207,8 @@ class _LinearScrollingPlayerSelectorState
 
                 if (i == n - 2) {
                   return Hero(tag: 'avatar', child: child);
-                } 
-                
+                }
+
                 return child;
               },
             ),

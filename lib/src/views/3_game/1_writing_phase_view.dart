@@ -205,7 +205,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
     return Container(
       decoration: BoxDecoration(
           color: hasSubmitted
-              ? Colors.grey.withOpacity(0.7)
+              ? const Color.fromARGB(255, 202, 202, 202).withOpacity(0.7)
               : Colors.white.withOpacity(0.7),
           borderRadius: BorderRadius.circular(16.0)),
       child: Center(

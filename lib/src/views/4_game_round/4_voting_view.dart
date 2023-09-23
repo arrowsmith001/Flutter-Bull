@@ -1,14 +1,20 @@
 import 'dart:math';
 
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
+import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
+import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class VotingPhaseView extends ConsumerStatefulWidget {
   const VotingPhaseView({super.key});
@@ -23,10 +29,12 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 
-  get gameNotifier => ref.read(gameNotifierProvider(roomId).notifier);
-  
-  void onVoteTrue() => vote(true);
+  double get screenHeight => MediaQuery.of(context).size.height / 2;
 
+  GameNotifier get gameNotifier =>
+      ref.read(gameNotifierProvider(roomId).notifier);
+
+  void onVoteTrue() => vote(true);
 
   void onVoteBull() => vote(false);
 
@@ -47,28 +55,31 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     return Scaffold(
       body: vmAsync.whenDefault((vm) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Flexible(
               flex: 3,
               child: Column(children: [
                 Expanded(
                     child:
-                        _buildStatementTextBox(vm.playersWhoseTurnStatement)),
+                        UtterBullPlayerAvatar(vm.playerWhoseTurn.avatarData)),
                 Expanded(
                     child:
-                        UtterBullPlayerAvatar(vm.playerWhoseTurn.avatarData)),
+                        _buildStatementTextBox(vm.playersWhoseTurnStatement)),
               ]),
             ),
-            Flexible(child: _buildTimer(vm.timeString)),
-            Flexible(flex: 5, child: _buildVoteButtons()),
-            vm.isReading && vm.isRoundInProgress == false
-                ? SizedBox.shrink()
-                : Flexible(
-                    flex: 1,
-                    child: TextButton(
-                      child: Text('End Round'),
-                      onPressed: () => onEndRound(),
-                    )),
+            _buildTimer(vm.timeString),
+            Expanded(
+              flex: 1,
+              child: PlayersVotedWrapList(vm: vm),
+            ),
+            Expanded(
+              flex: 1,
+              child: AnimatedSwitcher(duration: Duration(seconds: 1),
+              child: 
+                vm.isReading ? _buildEndRoundButton(!vm.isRoundInProgress) : _buildVoteButtons(!vm.hasVoted && vm.isRoundInProgress)
+              ),
+            ),
           ],
         );
       }),
@@ -90,19 +101,58 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     );
   }
 
-  Widget _buildVoteButtons() {
+  Widget _buildVoteButtons(bool enabled) {
     return Row(children: [
       Expanded(
-          child: TextButton(
-              onPressed: () => onVoteTrue(), child: Text(voteTrueButtonLabel))),
+          child: UtterBullButton(
+              onPressed: enabled ? () => onVoteTrue() : null,
+              title: voteTrueButtonLabel,
+              isShimmering: false)),
       Expanded(
-          child: TextButton(
-              onPressed: () => onVoteBull(), child: Text(voteBullButtonLabel))),
+          child: UtterBullButton(
+        onPressed: enabled ? () => onVoteBull() : null,
+        title: voteBullButtonLabel,
+        isShimmering: false,
+      )),
     ]);
+  }
+
+  Widget _buildEndRoundButton(bool enabled) {
+    return UtterBullButton(
+      title: 'End Round',
+      onPressed: enabled ? () => onEndRound() : null,
+    );
   }
 
   Widget _buildTimer(String timeString) {
     return Text(timeString);
+  }
+}
+
+class PlayersVotedWrapList extends StatelessWidget {
+  const PlayersVotedWrapList({
+    super.key,
+    required this.vm,
+  });
+
+  final VotingPhaseViewModel vm;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, cons) {
+      return RegularRectanglePacker(
+          size: Size(cons.maxWidth, cons.maxHeight),
+          items: vm.eligibleVoterIds
+              .map((id) => vm.playerMap[id])
+              .toList()
+              .map((e) {
+            final Widget child = UtterBullPlayerAvatar(e!.avatarData);
+            if (vm.eligibleVoterStatus[e.player.id] ?? false) {
+              return child;
+            }
+            return Opacity(opacity: 0.7, child: child);
+          }).toList());
+    });
   }
 }
 

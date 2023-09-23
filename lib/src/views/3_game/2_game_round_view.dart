@@ -26,10 +26,12 @@ class GameRoundView extends ConsumerStatefulWidget {
 
 class _GameRoundViewState extends ConsumerState<GameRoundView>
     with UserID, RoomID, WhoseTurnID {
+
   final navController = GameRoundNavigationController();
 
   @override
   Widget build(BuildContext context) {
+    
     final vmProvider = gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
 
     ref.listen(vmProvider.select((value) => value.value), (_, next) {
@@ -69,7 +71,7 @@ class GameRoundNavigationController
         return ForwardPushRoute(
             (context) => scoped(ReaderView()));
       case 'reading':
-        return ForwardPushRoute((context) => scoped(ReadingOutView()));
+        return PageRouteBuilder(pageBuilder: (context, anim, anim2) => scoped(ReadingOutView()));
       case 'voting':
         return ForwardPushRoute((context) => scoped(VotingPhaseView()));
       case 'votingEnd':

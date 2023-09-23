@@ -25,6 +25,14 @@ mixin _$VotingPhaseViewModel {
   bool get isRoundInProgress => throw _privateConstructorUsedError;
   bool get isSaboteur => throw _privateConstructorUsedError;
   bool get isReading => throw _privateConstructorUsedError;
+  bool get hasVoted => throw _privateConstructorUsedError;
+  List<String> get playersVotedIds => throw _privateConstructorUsedError;
+  List<String> get playersNotVotedIds => throw _privateConstructorUsedError;
+  List<String> get eligibleVoterIds => throw _privateConstructorUsedError;
+  Map<String, bool> get eligibleVoterStatus =>
+      throw _privateConstructorUsedError;
+  Map<String, PlayerWithAvatar> get playerMap =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $VotingPhaseViewModelCopyWith<VotingPhaseViewModel> get copyWith =>
@@ -46,7 +54,13 @@ abstract class $VotingPhaseViewModelCopyWith<$Res> {
       int numberOfPlayersVoting,
       bool isRoundInProgress,
       bool isSaboteur,
-      bool isReading});
+      bool isReading,
+      bool hasVoted,
+      List<String> playersVotedIds,
+      List<String> playersNotVotedIds,
+      List<String> eligibleVoterIds,
+      Map<String, bool> eligibleVoterStatus,
+      Map<String, PlayerWithAvatar> playerMap});
 }
 
 /// @nodoc
@@ -72,6 +86,12 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
     Object? isRoundInProgress = null,
     Object? isSaboteur = null,
     Object? isReading = null,
+    Object? hasVoted = null,
+    Object? playersVotedIds = null,
+    Object? playersNotVotedIds = null,
+    Object? eligibleVoterIds = null,
+    Object? eligibleVoterStatus = null,
+    Object? playerMap = null,
   }) {
     return _then(_value.copyWith(
       playerWhoseTurn: null == playerWhoseTurn
@@ -110,6 +130,30 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
           ? _value.isReading
           : isReading // ignore: cast_nullable_to_non_nullable
               as bool,
+      hasVoted: null == hasVoted
+          ? _value.hasVoted
+          : hasVoted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      playersVotedIds: null == playersVotedIds
+          ? _value.playersVotedIds
+          : playersVotedIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      playersNotVotedIds: null == playersNotVotedIds
+          ? _value.playersNotVotedIds
+          : playersNotVotedIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      eligibleVoterIds: null == eligibleVoterIds
+          ? _value.eligibleVoterIds
+          : eligibleVoterIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      eligibleVoterStatus: null == eligibleVoterStatus
+          ? _value.eligibleVoterStatus
+          : eligibleVoterStatus // ignore: cast_nullable_to_non_nullable
+              as Map<String, bool>,
+      playerMap: null == playerMap
+          ? _value.playerMap
+          : playerMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, PlayerWithAvatar>,
     ) as $Val);
   }
 }
@@ -131,7 +175,13 @@ abstract class _$$_VotingPhaseViewModelCopyWith<$Res>
       int numberOfPlayersVoting,
       bool isRoundInProgress,
       bool isSaboteur,
-      bool isReading});
+      bool isReading,
+      bool hasVoted,
+      List<String> playersVotedIds,
+      List<String> playersNotVotedIds,
+      List<String> eligibleVoterIds,
+      Map<String, bool> eligibleVoterStatus,
+      Map<String, PlayerWithAvatar> playerMap});
 }
 
 /// @nodoc
@@ -154,6 +204,12 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
     Object? isRoundInProgress = null,
     Object? isSaboteur = null,
     Object? isReading = null,
+    Object? hasVoted = null,
+    Object? playersVotedIds = null,
+    Object? playersNotVotedIds = null,
+    Object? eligibleVoterIds = null,
+    Object? eligibleVoterStatus = null,
+    Object? playerMap = null,
   }) {
     return _then(_$_VotingPhaseViewModel(
       playerWhoseTurn: null == playerWhoseTurn
@@ -192,6 +248,30 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
           ? _value.isReading
           : isReading // ignore: cast_nullable_to_non_nullable
               as bool,
+      hasVoted: null == hasVoted
+          ? _value.hasVoted
+          : hasVoted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      playersVotedIds: null == playersVotedIds
+          ? _value._playersVotedIds
+          : playersVotedIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      playersNotVotedIds: null == playersNotVotedIds
+          ? _value._playersNotVotedIds
+          : playersNotVotedIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      eligibleVoterIds: null == eligibleVoterIds
+          ? _value._eligibleVoterIds
+          : eligibleVoterIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      eligibleVoterStatus: null == eligibleVoterStatus
+          ? _value._eligibleVoterStatus
+          : eligibleVoterStatus // ignore: cast_nullable_to_non_nullable
+              as Map<String, bool>,
+      playerMap: null == playerMap
+          ? _value._playerMap
+          : playerMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, PlayerWithAvatar>,
     ));
   }
 }
@@ -208,7 +288,18 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
       required this.numberOfPlayersVoting,
       required this.isRoundInProgress,
       required this.isSaboteur,
-      required this.isReading});
+      required this.isReading,
+      required this.hasVoted,
+      required final List<String> playersVotedIds,
+      required final List<String> playersNotVotedIds,
+      required final List<String> eligibleVoterIds,
+      required final Map<String, bool> eligibleVoterStatus,
+      required final Map<String, PlayerWithAvatar> playerMap})
+      : _playersVotedIds = playersVotedIds,
+        _playersNotVotedIds = playersNotVotedIds,
+        _eligibleVoterIds = eligibleVoterIds,
+        _eligibleVoterStatus = eligibleVoterStatus,
+        _playerMap = playerMap;
 
   @override
   final PlayerWithAvatar playerWhoseTurn;
@@ -228,10 +319,54 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
   final bool isSaboteur;
   @override
   final bool isReading;
+  @override
+  final bool hasVoted;
+  final List<String> _playersVotedIds;
+  @override
+  List<String> get playersVotedIds {
+    if (_playersVotedIds is EqualUnmodifiableListView) return _playersVotedIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playersVotedIds);
+  }
+
+  final List<String> _playersNotVotedIds;
+  @override
+  List<String> get playersNotVotedIds {
+    if (_playersNotVotedIds is EqualUnmodifiableListView)
+      return _playersNotVotedIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playersNotVotedIds);
+  }
+
+  final List<String> _eligibleVoterIds;
+  @override
+  List<String> get eligibleVoterIds {
+    if (_eligibleVoterIds is EqualUnmodifiableListView)
+      return _eligibleVoterIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_eligibleVoterIds);
+  }
+
+  final Map<String, bool> _eligibleVoterStatus;
+  @override
+  Map<String, bool> get eligibleVoterStatus {
+    if (_eligibleVoterStatus is EqualUnmodifiableMapView)
+      return _eligibleVoterStatus;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_eligibleVoterStatus);
+  }
+
+  final Map<String, PlayerWithAvatar> _playerMap;
+  @override
+  Map<String, PlayerWithAvatar> get playerMap {
+    if (_playerMap is EqualUnmodifiableMapView) return _playerMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_playerMap);
+  }
 
   @override
   String toString() {
-    return 'VotingPhaseViewModel._(playerWhoseTurn: $playerWhoseTurn, playersWhoseTurnStatement: $playersWhoseTurnStatement, timeRemaining: $timeRemaining, timeString: $timeString, numberOfPlayersVoted: $numberOfPlayersVoted, numberOfPlayersVoting: $numberOfPlayersVoting, isRoundInProgress: $isRoundInProgress, isSaboteur: $isSaboteur, isReading: $isReading)';
+    return 'VotingPhaseViewModel._(playerWhoseTurn: $playerWhoseTurn, playersWhoseTurnStatement: $playersWhoseTurnStatement, timeRemaining: $timeRemaining, timeString: $timeString, numberOfPlayersVoted: $numberOfPlayersVoted, numberOfPlayersVoting: $numberOfPlayersVoting, isRoundInProgress: $isRoundInProgress, isSaboteur: $isSaboteur, isReading: $isReading, hasVoted: $hasVoted, playersVotedIds: $playersVotedIds, playersNotVotedIds: $playersNotVotedIds, eligibleVoterIds: $eligibleVoterIds, eligibleVoterStatus: $eligibleVoterStatus, playerMap: $playerMap)';
   }
 
   @override
@@ -257,7 +392,19 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
             (identical(other.isSaboteur, isSaboteur) ||
                 other.isSaboteur == isSaboteur) &&
             (identical(other.isReading, isReading) ||
-                other.isReading == isReading));
+                other.isReading == isReading) &&
+            (identical(other.hasVoted, hasVoted) ||
+                other.hasVoted == hasVoted) &&
+            const DeepCollectionEquality()
+                .equals(other._playersVotedIds, _playersVotedIds) &&
+            const DeepCollectionEquality()
+                .equals(other._playersNotVotedIds, _playersNotVotedIds) &&
+            const DeepCollectionEquality()
+                .equals(other._eligibleVoterIds, _eligibleVoterIds) &&
+            const DeepCollectionEquality()
+                .equals(other._eligibleVoterStatus, _eligibleVoterStatus) &&
+            const DeepCollectionEquality()
+                .equals(other._playerMap, _playerMap));
   }
 
   @override
@@ -271,7 +418,13 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
       numberOfPlayersVoting,
       isRoundInProgress,
       isSaboteur,
-      isReading);
+      isReading,
+      hasVoted,
+      const DeepCollectionEquality().hash(_playersVotedIds),
+      const DeepCollectionEquality().hash(_playersNotVotedIds),
+      const DeepCollectionEquality().hash(_eligibleVoterIds),
+      const DeepCollectionEquality().hash(_eligibleVoterStatus),
+      const DeepCollectionEquality().hash(_playerMap));
 
   @JsonKey(ignore: true)
   @override
@@ -283,15 +436,22 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
 
 abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
   const factory _VotingPhaseViewModel(
-      {required final PlayerWithAvatar playerWhoseTurn,
-      required final String playersWhoseTurnStatement,
-      required final Duration timeRemaining,
-      required final String timeString,
-      required final int numberOfPlayersVoted,
-      required final int numberOfPlayersVoting,
-      required final bool isRoundInProgress,
-      required final bool isSaboteur,
-      required final bool isReading}) = _$_VotingPhaseViewModel;
+          {required final PlayerWithAvatar playerWhoseTurn,
+          required final String playersWhoseTurnStatement,
+          required final Duration timeRemaining,
+          required final String timeString,
+          required final int numberOfPlayersVoted,
+          required final int numberOfPlayersVoting,
+          required final bool isRoundInProgress,
+          required final bool isSaboteur,
+          required final bool isReading,
+          required final bool hasVoted,
+          required final List<String> playersVotedIds,
+          required final List<String> playersNotVotedIds,
+          required final List<String> eligibleVoterIds,
+          required final Map<String, bool> eligibleVoterStatus,
+          required final Map<String, PlayerWithAvatar> playerMap}) =
+      _$_VotingPhaseViewModel;
 
   @override
   PlayerWithAvatar get playerWhoseTurn;
@@ -311,6 +471,18 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
   bool get isSaboteur;
   @override
   bool get isReading;
+  @override
+  bool get hasVoted;
+  @override
+  List<String> get playersVotedIds;
+  @override
+  List<String> get playersNotVotedIds;
+  @override
+  List<String> get eligibleVoterIds;
+  @override
+  Map<String, bool> get eligibleVoterStatus;
+  @override
+  Map<String, PlayerWithAvatar> get playerMap;
   @override
   @JsonKey(ignore: true)
   _$$_VotingPhaseViewModelCopyWith<_$_VotingPhaseViewModel> get copyWith =>

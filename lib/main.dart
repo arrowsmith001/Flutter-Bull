@@ -2,7 +2,6 @@ import 'dart:js_util';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
-import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/custom/widgets/row_of_n.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/developer/utter_bull_developer_panel.dart';
@@ -23,26 +21,31 @@ import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
-import 'package:flutter_bull/src/views/0_app/auth_container.dart';
+import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_app.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_master_background.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
-import 'package:logger/logger.dart';
 
 import 'src/custom/data/implemented/firebase.dart';
 
-// TODO: Formalize events in UI layer
+// Immediate
+// TODO: Results! And reveals - associate result id with room
+// TODO: Remove reading screen, subsume into reader screen
+
+// Future
 // TODO: Consider firebase function listeners in TS file
 
-final int instances = 1;
-final bool isEmulatingFirebase = true;
-final bool devToolsOn = true;
-final bool overrideMediaQuery = true;
+bool get isFakingAuth => fakeId != '';
+String fakeId = '';
+
+const int instances = 1;
+const bool isEmulatingFirebase = true;
+const bool devToolsOn = true;
+const bool overrideMediaQuery = true;
 
 void main() async {
   FlutterError.demangleStackTrace = (StackTrace stack) {
-
     if (stack is Trace) return stack.vmTrace;
     if (stack is Chain) return stack.toTrace().vmTrace;
     return stack;
@@ -65,7 +68,6 @@ void main() async {
 
   runApp(MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -134,18 +136,43 @@ class MyApp extends StatelessWidget {
   Widget _buildInstance() {
     //auth.signOut();
 
-    final auth = FirebaseAuthService();
+    final auth = isFakingAuth ? FakeAuthService(fakeId) : FirebaseAuthService();
     final data = _getFirebaseDataLayer();
     final server = UtterBullClientSideServer(data, [auth]);
     final streams = FirebaseDataStreamService();
     final images = FirebaseImageStorageService();
 
-    data.achievementRepo.createItem(Achievement(id: 'fooledAll', title: 'Fooled All', description: '* fooled the whole room', score: 30, iconPath: 'icons/achievements/default.png'));
-    data.achievementRepo.createItem(Achievement(id: 'fooledMost', title: 'Fooled Most', description: '* fooled most of the room', score: 20, iconPath: 'icons/achievements/default.png'));
-    data.achievementRepo.createItem(Achievement(id: 'fooledSome', title: 'Fooled Some', description: '* fooled some of the room', score: 10, iconPath: 'icons/achievements/default.png'));
-    data.achievementRepo.createItem(Achievement(id: 'votedCorrectly', title: 'Voted Correctly', description: '* voted correctly', score: 10, iconPath: 'icons/achievements/default.png'));
-    data.achievementRepo.createItem(Achievement(id: 'votedCorrectlyQuickest', title: 'Quickest Correct Vote', description: '* voted correctly in the quickest time', score: 20, iconPath: 'icons/achievements/default.png'));
-//builder: (context, constraints) => 
+    data.achievementRepo.createItem(Achievement(
+        id: 'fooledAll',
+        title: 'Fooled All',
+        description: '* fooled the whole room',
+        score: 30,
+        iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(
+        id: 'fooledMost',
+        title: 'Fooled Most',
+        description: '* fooled most of the room',
+        score: 20,
+        iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(
+        id: 'fooledSome',
+        title: 'Fooled Some',
+        description: '* fooled some of the room',
+        score: 10,
+        iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(
+        id: 'votedCorrectly',
+        title: 'Voted Correctly',
+        description: '* voted correctly',
+        score: 10,
+        iconPath: 'icons/achievements/default.png'));
+    data.achievementRepo.createItem(Achievement(
+        id: 'votedCorrectlyQuickest',
+        title: 'Quickest Correct Vote',
+        description: '* voted correctly in the quickest time',
+        score: 20,
+        iconPath: 'icons/achievements/default.png'));
+//builder: (context, constraints) =>
     return WidgetsApp(
       builder: (context, _) => Row(
         children: [
@@ -154,20 +181,18 @@ class MyApp extends StatelessWidget {
               color: Colors.black,
               child: AspectRatio(
                 aspectRatio: 9 / 20,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return MediaQuery(
-                      data: MediaQueryData(size: constraints.biggest),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: const UtterBullApp(),
-                        ),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  return MediaQuery(
+                    data: MediaQueryData(size: constraints.biggest),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: const UtterBullApp(),
                       ),
-                    );
-                  }
-                ),
+                    ),
+                  );
+                }),
               ),
             ),
             authService: auth,
@@ -207,6 +232,21 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class TestWidget extends StatefulWidget {
+  const TestWidget({super.key});
+
+  @override
+  State<TestWidget> createState() => _TestWidgetState();
+}
+
+class _TestWidgetState extends State<TestWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return RegularRectanglePacker(size: Size(MediaQuery.of(context).size.width,100,), items: 
+    List.generate(11, (i) => Column(children: [Flexible(child: Container(child: UtterBullPlayerAvatar(null), color: Colors.green,))],)));
+  }
+}
+
 class ProvisionedUtterBullFunctionUser extends StatelessWidget {
   final AuthService authService;
   final UtterBullServer server;
@@ -235,4 +275,3 @@ class ProvisionedUtterBullFunctionUser extends StatelessWidget {
     ], child: child);
   }
 }
-

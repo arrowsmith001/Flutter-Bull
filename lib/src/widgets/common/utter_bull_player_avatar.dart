@@ -22,6 +22,8 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
     if (widget.data == null) return UtterBullCircularProgressIndicator();
     return Image.memory(
       widget.data!,
+      width: 100,
+      height: 100,
       fit: BoxFit.cover,
       frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return CropCircled(child: child);

@@ -57,6 +57,10 @@ class GameNotifier extends _$GameNotifier {
     await _server.vote(state.value!.gameRoom.id!, userId, truthOrLie);
   }
 
+  Future<void> startRound(String userId) async {
+    await _server.startRound(state.value!.gameRoom.id!, userId);
+  }
+
   Future<void> endRound(String userId) async {
     await _server.endRound(state.value!.gameRoom.id!, userId);
   }

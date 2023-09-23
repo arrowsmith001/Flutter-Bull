@@ -15,6 +15,8 @@ import * as logger from "firebase-functions/logger";
 import * as promises from 'node:timers/promises';
 
 
+const subphaseStartVoting = 4;
+
 
 const delaysOn = false;
 
@@ -402,7 +404,7 @@ async function startRoundImpl(roomId: string, userId: string) {
         // TODO: Account for time zones!!
         var roundEndTime = Date.now().valueOf() + (totalTime * 1000);
 
-        txn.update(roomRef, { 'roundEndUTC': roundEndTime, 'subPhase': 1 });
+        txn.update(roomRef, { 'roundEndUTC': roundEndTime, 'subPhase': subphaseStartVoting });
 
     });
 
@@ -695,6 +697,7 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
 
     var liars = Array.from(truthOrLieMap.keys()).filter((k) => !truthOrLieMap.get(k));
 
+    console.log('_getTruthOrLieTargetMap 1: ' + JSON.stringify(liars));
 
     // TODO: Tie this to an optional setting ("All Truths Allowed")
     if (liars.length == 0) {
@@ -709,6 +712,8 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
 
         truthOrLieMap.set(firstToSwitch, false);
         truthOrLieMap.set(secondToSwitch, false);
+
+        console.log('truthOrLieMap 1: ' + JSON.stringify(truthOrLieMap));
     }
     // Adjust for case where liars = 1
     else if (liars.length == 1) {
@@ -719,6 +724,8 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
         var randomPlayerId = truthers.at(randomIndex)!;
 
         truthOrLieMap.set(randomPlayerId, false);
+
+        console.log('truthOrLieMap 2: ' + JSON.stringify(truthOrLieMap));
     }
 
     // Produce derangement of liars
@@ -726,14 +733,20 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
     var numberOfLiars = liarIds.length;
 
     var derangement = _getDerangement(liarIds.length);
+    console.log('derangement 1: ' + JSON.stringify(derangement));
 
     var targets = new Array(numberOfLiars);
     for (var i = 0; i < numberOfLiars; i++) {
         targets[i] = liarIds[derangement[i]];
     }
 
+    console.log('targets 1: ' + JSON.stringify(targets));
+
     // Produce target map (including truth-tellers)
     var truthers = Array.from(truthOrLieMap.keys()).filter((k) => truthOrLieMap.get(k));
+
+    console.log('truthers 1: ' + JSON.stringify(truthers));
+
     var targetMap = new Map<string, string>();
 
     for (var i = 0; i < liarIds.length; i++) {

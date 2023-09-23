@@ -74,17 +74,26 @@ class GameDataFunctions {
   }
 
   static List<String> getShuffledIds(GameRoom game) {
-    
     final pseudoShuffledIds = List<String>.from(game.playerOrder);
-
-    // Remove ids of players who have had their turn
-    pseudoShuffledIds
-        .removeWhere((id) => game.playerOrder.indexOf(id) < game.progress);
 
     // 'Random' seed = sum of the lengths of the text entries
     final int seed =
         game.texts.values.map((s) => s?.length ?? 0).reduce((v, e) => v + e);
 
     return pseudoShuffledIds..shuffle(Random(seed));
+  }
+
+  static int calculateTimeToReadOut(String statement) {
+    return 1;
+    final int wordCount = statement.split(' ').length;
+    final int expectedRate = wordCount * 2;
+    if (expectedRate < 3) return 3;
+    if (expectedRate > 10) return 10;
+    return expectedRate;
+  }
+
+  static Map<String, PlayerWithAvatar> makePlayerMap(
+      List<PlayerWithAvatar> players) {
+    return Map<String, PlayerWithAvatar>.fromEntries(players.map((e) => MapEntry(e.player.id!, e)));
   }
 }

@@ -17,14 +17,16 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$GameRoundViewModel {
   RoundPhase get roundPhase => throw _privateConstructorUsedError;
-  List<String> get pseudoShuffledPlayerIds =>
-      throw _privateConstructorUsedError;
+  List<String> get playersLeftToPlayIds => throw _privateConstructorUsedError;
   List<PlayerWithAvatar> get players => throw _privateConstructorUsedError;
+  PlayerWithAvatar get playerWhoseTurn => throw _privateConstructorUsedError;
   String get playerWhoseTurnStatement => throw _privateConstructorUsedError;
-  String get roleDescriptionString => throw _privateConstructorUsedError;
+  List<String> get roleDescriptionStrings => throw _privateConstructorUsedError;
   bool get isMyTurn => throw _privateConstructorUsedError;
   bool get isSaboteur => throw _privateConstructorUsedError;
+  bool get isTruth => throw _privateConstructorUsedError;
   int get whoseTurnIndex => throw _privateConstructorUsedError;
+  int get timeToReadOut => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameRoundViewModelCopyWith<GameRoundViewModel> get copyWith =>
@@ -39,13 +41,16 @@ abstract class $GameRoundViewModelCopyWith<$Res> {
   @useResult
   $Res call(
       {RoundPhase roundPhase,
-      List<String> pseudoShuffledPlayerIds,
+      List<String> playersLeftToPlayIds,
       List<PlayerWithAvatar> players,
+      PlayerWithAvatar playerWhoseTurn,
       String playerWhoseTurnStatement,
-      String roleDescriptionString,
+      List<String> roleDescriptionStrings,
       bool isMyTurn,
       bool isSaboteur,
-      int whoseTurnIndex});
+      bool isTruth,
+      int whoseTurnIndex,
+      int timeToReadOut});
 }
 
 /// @nodoc
@@ -62,35 +67,42 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
   @override
   $Res call({
     Object? roundPhase = null,
-    Object? pseudoShuffledPlayerIds = null,
+    Object? playersLeftToPlayIds = null,
     Object? players = null,
+    Object? playerWhoseTurn = null,
     Object? playerWhoseTurnStatement = null,
-    Object? roleDescriptionString = null,
+    Object? roleDescriptionStrings = null,
     Object? isMyTurn = null,
     Object? isSaboteur = null,
+    Object? isTruth = null,
     Object? whoseTurnIndex = null,
+    Object? timeToReadOut = null,
   }) {
     return _then(_value.copyWith(
       roundPhase: null == roundPhase
           ? _value.roundPhase
           : roundPhase // ignore: cast_nullable_to_non_nullable
               as RoundPhase,
-      pseudoShuffledPlayerIds: null == pseudoShuffledPlayerIds
-          ? _value.pseudoShuffledPlayerIds
-          : pseudoShuffledPlayerIds // ignore: cast_nullable_to_non_nullable
+      playersLeftToPlayIds: null == playersLeftToPlayIds
+          ? _value.playersLeftToPlayIds
+          : playersLeftToPlayIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
       players: null == players
           ? _value.players
           : players // ignore: cast_nullable_to_non_nullable
               as List<PlayerWithAvatar>,
+      playerWhoseTurn: null == playerWhoseTurn
+          ? _value.playerWhoseTurn
+          : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
+              as PlayerWithAvatar,
       playerWhoseTurnStatement: null == playerWhoseTurnStatement
           ? _value.playerWhoseTurnStatement
           : playerWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
               as String,
-      roleDescriptionString: null == roleDescriptionString
-          ? _value.roleDescriptionString
-          : roleDescriptionString // ignore: cast_nullable_to_non_nullable
-              as String,
+      roleDescriptionStrings: null == roleDescriptionStrings
+          ? _value.roleDescriptionStrings
+          : roleDescriptionStrings // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       isMyTurn: null == isMyTurn
           ? _value.isMyTurn
           : isMyTurn // ignore: cast_nullable_to_non_nullable
@@ -99,9 +111,17 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
           ? _value.isSaboteur
           : isSaboteur // ignore: cast_nullable_to_non_nullable
               as bool,
+      isTruth: null == isTruth
+          ? _value.isTruth
+          : isTruth // ignore: cast_nullable_to_non_nullable
+              as bool,
       whoseTurnIndex: null == whoseTurnIndex
           ? _value.whoseTurnIndex
           : whoseTurnIndex // ignore: cast_nullable_to_non_nullable
+              as int,
+      timeToReadOut: null == timeToReadOut
+          ? _value.timeToReadOut
+          : timeToReadOut // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -117,13 +137,16 @@ abstract class _$$_GameRoundViewModelCopyWith<$Res>
   @useResult
   $Res call(
       {RoundPhase roundPhase,
-      List<String> pseudoShuffledPlayerIds,
+      List<String> playersLeftToPlayIds,
       List<PlayerWithAvatar> players,
+      PlayerWithAvatar playerWhoseTurn,
       String playerWhoseTurnStatement,
-      String roleDescriptionString,
+      List<String> roleDescriptionStrings,
       bool isMyTurn,
       bool isSaboteur,
-      int whoseTurnIndex});
+      bool isTruth,
+      int whoseTurnIndex,
+      int timeToReadOut});
 }
 
 /// @nodoc
@@ -138,35 +161,42 @@ class __$$_GameRoundViewModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? roundPhase = null,
-    Object? pseudoShuffledPlayerIds = null,
+    Object? playersLeftToPlayIds = null,
     Object? players = null,
+    Object? playerWhoseTurn = null,
     Object? playerWhoseTurnStatement = null,
-    Object? roleDescriptionString = null,
+    Object? roleDescriptionStrings = null,
     Object? isMyTurn = null,
     Object? isSaboteur = null,
+    Object? isTruth = null,
     Object? whoseTurnIndex = null,
+    Object? timeToReadOut = null,
   }) {
     return _then(_$_GameRoundViewModel(
       roundPhase: null == roundPhase
           ? _value.roundPhase
           : roundPhase // ignore: cast_nullable_to_non_nullable
               as RoundPhase,
-      pseudoShuffledPlayerIds: null == pseudoShuffledPlayerIds
-          ? _value._pseudoShuffledPlayerIds
-          : pseudoShuffledPlayerIds // ignore: cast_nullable_to_non_nullable
+      playersLeftToPlayIds: null == playersLeftToPlayIds
+          ? _value._playersLeftToPlayIds
+          : playersLeftToPlayIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
       players: null == players
           ? _value._players
           : players // ignore: cast_nullable_to_non_nullable
               as List<PlayerWithAvatar>,
+      playerWhoseTurn: null == playerWhoseTurn
+          ? _value.playerWhoseTurn
+          : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
+              as PlayerWithAvatar,
       playerWhoseTurnStatement: null == playerWhoseTurnStatement
           ? _value.playerWhoseTurnStatement
           : playerWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
               as String,
-      roleDescriptionString: null == roleDescriptionString
-          ? _value.roleDescriptionString
-          : roleDescriptionString // ignore: cast_nullable_to_non_nullable
-              as String,
+      roleDescriptionStrings: null == roleDescriptionStrings
+          ? _value._roleDescriptionStrings
+          : roleDescriptionStrings // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       isMyTurn: null == isMyTurn
           ? _value.isMyTurn
           : isMyTurn // ignore: cast_nullable_to_non_nullable
@@ -175,9 +205,17 @@ class __$$_GameRoundViewModelCopyWithImpl<$Res>
           ? _value.isSaboteur
           : isSaboteur // ignore: cast_nullable_to_non_nullable
               as bool,
+      isTruth: null == isTruth
+          ? _value.isTruth
+          : isTruth // ignore: cast_nullable_to_non_nullable
+              as bool,
       whoseTurnIndex: null == whoseTurnIndex
           ? _value.whoseTurnIndex
           : whoseTurnIndex // ignore: cast_nullable_to_non_nullable
+              as int,
+      timeToReadOut: null == timeToReadOut
+          ? _value.timeToReadOut
+          : timeToReadOut // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
@@ -188,25 +226,29 @@ class __$$_GameRoundViewModelCopyWithImpl<$Res>
 class _$_GameRoundViewModel implements _GameRoundViewModel {
   const _$_GameRoundViewModel(
       {required this.roundPhase,
-      required final List<String> pseudoShuffledPlayerIds,
+      required final List<String> playersLeftToPlayIds,
       required final List<PlayerWithAvatar> players,
+      required this.playerWhoseTurn,
       required this.playerWhoseTurnStatement,
-      required this.roleDescriptionString,
+      required final List<String> roleDescriptionStrings,
       required this.isMyTurn,
       required this.isSaboteur,
-      required this.whoseTurnIndex})
-      : _pseudoShuffledPlayerIds = pseudoShuffledPlayerIds,
-        _players = players;
+      required this.isTruth,
+      required this.whoseTurnIndex,
+      required this.timeToReadOut})
+      : _playersLeftToPlayIds = playersLeftToPlayIds,
+        _players = players,
+        _roleDescriptionStrings = roleDescriptionStrings;
 
   @override
   final RoundPhase roundPhase;
-  final List<String> _pseudoShuffledPlayerIds;
+  final List<String> _playersLeftToPlayIds;
   @override
-  List<String> get pseudoShuffledPlayerIds {
-    if (_pseudoShuffledPlayerIds is EqualUnmodifiableListView)
-      return _pseudoShuffledPlayerIds;
+  List<String> get playersLeftToPlayIds {
+    if (_playersLeftToPlayIds is EqualUnmodifiableListView)
+      return _playersLeftToPlayIds;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_pseudoShuffledPlayerIds);
+    return EqualUnmodifiableListView(_playersLeftToPlayIds);
   }
 
   final List<PlayerWithAvatar> _players;
@@ -218,19 +260,32 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
   }
 
   @override
-  final String playerWhoseTurnStatement;
+  final PlayerWithAvatar playerWhoseTurn;
   @override
-  final String roleDescriptionString;
+  final String playerWhoseTurnStatement;
+  final List<String> _roleDescriptionStrings;
+  @override
+  List<String> get roleDescriptionStrings {
+    if (_roleDescriptionStrings is EqualUnmodifiableListView)
+      return _roleDescriptionStrings;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_roleDescriptionStrings);
+  }
+
   @override
   final bool isMyTurn;
   @override
   final bool isSaboteur;
   @override
+  final bool isTruth;
+  @override
   final int whoseTurnIndex;
+  @override
+  final int timeToReadOut;
 
   @override
   String toString() {
-    return 'GameRoundViewModel._(roundPhase: $roundPhase, pseudoShuffledPlayerIds: $pseudoShuffledPlayerIds, players: $players, playerWhoseTurnStatement: $playerWhoseTurnStatement, roleDescriptionString: $roleDescriptionString, isMyTurn: $isMyTurn, isSaboteur: $isSaboteur, whoseTurnIndex: $whoseTurnIndex)';
+    return 'GameRoundViewModel._(roundPhase: $roundPhase, playersLeftToPlayIds: $playersLeftToPlayIds, players: $players, playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, roleDescriptionStrings: $roleDescriptionStrings, isMyTurn: $isMyTurn, isSaboteur: $isSaboteur, isTruth: $isTruth, whoseTurnIndex: $whoseTurnIndex, timeToReadOut: $timeToReadOut)';
   }
 
   @override
@@ -240,33 +295,41 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
             other is _$_GameRoundViewModel &&
             (identical(other.roundPhase, roundPhase) ||
                 other.roundPhase == roundPhase) &&
-            const DeepCollectionEquality().equals(
-                other._pseudoShuffledPlayerIds, _pseudoShuffledPlayerIds) &&
+            const DeepCollectionEquality()
+                .equals(other._playersLeftToPlayIds, _playersLeftToPlayIds) &&
             const DeepCollectionEquality().equals(other._players, _players) &&
+            (identical(other.playerWhoseTurn, playerWhoseTurn) ||
+                other.playerWhoseTurn == playerWhoseTurn) &&
             (identical(
                     other.playerWhoseTurnStatement, playerWhoseTurnStatement) ||
                 other.playerWhoseTurnStatement == playerWhoseTurnStatement) &&
-            (identical(other.roleDescriptionString, roleDescriptionString) ||
-                other.roleDescriptionString == roleDescriptionString) &&
+            const DeepCollectionEquality().equals(
+                other._roleDescriptionStrings, _roleDescriptionStrings) &&
             (identical(other.isMyTurn, isMyTurn) ||
                 other.isMyTurn == isMyTurn) &&
             (identical(other.isSaboteur, isSaboteur) ||
                 other.isSaboteur == isSaboteur) &&
+            (identical(other.isTruth, isTruth) || other.isTruth == isTruth) &&
             (identical(other.whoseTurnIndex, whoseTurnIndex) ||
-                other.whoseTurnIndex == whoseTurnIndex));
+                other.whoseTurnIndex == whoseTurnIndex) &&
+            (identical(other.timeToReadOut, timeToReadOut) ||
+                other.timeToReadOut == timeToReadOut));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       roundPhase,
-      const DeepCollectionEquality().hash(_pseudoShuffledPlayerIds),
+      const DeepCollectionEquality().hash(_playersLeftToPlayIds),
       const DeepCollectionEquality().hash(_players),
+      playerWhoseTurn,
       playerWhoseTurnStatement,
-      roleDescriptionString,
+      const DeepCollectionEquality().hash(_roleDescriptionStrings),
       isMyTurn,
       isSaboteur,
-      whoseTurnIndex);
+      isTruth,
+      whoseTurnIndex,
+      timeToReadOut);
 
   @JsonKey(ignore: true)
   @override
@@ -279,30 +342,39 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
 abstract class _GameRoundViewModel implements GameRoundViewModel {
   const factory _GameRoundViewModel(
       {required final RoundPhase roundPhase,
-      required final List<String> pseudoShuffledPlayerIds,
+      required final List<String> playersLeftToPlayIds,
       required final List<PlayerWithAvatar> players,
+      required final PlayerWithAvatar playerWhoseTurn,
       required final String playerWhoseTurnStatement,
-      required final String roleDescriptionString,
+      required final List<String> roleDescriptionStrings,
       required final bool isMyTurn,
       required final bool isSaboteur,
-      required final int whoseTurnIndex}) = _$_GameRoundViewModel;
+      required final bool isTruth,
+      required final int whoseTurnIndex,
+      required final int timeToReadOut}) = _$_GameRoundViewModel;
 
   @override
   RoundPhase get roundPhase;
   @override
-  List<String> get pseudoShuffledPlayerIds;
+  List<String> get playersLeftToPlayIds;
   @override
   List<PlayerWithAvatar> get players;
   @override
+  PlayerWithAvatar get playerWhoseTurn;
+  @override
   String get playerWhoseTurnStatement;
   @override
-  String get roleDescriptionString;
+  List<String> get roleDescriptionStrings;
   @override
   bool get isMyTurn;
   @override
   bool get isSaboteur;
   @override
+  bool get isTruth;
+  @override
   int get whoseTurnIndex;
+  @override
+  int get timeToReadOut;
   @override
   @JsonKey(ignore: true)
   _$$_GameRoundViewModelCopyWith<_$_GameRoundViewModel> get copyWith =>
