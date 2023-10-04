@@ -6,7 +6,7 @@ part of 'game_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameNotifierHash() => r'9e12e8416f41e9faba212c1aa992d16a4e9f9d35';
+String _$gameNotifierHash() => r'7fcd32177d8e39f6635af345004295199994b89f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -85,8 +85,8 @@ class GameNotifierProvider
     extends StreamNotifierProviderImpl<GameNotifier, GameNotifierState> {
   /// See also [GameNotifier].
   GameNotifierProvider(
-    this.gameRoomId,
-  ) : super.internal(
+    String? gameRoomId,
+  ) : this._internal(
           () => GameNotifier()..gameRoomId = gameRoomId,
           from: gameNotifierProvider,
           name: r'gameNotifierProvider',
@@ -97,9 +97,51 @@ class GameNotifierProvider
           dependencies: GameNotifierFamily._dependencies,
           allTransitiveDependencies:
               GameNotifierFamily._allTransitiveDependencies,
+          gameRoomId: gameRoomId,
         );
 
+  GameNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameRoomId,
+  }) : super.internal();
+
   final String? gameRoomId;
+
+  @override
+  Stream<GameNotifierState> runNotifierBuild(
+    covariant GameNotifier notifier,
+  ) {
+    return notifier.build(
+      gameRoomId,
+    );
+  }
+
+  @override
+  Override overrideWith(GameNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: GameNotifierProvider._internal(
+        () => create()..gameRoomId = gameRoomId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameRoomId: gameRoomId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<GameNotifier, GameNotifierState>
+      createElement() {
+    return _GameNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -113,15 +155,20 @@ class GameNotifierProvider
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin GameNotifierRef on StreamNotifierProviderRef<GameNotifierState> {
+  /// The parameter `gameRoomId` of this provider.
+  String? get gameRoomId;
+}
+
+class _GameNotifierProviderElement
+    extends StreamNotifierProviderElement<GameNotifier, GameNotifierState>
+    with GameNotifierRef {
+  _GameNotifierProviderElement(super.provider);
 
   @override
-  Stream<GameNotifierState> runNotifierBuild(
-    covariant GameNotifier notifier,
-  ) {
-    return notifier.build(
-      gameRoomId,
-    );
-  }
+  String? get gameRoomId => (origin as GameNotifierProvider).gameRoomId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

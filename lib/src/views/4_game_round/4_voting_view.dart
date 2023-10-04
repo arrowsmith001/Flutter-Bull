@@ -9,10 +9,12 @@ import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -46,11 +48,22 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     gameNotifier.vote(userId, trueOrFalse);
   }
 
+  // TODO: Notify
+  void onRoundTimerEnd() {}
+
   @override
   Widget build(BuildContext context) {
     final vmProvider =
         votingPhaseViewNotifierProvider(roomId, userId, whoseTurnId);
     final vmAsync = ref.watch(vmProvider);
+
+    ref.listen(vmProvider.select((vm) => vm.valueOrNull?.isRoundInProgress),
+        (prev, next) {
+      if (next == false) {
+        onRoundTimerEnd();
+        
+      }
+    });
 
     return Scaffold(
       body: vmAsync.whenDefault((vm) {
@@ -58,26 +71,38 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Flexible(
-              flex: 3,
+              flex: 2,
               child: Column(children: [
                 Expanded(
-                    child:
-                        UtterBullPlayerAvatar(vm.playerWhoseTurn.avatarData)),
+                    child: UtterBullPlayerAvatar(
+                        null, vm.playerWhoseTurn.avatarData)),
                 Expanded(
-                    child:
-                        _buildStatementTextBox(vm.playersWhoseTurnStatement)),
+                    child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: UtterBullTextBox(
+                    vm.playersWhoseTurnStatement,
+                    padding: const EdgeInsets.all(12.0),
+                  ),
+                )),
               ]),
             ),
-            _buildTimer(vm.timeString),
+            Expanded(child: _buildTimer(vm.timeString)),
             Expanded(
               flex: 1,
               child: PlayersVotedWrapList(vm: vm),
             ),
             Expanded(
               flex: 1,
-              child: AnimatedSwitcher(duration: Duration(seconds: 1),
-              child: 
-                vm.isReading ? _buildEndRoundButton(!vm.isRoundInProgress) : _buildVoteButtons(!vm.hasVoted && vm.isRoundInProgress)
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: AnimatedSwitcher(
+                    duration: Duration(seconds: 1),
+                    child: vm.isReading
+                        ? _buildEndRoundButton(!vm.isRoundInProgress)
+                        : vm.isRoundInProgress
+                            ? _buildVoteButtons(
+                                !vm.hasVoted && vm.isRoundInProgress)
+                            : _buildWaitingForPlayerText(vm)),
               ),
             ),
           ],
@@ -86,30 +111,17 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     );
   }
 
-  Widget _buildStatementTextBox(String statement) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-            child: AutoSizeText(
-          statement,
-          style: Theme.of(context).textTheme.bodyMedium,
-        )),
-      ),
-    );
-  }
-
   Widget _buildVoteButtons(bool enabled) {
     return Row(children: [
       Expanded(
           child: UtterBullButton(
+              color: UtterBullGlobal.truthColor,
               onPressed: enabled ? () => onVoteTrue() : null,
               title: voteTrueButtonLabel,
               isShimmering: false)),
       Expanded(
           child: UtterBullButton(
+        color: UtterBullGlobal.lieColor,
         onPressed: enabled ? () => onVoteBull() : null,
         title: voteBullButtonLabel,
         isShimmering: false,
@@ -125,7 +137,17 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   }
 
   Widget _buildTimer(String timeString) {
-    return Text(timeString);
+    return Center(
+        child: AutoSizeText(timeString, style: TextStyle(fontSize: 100)));
+  }
+
+  Widget _buildWaitingForPlayerText(VotingPhaseViewModel vm) {
+    return AutoSizeText(
+      vm.waitingForPlayerText,
+      maxLines: 1,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.displayLarge,
+    );
   }
 }
 
@@ -135,24 +157,28 @@ class PlayersVotedWrapList extends StatelessWidget {
     required this.vm,
   });
 
+  static const double notVotedOpacity = 0.5;
+
   final VotingPhaseViewModel vm;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, cons) {
-      return RegularRectanglePacker(
-          size: Size(cons.maxWidth, cons.maxHeight),
-          items: vm.eligibleVoterIds
-              .map((id) => vm.playerMap[id])
-              .toList()
-              .map((e) {
-            final Widget child = UtterBullPlayerAvatar(e!.avatarData);
-            if (vm.eligibleVoterStatus[e.player.id] ?? false) {
-              return child;
-            }
-            return Opacity(opacity: 0.7, child: child);
-          }).toList());
-    });
+    return Center(
+      child: LayoutBuilder(builder: (context, cons) {
+        return RegularRectanglePacker(
+            size: Size(cons.maxWidth, cons.maxHeight),
+            items: vm.eligibleVoterIds
+                .map((id) => vm.playerMap[id])
+                .toList()
+                .map((e) {
+              final Widget child = UtterBullPlayerAvatar(null, e!.avatarData);
+              if (vm.eligibleVoterStatus[e.player.id] ?? false) {
+                return child;
+              }
+              return Opacity(opacity: notVotedOpacity, child: child);
+            }).toList());
+      }),
+    );
   }
 }
 

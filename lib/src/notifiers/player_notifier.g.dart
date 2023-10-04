@@ -6,7 +6,7 @@ part of 'player_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playerNotifierHash() => r'0a9350706b3e0176d14e5a22eb20436b1f428c87';
+String _$playerNotifierHash() => r'63d69167fade4e10f7d4b537289819e91967597e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -85,8 +85,8 @@ class PlayerNotifierProvider
     extends StreamNotifierProviderImpl<PlayerNotifier, PlayerWithAvatar> {
   /// See also [PlayerNotifier].
   PlayerNotifierProvider(
-    this.userId,
-  ) : super.internal(
+    String userId,
+  ) : this._internal(
           () => PlayerNotifier()..userId = userId,
           from: playerNotifierProvider,
           name: r'playerNotifierProvider',
@@ -97,9 +97,51 @@ class PlayerNotifierProvider
           dependencies: PlayerNotifierFamily._dependencies,
           allTransitiveDependencies:
               PlayerNotifierFamily._allTransitiveDependencies,
+          userId: userId,
         );
 
+  PlayerNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+  }) : super.internal();
+
   final String userId;
+
+  @override
+  Stream<PlayerWithAvatar> runNotifierBuild(
+    covariant PlayerNotifier notifier,
+  ) {
+    return notifier.build(
+      userId,
+    );
+  }
+
+  @override
+  Override overrideWith(PlayerNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: PlayerNotifierProvider._internal(
+        () => create()..userId = userId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<PlayerNotifier, PlayerWithAvatar>
+      createElement() {
+    return _PlayerNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -113,15 +155,20 @@ class PlayerNotifierProvider
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin PlayerNotifierRef on StreamNotifierProviderRef<PlayerWithAvatar> {
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _PlayerNotifierProviderElement
+    extends StreamNotifierProviderElement<PlayerNotifier, PlayerWithAvatar>
+    with PlayerNotifierRef {
+  _PlayerNotifierProviderElement(super.provider);
 
   @override
-  Stream<PlayerWithAvatar> runNotifierBuild(
-    covariant PlayerNotifier notifier,
-  ) {
-    return notifier.build(
-      userId,
-    );
-  }
+  String get userId => (origin as PlayerNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

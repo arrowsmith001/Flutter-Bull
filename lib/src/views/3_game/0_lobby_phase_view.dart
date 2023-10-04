@@ -9,6 +9,7 @@ import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dart';
+import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
@@ -148,6 +149,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   final ScrollController _scrollController = ScrollController();
 
+  // TODO: Change to RegularRectanglePacker
   Widget _buildAnimatedList(LobbyPhaseViewModel vm) {
     return AnimatedGrid(
       controller: _scrollController,
@@ -155,11 +157,11 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
         initialItemCount: vm.presentPlayers.length,
         itemBuilder: (context, index, animation)
         {
-          final player = vm.presentPlayers[index];
-
+          final player = vm.presentPlayers.values.toList()[index];
           return _buildAnimatedListItem(animation, player);
       
-        }, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.15),);
+        }, 
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.15),);
   }
 
   Widget _buildAnimatedListItem(
@@ -179,28 +181,9 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   }
 
   Widget _buildListItem(PlayerWithAvatar playerWithAvatar) {
-    return Stack(
-      alignment: Alignment.center, 
-      children: [
-      SizedBox(
+    return SizedBox(
           height: 120,
-          child: UtterBullPlayerAvatar(playerWithAvatar.avatarData)),
-      SizedBox(
-        height: 150,
-        child: Stack(
-      alignment: Alignment.center, 
-        
-          children: 
-        [
-          PositionedDirectional(
-            bottom: 0,
-            child: SizedBox(
-            height: 35, 
-            child: UglyOutlinedText(playerWithAvatar.player.name!, outlineColor: Color.lerp(Theme.of(context).colorScheme.primary, Colors.black, 0.4))),
-          )
-        ]),
-      )
-    ]);
+          child: UtterBullPlayerAvatar(playerWithAvatar.player.name!, playerWithAvatar.avatarData));
   }
 
   void _insertIntoPlayerList(String? changedItemId, int? changeIndex) {
@@ -221,7 +204,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   Widget _buildList(LobbyPhaseViewModel vm) {
     return ListView(
-      children: vm.presentPlayers.map((e) => _buildListItem(e)).toList(),
+      children: vm.presentPlayers.values.map((e) => _buildListItem(e)).toList(),
     );
   }
 }

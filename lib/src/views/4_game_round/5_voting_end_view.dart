@@ -56,7 +56,7 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
                         _buildStatementTextBox(vm.playersWhoseTurnStatement)),
                 Expanded(
                     child:
-                        UtterBullPlayerAvatar(vm.playerWhoseTurn.avatarData)),
+                        UtterBullPlayerAvatar(vm.playerWhoseTurn.player.name!, vm.playerWhoseTurn.avatarData)),
               ]),
             ),
             Flexible(child: _buildTimer(vm.timeString)),

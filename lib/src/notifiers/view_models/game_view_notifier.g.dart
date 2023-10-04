@@ -85,8 +85,8 @@ class GameViewNotifierProvider
     extends StreamNotifierProviderImpl<GameViewNotifier, GameViewModel> {
   /// See also [GameViewNotifier].
   GameViewNotifierProvider(
-    this.roomId,
-  ) : super.internal(
+    String roomId,
+  ) : this._internal(
           () => GameViewNotifier()..roomId = roomId,
           from: gameViewNotifierProvider,
           name: r'gameViewNotifierProvider',
@@ -97,9 +97,51 @@ class GameViewNotifierProvider
           dependencies: GameViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               GameViewNotifierFamily._allTransitiveDependencies,
+          roomId: roomId,
         );
 
+  GameViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.roomId,
+  }) : super.internal();
+
   final String roomId;
+
+  @override
+  Stream<GameViewModel> runNotifierBuild(
+    covariant GameViewNotifier notifier,
+  ) {
+    return notifier.build(
+      roomId,
+    );
+  }
+
+  @override
+  Override overrideWith(GameViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: GameViewNotifierProvider._internal(
+        () => create()..roomId = roomId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        roomId: roomId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<GameViewNotifier, GameViewModel>
+      createElement() {
+    return _GameViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -113,15 +155,20 @@ class GameViewNotifierProvider
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin GameViewNotifierRef on StreamNotifierProviderRef<GameViewModel> {
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+}
+
+class _GameViewNotifierProviderElement
+    extends StreamNotifierProviderElement<GameViewNotifier, GameViewModel>
+    with GameViewNotifierRef {
+  _GameViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<GameViewModel> runNotifierBuild(
-    covariant GameViewNotifier notifier,
-  ) {
-    return notifier.build(
-      roomId,
-    );
-  }
+  String get roomId => (origin as GameViewNotifierProvider).roomId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

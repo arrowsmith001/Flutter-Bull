@@ -1,3 +1,4 @@
+import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/achievement.dart';
@@ -5,7 +6,9 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/model/game_result.dart';
+import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
+import 'package:flutter_bull/src/services/local_achievement_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class DataService {
@@ -32,10 +35,11 @@ abstract class DataService {
   Future<GameResult?> getResult(String resultId);
 
   Future<Achievement> getAchievement(String achievementId);
+
+  Future<Map<String, Achievement>> getAllAchievements();
 }
 
 class DatabaseDrivenDataLayer extends DataService {
-  
   DatabaseDrivenDataLayer({
     required this.gameRoomRepo,
     required this.playerRepo,
@@ -121,10 +125,19 @@ class DatabaseDrivenDataLayer extends DataService {
   Future<Achievement> getAchievement(String achievementId) async {
     return await achievementRepo.getItemById(achievementId);
   }
+
+  @override
+  Future<Map<String, Achievement>> getAllAchievements() async {
+    final List<Achievement> achievementsByIds = await achievementRepo
+        .getItemsByIds(AchievementId.values.map((e) => e.name));
+
+    return {for (Achievement ach in achievementsByIds) ach.id!: ach};
+  }
 }
 
-class FakeDataLayer extends DataService implements DataStreamService {
-  FakeDataLayer({List<GameRoom>? gameRoomsInit, List<Player>? playersInit}) {
+class InMemoryDataLayer extends DataService implements DataStreamService {
+  InMemoryDataLayer(
+      {List<GameRoom>? gameRoomsInit, List<Player>? playersInit}) {
     gameRooms.addAll({
       for (GameRoom room in gameRoomsInit ?? [])
         room.id!: BehaviorSubject.seeded(room)
@@ -255,6 +268,114 @@ class FakeDataLayer extends DataService implements DataStreamService {
   @override
   Future<Achievement> getAchievement(String achievementId) {
     // TODO: implement getAchievement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, Achievement>> getAllAchievements() {
+    // TODO: implement getAllAchievements
+    throw UnimplementedError();
+  }
+}
+
+class StaticDataLayer extends DataService implements DataStreamService {
+  StaticDataLayer(this.game, this.players);
+
+  final GameRoom game;
+  final Map<String, Player> players;
+
+  final LocalAchievementService achievementService = LocalAchievementService();
+
+  @override
+  Stream<GameRoom> streamGameRoom(String gameRoomId) {
+    return Stream.value(game);
+  }
+
+  @override
+  Stream<Player> streamPlayer(String userId) {
+    return Stream.value(players[userId]!);
+  }
+
+  @override
+  Future<int> countRoomsByCode(String code) {
+    // TODO: implement countRoomsByCode
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> createNewGameRoom(String code) {
+    // TODO: implement createNewGameRoom
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> createPlayer(Player player) {
+    // TODO: implement createPlayer
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> doesPlayerExist(String userId) {
+    // TODO: implement doesPlayerExist
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Achievement> getAchievement(String achievementId) {
+    return achievementService.read(achievementId);
+  }
+
+  @override
+  Future<Map<String, Achievement>> getAllAchievements() async {
+    return Map.fromEntries(
+        achievementService.getAll().map((e) => MapEntry(e.id!, e)));
+  }
+
+  @override
+  Future<GameResult?> getResult(String resultId) {
+    // TODO: implement getResult
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getRoomIdFromCode(String roomCode) {
+    // TODO: implement getRoomIdFromCode
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> removeFromRoom(String userId, String gameRoomId) {
+    // TODO: implement removeFromRoom
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setImagePath(String userId, String path) {
+    // TODO: implement setImagePath
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setName(String id, String text) {
+    // TODO: implement setName
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setOccupiedRoom(String userId, String gameRoomId) {
+    // TODO: implement setOccupiedRoom
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setRoomPhase(String roomCode, GamePhase newPhase) {
+    // TODO: implement setRoomPhase
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<PlayerStatus> streamPlayerStatus(String userId) {
+    // TODO: implement streamPlayerStatus
     throw UnimplementedError();
   }
 }

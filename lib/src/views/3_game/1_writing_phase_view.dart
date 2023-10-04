@@ -159,8 +159,8 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
                 text: vm.writingPrompt.truthOrLie,
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     color: vm.writingTruthOrLie
-                        ? UtterBullTheme.truthColor
-                        : UtterBullTheme.lieColor),
+                        ? UtterBullGlobal.truthColor
+                        : UtterBullGlobal.lieColor),
               ),
             ]),
             textAlign: TextAlign.center),
@@ -193,7 +193,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
         Expanded(
             child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: UtterBullPlayerAvatar(vm.playerWritingFor.avatarData),
+          child: UtterBullPlayerAvatar(null, vm.playerWritingFor.avatarData),
         )),
       ],
     );

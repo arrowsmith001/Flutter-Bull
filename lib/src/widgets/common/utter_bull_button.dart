@@ -43,8 +43,9 @@ class UtterBullButton extends StatefulWidget {
       required this.title,
       this.leading,
       this.maxHeight,
-      this.isLoading = false, 
-      this.isShimmering = true});
+      this.isLoading = false,
+      this.isShimmering = true,
+      this.color, this.gradient});
 
   final VoidCallback? onPressed;
   final String title;
@@ -52,6 +53,8 @@ class UtterBullButton extends StatefulWidget {
   final double? maxHeight;
   final bool isLoading;
   final bool isShimmering;
+  final Color? color;
+  final Gradient? gradient;
 
   @override
   _UtterBullButtonState createState() => _UtterBullButtonState();
@@ -94,7 +97,9 @@ class _UtterBullButtonState extends State<UtterBullButton>
 
   double radius = 24.0;
   Color get color =>
-      isEnabled ? Theme.of(context).colorScheme.primary : Colors.grey;
+      isEnabled ? 
+      (widget.color ?? Theme.of(context).colorScheme.primary) 
+      : Colors.grey;
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +188,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
   Container _buildInnerLayer() {
     return Container(
         decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: widget.gradient ?? LinearGradient(
                 colors: [Color.lerp(color, Colors.white, 0.7)!, color],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter),
@@ -201,7 +206,9 @@ class _UtterBullButtonState extends State<UtterBullButton>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              widget.isLoading ? UtterBullCircularProgressIndicator() : _buildLeading(),
+              widget.isLoading
+                  ? UtterBullCircularProgressIndicator()
+                  : _buildLeading(),
               Expanded(child: UglyOutlinedText(widget.title))
             ],
           ),

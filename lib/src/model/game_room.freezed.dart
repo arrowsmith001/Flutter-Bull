@@ -20,8 +20,7 @@ GameRoom _$GameRoomFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$GameRoom {
-  String? get id => throw _privateConstructorUsedError;
-  String? get resultId => throw _privateConstructorUsedError;
+  String? get id => throw _privateConstructorUsedError; //String? resultId,
   String get roomCode => throw _privateConstructorUsedError;
   GamePhase get phase => throw _privateConstructorUsedError;
   int get subPhase => throw _privateConstructorUsedError;
@@ -50,7 +49,6 @@ abstract class $GameRoomCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
-      String? resultId,
       String roomCode,
       GamePhase phase,
       int subPhase,
@@ -83,7 +81,6 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
   @override
   $Res call({
     Object? id = freezed,
-    Object? resultId = freezed,
     Object? roomCode = null,
     Object? phase = null,
     Object? subPhase = null,
@@ -103,10 +100,6 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String?,
-      resultId: freezed == resultId
-          ? _value.resultId
-          : resultId // ignore: cast_nullable_to_non_nullable
               as String?,
       roomCode: null == roomCode
           ? _value.roomCode
@@ -185,7 +178,6 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
-      String? resultId,
       String roomCode,
       GamePhase phase,
       int subPhase,
@@ -217,7 +209,6 @@ class __$$_GameRoomCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? resultId = freezed,
     Object? roomCode = null,
     Object? phase = null,
     Object? subPhase = null,
@@ -237,10 +228,6 @@ class __$$_GameRoomCopyWithImpl<$Res>
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String?,
-      resultId: freezed == resultId
-          ? _value.resultId
-          : resultId // ignore: cast_nullable_to_non_nullable
               as String?,
       roomCode: null == roomCode
           ? _value.roomCode
@@ -307,7 +294,6 @@ class __$$_GameRoomCopyWithImpl<$Res>
 class _$_GameRoom implements _GameRoom {
   _$_GameRoom(
       {this.id,
-      this.resultId,
       required this.roomCode,
       this.phase = GamePhase.lobby,
       this.subPhase = 0,
@@ -335,8 +321,7 @@ class _$_GameRoom implements _GameRoom {
 
   @override
   final String? id;
-  @override
-  final String? resultId;
+//String? resultId,
   @override
   final String roomCode;
   @override
@@ -421,7 +406,7 @@ class _$_GameRoom implements _GameRoom {
 
   @override
   String toString() {
-    return 'GameRoom(id: $id, resultId: $resultId, roomCode: $roomCode, phase: $phase, subPhase: $subPhase, state: $state, playerIds: $playerIds, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, playerOrder: $playerOrder, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
+    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, subPhase: $subPhase, state: $state, playerIds: $playerIds, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, playerOrder: $playerOrder, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
   }
 
   @override
@@ -430,8 +415,6 @@ class _$_GameRoom implements _GameRoom {
         (other.runtimeType == runtimeType &&
             other is _$_GameRoom &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.resultId, resultId) ||
-                other.resultId == resultId) &&
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
             (identical(other.phase, phase) || other.phase == phase) &&
@@ -461,7 +444,6 @@ class _$_GameRoom implements _GameRoom {
   int get hashCode => Object.hash(
       runtimeType,
       id,
-      resultId,
       roomCode,
       phase,
       subPhase,
@@ -494,7 +476,6 @@ class _$_GameRoom implements _GameRoom {
 abstract class _GameRoom implements GameRoom {
   factory _GameRoom(
       {final String? id,
-      final String? resultId,
       required final String roomCode,
       final GamePhase phase,
       final int subPhase,
@@ -514,9 +495,7 @@ abstract class _GameRoom implements GameRoom {
 
   @override
   String? get id;
-  @override
-  String? get resultId;
-  @override
+  @override //String? resultId,
   String get roomCode;
   @override
   GamePhase get phase;

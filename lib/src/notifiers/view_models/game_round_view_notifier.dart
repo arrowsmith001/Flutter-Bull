@@ -24,7 +24,7 @@ class GameRoundViewNotifier extends _$GameRoundViewNotifier {
   }
 
   Stream<GameRoundViewModel> _buildViewModel(
-      String userId, GameRoom game, List<PlayerWithAvatar> players, String whoseTurnId) async* {
+      String userId, GameRoom game, Map<String, PlayerWithAvatar> players, String whoseTurnId) async* {
 
     final roundPhase = RoundPhase.values[game.subPhase]; // TODO: Check index, check phase is round phase
 

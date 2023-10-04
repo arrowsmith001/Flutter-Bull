@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$RevealsPhaseViewModel {
   String get path => throw _privateConstructorUsedError;
-  int get progress => throw _privateConstructorUsedError;
+  int? get progress => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $RevealsPhaseViewModelCopyWith<RevealsPhaseViewModel> get copyWith =>
@@ -30,7 +30,7 @@ abstract class $RevealsPhaseViewModelCopyWith<$Res> {
           $Res Function(RevealsPhaseViewModel) then) =
       _$RevealsPhaseViewModelCopyWithImpl<$Res, RevealsPhaseViewModel>;
   @useResult
-  $Res call({String path, int progress});
+  $Res call({String path, int? progress});
 }
 
 /// @nodoc
@@ -48,17 +48,17 @@ class _$RevealsPhaseViewModelCopyWithImpl<$Res,
   @override
   $Res call({
     Object? path = null,
-    Object? progress = null,
+    Object? progress = freezed,
   }) {
     return _then(_value.copyWith(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
               as String,
-      progress: null == progress
+      progress: freezed == progress
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
     ) as $Val);
   }
 }
@@ -71,7 +71,7 @@ abstract class _$$_RevealsPhaseViewModelCopyWith<$Res>
       __$$_RevealsPhaseViewModelCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String path, int progress});
+  $Res call({String path, int? progress});
 }
 
 /// @nodoc
@@ -86,17 +86,17 @@ class __$$_RevealsPhaseViewModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? path = null,
-    Object? progress = null,
+    Object? progress = freezed,
   }) {
     return _then(_$_RevealsPhaseViewModel(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
               as String,
-      progress: null == progress
+      progress: freezed == progress
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
     ));
   }
 }
@@ -109,7 +109,7 @@ class _$_RevealsPhaseViewModel implements _RevealsPhaseViewModel {
   @override
   final String path;
   @override
-  final int progress;
+  final int? progress;
 
   @override
   String toString() {
@@ -140,12 +140,12 @@ class _$_RevealsPhaseViewModel implements _RevealsPhaseViewModel {
 abstract class _RevealsPhaseViewModel implements RevealsPhaseViewModel {
   factory _RevealsPhaseViewModel(
       {required final String path,
-      required final int progress}) = _$_RevealsPhaseViewModel;
+      required final int? progress}) = _$_RevealsPhaseViewModel;
 
   @override
   String get path;
   @override
-  int get progress;
+  int? get progress;
   @override
   @JsonKey(ignore: true)
   _$$_RevealsPhaseViewModelCopyWith<_$_RevealsPhaseViewModel> get copyWith =>

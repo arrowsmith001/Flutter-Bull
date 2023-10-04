@@ -180,13 +180,13 @@ export const setSubPhase = http.onCall(
         await setSubPhaseImpl(roomId, phaseNum);
     });
 
-export const calculateResults = http.onCall(
-    async (req: http.CallableRequest) => {
+// export const calculateResults = http.onCall(
+//     async (req: http.CallableRequest) => {
 
-        var roomId = req.data['roomId'] as string;
+//         var roomId = req.data['roomId'] as string;
 
-        await _calculateResults(roomId);
-    });
+//         await _calculateResults(roomId);
+//     });
 
 
 
@@ -474,6 +474,7 @@ async function voteImpl(roomId: string, userId: string, truthOrLie: boolean) {
 async function endRoundImpl(roomId: string, userId: string) {
 
     var roomRef = db.collection('rooms').doc(roomId);
+    var goToReveals = false;
 
     await db.runTransaction(async (txn) => {
 
@@ -501,15 +502,9 @@ async function endRoundImpl(roomId: string, userId: string) {
 
         if (playerOrder.length <= progress) {
 
-            // All data should be ready at this point
-            _calculateResults(roomId);
+            goToReveals = true;
 
-            txn
-                .update(roomRef, { 'votes': currentRoomData['votes'] })
-                .update(roomRef, { 'progress': 0, 'subPhase': 0, 'phase': GameRoomPhase.reveals });
-
-
-
+            txn.update(roomRef, { 'votes': currentRoomData['votes'] });
         }
         else {
 
@@ -517,10 +512,16 @@ async function endRoundImpl(roomId: string, userId: string) {
                 .update(roomRef, { 'votes': currentRoomData['votes'] })
                 .update(roomRef, { 'progress': progress, 'subPhase': 0 });
         }
-
-
-
     });
+
+    if (goToReveals) {
+        //await _calculateResults(roomId);
+
+        await db.runTransaction(async (txn) => {
+            txn
+                .update(roomRef, { 'progress': 0, 'subPhase': 0, 'phase': GameRoomPhase.reveals });
+        });
+    }
 
 }
 
@@ -535,7 +536,7 @@ async function revealImpl(roomId: string, userId: string) {
         var currentRoom = await txn.get(roomRef);
         var currentRoomData = currentRoom.data()!;
 
-        var currentSubPhase = currentRoomData['subPhase'] as number;
+        var currentSubPhase = currentRoomData.subPhase as number;
 
         if (currentSubPhase == 0) {
 
@@ -732,20 +733,22 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
     var liarIds = Array.from(truthOrLieMap.keys()).filter((k) => !truthOrLieMap.get(k));
     var numberOfLiars = liarIds.length;
 
-    var derangement = _getDerangement(liarIds.length);
-    console.log('derangement 1: ' + JSON.stringify(derangement));
-
     var targets = new Array(numberOfLiars);
-    for (var i = 0; i < numberOfLiars; i++) {
-        targets[i] = liarIds[derangement[i]];
+
+
+    if (numberOfLiars > 0) {
+        var derangement = _getDerangement(liarIds.length);
+        console.log('derangement 1: ' + JSON.stringify(derangement));
+
+        for (var i = 0; i < numberOfLiars; i++) {
+            targets[i] = liarIds[derangement[i]];
+        }
     }
 
-    console.log('targets 1: ' + JSON.stringify(targets));
 
     // Produce target map (including truth-tellers)
     var truthers = Array.from(truthOrLieMap.keys()).filter((k) => truthOrLieMap.get(k));
 
-    console.log('truthers 1: ' + JSON.stringify(truthers));
 
     var targetMap = new Map<string, string>();
 
@@ -830,147 +833,146 @@ function _shuffleArray(array: any[]): void {
     }
 }
 
-class Achievements {
-    static fooledAll = 'fooledAll';
-    static fooledMost = 'fooledMost';
-    static fooledSome = 'fooledSome';
-    static votedCorrectly = 'votedCorrectly';
-    static votedCorrectlyInMinority = 'votedCorrectlyInMinority';
-    static votedCorrectlyQuickest = 'votedCorrectlyQuickest';
-}
+// class Achievements {
+//     static fooledAll = 'fooledAll';
+//     static fooledMost = 'fooledMost';
+//     static fooledSome = 'fooledSome';
+//     static votedCorrectly = 'votedCorrectly';
+//     static votedCorrectlyInMinority = 'votedCorrectlyInMinority';
+//     static votedCorrectlyQuickest = 'votedCorrectlyQuickest';
+// }
 
-async function _calculateResults(roomId: string) {
+// async function _calculateResults(roomId: string) {
 
-    var roomRef = db.collection('rooms').doc(roomId);
-    //var achievementsRef = db.collection('achievements');
-    var resultsRef = db.collection('results');
+//     var roomRef = db.collection('rooms').doc(roomId);
+//     //var achievementsRef = db.collection('achievements');
+//     var resultsRef = db.collection('results');
 
-    await db.runTransaction(async (txn) => {
+//     await db.runTransaction(async (txn) => {
 
-        var roomQuery = await txn.get(roomRef);
-        var room = roomQuery.data()!;
+//         var roomQuery = await txn.get(roomRef);
+//         var room = roomQuery.data()!;
 
-        // TODO: Calculate
+//         // TODO: Calculate
 
-        const order = room['playerOrder'] as string[];
-        const votes = room['votes'];
-        const truths = room['truths'];
+//         const order = room['playerOrder'] as string[];
+//         const votes = room['votes'];
+//         const truths = room['truths'];
 
-        console.log(order);
-        console.log(votes);
-        console.log(truths);
-
-
-        const numberOfRounds = order.length;
-
-        const achievementsByRound = [];
-
-        // For each round...
-        for (let roundNum = 0; roundNum < numberOfRounds; roundNum++) {
-
-            const achievements: { [k: string]: any } = {};
-
-            var playerWhoseTurn = order[roundNum];
-            var truthThisRound = room['truths'][playerWhoseTurn];
-
-            var numberVotedTrue = 0;
-            var numberVotedFalse = 0;
-            var numberOfEligibleVoters = 0;
-
-            // Count votes & voters
-            order.forEach((playerId) => {
-
-                var vote = votes[playerId][roundNum];
-
-                if (vote != 'p') {
-                    numberOfEligibleVoters++;
-                }
-
-                switch (vote) {
-                    case 't':
-                        numberVotedTrue++;
-                        break;
-                    case 'l':
-                        numberVotedFalse++;
-                        break;
-                }
-            });
-
-            var numberVotedCorrectly = truthThisRound ? numberVotedTrue : numberVotedFalse;
-            var proportionVotedCorrectly = numberVotedCorrectly / numberOfEligibleVoters;
-
-            // For each player, calculate achievements...
-            order.forEach((playerId) => {
-
-                const playerAchievements: string[] = [];
+//         console.log(order);
+//         console.log(votes);
+//         console.log(truths);
 
 
-                var vote = votes[playerId][roundNum];
+//         const numberOfRounds = order.length;
 
-                switch (vote) {
-                    case 't':
-                        if (truthThisRound) {
-                            playerAchievements.push(Achievements.votedCorrectly);
-                        }
-                        break;
-                    case 'l':
-                        if (!truthThisRound) {
-                            playerAchievements.push(Achievements.votedCorrectly);
-                        }
-                        break;
-                    case 'p':
+//         const achievementsByRound = [];
 
-                        if (numberVotedCorrectly == 0) {
-                            playerAchievements.push(Achievements.fooledAll)
-                        }
-                        else if (proportionVotedCorrectly < 0.5) {
-                            playerAchievements.push(Achievements.fooledMost);
-                        }
-                        else if (numberVotedCorrectly != numberOfEligibleVoters) {
-                            playerAchievements.push(Achievements.fooledSome);
-                        }
+//         // For each round...
+//         for (let roundNum = 0; roundNum < numberOfRounds; roundNum++) {
 
-                        break;
-                }
+//             const achievements: { [k: string]: any } = {};
 
+//             var playerWhoseTurn = order[roundNum];
+//             var truthThisRound = room['truths'][playerWhoseTurn];
 
-                achievements[playerId] = playerAchievements;
-            });
+//             var numberVotedTrue = 0;
+//             var numberVotedFalse = 0;
+//             var numberOfEligibleVoters = 0;
 
-            achievementsByRound.push({ 'playersToAchievements': achievements });
+//             // Count votes & voters
+//             order.forEach((playerId) => {
 
-        }
+//                 var vote = votes[playerId][roundNum];
 
+//                 if (vote != 'p') {
+//                     numberOfEligibleVoters++;
+//                 }
 
-        const data = { 'result': achievementsByRound, 'timeCreatedUTC': Date.now().valueOf() };
+//                 switch (vote) {
+//                     case 't':
+//                         numberVotedTrue++;
+//                         break;
+//                     case 'l':
+//                         numberVotedFalse++;
+//                         break;
+//                 }
+//             });
 
-        console.log(data);
+//             var numberVotedCorrectly = truthThisRound ? numberVotedTrue : numberVotedFalse;
+//             var proportionVotedCorrectly = numberVotedCorrectly / numberOfEligibleVoters;
 
-        const map = JSON.stringify(data);
+//             // For each player, calculate achievements...
+//             order.forEach((playerId) => {
 
-        console.log(map);
-
-        const json = JSON.parse(map);
-
-        console.log(json);
-
-        const newDoc = resultsRef.doc();
-
-        txn.create(newDoc, json)
-            .update(roomRef, { 'resultId': newDoc.id });;
+//                 const playerAchievements: string[] = [];
 
 
-        // TODO: Serialize!
-        // TODO: Include round scores
-        // TODO: Add result reference to room
+//                 var vote = votes[playerId][roundNum];
 
-    })
+//                 switch (vote) {
+//                     case 't':
+//                         if (truthThisRound) {
+//                             playerAchievements.push(Achievements.votedCorrectly);
+//                         }
+//                         break;
+//                     case 'l':
+//                         if (!truthThisRound) {
+//                             playerAchievements.push(Achievements.votedCorrectly);
+//                         }
+//                         break;
+//                     case 'p':
 
+//                         if (numberVotedCorrectly == 0) {
+//                             playerAchievements.push(Achievements.fooledAll)
+//                         }
+//                         else if (proportionVotedCorrectly < 0.5) {
+//                             playerAchievements.push(Achievements.fooledMost);
+//                         }
+//                         else if (numberVotedCorrectly != numberOfEligibleVoters) {
+//                             playerAchievements.push(Achievements.fooledSome);
+//                         }
+
+//                         break;
+//                 }
+
+
+//                 achievements[playerId] = playerAchievements;
+//             });
+
+//             achievementsByRound.push({ 'playersToAchievements': achievements });
+
+//         }
+
+//         const newDoc = resultsRef.doc();
+
+//         const data = {
+//             'id': newDoc.id,
+//             'result': achievementsByRound,
+//             'timeCreatedUTC': Date.now().valueOf()
+//         };
+
+//         const map = JSON.stringify(data);
+
+//         const json = JSON.parse(map);
+
+//         console.log(json);
+
+
+//         txn.create(newDoc, json)
+//             .update(roomRef, { 'resultId': newDoc.id });;
+
+
+//         // TODO: Serialize!
+//         // TODO: Include round scores
+
+//     });
 
 
 
 
-}
+
+// }
 /* function _substituteCharAt(str: string, pos: number, char: string): string {
     return str.substring(0, pos) + char + str.substring(pos + 1);
 } */

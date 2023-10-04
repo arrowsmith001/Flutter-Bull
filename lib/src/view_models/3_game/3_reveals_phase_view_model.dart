@@ -8,6 +8,6 @@ class RevealsPhaseViewModel with _$RevealsPhaseViewModel {
 
     factory RevealsPhaseViewModel(
       {required String path, 
-      required int progress}
+      required int? progress}
       ) = _RevealsPhaseViewModel;
 }

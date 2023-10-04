@@ -17,9 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$GameNotifierState {
   GameRoom get gameRoom => throw _privateConstructorUsedError;
-  List<PlayerWithAvatar> get players => throw _privateConstructorUsedError;
-  GameResult? get result => throw _privateConstructorUsedError;
-  List<AchievementWithIcon> get achievementsWithIcons =>
+  Map<String, PlayerWithAvatar> get players =>
       throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -33,14 +31,9 @@ abstract class $GameNotifierStateCopyWith<$Res> {
           GameNotifierState value, $Res Function(GameNotifierState) then) =
       _$GameNotifierStateCopyWithImpl<$Res, GameNotifierState>;
   @useResult
-  $Res call(
-      {GameRoom gameRoom,
-      List<PlayerWithAvatar> players,
-      GameResult? result,
-      List<AchievementWithIcon> achievementsWithIcons});
+  $Res call({GameRoom gameRoom, Map<String, PlayerWithAvatar> players});
 
   $GameRoomCopyWith<$Res> get gameRoom;
-  $GameResultCopyWith<$Res>? get result;
 }
 
 /// @nodoc
@@ -58,8 +51,6 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
   $Res call({
     Object? gameRoom = null,
     Object? players = null,
-    Object? result = freezed,
-    Object? achievementsWithIcons = null,
   }) {
     return _then(_value.copyWith(
       gameRoom: null == gameRoom
@@ -69,15 +60,7 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
       players: null == players
           ? _value.players
           : players // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
-      result: freezed == result
-          ? _value.result
-          : result // ignore: cast_nullable_to_non_nullable
-              as GameResult?,
-      achievementsWithIcons: null == achievementsWithIcons
-          ? _value.achievementsWithIcons
-          : achievementsWithIcons // ignore: cast_nullable_to_non_nullable
-              as List<AchievementWithIcon>,
+              as Map<String, PlayerWithAvatar>,
     ) as $Val);
   }
 
@@ -86,18 +69,6 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
   $GameRoomCopyWith<$Res> get gameRoom {
     return $GameRoomCopyWith<$Res>(_value.gameRoom, (value) {
       return _then(_value.copyWith(gameRoom: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $GameResultCopyWith<$Res>? get result {
-    if (_value.result == null) {
-      return null;
-    }
-
-    return $GameResultCopyWith<$Res>(_value.result!, (value) {
-      return _then(_value.copyWith(result: value) as $Val);
     });
   }
 }
@@ -110,16 +81,10 @@ abstract class _$$_GameNotifierStateCopyWith<$Res>
       __$$_GameNotifierStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {GameRoom gameRoom,
-      List<PlayerWithAvatar> players,
-      GameResult? result,
-      List<AchievementWithIcon> achievementsWithIcons});
+  $Res call({GameRoom gameRoom, Map<String, PlayerWithAvatar> players});
 
   @override
   $GameRoomCopyWith<$Res> get gameRoom;
-  @override
-  $GameResultCopyWith<$Res>? get result;
 }
 
 /// @nodoc
@@ -135,8 +100,6 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
   $Res call({
     Object? gameRoom = null,
     Object? players = null,
-    Object? result = freezed,
-    Object? achievementsWithIcons = null,
   }) {
     return _then(_$_GameNotifierState(
       gameRoom: null == gameRoom
@@ -146,15 +109,7 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
       players: null == players
           ? _value._players
           : players // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
-      result: freezed == result
-          ? _value.result
-          : result // ignore: cast_nullable_to_non_nullable
-              as GameResult?,
-      achievementsWithIcons: null == achievementsWithIcons
-          ? _value._achievementsWithIcons
-          : achievementsWithIcons // ignore: cast_nullable_to_non_nullable
-              as List<AchievementWithIcon>,
+              as Map<String, PlayerWithAvatar>,
     ));
   }
 }
@@ -164,38 +119,23 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
 class _$_GameNotifierState extends _GameNotifierState {
   _$_GameNotifierState(
       {required this.gameRoom,
-      required final List<PlayerWithAvatar> players,
-      this.result,
-      final List<AchievementWithIcon> achievementsWithIcons = const []})
+      required final Map<String, PlayerWithAvatar> players})
       : _players = players,
-        _achievementsWithIcons = achievementsWithIcons,
         super._();
 
   @override
   final GameRoom gameRoom;
-  final List<PlayerWithAvatar> _players;
+  final Map<String, PlayerWithAvatar> _players;
   @override
-  List<PlayerWithAvatar> get players {
-    if (_players is EqualUnmodifiableListView) return _players;
+  Map<String, PlayerWithAvatar> get players {
+    if (_players is EqualUnmodifiableMapView) return _players;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_players);
-  }
-
-  @override
-  final GameResult? result;
-  final List<AchievementWithIcon> _achievementsWithIcons;
-  @override
-  @JsonKey()
-  List<AchievementWithIcon> get achievementsWithIcons {
-    if (_achievementsWithIcons is EqualUnmodifiableListView)
-      return _achievementsWithIcons;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_achievementsWithIcons);
+    return EqualUnmodifiableMapView(_players);
   }
 
   @override
   String toString() {
-    return 'GameNotifierState(gameRoom: $gameRoom, players: $players, result: $result, achievementsWithIcons: $achievementsWithIcons)';
+    return 'GameNotifierState(gameRoom: $gameRoom, players: $players)';
   }
 
   @override
@@ -205,19 +145,12 @@ class _$_GameNotifierState extends _GameNotifierState {
             other is _$_GameNotifierState &&
             (identical(other.gameRoom, gameRoom) ||
                 other.gameRoom == gameRoom) &&
-            const DeepCollectionEquality().equals(other._players, _players) &&
-            (identical(other.result, result) || other.result == result) &&
-            const DeepCollectionEquality()
-                .equals(other._achievementsWithIcons, _achievementsWithIcons));
+            const DeepCollectionEquality().equals(other._players, _players));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      gameRoom,
-      const DeepCollectionEquality().hash(_players),
-      result,
-      const DeepCollectionEquality().hash(_achievementsWithIcons));
+      runtimeType, gameRoom, const DeepCollectionEquality().hash(_players));
 
   @JsonKey(ignore: true)
   @override
@@ -230,20 +163,14 @@ class _$_GameNotifierState extends _GameNotifierState {
 abstract class _GameNotifierState extends GameNotifierState {
   factory _GameNotifierState(
           {required final GameRoom gameRoom,
-          required final List<PlayerWithAvatar> players,
-          final GameResult? result,
-          final List<AchievementWithIcon> achievementsWithIcons}) =
+          required final Map<String, PlayerWithAvatar> players}) =
       _$_GameNotifierState;
   _GameNotifierState._() : super._();
 
   @override
   GameRoom get gameRoom;
   @override
-  List<PlayerWithAvatar> get players;
-  @override
-  GameResult? get result;
-  @override
-  List<AchievementWithIcon> get achievementsWithIcons;
+  Map<String, PlayerWithAvatar> get players;
   @override
   @JsonKey(ignore: true)
   _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>

@@ -7,7 +7,7 @@ part of 'result_view_notifier.dart';
 // **************************************************************************
 
 String _$resultViewNotifierHash() =>
-    r'007e55d739c12ceba022f7ebafc0c770ae6b5ac1';
+    r'd4f543a2e9470c10402b01f5024294ab6b121c5a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -91,9 +91,9 @@ class ResultViewNotifierProvider
     extends StreamNotifierProviderImpl<ResultViewNotifier, ResultViewModel> {
   /// See also [ResultViewNotifier].
   ResultViewNotifierProvider(
-    this.roomId,
-    this.userId,
-  ) : super.internal(
+    String roomId,
+    String userId,
+  ) : this._internal(
           () => ResultViewNotifier()
             ..roomId = roomId
             ..userId = userId,
@@ -106,10 +106,58 @@ class ResultViewNotifierProvider
           dependencies: ResultViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               ResultViewNotifierFamily._allTransitiveDependencies,
+          roomId: roomId,
+          userId: userId,
         );
+
+  ResultViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.roomId,
+    required this.userId,
+  }) : super.internal();
 
   final String roomId;
   final String userId;
+
+  @override
+  Stream<ResultViewModel> runNotifierBuild(
+    covariant ResultViewNotifier notifier,
+  ) {
+    return notifier.build(
+      roomId,
+      userId,
+    );
+  }
+
+  @override
+  Override overrideWith(ResultViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: ResultViewNotifierProvider._internal(
+        () => create()
+          ..roomId = roomId
+          ..userId = userId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        roomId: roomId,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<ResultViewNotifier, ResultViewModel>
+      createElement() {
+    return _ResultViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -126,16 +174,25 @@ class ResultViewNotifierProvider
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin ResultViewNotifierRef on StreamNotifierProviderRef<ResultViewModel> {
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _ResultViewNotifierProviderElement
+    extends StreamNotifierProviderElement<ResultViewNotifier, ResultViewModel>
+    with ResultViewNotifierRef {
+  _ResultViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<ResultViewModel> runNotifierBuild(
-    covariant ResultViewNotifier notifier,
-  ) {
-    return notifier.build(
-      roomId,
-      userId,
-    );
-  }
+  String get roomId => (origin as ResultViewNotifierProvider).roomId;
+  @override
+  String get userId => (origin as ResultViewNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

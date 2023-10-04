@@ -6,6 +6,7 @@ import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/2_main/game_view_model.dart';
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
@@ -29,21 +30,15 @@ class _GameViewState extends ConsumerState<GameView> with RoomID {
 
   @override
   Widget build(BuildContext context) {
-    
     ref.listen(vmProvider.select((value) => value.value?.path), (_, next) {
       if (next != null) navController.navigateTo(next);
     });
-
 
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-            gradient: RadialGradient(
-                center: AlignmentDirectional.topCenter,
-                radius: 2.5,
-                colors: [Colors.white, Color.fromARGB(255, 109, 221, 255)])),
+        decoration: UtterBullGlobal.gameViewDecoration,
         child: Center(
           child: vmAsync.whenDefault((vm) {
             return ControlledNavigator(
@@ -89,3 +84,4 @@ class GameRouteNavigationController
     return null;
   }
 }
+

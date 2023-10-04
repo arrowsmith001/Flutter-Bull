@@ -16,7 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ResultViewModel {
-  List<PlayerBreakdownViewModel> get playerBreakdown =>
+  Map<String, PlayerWithAvatar> get playerMap =>
+      throw _privateConstructorUsedError;
+  List<PlayerResultSummary> get playerResultSummaries =>
       throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -30,7 +32,9 @@ abstract class $ResultViewModelCopyWith<$Res> {
           ResultViewModel value, $Res Function(ResultViewModel) then) =
       _$ResultViewModelCopyWithImpl<$Res, ResultViewModel>;
   @useResult
-  $Res call({List<PlayerBreakdownViewModel> playerBreakdown});
+  $Res call(
+      {Map<String, PlayerWithAvatar> playerMap,
+      List<PlayerResultSummary> playerResultSummaries});
 }
 
 /// @nodoc
@@ -46,13 +50,18 @@ class _$ResultViewModelCopyWithImpl<$Res, $Val extends ResultViewModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? playerBreakdown = null,
+    Object? playerMap = null,
+    Object? playerResultSummaries = null,
   }) {
     return _then(_value.copyWith(
-      playerBreakdown: null == playerBreakdown
-          ? _value.playerBreakdown
-          : playerBreakdown // ignore: cast_nullable_to_non_nullable
-              as List<PlayerBreakdownViewModel>,
+      playerMap: null == playerMap
+          ? _value.playerMap
+          : playerMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, PlayerWithAvatar>,
+      playerResultSummaries: null == playerResultSummaries
+          ? _value.playerResultSummaries
+          : playerResultSummaries // ignore: cast_nullable_to_non_nullable
+              as List<PlayerResultSummary>,
     ) as $Val);
   }
 }
@@ -65,7 +74,9 @@ abstract class _$$_ResultViewModelCopyWith<$Res>
       __$$_ResultViewModelCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<PlayerBreakdownViewModel> playerBreakdown});
+  $Res call(
+      {Map<String, PlayerWithAvatar> playerMap,
+      List<PlayerResultSummary> playerResultSummaries});
 }
 
 /// @nodoc
@@ -79,13 +90,18 @@ class __$$_ResultViewModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? playerBreakdown = null,
+    Object? playerMap = null,
+    Object? playerResultSummaries = null,
   }) {
     return _then(_$_ResultViewModel(
-      playerBreakdown: null == playerBreakdown
-          ? _value._playerBreakdown
-          : playerBreakdown // ignore: cast_nullable_to_non_nullable
-              as List<PlayerBreakdownViewModel>,
+      playerMap: null == playerMap
+          ? _value._playerMap
+          : playerMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, PlayerWithAvatar>,
+      playerResultSummaries: null == playerResultSummaries
+          ? _value._playerResultSummaries
+          : playerResultSummaries // ignore: cast_nullable_to_non_nullable
+              as List<PlayerResultSummary>,
     ));
   }
 }
@@ -94,20 +110,31 @@ class __$$_ResultViewModelCopyWithImpl<$Res>
 
 class _$_ResultViewModel implements _ResultViewModel {
   _$_ResultViewModel(
-      {required final List<PlayerBreakdownViewModel> playerBreakdown})
-      : _playerBreakdown = playerBreakdown;
+      {required final Map<String, PlayerWithAvatar> playerMap,
+      required final List<PlayerResultSummary> playerResultSummaries})
+      : _playerMap = playerMap,
+        _playerResultSummaries = playerResultSummaries;
 
-  final List<PlayerBreakdownViewModel> _playerBreakdown;
+  final Map<String, PlayerWithAvatar> _playerMap;
   @override
-  List<PlayerBreakdownViewModel> get playerBreakdown {
-    if (_playerBreakdown is EqualUnmodifiableListView) return _playerBreakdown;
+  Map<String, PlayerWithAvatar> get playerMap {
+    if (_playerMap is EqualUnmodifiableMapView) return _playerMap;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_playerBreakdown);
+    return EqualUnmodifiableMapView(_playerMap);
+  }
+
+  final List<PlayerResultSummary> _playerResultSummaries;
+  @override
+  List<PlayerResultSummary> get playerResultSummaries {
+    if (_playerResultSummaries is EqualUnmodifiableListView)
+      return _playerResultSummaries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playerResultSummaries);
   }
 
   @override
   String toString() {
-    return 'ResultViewModel._(playerBreakdown: $playerBreakdown)';
+    return 'ResultViewModel._(playerMap: $playerMap, playerResultSummaries: $playerResultSummaries)';
   }
 
   @override
@@ -116,12 +143,16 @@ class _$_ResultViewModel implements _ResultViewModel {
         (other.runtimeType == runtimeType &&
             other is _$_ResultViewModel &&
             const DeepCollectionEquality()
-                .equals(other._playerBreakdown, _playerBreakdown));
+                .equals(other._playerMap, _playerMap) &&
+            const DeepCollectionEquality()
+                .equals(other._playerResultSummaries, _playerResultSummaries));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_playerBreakdown));
+      runtimeType,
+      const DeepCollectionEquality().hash(_playerMap),
+      const DeepCollectionEquality().hash(_playerResultSummaries));
 
   @JsonKey(ignore: true)
   @override
@@ -132,202 +163,16 @@ class _$_ResultViewModel implements _ResultViewModel {
 
 abstract class _ResultViewModel implements ResultViewModel {
   factory _ResultViewModel(
-          {required final List<PlayerBreakdownViewModel> playerBreakdown}) =
+          {required final Map<String, PlayerWithAvatar> playerMap,
+          required final List<PlayerResultSummary> playerResultSummaries}) =
       _$_ResultViewModel;
 
   @override
-  List<PlayerBreakdownViewModel> get playerBreakdown;
+  Map<String, PlayerWithAvatar> get playerMap;
+  @override
+  List<PlayerResultSummary> get playerResultSummaries;
   @override
   @JsonKey(ignore: true)
   _$$_ResultViewModelCopyWith<_$_ResultViewModel> get copyWith =>
       throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-mixin _$PlayerBreakdownViewModel {
-  PlayerWithAvatar get playerWithAvatar => throw _privateConstructorUsedError;
-  int get score => throw _privateConstructorUsedError;
-  int get previousScore => throw _privateConstructorUsedError;
-  int get scoreDifference => throw _privateConstructorUsedError;
-
-  @JsonKey(ignore: true)
-  $PlayerBreakdownViewModelCopyWith<PlayerBreakdownViewModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PlayerBreakdownViewModelCopyWith<$Res> {
-  factory $PlayerBreakdownViewModelCopyWith(PlayerBreakdownViewModel value,
-          $Res Function(PlayerBreakdownViewModel) then) =
-      _$PlayerBreakdownViewModelCopyWithImpl<$Res, PlayerBreakdownViewModel>;
-  @useResult
-  $Res call(
-      {PlayerWithAvatar playerWithAvatar,
-      int score,
-      int previousScore,
-      int scoreDifference});
-}
-
-/// @nodoc
-class _$PlayerBreakdownViewModelCopyWithImpl<$Res,
-        $Val extends PlayerBreakdownViewModel>
-    implements $PlayerBreakdownViewModelCopyWith<$Res> {
-  _$PlayerBreakdownViewModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? playerWithAvatar = null,
-    Object? score = null,
-    Object? previousScore = null,
-    Object? scoreDifference = null,
-  }) {
-    return _then(_value.copyWith(
-      playerWithAvatar: null == playerWithAvatar
-          ? _value.playerWithAvatar
-          : playerWithAvatar // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
-      score: null == score
-          ? _value.score
-          : score // ignore: cast_nullable_to_non_nullable
-              as int,
-      previousScore: null == previousScore
-          ? _value.previousScore
-          : previousScore // ignore: cast_nullable_to_non_nullable
-              as int,
-      scoreDifference: null == scoreDifference
-          ? _value.scoreDifference
-          : scoreDifference // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$_PlayerBreakdownViewModelCopyWith<$Res>
-    implements $PlayerBreakdownViewModelCopyWith<$Res> {
-  factory _$$_PlayerBreakdownViewModelCopyWith(
-          _$_PlayerBreakdownViewModel value,
-          $Res Function(_$_PlayerBreakdownViewModel) then) =
-      __$$_PlayerBreakdownViewModelCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {PlayerWithAvatar playerWithAvatar,
-      int score,
-      int previousScore,
-      int scoreDifference});
-}
-
-/// @nodoc
-class __$$_PlayerBreakdownViewModelCopyWithImpl<$Res>
-    extends _$PlayerBreakdownViewModelCopyWithImpl<$Res,
-        _$_PlayerBreakdownViewModel>
-    implements _$$_PlayerBreakdownViewModelCopyWith<$Res> {
-  __$$_PlayerBreakdownViewModelCopyWithImpl(_$_PlayerBreakdownViewModel _value,
-      $Res Function(_$_PlayerBreakdownViewModel) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? playerWithAvatar = null,
-    Object? score = null,
-    Object? previousScore = null,
-    Object? scoreDifference = null,
-  }) {
-    return _then(_$_PlayerBreakdownViewModel(
-      playerWithAvatar: null == playerWithAvatar
-          ? _value.playerWithAvatar
-          : playerWithAvatar // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
-      score: null == score
-          ? _value.score
-          : score // ignore: cast_nullable_to_non_nullable
-              as int,
-      previousScore: null == previousScore
-          ? _value.previousScore
-          : previousScore // ignore: cast_nullable_to_non_nullable
-              as int,
-      scoreDifference: null == scoreDifference
-          ? _value.scoreDifference
-          : scoreDifference // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$_PlayerBreakdownViewModel implements _PlayerBreakdownViewModel {
-  _$_PlayerBreakdownViewModel(
-      {required this.playerWithAvatar,
-      required this.score,
-      required this.previousScore,
-      required this.scoreDifference});
-
-  @override
-  final PlayerWithAvatar playerWithAvatar;
-  @override
-  final int score;
-  @override
-  final int previousScore;
-  @override
-  final int scoreDifference;
-
-  @override
-  String toString() {
-    return 'PlayerBreakdownViewModel(playerWithAvatar: $playerWithAvatar, score: $score, previousScore: $previousScore, scoreDifference: $scoreDifference)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$_PlayerBreakdownViewModel &&
-            (identical(other.playerWithAvatar, playerWithAvatar) ||
-                other.playerWithAvatar == playerWithAvatar) &&
-            (identical(other.score, score) || other.score == score) &&
-            (identical(other.previousScore, previousScore) ||
-                other.previousScore == previousScore) &&
-            (identical(other.scoreDifference, scoreDifference) ||
-                other.scoreDifference == scoreDifference));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, playerWithAvatar, score, previousScore, scoreDifference);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$_PlayerBreakdownViewModelCopyWith<_$_PlayerBreakdownViewModel>
-      get copyWith => __$$_PlayerBreakdownViewModelCopyWithImpl<
-          _$_PlayerBreakdownViewModel>(this, _$identity);
-}
-
-abstract class _PlayerBreakdownViewModel implements PlayerBreakdownViewModel {
-  factory _PlayerBreakdownViewModel(
-      {required final PlayerWithAvatar playerWithAvatar,
-      required final int score,
-      required final int previousScore,
-      required final int scoreDifference}) = _$_PlayerBreakdownViewModel;
-
-  @override
-  PlayerWithAvatar get playerWithAvatar;
-  @override
-  int get score;
-  @override
-  int get previousScore;
-  @override
-  int get scoreDifference;
-  @override
-  @JsonKey(ignore: true)
-  _$$_PlayerBreakdownViewModelCopyWith<_$_PlayerBreakdownViewModel>
-      get copyWith => throw _privateConstructorUsedError;
 }

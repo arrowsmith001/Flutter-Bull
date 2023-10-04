@@ -88,8 +88,8 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
     SignedInPlayerStatusNotifier, SignedInPlayerStatusNotifierState> {
   /// See also [SignedInPlayerStatusNotifier].
   SignedInPlayerStatusNotifierProvider(
-    this.userId,
-  ) : super.internal(
+    String? userId,
+  ) : this._internal(
           () => SignedInPlayerStatusNotifier()..userId = userId,
           from: signedInPlayerStatusNotifierProvider,
           name: r'signedInPlayerStatusNotifierProvider',
@@ -100,9 +100,51 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
           dependencies: SignedInPlayerStatusNotifierFamily._dependencies,
           allTransitiveDependencies:
               SignedInPlayerStatusNotifierFamily._allTransitiveDependencies,
+          userId: userId,
         );
 
+  SignedInPlayerStatusNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+  }) : super.internal();
+
   final String? userId;
+
+  @override
+  Stream<SignedInPlayerStatusNotifierState> runNotifierBuild(
+    covariant SignedInPlayerStatusNotifier notifier,
+  ) {
+    return notifier.build(
+      userId,
+    );
+  }
+
+  @override
+  Override overrideWith(SignedInPlayerStatusNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: SignedInPlayerStatusNotifierProvider._internal(
+        () => create()..userId = userId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<SignedInPlayerStatusNotifier,
+      SignedInPlayerStatusNotifierState> createElement() {
+    return _SignedInPlayerStatusNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -117,15 +159,22 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin SignedInPlayerStatusNotifierRef
+    on StreamNotifierProviderRef<SignedInPlayerStatusNotifierState> {
+  /// The parameter `userId` of this provider.
+  String? get userId;
+}
+
+class _SignedInPlayerStatusNotifierProviderElement
+    extends StreamNotifierProviderElement<SignedInPlayerStatusNotifier,
+        SignedInPlayerStatusNotifierState>
+    with SignedInPlayerStatusNotifierRef {
+  _SignedInPlayerStatusNotifierProviderElement(super.provider);
 
   @override
-  Stream<SignedInPlayerStatusNotifierState> runNotifierBuild(
-    covariant SignedInPlayerStatusNotifier notifier,
-  ) {
-    return notifier.build(
-      userId,
-    );
-  }
+  String? get userId => (origin as SignedInPlayerStatusNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -7,7 +7,7 @@ part of 'writing_phase_view_notifier.dart';
 // **************************************************************************
 
 String _$writingPhaseViewNotifierHash() =>
-    r'0f5992dac7f18a79835e3e7e6445d5c646acd2de';
+    r'c1bc3507f1934229924029a24190bb152e83e9b0';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -92,9 +92,9 @@ class WritingPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
     WritingPhaseViewNotifier, WritingPhaseViewModel> {
   /// See also [WritingPhaseViewNotifier].
   WritingPhaseViewNotifierProvider(
-    this.roomId,
-    this.userId,
-  ) : super.internal(
+    String roomId,
+    String userId,
+  ) : this._internal(
           () => WritingPhaseViewNotifier()
             ..roomId = roomId
             ..userId = userId,
@@ -107,10 +107,58 @@ class WritingPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
           dependencies: WritingPhaseViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               WritingPhaseViewNotifierFamily._allTransitiveDependencies,
+          roomId: roomId,
+          userId: userId,
         );
+
+  WritingPhaseViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.roomId,
+    required this.userId,
+  }) : super.internal();
 
   final String roomId;
   final String userId;
+
+  @override
+  Stream<WritingPhaseViewModel> runNotifierBuild(
+    covariant WritingPhaseViewNotifier notifier,
+  ) {
+    return notifier.build(
+      roomId,
+      userId,
+    );
+  }
+
+  @override
+  Override overrideWith(WritingPhaseViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: WritingPhaseViewNotifierProvider._internal(
+        () => create()
+          ..roomId = roomId
+          ..userId = userId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        roomId: roomId,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<WritingPhaseViewNotifier, WritingPhaseViewModel>
+      createElement() {
+    return _WritingPhaseViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -127,16 +175,26 @@ class WritingPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin WritingPhaseViewNotifierRef
+    on StreamNotifierProviderRef<WritingPhaseViewModel> {
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _WritingPhaseViewNotifierProviderElement
+    extends StreamNotifierProviderElement<WritingPhaseViewNotifier,
+        WritingPhaseViewModel> with WritingPhaseViewNotifierRef {
+  _WritingPhaseViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<WritingPhaseViewModel> runNotifierBuild(
-    covariant WritingPhaseViewNotifier notifier,
-  ) {
-    return notifier.build(
-      roomId,
-      userId,
-    );
-  }
+  String get roomId => (origin as WritingPhaseViewNotifierProvider).roomId;
+  @override
+  String get userId => (origin as WritingPhaseViewNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

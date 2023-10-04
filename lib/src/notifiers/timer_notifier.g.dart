@@ -84,8 +84,8 @@ class TimerNotifierProvider
     extends StreamNotifierProviderImpl<TimerNotifier, TimerState> {
   /// See also [TimerNotifier].
   TimerNotifierProvider(
-    this.utcEnd,
-  ) : super.internal(
+    int? utcEnd,
+  ) : this._internal(
           () => TimerNotifier()..utcEnd = utcEnd,
           from: timerNotifierProvider,
           name: r'timerNotifierProvider',
@@ -96,9 +96,50 @@ class TimerNotifierProvider
           dependencies: TimerNotifierFamily._dependencies,
           allTransitiveDependencies:
               TimerNotifierFamily._allTransitiveDependencies,
+          utcEnd: utcEnd,
         );
 
+  TimerNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.utcEnd,
+  }) : super.internal();
+
   final int? utcEnd;
+
+  @override
+  Stream<TimerState> runNotifierBuild(
+    covariant TimerNotifier notifier,
+  ) {
+    return notifier.build(
+      utcEnd,
+    );
+  }
+
+  @override
+  Override overrideWith(TimerNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: TimerNotifierProvider._internal(
+        () => create()..utcEnd = utcEnd,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        utcEnd: utcEnd,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<TimerNotifier, TimerState> createElement() {
+    return _TimerNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -112,15 +153,20 @@ class TimerNotifierProvider
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin TimerNotifierRef on StreamNotifierProviderRef<TimerState> {
+  /// The parameter `utcEnd` of this provider.
+  int? get utcEnd;
+}
+
+class _TimerNotifierProviderElement
+    extends StreamNotifierProviderElement<TimerNotifier, TimerState>
+    with TimerNotifierRef {
+  _TimerNotifierProviderElement(super.provider);
 
   @override
-  Stream<TimerState> runNotifierBuild(
-    covariant TimerNotifier notifier,
-  ) {
-    return notifier.build(
-      utcEnd,
-    );
-  }
+  int? get utcEnd => (origin as TimerNotifierProvider).utcEnd;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -20,6 +20,7 @@ mixin _$VotingPhaseViewModel {
   String get playersWhoseTurnStatement => throw _privateConstructorUsedError;
   Duration get timeRemaining => throw _privateConstructorUsedError;
   String get timeString => throw _privateConstructorUsedError;
+  String get waitingForPlayerText => throw _privateConstructorUsedError;
   int get numberOfPlayersVoted => throw _privateConstructorUsedError;
   int get numberOfPlayersVoting => throw _privateConstructorUsedError;
   bool get isRoundInProgress => throw _privateConstructorUsedError;
@@ -50,6 +51,7 @@ abstract class $VotingPhaseViewModelCopyWith<$Res> {
       String playersWhoseTurnStatement,
       Duration timeRemaining,
       String timeString,
+      String waitingForPlayerText,
       int numberOfPlayersVoted,
       int numberOfPlayersVoting,
       bool isRoundInProgress,
@@ -81,6 +83,7 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
     Object? playersWhoseTurnStatement = null,
     Object? timeRemaining = null,
     Object? timeString = null,
+    Object? waitingForPlayerText = null,
     Object? numberOfPlayersVoted = null,
     Object? numberOfPlayersVoting = null,
     Object? isRoundInProgress = null,
@@ -109,6 +112,10 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
       timeString: null == timeString
           ? _value.timeString
           : timeString // ignore: cast_nullable_to_non_nullable
+              as String,
+      waitingForPlayerText: null == waitingForPlayerText
+          ? _value.waitingForPlayerText
+          : waitingForPlayerText // ignore: cast_nullable_to_non_nullable
               as String,
       numberOfPlayersVoted: null == numberOfPlayersVoted
           ? _value.numberOfPlayersVoted
@@ -171,6 +178,7 @@ abstract class _$$_VotingPhaseViewModelCopyWith<$Res>
       String playersWhoseTurnStatement,
       Duration timeRemaining,
       String timeString,
+      String waitingForPlayerText,
       int numberOfPlayersVoted,
       int numberOfPlayersVoting,
       bool isRoundInProgress,
@@ -199,6 +207,7 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
     Object? playersWhoseTurnStatement = null,
     Object? timeRemaining = null,
     Object? timeString = null,
+    Object? waitingForPlayerText = null,
     Object? numberOfPlayersVoted = null,
     Object? numberOfPlayersVoting = null,
     Object? isRoundInProgress = null,
@@ -227,6 +236,10 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
       timeString: null == timeString
           ? _value.timeString
           : timeString // ignore: cast_nullable_to_non_nullable
+              as String,
+      waitingForPlayerText: null == waitingForPlayerText
+          ? _value.waitingForPlayerText
+          : waitingForPlayerText // ignore: cast_nullable_to_non_nullable
               as String,
       numberOfPlayersVoted: null == numberOfPlayersVoted
           ? _value.numberOfPlayersVoted
@@ -284,6 +297,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
       required this.playersWhoseTurnStatement,
       required this.timeRemaining,
       required this.timeString,
+      required this.waitingForPlayerText,
       required this.numberOfPlayersVoted,
       required this.numberOfPlayersVoting,
       required this.isRoundInProgress,
@@ -309,6 +323,8 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
   final Duration timeRemaining;
   @override
   final String timeString;
+  @override
+  final String waitingForPlayerText;
   @override
   final int numberOfPlayersVoted;
   @override
@@ -366,7 +382,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
 
   @override
   String toString() {
-    return 'VotingPhaseViewModel._(playerWhoseTurn: $playerWhoseTurn, playersWhoseTurnStatement: $playersWhoseTurnStatement, timeRemaining: $timeRemaining, timeString: $timeString, numberOfPlayersVoted: $numberOfPlayersVoted, numberOfPlayersVoting: $numberOfPlayersVoting, isRoundInProgress: $isRoundInProgress, isSaboteur: $isSaboteur, isReading: $isReading, hasVoted: $hasVoted, playersVotedIds: $playersVotedIds, playersNotVotedIds: $playersNotVotedIds, eligibleVoterIds: $eligibleVoterIds, eligibleVoterStatus: $eligibleVoterStatus, playerMap: $playerMap)';
+    return 'VotingPhaseViewModel._(playerWhoseTurn: $playerWhoseTurn, playersWhoseTurnStatement: $playersWhoseTurnStatement, timeRemaining: $timeRemaining, timeString: $timeString, waitingForPlayerText: $waitingForPlayerText, numberOfPlayersVoted: $numberOfPlayersVoted, numberOfPlayersVoting: $numberOfPlayersVoting, isRoundInProgress: $isRoundInProgress, isSaboteur: $isSaboteur, isReading: $isReading, hasVoted: $hasVoted, playersVotedIds: $playersVotedIds, playersNotVotedIds: $playersNotVotedIds, eligibleVoterIds: $eligibleVoterIds, eligibleVoterStatus: $eligibleVoterStatus, playerMap: $playerMap)';
   }
 
   @override
@@ -383,6 +399,8 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
                 other.timeRemaining == timeRemaining) &&
             (identical(other.timeString, timeString) ||
                 other.timeString == timeString) &&
+            (identical(other.waitingForPlayerText, waitingForPlayerText) ||
+                other.waitingForPlayerText == waitingForPlayerText) &&
             (identical(other.numberOfPlayersVoted, numberOfPlayersVoted) ||
                 other.numberOfPlayersVoted == numberOfPlayersVoted) &&
             (identical(other.numberOfPlayersVoting, numberOfPlayersVoting) ||
@@ -414,6 +432,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
       playersWhoseTurnStatement,
       timeRemaining,
       timeString,
+      waitingForPlayerText,
       numberOfPlayersVoted,
       numberOfPlayersVoting,
       isRoundInProgress,
@@ -440,6 +459,7 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
           required final String playersWhoseTurnStatement,
           required final Duration timeRemaining,
           required final String timeString,
+          required final String waitingForPlayerText,
           required final int numberOfPlayersVoted,
           required final int numberOfPlayersVoting,
           required final bool isRoundInProgress,
@@ -461,6 +481,8 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
   Duration get timeRemaining;
   @override
   String get timeString;
+  @override
+  String get waitingForPlayerText;
   @override
   int get numberOfPlayersVoted;
   @override

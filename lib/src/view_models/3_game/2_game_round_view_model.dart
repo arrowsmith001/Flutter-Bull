@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/view_models/game_data_functions.dart';
+import 'package:flutter_bull/src/utils/game_data_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '2_game_round_view_model.freezed.dart';
@@ -15,14 +15,14 @@ class GameRoundViewModel with _$GameRoundViewModel {
   factory GameRoundViewModel(
       {required RoundPhase roundPhase,
       required GameRoom game,
-      required List<PlayerWithAvatar> players,
+      required Map<String, PlayerWithAvatar> players,
       required String userId,
       required String whoseTurnId}) {
 
     final int progress = game.progress; // TODO: Define progress in terms of whoseTurnId?
 
     final PlayerWithAvatar playerWhoseTurn =
-        players.where((element) => element.player.id == whoseTurnId).single;
+        players[whoseTurnId]!;
 
     final bool isTruth = game.truths[whoseTurnId] ?? false;
 
@@ -66,7 +66,7 @@ class GameRoundViewModel with _$GameRoundViewModel {
   const factory GameRoundViewModel._({
     required RoundPhase roundPhase,
     required List<String> playersLeftToPlayIds,
-    required List<PlayerWithAvatar> players,
+    required Map<String, PlayerWithAvatar> players,
     required PlayerWithAvatar playerWhoseTurn,
     required String playerWhoseTurnStatement,
     required List<String> roleDescriptionStrings,

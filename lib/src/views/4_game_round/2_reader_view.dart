@@ -34,11 +34,11 @@ class _ReaderViewState extends ConsumerState<ReaderView>
     return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {
 
       final playerWhoseTurn =
-          vm.players.firstWhere((p) => p.player.id == whoseTurnId);
+          vm.players[whoseTurnId]!;
 
       Widget avatar = Hero(
           tag: 'avatar',
-          child: UtterBullPlayerAvatar(playerWhoseTurn.avatarData));
+          child: UtterBullPlayerAvatar(null, playerWhoseTurn.avatarData));
 
       Widget prompt = Hero(
         tag: 'prompt',

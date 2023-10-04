@@ -177,3 +177,67 @@ class FiveDigit3Alpha2NumericCodeGenerator implements RoomCodeGenerator {
     return numbers[r.nextInt(numbers.length)];
   }
 }
+
+
+class MockServer extends UtterBullServer {
+  @override
+  Future<void> calculateResults(String s) async {
+  }
+
+  @override
+  Future<void> createPlayerWithID(String userId) async {
+  }
+
+  @override
+  Future<void> createRoom(String userId)async {
+  }
+
+  @override
+  Future<void> endRound(String roomId, String userId) async {
+  }
+
+  @override
+  Future<void> joinRoom(String userId, String roomCode) async{
+  }
+
+  @override
+  Future<void> removeFromRoom(String userId, String roomId) async{
+  }
+
+  @override
+  Future<void> returnToLobby(String roomId) async{
+  }
+
+  @override
+  Future<void> reveal(String roomId, String userId)async {
+  }
+
+  @override
+  Future<void> revealNext(String roomId, String userId) async{
+  }
+
+  @override
+  Future<void> setRoomPhase(String gameRoomId, GamePhase newPhase) async{
+  }
+
+  @override
+  Future<void> setSubPhase(String roomId, int phaseNum)async {
+  }
+
+  @override
+  Future<void> startGame(String roomId)async {
+  }
+
+  @override
+  Future<void> startRound(String roomId, String userId)async {
+  }
+
+  @override
+  Future<void> submitText(String roomId, String userId, String? text)async {
+  }
+
+  @override
+  Future<void> vote(String roomId, String userId, bool truthOrLie)async {
+  }
+
+}

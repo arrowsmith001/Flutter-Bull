@@ -87,8 +87,8 @@ class AchievementNotifierProvider extends AsyncNotifierProviderImpl<
     AchievementNotifier, AchievementWithIcon> {
   /// See also [AchievementNotifier].
   AchievementNotifierProvider(
-    this.achievementId,
-  ) : super.internal(
+    String achievementId,
+  ) : this._internal(
           () => AchievementNotifier()..achievementId = achievementId,
           from: achievementNotifierProvider,
           name: r'achievementNotifierProvider',
@@ -99,9 +99,51 @@ class AchievementNotifierProvider extends AsyncNotifierProviderImpl<
           dependencies: AchievementNotifierFamily._dependencies,
           allTransitiveDependencies:
               AchievementNotifierFamily._allTransitiveDependencies,
+          achievementId: achievementId,
         );
 
+  AchievementNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.achievementId,
+  }) : super.internal();
+
   final String achievementId;
+
+  @override
+  Future<AchievementWithIcon> runNotifierBuild(
+    covariant AchievementNotifier notifier,
+  ) {
+    return notifier.build(
+      achievementId,
+    );
+  }
+
+  @override
+  Override overrideWith(AchievementNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: AchievementNotifierProvider._internal(
+        () => create()..achievementId = achievementId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        achievementId: achievementId,
+      ),
+    );
+  }
+
+  @override
+  AsyncNotifierProviderElement<AchievementNotifier, AchievementWithIcon>
+      createElement() {
+    return _AchievementNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -116,15 +158,20 @@ class AchievementNotifierProvider extends AsyncNotifierProviderImpl<
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin AchievementNotifierRef on AsyncNotifierProviderRef<AchievementWithIcon> {
+  /// The parameter `achievementId` of this provider.
+  String get achievementId;
+}
+
+class _AchievementNotifierProviderElement extends AsyncNotifierProviderElement<
+    AchievementNotifier, AchievementWithIcon> with AchievementNotifierRef {
+  _AchievementNotifierProviderElement(super.provider);
 
   @override
-  Future<AchievementWithIcon> runNotifierBuild(
-    covariant AchievementNotifier notifier,
-  ) {
-    return notifier.build(
-      achievementId,
-    );
-  }
+  String get achievementId =>
+      (origin as AchievementNotifierProvider).achievementId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

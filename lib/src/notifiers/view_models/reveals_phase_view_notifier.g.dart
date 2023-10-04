@@ -87,8 +87,8 @@ class RevealsPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
     RevealsPhaseViewNotifier, RevealsPhaseViewModel> {
   /// See also [RevealsPhaseViewNotifier].
   RevealsPhaseViewNotifierProvider(
-    this.roomId,
-  ) : super.internal(
+    String roomId,
+  ) : this._internal(
           () => RevealsPhaseViewNotifier()..roomId = roomId,
           from: revealsPhaseViewNotifierProvider,
           name: r'revealsPhaseViewNotifierProvider',
@@ -99,9 +99,51 @@ class RevealsPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
           dependencies: RevealsPhaseViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               RevealsPhaseViewNotifierFamily._allTransitiveDependencies,
+          roomId: roomId,
         );
 
+  RevealsPhaseViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.roomId,
+  }) : super.internal();
+
   final String roomId;
+
+  @override
+  Stream<RevealsPhaseViewModel> runNotifierBuild(
+    covariant RevealsPhaseViewNotifier notifier,
+  ) {
+    return notifier.build(
+      roomId,
+    );
+  }
+
+  @override
+  Override overrideWith(RevealsPhaseViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: RevealsPhaseViewNotifierProvider._internal(
+        () => create()..roomId = roomId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        roomId: roomId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<RevealsPhaseViewNotifier, RevealsPhaseViewModel>
+      createElement() {
+    return _RevealsPhaseViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -115,15 +157,21 @@ class RevealsPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin RevealsPhaseViewNotifierRef
+    on StreamNotifierProviderRef<RevealsPhaseViewModel> {
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+}
+
+class _RevealsPhaseViewNotifierProviderElement
+    extends StreamNotifierProviderElement<RevealsPhaseViewNotifier,
+        RevealsPhaseViewModel> with RevealsPhaseViewNotifierRef {
+  _RevealsPhaseViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<RevealsPhaseViewModel> runNotifierBuild(
-    covariant RevealsPhaseViewNotifier notifier,
-  ) {
-    return notifier.build(
-      roomId,
-    );
-  }
+  String get roomId => (origin as RevealsPhaseViewNotifierProvider).roomId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

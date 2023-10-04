@@ -88,7 +88,7 @@ class _ChangeAvatarViewState extends ConsumerState<ChangeAvatarView>
     else {
       return Column(
       children: [
-        UtterBullPlayerAvatar(imageAsBytes)
+        UtterBullPlayerAvatar(null, imageAsBytes)
         ,
         saveButton,
         discardButton,

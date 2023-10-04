@@ -1,6 +1,6 @@
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/view_models/game_data_functions.dart';
+import 'package:flutter_bull/src/utils/game_data_functions.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,7 +10,7 @@ part '1_writing_phase_view_model.freezed.dart';
 class WritingPhaseViewModel with _$WritingPhaseViewModel {
   factory WritingPhaseViewModel(
       {required GameRoom game,
-      required List<PlayerWithAvatar> players,
+      required Map<String, PlayerWithAvatar> players,
       required String userId}) {
     final targetId = game.targets[userId];
     final isWritingTruth = targetId == userId;

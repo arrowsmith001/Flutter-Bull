@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$LobbyPhaseViewModel {
   String get roomCode => throw _privateConstructorUsedError;
-  List<PlayerWithAvatar> get presentPlayers =>
+  Map<String, PlayerWithAvatar> get presentPlayers =>
       throw _privateConstructorUsedError;
   Set<PlayerWithAvatar> get absentPlayers => throw _privateConstructorUsedError;
   ListChangeData<PlayerWithAvatar> get listChangeData =>
@@ -40,7 +40,7 @@ abstract class $LobbyPhaseViewModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String roomCode,
-      List<PlayerWithAvatar> presentPlayers,
+      Map<String, PlayerWithAvatar> presentPlayers,
       Set<PlayerWithAvatar> absentPlayers,
       ListChangeData<PlayerWithAvatar> listChangeData,
       Map<String, bool> playerReadies,
@@ -79,7 +79,7 @@ class _$LobbyPhaseViewModelCopyWithImpl<$Res, $Val extends LobbyPhaseViewModel>
       presentPlayers: null == presentPlayers
           ? _value.presentPlayers
           : presentPlayers // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
+              as Map<String, PlayerWithAvatar>,
       absentPlayers: null == absentPlayers
           ? _value.absentPlayers
           : absentPlayers // ignore: cast_nullable_to_non_nullable
@@ -118,7 +118,7 @@ abstract class _$$_LobbyPhaseViewModelCopyWith<$Res>
   @useResult
   $Res call(
       {String roomCode,
-      List<PlayerWithAvatar> presentPlayers,
+      Map<String, PlayerWithAvatar> presentPlayers,
       Set<PlayerWithAvatar> absentPlayers,
       ListChangeData<PlayerWithAvatar> listChangeData,
       Map<String, bool> playerReadies,
@@ -155,7 +155,7 @@ class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
       presentPlayers: null == presentPlayers
           ? _value._presentPlayers
           : presentPlayers // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
+              as Map<String, PlayerWithAvatar>,
       absentPlayers: null == absentPlayers
           ? _value._absentPlayers
           : absentPlayers // ignore: cast_nullable_to_non_nullable
@@ -189,7 +189,7 @@ class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
 class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
   _$_LobbyPhaseViewModel(
       {required this.roomCode,
-      required final List<PlayerWithAvatar> presentPlayers,
+      required final Map<String, PlayerWithAvatar> presentPlayers,
       required final Set<PlayerWithAvatar> absentPlayers,
       required this.listChangeData,
       required final Map<String, bool> playerReadies,
@@ -202,12 +202,12 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
 
   @override
   final String roomCode;
-  final List<PlayerWithAvatar> _presentPlayers;
+  final Map<String, PlayerWithAvatar> _presentPlayers;
   @override
-  List<PlayerWithAvatar> get presentPlayers {
-    if (_presentPlayers is EqualUnmodifiableListView) return _presentPlayers;
+  Map<String, PlayerWithAvatar> get presentPlayers {
+    if (_presentPlayers is EqualUnmodifiableMapView) return _presentPlayers;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_presentPlayers);
+    return EqualUnmodifiableMapView(_presentPlayers);
   }
 
   final Set<PlayerWithAvatar> _absentPlayers;
@@ -286,7 +286,7 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
 abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
   factory _LobbyPhaseViewModel(
       {required final String roomCode,
-      required final List<PlayerWithAvatar> presentPlayers,
+      required final Map<String, PlayerWithAvatar> presentPlayers,
       required final Set<PlayerWithAvatar> absentPlayers,
       required final ListChangeData<PlayerWithAvatar> listChangeData,
       required final Map<String, bool> playerReadies,
@@ -297,7 +297,7 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
   @override
   String get roomCode;
   @override
-  List<PlayerWithAvatar> get presentPlayers;
+  Map<String, PlayerWithAvatar> get presentPlayers;
   @override
   Set<PlayerWithAvatar> get absentPlayers;
   @override

@@ -7,7 +7,7 @@ part of 'reveal_view_notifier.dart';
 // **************************************************************************
 
 String _$revealViewNotifierHash() =>
-    r'bd304c41e6c15fac083da0fe4bea50bf34b15843';
+    r'90fa684f0f59bf1ff77daed344199c38d0ead17a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -96,10 +96,10 @@ class RevealViewNotifierProvider
     extends StreamNotifierProviderImpl<RevealViewNotifier, RevealViewModel> {
   /// See also [RevealViewNotifier].
   RevealViewNotifierProvider(
-    this.roomId,
-    this.userId,
-    this.whoseTurnId,
-  ) : super.internal(
+    String roomId,
+    String userId,
+    String whoseTurnId,
+  ) : this._internal(
           () => RevealViewNotifier()
             ..roomId = roomId
             ..userId = userId
@@ -113,11 +113,64 @@ class RevealViewNotifierProvider
           dependencies: RevealViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               RevealViewNotifierFamily._allTransitiveDependencies,
+          roomId: roomId,
+          userId: userId,
+          whoseTurnId: whoseTurnId,
         );
+
+  RevealViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.roomId,
+    required this.userId,
+    required this.whoseTurnId,
+  }) : super.internal();
 
   final String roomId;
   final String userId;
   final String whoseTurnId;
+
+  @override
+  Stream<RevealViewModel> runNotifierBuild(
+    covariant RevealViewNotifier notifier,
+  ) {
+    return notifier.build(
+      roomId,
+      userId,
+      whoseTurnId,
+    );
+  }
+
+  @override
+  Override overrideWith(RevealViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: RevealViewNotifierProvider._internal(
+        () => create()
+          ..roomId = roomId
+          ..userId = userId
+          ..whoseTurnId = whoseTurnId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        roomId: roomId,
+        userId: userId,
+        whoseTurnId: whoseTurnId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<RevealViewNotifier, RevealViewModel>
+      createElement() {
+    return _RevealViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -136,17 +189,30 @@ class RevealViewNotifierProvider
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin RevealViewNotifierRef on StreamNotifierProviderRef<RevealViewModel> {
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+
+  /// The parameter `userId` of this provider.
+  String get userId;
+
+  /// The parameter `whoseTurnId` of this provider.
+  String get whoseTurnId;
+}
+
+class _RevealViewNotifierProviderElement
+    extends StreamNotifierProviderElement<RevealViewNotifier, RevealViewModel>
+    with RevealViewNotifierRef {
+  _RevealViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<RevealViewModel> runNotifierBuild(
-    covariant RevealViewNotifier notifier,
-  ) {
-    return notifier.build(
-      roomId,
-      userId,
-      whoseTurnId,
-    );
-  }
+  String get roomId => (origin as RevealViewNotifierProvider).roomId;
+  @override
+  String get userId => (origin as RevealViewNotifierProvider).userId;
+  @override
+  String get whoseTurnId => (origin as RevealViewNotifierProvider).whoseTurnId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

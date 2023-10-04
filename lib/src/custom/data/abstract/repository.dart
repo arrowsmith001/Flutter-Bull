@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 
-
 import 'database_service.dart';
 import 'entity.dart';
 
@@ -51,8 +50,7 @@ class Repository<T extends Entity> {
   } */
 
   Future<List<T>> getItemsByField(String fieldName, String fieldValue) async {
-    final fetchedItems =
-        await databaseService.readWhere(fieldName, fieldValue);
+    final fetchedItems = await databaseService.readWhere(fieldName, fieldValue);
     cache.cacheAll(fetchedItems);
     return fetchedItems;
   }
@@ -75,15 +73,16 @@ class Repository<T extends Entity> {
 
   Future<List<T>> getItemsByIds(Iterable<String> itemIds) async {
     if (itemIds.isEmpty) return [];
-    final cachedItems = cache.getAsMany(itemIds);
-    final cachedItemIds = []; //cachedItems.map((e) => e.id);
+    // final cachedItems = cache.getAsMany(itemIds);
+    // final cachedItemIds = []; //cachedItems.map((e) => e.id);
 
-    final uncachedItems = await databaseService.readMultiple(
-        itemIds.where((element) => !cachedItemIds.contains(element)));
-    cache.cacheAll(uncachedItems);
-    cachedItems.addAll(uncachedItems);
+    // final uncachedItems = await databaseService.readMultiple(
+    //     itemIds.where((element) => !cachedItemIds.contains(element)));
+    // cache.cacheAll(uncachedItems);
+    // cachedItems.addAll(uncachedItems);
 
-    return cachedItems;
+    // return cachedItems;
+    return await databaseService.readMultiple(itemIds);
   }
 
   Future<bool> itemExists(String userId) async {
@@ -94,7 +93,6 @@ class Repository<T extends Entity> {
       return false;
     }
   }
-
 }
 
 class EmptyCache<T extends Entity> implements Cache<T> {

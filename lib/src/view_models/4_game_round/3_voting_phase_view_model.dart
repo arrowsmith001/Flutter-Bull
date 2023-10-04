@@ -1,6 +1,6 @@
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/view_models/game_data_functions.dart';
+import 'package:flutter_bull/src/utils/game_data_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logger/logger.dart';
 
@@ -10,7 +10,7 @@ part '3_voting_phase_view_model.freezed.dart';
 class VotingPhaseViewModel with _$VotingPhaseViewModel {
   factory VotingPhaseViewModel(
       {required GameRoom game,
-      required List<PlayerWithAvatar> players,
+      required Map<String, PlayerWithAvatar> players,
       required String userId,
       required String whoseTurnId,
       required Duration? timeRemaining}) {
@@ -25,7 +25,7 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
 
     final Map<String, bool> eligibleVoterStatus = Map.fromEntries(
         eligibleVoterIds
-            .map((id) => MapEntry(id, game.votes[id]![game.progress] != '-')));
+            .map((id) => MapEntry(id, game.votes[id]![progress] != '-')));
 
     final List<String> playerVotedIds = eligibleVoterIds
         .where((id) => eligibleVoterStatus[id] ?? false)
@@ -42,24 +42,25 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
 
     final String? vote = game.votes[userId]![progress];
     final bool hasVoted = vote != '-';
-    Logger().d('vote $vote');
+
+    final playerWhoseTurn = GameDataFunctions.playerWhoseTurn(players, whoseTurnId);
 
     return VotingPhaseViewModel._(
-        playerWhoseTurn:
-            GameDataFunctions.playerWhoseTurn(players, whoseTurnId),
+        playerWhoseTurn: playerWhoseTurn,
         playersWhoseTurnStatement:
             GameDataFunctions.playersWhoseTurnStatement(game, whoseTurnId),
         playersVotedIds: playerVotedIds,
         playersNotVotedIds: playerNotVotedIds,
         eligibleVoterIds: eligibleVoterIds,
         eligibleVoterStatus: eligibleVoterStatus,
-        playerMap: GameDataFunctions.makePlayerMap(players),
+        playerMap: players,
         timeString: generateTimeString(timeRemaining),
         timeRemaining: timeRemaining ?? Duration.zero,
         isRoundInProgress: timeRemaining != Duration.zero,
         numberOfPlayersVoted: GameDataFunctions.playersVoted(game, whoseTurnId),
         numberOfPlayersVoting: game.playerOrder.length,
         isSaboteur: false,
+        waitingForPlayerText: "Waiting for ${playerWhoseTurn.player.name!}",
         hasVoted: hasVoted,
         isReading: userId == whoseTurnId);
   }
@@ -69,6 +70,7 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
           required String playersWhoseTurnStatement,
           required Duration timeRemaining,
           required String timeString,
+          required String waitingForPlayerText,
           required int numberOfPlayersVoted,
           required int numberOfPlayersVoting,
           required bool isRoundInProgress,

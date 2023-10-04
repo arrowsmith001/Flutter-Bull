@@ -7,7 +7,7 @@ part of 'lobby_phase_view_notifier.dart';
 // **************************************************************************
 
 String _$lobbyPhaseViewNotifierHash() =>
-    r'299fdd645a8ad0997243c6e59d22bf57e6a7e537';
+    r'58633e62fc72a85f654dc9d08ce302905edd3bc6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -92,9 +92,9 @@ class LobbyPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
     LobbyPhaseViewNotifier, LobbyPhaseViewModel> {
   /// See also [LobbyPhaseViewNotifier].
   LobbyPhaseViewNotifierProvider(
-    this.roomId,
-    this.userId,
-  ) : super.internal(
+    String roomId,
+    String userId,
+  ) : this._internal(
           () => LobbyPhaseViewNotifier()
             ..roomId = roomId
             ..userId = userId,
@@ -107,10 +107,58 @@ class LobbyPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
           dependencies: LobbyPhaseViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               LobbyPhaseViewNotifierFamily._allTransitiveDependencies,
+          roomId: roomId,
+          userId: userId,
         );
+
+  LobbyPhaseViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.roomId,
+    required this.userId,
+  }) : super.internal();
 
   final String roomId;
   final String userId;
+
+  @override
+  Stream<LobbyPhaseViewModel> runNotifierBuild(
+    covariant LobbyPhaseViewNotifier notifier,
+  ) {
+    return notifier.build(
+      roomId,
+      userId,
+    );
+  }
+
+  @override
+  Override overrideWith(LobbyPhaseViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: LobbyPhaseViewNotifierProvider._internal(
+        () => create()
+          ..roomId = roomId
+          ..userId = userId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        roomId: roomId,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<LobbyPhaseViewNotifier, LobbyPhaseViewModel>
+      createElement() {
+    return _LobbyPhaseViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -127,16 +175,26 @@ class LobbyPhaseViewNotifierProvider extends StreamNotifierProviderImpl<
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin LobbyPhaseViewNotifierRef
+    on StreamNotifierProviderRef<LobbyPhaseViewModel> {
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _LobbyPhaseViewNotifierProviderElement
+    extends StreamNotifierProviderElement<LobbyPhaseViewNotifier,
+        LobbyPhaseViewModel> with LobbyPhaseViewNotifierRef {
+  _LobbyPhaseViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<LobbyPhaseViewModel> runNotifierBuild(
-    covariant LobbyPhaseViewNotifier notifier,
-  ) {
-    return notifier.build(
-      roomId,
-      userId,
-    );
-  }
+  String get roomId => (origin as LobbyPhaseViewNotifierProvider).roomId;
+  @override
+  String get userId => (origin as LobbyPhaseViewNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

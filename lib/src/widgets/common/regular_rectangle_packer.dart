@@ -3,68 +3,93 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
+// TODO: Enforce consistent size
 class RegularRectanglePacker extends StatelessWidget {
-  RegularRectanglePacker({super.key, required this.size, required this.items});
+  RegularRectanglePacker(
+      {super.key, this.color, required this.size, required this.items}) {
+    if (R == 0.0 || R.isNaN || R.isInfinite || R.isNegative) {
+      rowCount = 1;
+      colCount = 1;
+    }
+else
+{
+  
+    double dRowCount = sqrt(n.toDouble() / R);
+    double dColCount = R * dRowCount;
 
+    rowCount = max(dRowCount.floor(), 1);
+    colCount = max(dColCount.floor(), 1);
+}
+  }
+
+  late int colCount;
+  late int rowCount;
+
+  final Color? color;
   final Size size;
-  double get ratio => size.width / size.height;
-
   final List<Widget> items;
+
+  double get R => size.width / size.height;
 
   int get n => items.length;
 
-  double get ratioAdjH => ratio <= 1 ? ratio : 1 + log(ratio);
-  double get ratioAdjV => ratio > 1 ? ratio : 1 + log(ratio);
-  int get nPerRow => (sqrt(n)).ceil();
+  double get ratioAdjH => R <= 1 ? R : 1 + log(R);
+
+  double get ratioAdjV => R > 1 ? R : 1 + log(R);
+
+  int get nPerRow => (ratioAdjH * sqrt(n)).ceil();
 
   int get numberOfRows => (n / nPerRow).ceil();
+
   double get dim => size.width / nPerRow;
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> rows = [];
 
-    // return Stack(children: [
-    //   Positioned.fromRect(
-    //     rect: Rect.fromCenter((size.width / 2) - dim/2, (size.height / 2) - dim/2, dim, dim),
-    //     child: items[0])
-    // ]);
+    var numberAdded = 0;
+    var rowNum = 0;
+    var breakCondition = 10000;
 
-    final List<Widget> rows = List<Row>.generate(numberOfRows, (i) {
-      final int remainder = (n - (i * nPerRow)) % nPerRow;
-      final int nInThisRow = i < (numberOfRows - 1)
-          ? nPerRow
-          : (remainder == 0 ? nPerRow : remainder);
+    while (numberAdded < n && 0 < breakCondition) {
+      breakCondition--;
 
-      final double spaceToFill =
-          nInThisRow == nPerRow ? 0 : ((nPerRow - nInThisRow) * dim);
+      final List<Widget> colChildren = [];
 
-      return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        SizedBox(width: spaceToFill / 2),
-        ...List.generate(nInThisRow, (j) {
-          Logger().d("$i $j $nInThisRow");
-          return items[(i * nPerRow) + j];
-        }).map((e) => Flexible(child: e)).toList(),
-        SizedBox(width: spaceToFill / 2),
-      ]);
-    });
+      for (var j = 0; j < colCount; j++) {
+        var index = (rowNum * colCount) + j;
+        try {
+          colChildren.add(items[index]);
+        } catch (e) {}
+        numberAdded++;
+      }
+
+      if (colChildren.isNotEmpty) {
+        final row = Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: colChildren.map((e) => Flexible(child: e)).toList());
+
+        rows.add(row);
+      }
+
+      rowNum++;
+    }
 
     final Widget child = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: rows
-            .map((e) => Flexible(
+            .map((e) => Expanded(
                   child: e,
                 ))
             .toList());
 
-    return SizedBox(
-      width: size.width,
-      height: size.height,
-      child: Column(children: [
-        Expanded(
-            child: Row(
-          children: [Expanded(child: child)],
-        ))
-      ]),
+    return Container(
+      color: color,
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: child,
+      ),
     );
   }
 }

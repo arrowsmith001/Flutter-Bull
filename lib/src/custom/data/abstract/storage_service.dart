@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:logger/logger.dart';
 import 'package:image/image.dart';
 //import 'package:path_provider/path_provider.dart';
@@ -48,4 +49,17 @@ class FirebaseImageStorageService implements ImageStorageService {
         SettableMetadata(
             cacheControl: 'public, max-age=${60 * 60 * 1}, s-maxage=600'));
   }
+}
+
+class DefaultAvatarImageService extends ImageStorageService {
+  @override
+  Future<Uint8List> downloadImage(String path) async {
+    final data =
+        await FirebaseStorage.instance.ref('pp/default/avatar.jpg').getData();
+
+    return data!;
+  }
+
+  @override
+  Future<void> uploadImage(Uint8List image, String path) async {}
 }

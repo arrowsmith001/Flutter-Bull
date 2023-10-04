@@ -60,7 +60,7 @@ class _ShufflePlayersAnimationViewState
 
 abstract class PlayerSelector extends StatefulWidget {
   final Duration maxDuration;
-  final List<PlayerWithAvatar> playerAvatars;
+  final Map<String, PlayerWithAvatar> playerAvatars;
   final List<String> shuffledPlayerIds;
   final int selectedIndex;
   final double width;
@@ -141,8 +141,7 @@ class _LinearScrollingPlayerSelectorState
       upper = pos + w;
 
       if (0 <= i && i < n) {
-        currentPlayerName = widget.playerAvatars
-                .firstWhere((element) => element.player.id == ids[i])
+        currentPlayerName = widget.playerAvatars[ids[i]]!
                 .player
                 .name ??
             '';
@@ -169,6 +168,7 @@ class _LinearScrollingPlayerSelectorState
       mainAxisSize: MainAxisSize.min,
       children: [
         AutoSizeText(currentPlayerName,
+        maxLines: 1,
             style: Theme.of(context).textTheme.displayLarge),
         Flexible(
           child: SizedBox(
@@ -193,8 +193,7 @@ class _LinearScrollingPlayerSelectorState
                 // Logger().d('w:' + w.toString());
                 //final double scale = ;
 
-                final avatar = widget.playerAvatars
-                    .firstWhere((p) => p.player.id == ids[i]);
+                final avatar = widget.playerAvatars[ids[i]]!;
 
                 final int sign = dx < 0 ? -1 : 1;
 
@@ -202,7 +201,7 @@ class _LinearScrollingPlayerSelectorState
                   offset: Offset(dx * w / 5, 0),
                   child: Transform.scale(
                       scale: 1 - dx.abs(),
-                      child: UtterBullPlayerAvatar(avatar.avatarData)),
+                      child: UtterBullPlayerAvatar(null, avatar.avatarData)),
                 );
 
                 if (i == n - 2) {
@@ -227,8 +226,7 @@ class _LinearScrollingPlayerSelectorState
                 upper = pos + w;
 
                 if (0 <= i && i < n) {
-                  currentPlayerName = widget.playerAvatars
-                          .firstWhere((element) => element.player.id == ids[i])
+                  currentPlayerName = widget.playerAvatars[ids[i]]!
                           .player
                           .name ??
                       '';

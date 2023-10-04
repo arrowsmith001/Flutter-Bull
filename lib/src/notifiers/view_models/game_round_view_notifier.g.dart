@@ -7,7 +7,7 @@ part of 'game_round_view_notifier.dart';
 // **************************************************************************
 
 String _$gameRoundViewNotifierHash() =>
-    r'85e577cc6ab4934aca7fc42f5780fba788d2b4d8';
+    r'170175e946f09000225036cb7ec37075bd766ec4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -97,10 +97,10 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
     GameRoundViewNotifier, GameRoundViewModel> {
   /// See also [GameRoundViewNotifier].
   GameRoundViewNotifierProvider(
-    this.userId,
-    this.roomId,
-    this.whoseTurnId,
-  ) : super.internal(
+    String userId,
+    String roomId,
+    String whoseTurnId,
+  ) : this._internal(
           () => GameRoundViewNotifier()
             ..userId = userId
             ..roomId = roomId
@@ -114,11 +114,64 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
           dependencies: GameRoundViewNotifierFamily._dependencies,
           allTransitiveDependencies:
               GameRoundViewNotifierFamily._allTransitiveDependencies,
+          userId: userId,
+          roomId: roomId,
+          whoseTurnId: whoseTurnId,
         );
+
+  GameRoundViewNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+    required this.roomId,
+    required this.whoseTurnId,
+  }) : super.internal();
 
   final String userId;
   final String roomId;
   final String whoseTurnId;
+
+  @override
+  Stream<GameRoundViewModel> runNotifierBuild(
+    covariant GameRoundViewNotifier notifier,
+  ) {
+    return notifier.build(
+      userId,
+      roomId,
+      whoseTurnId,
+    );
+  }
+
+  @override
+  Override overrideWith(GameRoundViewNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: GameRoundViewNotifierProvider._internal(
+        () => create()
+          ..userId = userId
+          ..roomId = roomId
+          ..whoseTurnId = whoseTurnId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+        roomId: roomId,
+        whoseTurnId: whoseTurnId,
+      ),
+    );
+  }
+
+  @override
+  StreamNotifierProviderElement<GameRoundViewNotifier, GameRoundViewModel>
+      createElement() {
+    return _GameRoundViewNotifierProviderElement(this);
+  }
 
   @override
   bool operator ==(Object other) {
@@ -137,17 +190,32 @@ class GameRoundViewNotifierProvider extends StreamNotifierProviderImpl<
 
     return _SystemHash.finish(hash);
   }
+}
+
+mixin GameRoundViewNotifierRef
+    on StreamNotifierProviderRef<GameRoundViewModel> {
+  /// The parameter `userId` of this provider.
+  String get userId;
+
+  /// The parameter `roomId` of this provider.
+  String get roomId;
+
+  /// The parameter `whoseTurnId` of this provider.
+  String get whoseTurnId;
+}
+
+class _GameRoundViewNotifierProviderElement
+    extends StreamNotifierProviderElement<GameRoundViewNotifier,
+        GameRoundViewModel> with GameRoundViewNotifierRef {
+  _GameRoundViewNotifierProviderElement(super.provider);
 
   @override
-  Stream<GameRoundViewModel> runNotifierBuild(
-    covariant GameRoundViewNotifier notifier,
-  ) {
-    return notifier.build(
-      userId,
-      roomId,
-      whoseTurnId,
-    );
-  }
+  String get userId => (origin as GameRoundViewNotifierProvider).userId;
+  @override
+  String get roomId => (origin as GameRoundViewNotifierProvider).roomId;
+  @override
+  String get whoseTurnId =>
+      (origin as GameRoundViewNotifierProvider).whoseTurnId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

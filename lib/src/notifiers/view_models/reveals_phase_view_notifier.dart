@@ -5,6 +5,7 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/view_models/3_game/3_reveals_phase_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'reveals_phase_view_notifier.g.dart';
 
@@ -15,20 +16,18 @@ class RevealsPhaseViewNotifier extends _$RevealsPhaseViewNotifier {
     final revealsphase = ref.watch(gameNotifierProvider(roomId));
 
     if (revealsphase is AsyncData) {
-      yield* _buildViewModel(revealsphase.requireValue.gameRoom);
+      
+      yield*_buildViewModel(revealsphase.requireValue.gameRoom);
     }
   }
 
   Stream<RevealsPhaseViewModel> _buildViewModel(GameRoom game) async* {
+
     final phase = game.phase;
 
     if (phase == GamePhase.reveals) {
-
-        final path = game.playerOrder[game.progress];
-        yield RevealsPhaseViewModel(path: path, progress: game.progress);
-      
-
+      final path = game.playerOrder[game.progress];
+      yield RevealsPhaseViewModel(path: path, progress: game.progress);
     }
-
   }
 }

@@ -16,7 +16,7 @@ import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
-import 'package:flutter_bull/src/view_models/game_data_functions.dart';
+import 'package:flutter_bull/src/utils/game_data_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UtterBullDeveloperPanel extends ConsumerStatefulWidget {
@@ -63,12 +63,17 @@ class _UtterBullDeveloperPanelState
         color: Colors.grey.shade100,
         child: SingleChildScrollView(
           controller: _scrollController,
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
+          child: Column(
+            mainAxisSize: MainAxisSize.min, 
+            children: [
+
             ElevatedButton(
                 onPressed: () => authNotifier.signOut(),
                 child: Text("Sign out")),
+
             LabelledAsyncData('userId', authAsync.valueOrNull,
                 stringifyValue: (data) => data?.userId),
+
             Row(
               children: [
                 LabelledAsyncData('player', playerAsync.valueOrNull,
@@ -76,7 +81,11 @@ class _UtterBullDeveloperPanelState
                         _jsonPrettyString(p?.player?.toJson())),
               ],
             ),
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start, 
+              children: [
+
               Flexible(
                 child: Column(
                   children: [
@@ -87,18 +96,20 @@ class _UtterBullDeveloperPanelState
                   ],
                 ),
               ),
+
               Expanded(
                   child: Row(children: [
                 Flexible(
                     child: ListedLabelledAsyncData(
                   'roomPlayers',
                   roomAsync.valueOrNull,
-                  (r) => r?.players,
+                  (r) => r?.players.values.toList(),
                   stringifyValue: (p) => _jsonPrettyString(p.player.toJson()),
                   buildTrailing: (p) => _buildPlayerFunctions(p.player.id),
                   buildTextColor: (s, str) => _getColorCode(s.player.id),
                 ))
               ])),
+              
             ]),
           ]),
         ));

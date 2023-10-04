@@ -94,11 +94,15 @@ class _MainViewState extends ConsumerState<MainView> {
           controller: nav,
         );
       }, loading: () {
-        return LoadingWidget(message: 'hello');
+        return LoadingWidget(message: 'Your player profile is being set up...');
       }, error: (e, _) {
-        return ErrorPopup(e.toString());
+        return ErrorPopup(e.toString(), escape: () => _onEscapeError());
       }),
     );
+  }
+
+  void _onEscapeError() {
+    nav.navigateToHome();
   }
 }
 
@@ -138,7 +142,7 @@ class MainRouteNavigatorController
 
       case 'avatar':
         const child = Text('Implement');
-       // scoped(ChangeAvatarView());
+        // scoped(ChangeAvatarView());
         return UpwardPushRoute((context) => child);
 
       case 'home':

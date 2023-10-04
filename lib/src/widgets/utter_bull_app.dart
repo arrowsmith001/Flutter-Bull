@@ -13,7 +13,7 @@ class UtterBullApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
               debugShowCheckedModeBanner: false,
-              theme: UtterBullTheme.theme,
+              theme: UtterBullGlobal.theme,
               home: const UtterBullMasterBackground(
                 child: AuthContainer()
               ));

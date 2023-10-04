@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class UtterBullTheme {
+class UtterBullGlobal {
   
   static Color backgroundDark = Color.fromARGB(255, 196, 196, 196);
 
@@ -17,6 +17,14 @@ class UtterBullTheme {
         secondary: Color.fromARGB(237, 196, 255, 173),
         tertiary: Color.fromARGB(235, 255, 255, 255),
       ));
+
+  static const int revealsPreambleTimeMilliseconds = 100;
+
+  static Decoration gameViewDecoration = const BoxDecoration(
+            gradient: RadialGradient(
+                center: AlignmentDirectional.topCenter,
+                radius: 2.5,
+                colors: [Colors.white, Color.fromARGB(255, 109, 221, 255)]));
 
 /*     static ColorScheme appColorScheme = ColorScheme(
       background: Color.fromARGB(255, 207, 207, 207), 

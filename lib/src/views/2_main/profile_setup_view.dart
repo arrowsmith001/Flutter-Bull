@@ -102,7 +102,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView>
               onTap: () => _onPress(context),
               child: asyncPlayer.whenDefault((data) => Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: UtterBullPlayerAvatar(data.avatarData!),
+                    child: UtterBullPlayerAvatar(null, data.avatarData!),
                   ))),
         )),
       ],

@@ -1,22 +1,28 @@
+import 'dart:html';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter_bull/src/model/game_room.dart';
+import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 
 class GameDataFunctions {
   static PlayerWithAvatar playerWhoseTurn(
-          List<PlayerWithAvatar> players, String whoseTurnId) =>
-      players.singleWhere((p) => p.player.id == whoseTurnId);
+      Map<String, PlayerWithAvatar> players, String whoseTurnId) {
+    try {
+      return players[whoseTurnId]!;
+    } catch (e) {
+      return PlayerWithAvatar(const Player(), Uint8List(0));
+    }
+  }
 
   static PlayerWithAvatar playerFromId(
-      String id, List<PlayerWithAvatar> players) {
-    return players.singleWhere((p) {
-      return p.player.id == id;
-    });
+      String id, Map<String, PlayerWithAvatar> players) {
+      return players[id]!;
   }
 
   static String playersWhoseTurnStatement(GameRoom game, String whoseTurnId) =>
-      game.texts[whoseTurnId]!;
+      game.texts[whoseTurnId] ?? '';
 
   static bool isStatementTruth(GameRoom game, String whoseTurnId) =>
       game.targets[whoseTurnId] == whoseTurnId;
@@ -26,8 +32,13 @@ class GameDataFunctions {
   }
 
   static PlayerWithAvatar getTargetPlayer(
-          GameRoom game, List<PlayerWithAvatar> players, String userId) =>
-      players.singleWhere((p) => p.player.id == game.targets[userId]);
+      GameRoom game, Map<String, PlayerWithAvatar> players, String userId) {
+    try {
+      return players[game.targets[userId]]!;
+    } catch (e) {
+      return PlayerWithAvatar(const Player(), Uint8List(0));
+    }
+  }
 
   static List<String> playersVotedTruth(GameRoom game, String whoseTurnId) {
     return _playersVotedX(game, whoseTurnId, 'T');
@@ -92,8 +103,4 @@ class GameDataFunctions {
     return expectedRate;
   }
 
-  static Map<String, PlayerWithAvatar> makePlayerMap(
-      List<PlayerWithAvatar> players) {
-    return Map<String, PlayerWithAvatar>.fromEntries(players.map((e) => MapEntry(e.player.id!, e)));
-  }
 }

@@ -43,19 +43,23 @@ class _AuthContainerState extends ConsumerState<AuthContainer> {
 
     final Widget main = asyncData.when(
       data: (data) => ControlledNavigator(
-                  observers: [CoordinatedRouteObserver()],
-                  controller: _navController,
-                  data: data),
+          observers: [CoordinatedRouteObserver()],
+          controller: _navController,
+          data: data),
 
       //data: (e) => ErrorPopup(e.toString(), escape: () => Logger().d("message"),),
       loading: () => LoadingWidget(),
       error: (e, _) => ErrorPopup(
         e.toString(),
-        escape: () => Logger().d("message"),
+        escape: () => _onEscapeError(),
       ),
     );
 
     return Scaffold(body: main);
+  }
+
+  void _onEscapeError() {
+    _navController.navigateToLogin();
   }
 }
 

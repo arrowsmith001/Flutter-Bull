@@ -28,18 +28,16 @@ class LobbyPhaseViewModel with _$LobbyPhaseViewModel
 {
   factory LobbyPhaseViewModel({
     required GameRoom game,
-    required List<PlayerWithAvatar> players,
+    required Map<String, PlayerWithAvatar> players,
     required String userId,
     required ListChangeData<PlayerWithAvatar> listChangeData,
   }) {
 
-    final presentPlayers = players
-              .where((p) => game.playerIds.contains(p.player.id))
-              .toList();
+    final presentPlayers = Map.fromEntries(players.entries
+    .where((entry) => game.playerIds.contains(entry.key)));
 
-    final absentPlayers = players
-              .where((p) => !game.playerIds.contains(p.player.id))
-              .toSet();
+    final absentPlayers = Set<PlayerWithAvatar>.from(players.entries
+    .where((entry) => !game.playerIds.contains(entry.key)).map((e) => e.value));
 
     final int numberOfPlayersPresent = presentPlayers.length;
     final int playerDiff = numberOfPlayersNeededForGame - numberOfPlayersPresent;
@@ -62,7 +60,7 @@ class LobbyPhaseViewModel with _$LobbyPhaseViewModel
 
   factory LobbyPhaseViewModel._({
     required String roomCode,
-    required List<PlayerWithAvatar> presentPlayers,
+    required Map<String, PlayerWithAvatar> presentPlayers,
     required Set<PlayerWithAvatar> absentPlayers,
     required ListChangeData<PlayerWithAvatar> listChangeData,
     required Map<String, bool> playerReadies,

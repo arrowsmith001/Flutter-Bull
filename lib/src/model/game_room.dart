@@ -12,7 +12,7 @@ class GameRoom extends Entity with _$GameRoom {
 
   factory GameRoom({
     String? id,
-    String? resultId,
+    //String? resultId,
     required String roomCode,
     @Default(GamePhase.lobby) GamePhase phase,
     @Default(0) int subPhase,

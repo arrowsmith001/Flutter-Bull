@@ -22,10 +22,10 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
   }
 
   LobbyPhaseViewModel _buildViewModel(
-      GameRoom game, List<PlayerWithAvatar> players, String userId) {
+      GameRoom game, Map<String, PlayerWithAvatar> players, String userId) {
         
     final prevPlayers =
-        state.value?.presentPlayers.map((e) => e.player.id!).toList() ?? [];
+        state.value?.presentPlayers.keys.toList() ?? [];
     final nextPlayers = game.playerIds;
 
     Logger().d('prev $prevPlayers - next $nextPlayers');
@@ -42,7 +42,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
   }
 
   ListChangeData<PlayerWithAvatar> _getListChange(
-      List<PlayerWithAvatar> allPlayers,
+      Map<String, PlayerWithAvatar> allPlayers,
       List<String> prevPlayers,
       List<String> nextPlayers) {
     if (prevPlayers.isEmpty || ListEquality().equals(prevPlayers, nextPlayers)) {
@@ -51,7 +51,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
       final newPlayerId =
           nextPlayers.singleWhere((p) => !prevPlayers.contains(p));
       final newPlayer =
-          allPlayers.singleWhere((p) => p.player.id == newPlayerId);
+          allPlayers[newPlayerId];
       final newPlayerIndex = nextPlayers.indexWhere((p) => p == newPlayerId);
       assert(newPlayerIndex >= 0, 'newPlayerIndex < 0');
       return ListChangeData(ListChangeType.add, newPlayer, newPlayerIndex);
@@ -60,7 +60,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
       final oldPlayerId =
           prevPlayers.singleWhere((p) => !nextPlayers.contains(p));
       final oldPlayer =
-          allPlayers.singleWhere((p) => p.player.id == oldPlayerId);
+          allPlayers[oldPlayerId];
       final oldPlayerIndex = prevPlayers.indexWhere((p) => p == oldPlayerId);
       assert(oldPlayerIndex >= 0, 'oldPlayerIndex < 0');
       return ListChangeData(ListChangeType.remove, oldPlayer, oldPlayerIndex);

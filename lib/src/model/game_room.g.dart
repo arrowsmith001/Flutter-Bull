@@ -8,7 +8,6 @@ part of 'game_room.dart';
 
 _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
       id: json['id'] as String?,
-      resultId: json['resultId'] as String?,
       roomCode: json['roomCode'] as String,
       phase: $enumDecodeNullable(_$GamePhaseEnumMap, json['phase']) ??
           GamePhase.lobby,
@@ -54,7 +53,6 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
 Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'resultId': instance.resultId,
       'roomCode': instance.roomCode,
       'phase': _$GamePhaseEnumMap[instance.phase]!,
       'subPhase': instance.subPhase,

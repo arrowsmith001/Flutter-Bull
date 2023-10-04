@@ -92,7 +92,7 @@ class _MyHomePageState extends ConsumerState<HomeView> with UserID {
             child: GestureDetector(
                 onTap: () =>
                     Navigator.of(context).pushReplacementNamed('avatar'),
-                child: UtterBullPlayerAvatar(data!)));
+                child: UtterBullPlayerAvatar(null, data!)));
       }),
     );
   }

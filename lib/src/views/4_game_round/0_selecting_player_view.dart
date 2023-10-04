@@ -38,14 +38,25 @@ class _SelectingPlayerPhaseViewState
     Navigator.of(context).pushReplacementNamed(RoundPhase.shuffling.name);
   }
 
+  final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: AutoSizeText('Selecting Next Player',
-              style: Theme.of(context).textTheme.displayLarge),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: 'Selecting Next Player'
+                .split(' ')
+                .map((s) => AutoSizeText(s,
+                maxLines: 1,
+                    group: _autoSizeGroup,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displayLarge))
+                .toList(),
+          ),
         ),
       ),
     );

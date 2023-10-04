@@ -8,6 +8,7 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -38,11 +39,11 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
   Widget build(BuildContext context) {
     return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {
       final playerWhoseTurn =
-          vm.players.firstWhere((p) => p.player.id == whoseTurnId);
+          vm.players[whoseTurnId]!;
 
       Widget avatar = Hero(
           tag: 'avatar',
-          child: UtterBullPlayerAvatar(playerWhoseTurn.avatarData));
+          child: UtterBullPlayerAvatar(null, playerWhoseTurn.avatarData));
 
       Widget prompt = Hero(
         tag: 'prompt',
@@ -52,11 +53,7 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
               borderRadius: BorderRadius.circular(16.0)),
           child: Column(children: [
             Expanded(
-              child: AutoSizeText(
-                vm.playerWhoseTurnStatement,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 100),
-              ),
+              child: UtterBullTextBox(vm.playerWhoseTurnStatement),
             ),
           ]),
         ),
