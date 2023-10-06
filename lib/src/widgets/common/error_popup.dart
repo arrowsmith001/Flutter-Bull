@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/custom/widgets/rounded_border.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 
 class ErrorPopup extends StatefulWidget {
@@ -19,16 +20,18 @@ class _ErrorPopupState extends State<ErrorPopup> {
   @override
   Widget build(BuildContext context) {
 
-    return Column(
-      children: [
-        const Spacer(),
-
-        Flexible(
-          flex: 2,
-          child: _buildMainBody(outerPaddingValue, context)),
-        
-        const Spacer(),
-      ],
+    return RoundedBorder(
+      child: Column(
+        children: [
+          const Spacer(),
+    
+          Flexible(
+            flex: 2,
+            child: _buildMainBody(outerPaddingValue, context)),
+          
+          const Spacer(),
+        ],
+      ),
     );
   }
 

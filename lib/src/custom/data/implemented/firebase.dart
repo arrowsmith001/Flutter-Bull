@@ -51,6 +51,7 @@ class FirebaseDatabaseService<T extends Entity> implements DatabaseService<T> {
         .doc(id)
         .get()
         .then((value) => value.data()!);
+
   }
 
   T _setIdIfNull(T item, String id) => deserializeDocument(item.toJson()..update('id', (_) => id));

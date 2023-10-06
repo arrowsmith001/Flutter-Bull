@@ -8,10 +8,10 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
+import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
-import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
@@ -164,20 +164,17 @@ class PlayersVotedWrapList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: LayoutBuilder(builder: (context, cons) {
-        return RegularRectanglePacker(
-            size: Size(cons.maxWidth, cons.maxHeight),
-            items: vm.eligibleVoterIds
-                .map((id) => vm.playerMap[id])
-                .toList()
-                .map((e) {
-              final Widget child = UtterBullPlayerAvatar(null, e!.avatarData);
-              if (vm.eligibleVoterStatus[e.player.id] ?? false) {
-                return child;
-              }
-              return Opacity(opacity: notVotedOpacity, child: child);
-            }).toList());
-      }),
+      child: RegularRectanglePacker(
+          items: vm.eligibleVoterIds
+              .map((id) => vm.playerMap[id])
+              .toList()
+              .map((e) {
+            final Widget child = UtterBullPlayerAvatar(null, e!.avatarData);
+            if (vm.eligibleVoterStatus[e.player.id] ?? false) {
+              return child;
+            }
+            return Opacity(opacity: notVotedOpacity, child: child);
+          }).toList()),
     );
   }
 }

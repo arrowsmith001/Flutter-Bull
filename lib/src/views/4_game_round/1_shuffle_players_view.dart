@@ -60,7 +60,7 @@ class _ShufflePlayersAnimationViewState
 
 abstract class PlayerSelector extends StatefulWidget {
   final Duration maxDuration;
-  final Map<String, PlayerWithAvatar> playerAvatars;
+  final Map<String, PublicPlayer> playerAvatars;
   final List<String> shuffledPlayerIds;
   final int selectedIndex;
   final double width;

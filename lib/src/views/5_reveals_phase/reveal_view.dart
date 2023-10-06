@@ -7,10 +7,10 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
+import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
-import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
@@ -188,7 +188,7 @@ class RevealViewState extends ConsumerState<RevealView>
     ref.read(gameNotifierProvider(roomId).notifier).revealNext(userId);
   }
 
-  Widget _buildPlayerStatementPreamble(PlayerWithAvatar playerWhoseTurn,
+  Widget _buildPlayerStatementPreamble(PublicPlayer playerWhoseTurn,
       String playerWhoseTurnStatement, bool isRevealed, bool isStatementTruth) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -250,7 +250,7 @@ class RevealViewState extends ConsumerState<RevealView>
 
   double get width => MediaQuery.of(context).size.width;
 
-  Widget _buildVoteList(bool truthOrLie, List<PlayerWithAvatar> playersVoted,
+  Widget _buildVoteList(bool truthOrLie, List<PublicPlayer> playersVoted,
       int maxNumberInVoteList) {
     final themeColor =
         truthOrLie ? UtterBullGlobal.truthColor : UtterBullGlobal.lieColor;
@@ -309,9 +309,11 @@ class RevealViewState extends ConsumerState<RevealView>
                       min(constraints.biggest.height,
                           max(1, maxNumberInVoteList) * (width / 2)));
 
-                  return RegularRectanglePacker(
-                      items: avatarList,
-                      size: sizeAdj);
+                  return SizedBox.fromSize(
+                    size: sizeAdj,
+                    child: RegularRectanglePacker(
+                        items: avatarList),
+                  );
                 }))
               ] // ListView(children: avatarList),
                   ),

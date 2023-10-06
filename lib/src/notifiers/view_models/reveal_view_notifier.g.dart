@@ -7,7 +7,7 @@ part of 'reveal_view_notifier.dart';
 // **************************************************************************
 
 String _$revealViewNotifierHash() =>
-    r'90fa684f0f59bf1ff77daed344199c38d0ead17a';
+    r'7c4205eb47da0b29e4dac7c7d5d998f6efdb0cbf';
 
 /// Copied from Dart SDK
 class _SystemHash {

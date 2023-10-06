@@ -10,7 +10,7 @@ part '1_writing_phase_view_model.freezed.dart';
 class WritingPhaseViewModel with _$WritingPhaseViewModel {
   factory WritingPhaseViewModel(
       {required GameRoom game,
-      required Map<String, PlayerWithAvatar> players,
+      required Map<String, PublicPlayer> players,
       required String userId}) {
     final targetId = game.targets[userId];
     final isWritingTruth = targetId == userId;
@@ -38,7 +38,7 @@ class WritingPhaseViewModel with _$WritingPhaseViewModel {
   }
 
   factory WritingPhaseViewModel._(
-      {required PlayerWithAvatar playerWritingFor,
+      {required PublicPlayer playerWritingFor,
       required bool writingTruthOrLie,
       required WritingPrompt writingPrompt,
       required bool hasSubmitted,

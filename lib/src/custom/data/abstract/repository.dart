@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:flutter_bull/src/model/game_room.dart';
+
 import 'database_service.dart';
 import 'entity.dart';
 
@@ -93,6 +95,7 @@ class Repository<T extends Entity> {
       return false;
     }
   }
+
 }
 
 class EmptyCache<T extends Entity> implements Cache<T> {

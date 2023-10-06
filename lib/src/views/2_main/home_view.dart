@@ -82,7 +82,7 @@ class _MyHomePageState extends ConsumerState<HomeView> with UserID {
         onPressed: () => authNotifier.signOut(), child: const Text('Sign out'));
   }
 
-  Widget _buildPlayerAvatar(AsyncValue<PlayerWithAvatar> avatarAsync) {
+  Widget _buildPlayerAvatar(AsyncValue<PublicPlayer> avatarAsync) {
     return SizedBox(
       height: 250,
       child: avatarAsync.whenDefault((avatar) {

@@ -22,6 +22,7 @@ import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
+import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
@@ -30,9 +31,9 @@ import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/services/local_achievement_service.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
+import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_bull/src/views/5_reveals_phase/reveal_view.dart';
-import 'package:flutter_bull/src/widgets/common/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_app.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,8 +53,8 @@ import 'src/widgets/main/mobile_app_layout_container.dart';
 
 ////////////////////////////////////////////////////////////////
 
-String fakeId = 'MBQq5TVxm9XBx3MEu9TEGXpPjzIw';
-const bool testModeOn = true;
+String fakeId = '';
+const bool testModeOn = false;
 
 ////////////////////////////////////////////////////////////////
 
@@ -198,37 +199,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class TestWidget extends StatefulWidget {
-  const TestWidget({super.key});
 
-  @override
-  State<TestWidget> createState() => _TestWidgetState();
-}
-
-class _TestWidgetState extends State<TestWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return RegularRectanglePacker(
-        size: Size(
-          MediaQuery.of(context).size.width,
-          100,
-        ),
-        items: List.generate(
-            11,
-            (i) => Column(
-                  children: [
-                    Flexible(
-                        child: Container(
-                      child: UtterBullPlayerAvatar(
-                        null,
-                        null,
-                      ),
-                      color: Colors.green,
-                    ))
-                  ],
-                )));
-  }
-}
 
 class ProvisionedUtterBullFunctionUser extends StatelessWidget {
   final AuthService authService;
@@ -267,15 +238,16 @@ class ResultViewTest extends StatefulWidget {
 }
 
 class _ResultViewTestState extends State<ResultViewTest> {
+
   void onFab() {
-    _revealController.onRevealed();
+    //_revealController.onRevealed();
   }
 
-  static const userId = '1';
+  static const userId = '0';
   static const roomId = '';
   static const whoseTurnId = '0';
 
-  static int numberOfPlayers = 6;
+  static int numberOfPlayers = 5;
 
   Map<String, Player> get createPlayers {
     final list = List.generate(numberOfPlayers,
@@ -291,6 +263,7 @@ class _ResultViewTestState extends State<ResultViewTest> {
 
     final Map<String, String> targets = {};
     final Map<String, bool> truths = {};
+    final Map<String, PlayerState> playerStates = Map.fromEntries(playerOrder.map((e) => MapEntry(e, (int.parse(e) % 2) == 0 ? PlayerState.ready : PlayerState.unready)));
     final int n = playerOrder.length;
     for (var i = 0; i < n; i++) {
       final String playerId = playerOrder[i];
@@ -324,9 +297,11 @@ class _ResultViewTestState extends State<ResultViewTest> {
         .map((p) => MapEntry(p, 'Player statement statement statement')));
 
     return GameRoom(
-        roomCode: "",
+        roomCode: "42069",
+        leaderId: userId,
         playerOrder: playerOrder,
         playerIds: playerOrder,
+        playerStates: playerStates,
         subPhase: 0,
         votes: votes,
         voteTimes: voteTimes,
@@ -341,6 +316,8 @@ class _ResultViewTestState extends State<ResultViewTest> {
   RevealViewModel? _revealViewModel;
   late final RevealViewController _revealController =
       RevealViewController(_revealViewModel);
+
+    
 
   // TODO: Test reveal with 1 voter: squash or align?
 
@@ -372,7 +349,7 @@ class _ResultViewTestState extends State<ResultViewTest> {
                     return PageRouteBuilder(pageBuilder: (_, __, ___) {
                       return Container(
                           decoration: UtterBullGlobal.gameViewDecoration,
-                          child: const ResultView());
+                          child: const LobbyPhaseView());
                     });
                   },
                 ),

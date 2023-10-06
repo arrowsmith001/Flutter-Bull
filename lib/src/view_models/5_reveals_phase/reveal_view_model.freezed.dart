@@ -16,12 +16,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$RevealViewModel {
-  PlayerWithAvatar get playerWhoseTurn => throw _privateConstructorUsedError;
+  PublicPlayer get playerWhoseTurn => throw _privateConstructorUsedError;
   String get playerWhoseTurnStatement => throw _privateConstructorUsedError;
   bool get isStatementTruth => throw _privateConstructorUsedError;
-  List<PlayerWithAvatar> get playersVotedLie =>
-      throw _privateConstructorUsedError;
-  List<PlayerWithAvatar> get playersVotedTruth =>
+  List<PublicPlayer> get playersVotedLie => throw _privateConstructorUsedError;
+  List<PublicPlayer> get playersVotedTruth =>
       throw _privateConstructorUsedError;
   bool get isRevealed => throw _privateConstructorUsedError;
   bool get isMyTurn => throw _privateConstructorUsedError;
@@ -39,11 +38,11 @@ abstract class $RevealViewModelCopyWith<$Res> {
       _$RevealViewModelCopyWithImpl<$Res, RevealViewModel>;
   @useResult
   $Res call(
-      {PlayerWithAvatar playerWhoseTurn,
+      {PublicPlayer playerWhoseTurn,
       String playerWhoseTurnStatement,
       bool isStatementTruth,
-      List<PlayerWithAvatar> playersVotedLie,
-      List<PlayerWithAvatar> playersVotedTruth,
+      List<PublicPlayer> playersVotedLie,
+      List<PublicPlayer> playersVotedTruth,
       bool isRevealed,
       bool isMyTurn,
       List<Achievement> achievements});
@@ -75,7 +74,7 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       playerWhoseTurnStatement: null == playerWhoseTurnStatement
           ? _value.playerWhoseTurnStatement
           : playerWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
@@ -87,11 +86,11 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
       playersVotedLie: null == playersVotedLie
           ? _value.playersVotedLie
           : playersVotedLie // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
+              as List<PublicPlayer>,
       playersVotedTruth: null == playersVotedTruth
           ? _value.playersVotedTruth
           : playersVotedTruth // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
+              as List<PublicPlayer>,
       isRevealed: null == isRevealed
           ? _value.isRevealed
           : isRevealed // ignore: cast_nullable_to_non_nullable
@@ -117,11 +116,11 @@ abstract class _$$_RevealViewModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {PlayerWithAvatar playerWhoseTurn,
+      {PublicPlayer playerWhoseTurn,
       String playerWhoseTurnStatement,
       bool isStatementTruth,
-      List<PlayerWithAvatar> playersVotedLie,
-      List<PlayerWithAvatar> playersVotedTruth,
+      List<PublicPlayer> playersVotedLie,
+      List<PublicPlayer> playersVotedTruth,
       bool isRevealed,
       bool isMyTurn,
       List<Achievement> achievements});
@@ -151,7 +150,7 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       playerWhoseTurnStatement: null == playerWhoseTurnStatement
           ? _value.playerWhoseTurnStatement
           : playerWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
@@ -163,11 +162,11 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
       playersVotedLie: null == playersVotedLie
           ? _value._playersVotedLie
           : playersVotedLie // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
+              as List<PublicPlayer>,
       playersVotedTruth: null == playersVotedTruth
           ? _value._playersVotedTruth
           : playersVotedTruth // ignore: cast_nullable_to_non_nullable
-              as List<PlayerWithAvatar>,
+              as List<PublicPlayer>,
       isRevealed: null == isRevealed
           ? _value.isRevealed
           : isRevealed // ignore: cast_nullable_to_non_nullable
@@ -191,8 +190,8 @@ class _$_RevealViewModel implements _RevealViewModel {
       {required this.playerWhoseTurn,
       required this.playerWhoseTurnStatement,
       required this.isStatementTruth,
-      required final List<PlayerWithAvatar> playersVotedLie,
-      required final List<PlayerWithAvatar> playersVotedTruth,
+      required final List<PublicPlayer> playersVotedLie,
+      required final List<PublicPlayer> playersVotedTruth,
       required this.isRevealed,
       required this.isMyTurn,
       required final List<Achievement> achievements})
@@ -201,22 +200,22 @@ class _$_RevealViewModel implements _RevealViewModel {
         _achievements = achievements;
 
   @override
-  final PlayerWithAvatar playerWhoseTurn;
+  final PublicPlayer playerWhoseTurn;
   @override
   final String playerWhoseTurnStatement;
   @override
   final bool isStatementTruth;
-  final List<PlayerWithAvatar> _playersVotedLie;
+  final List<PublicPlayer> _playersVotedLie;
   @override
-  List<PlayerWithAvatar> get playersVotedLie {
+  List<PublicPlayer> get playersVotedLie {
     if (_playersVotedLie is EqualUnmodifiableListView) return _playersVotedLie;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_playersVotedLie);
   }
 
-  final List<PlayerWithAvatar> _playersVotedTruth;
+  final List<PublicPlayer> _playersVotedTruth;
   @override
-  List<PlayerWithAvatar> get playersVotedTruth {
+  List<PublicPlayer> get playersVotedTruth {
     if (_playersVotedTruth is EqualUnmodifiableListView)
       return _playersVotedTruth;
     // ignore: implicit_dynamic_type
@@ -285,25 +284,25 @@ class _$_RevealViewModel implements _RevealViewModel {
 
 abstract class _RevealViewModel implements RevealViewModel {
   factory _RevealViewModel(
-      {required final PlayerWithAvatar playerWhoseTurn,
+      {required final PublicPlayer playerWhoseTurn,
       required final String playerWhoseTurnStatement,
       required final bool isStatementTruth,
-      required final List<PlayerWithAvatar> playersVotedLie,
-      required final List<PlayerWithAvatar> playersVotedTruth,
+      required final List<PublicPlayer> playersVotedLie,
+      required final List<PublicPlayer> playersVotedTruth,
       required final bool isRevealed,
       required final bool isMyTurn,
       required final List<Achievement> achievements}) = _$_RevealViewModel;
 
   @override
-  PlayerWithAvatar get playerWhoseTurn;
+  PublicPlayer get playerWhoseTurn;
   @override
   String get playerWhoseTurnStatement;
   @override
   bool get isStatementTruth;
   @override
-  List<PlayerWithAvatar> get playersVotedLie;
+  List<PublicPlayer> get playersVotedLie;
   @override
-  List<PlayerWithAvatar> get playersVotedTruth;
+  List<PublicPlayer> get playersVotedTruth;
   @override
   bool get isRevealed;
   @override

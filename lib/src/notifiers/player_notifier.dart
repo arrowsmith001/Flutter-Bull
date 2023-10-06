@@ -18,7 +18,7 @@ class PlayerNotifier extends _$PlayerNotifier {
   ImageStorageService get _imgService => ref.read(imageStorageServiceProvider);
 
   @override
-  Stream<PlayerWithAvatar> build(String userId) {
+  Stream<PublicPlayer> build(String userId) {
 
     Logger().d('userId: $userId');
     // TODO: Consider where existence checks belong ("pending" player notifier with timeout??)
@@ -29,7 +29,7 @@ class PlayerNotifier extends _$PlayerNotifier {
       {
         
     Logger().d('userId: $userId, player: $player');
-        final pwa = PlayerWithAvatar(player, await _imgService.downloadImage(player.profilePhotoPath ?? 'pp/default/avatar.jpg'));
+        final pwa = PublicPlayer(player, await _imgService.downloadImage(player.profilePhotoPath ?? 'pp/default/avatar.jpg'));
     Logger().d('pwa: $pwa');
         return pwa;
       }); // TODO: Make default a local file
@@ -40,9 +40,9 @@ class PlayerNotifier extends _$PlayerNotifier {
   }
 }
 
-class PlayerWithAvatar {
+class PublicPlayer {
   final Player player;
   final Uint8List? avatarData;
 
-  PlayerWithAvatar(this.player, this.avatarData);
+  PublicPlayer(this.player, this.avatarData);
 }

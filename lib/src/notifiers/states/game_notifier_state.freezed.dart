@@ -17,8 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$GameNotifierState {
   GameRoom get gameRoom => throw _privateConstructorUsedError;
-  Map<String, PlayerWithAvatar> get players =>
-      throw _privateConstructorUsedError;
+  Map<String, PublicPlayer> get players => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameNotifierStateCopyWith<GameNotifierState> get copyWith =>
@@ -31,7 +30,7 @@ abstract class $GameNotifierStateCopyWith<$Res> {
           GameNotifierState value, $Res Function(GameNotifierState) then) =
       _$GameNotifierStateCopyWithImpl<$Res, GameNotifierState>;
   @useResult
-  $Res call({GameRoom gameRoom, Map<String, PlayerWithAvatar> players});
+  $Res call({GameRoom gameRoom, Map<String, PublicPlayer> players});
 
   $GameRoomCopyWith<$Res> get gameRoom;
 }
@@ -60,7 +59,7 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
       players: null == players
           ? _value.players
           : players // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
     ) as $Val);
   }
 
@@ -81,7 +80,7 @@ abstract class _$$_GameNotifierStateCopyWith<$Res>
       __$$_GameNotifierStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GameRoom gameRoom, Map<String, PlayerWithAvatar> players});
+  $Res call({GameRoom gameRoom, Map<String, PublicPlayer> players});
 
   @override
   $GameRoomCopyWith<$Res> get gameRoom;
@@ -109,7 +108,7 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
       players: null == players
           ? _value._players
           : players // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
     ));
   }
 }
@@ -119,15 +118,15 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
 class _$_GameNotifierState extends _GameNotifierState {
   _$_GameNotifierState(
       {required this.gameRoom,
-      required final Map<String, PlayerWithAvatar> players})
+      required final Map<String, PublicPlayer> players})
       : _players = players,
         super._();
 
   @override
   final GameRoom gameRoom;
-  final Map<String, PlayerWithAvatar> _players;
+  final Map<String, PublicPlayer> _players;
   @override
-  Map<String, PlayerWithAvatar> get players {
+  Map<String, PublicPlayer> get players {
     if (_players is EqualUnmodifiableMapView) return _players;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_players);
@@ -162,15 +161,14 @@ class _$_GameNotifierState extends _GameNotifierState {
 
 abstract class _GameNotifierState extends GameNotifierState {
   factory _GameNotifierState(
-          {required final GameRoom gameRoom,
-          required final Map<String, PlayerWithAvatar> players}) =
-      _$_GameNotifierState;
+      {required final GameRoom gameRoom,
+      required final Map<String, PublicPlayer> players}) = _$_GameNotifierState;
   _GameNotifierState._() : super._();
 
   @override
   GameRoom get gameRoom;
   @override
-  Map<String, PlayerWithAvatar> get players;
+  Map<String, PublicPlayer> get players;
   @override
   @JsonKey(ignore: true)
   _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>

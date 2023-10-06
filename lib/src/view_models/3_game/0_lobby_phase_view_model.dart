@@ -1,9 +1,9 @@
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
+import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '0_lobby_phase_view_model.freezed.dart';
-
 
 // TODO: Outsource variable
 const int numberOfPlayersNeededForGame = 3;
@@ -20,53 +20,61 @@ class ListChangeData<T> {
   final ListChangeType listChangeType;
   final T? data;
 
-  ListChangeData(this.listChangeType, this.data, this.changeIndex);
+  ListChangeData(
+      this.listChangeType, this.data, this.changeIndex);
 }
 
 @freezed
-class LobbyPhaseViewModel with _$LobbyPhaseViewModel 
-{
+class LobbyPhaseViewModel with _$LobbyPhaseViewModel {
   factory LobbyPhaseViewModel({
     required GameRoom game,
-    required Map<String, PlayerWithAvatar> players,
+    required Map<String, LobbyPlayer> players,
     required String userId,
-    required ListChangeData<PlayerWithAvatar> listChangeData,
+    required ListChangeData<LobbyPlayer> listChangeData,
   }) {
+    final presentPlayers = Map.fromEntries(
+        players.entries.where((entry) => game.playerIds.contains(entry.key)));
 
-    final presentPlayers = Map.fromEntries(players.entries
-    .where((entry) => game.playerIds.contains(entry.key)));
-
-    final absentPlayers = Set<PlayerWithAvatar>.from(players.entries
-    .where((entry) => !game.playerIds.contains(entry.key)).map((e) => e.value));
+    final absentPlayers = Set<PublicPlayer>.from(players.entries
+        .where((entry) => !game.playerIds.contains(entry.key))
+        .map((e) => e.value.player));
 
     final int numberOfPlayersPresent = presentPlayers.length;
-    final int playerDiff = numberOfPlayersNeededForGame - numberOfPlayersPresent;
+    final int playerDiff =
+        numberOfPlayersNeededForGame - numberOfPlayersPresent;
     String numberOfPlayersString = '$numberOfPlayersPresent players in game';
-    if(playerDiff > 0)
-    {
+    if (playerDiff > 0) {
       numberOfPlayersString += ' ($playerDiff more needed)';
     }
-      
+
+    final readyRoster = game.playerIds
+            .where((id) => game.playerStates[id] == PlayerState.ready)
+            .toSet();
+
     return LobbyPhaseViewModel._(
-          roomCode: game.roomCode,
-          listChangeData: listChangeData,
-          presentPlayers: presentPlayers,
-          absentPlayers: absentPlayers,
-          playerReadies: {},
-          numberOfPlayersString: numberOfPlayersString,
-          enoughPlayers: numberOfPlayersPresent >= numberOfPlayersNeededForGame,
-          isStartingGame : game.state == 'startingGame');
+        roomCode: game.roomCode,
+        leaderId: game.leaderId ?? '',
+        isLeader: game.leaderId == userId,
+        listChangeData: listChangeData,
+        presentPlayers: presentPlayers,
+        absentPlayers: absentPlayers,
+        playerReadies: {},
+        numberOfPlayersString: numberOfPlayersString,
+        enoughPlayers: numberOfPlayersPresent >= numberOfPlayersNeededForGame,
+        isStartingGame: game.state == 'startingGame');
   }
 
   factory LobbyPhaseViewModel._({
     required String roomCode,
-    required Map<String, PlayerWithAvatar> presentPlayers,
-    required Set<PlayerWithAvatar> absentPlayers,
-    required ListChangeData<PlayerWithAvatar> listChangeData,
+    required String leaderId,
+    required bool isLeader,
+    required Map<String, LobbyPlayer> presentPlayers,
+    required Set<PublicPlayer> absentPlayers,
+    required ListChangeData<LobbyPlayer> listChangeData,
     required Map<String, bool> playerReadies,
     required String numberOfPlayersString,
     required bool enoughPlayers,
     required bool isStartingGame,
   }) = _LobbyPhaseViewModel;
-
 }
+

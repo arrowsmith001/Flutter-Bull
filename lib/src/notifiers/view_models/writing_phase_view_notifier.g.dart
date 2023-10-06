@@ -7,7 +7,7 @@ part of 'writing_phase_view_notifier.dart';
 // **************************************************************************
 
 String _$writingPhaseViewNotifierHash() =>
-    r'c1bc3507f1934229924029a24190bb152e83e9b0';
+    r'77e19913ffdc384434e1c238d873e6401013e45a';
 
 /// Copied from Dart SDK
 class _SystemHash {

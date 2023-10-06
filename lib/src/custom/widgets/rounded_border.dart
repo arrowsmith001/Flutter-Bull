@@ -5,37 +5,37 @@ class RoundedBorder extends StatelessWidget {
     required this.child,
     this.background,
     this.color,
-    this.thickness,
+    this.thickness = 4.0,
+    this.radius = 12.0,
     super.key,
   });
 
   final Widget child;
   final Widget? background;
   final Color? color;
-  final double? thickness;
+  final double thickness;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
-    final Widget child0 = ClipRRect(
-      borderRadius: BorderRadius.circular(12.0),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
       child: Container(
-        color: color ?? Colors.white.withAlpha(100),
+        color: color ?? Colors.white.withAlpha(200),
         child: Padding(
-          padding: EdgeInsets.all(thickness ?? 4.0),
-          child: child,
+          padding: EdgeInsets.all(thickness),
+          child: ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+
+            child: Stack(
+              children: [
+                Positioned.fill(child: background ?? const SizedBox.shrink()),
+                child
+              ],
+            ),
+          ),
         ),
       ),
     );
-
-    if (background != null) {
-      return Stack(
-        children: [
-          Positioned.fill(child: background!),
-          child
-        ],
-      );
-    }
-
-    return child0;
   }
 }

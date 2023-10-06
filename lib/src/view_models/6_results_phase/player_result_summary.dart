@@ -44,7 +44,7 @@ class PlayerResultSummaryItem {
   }
 
   final bool positive;
-  final String message;
+  final List<TextSpan> message;
 
   //int score;
   late Image icon;

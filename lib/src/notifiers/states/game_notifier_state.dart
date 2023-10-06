@@ -13,7 +13,7 @@ class GameNotifierState with _$GameNotifierState {
   factory GameNotifierState(
       {
         required GameRoom gameRoom,
-        required Map<String, PlayerWithAvatar> players,
+        required Map<String, PublicPlayer> players,
         //GameResult? result, 
         //@Default([]) List<AchievementWithIcon> achievementsWithIcons
         }) = _GameNotifierState;

@@ -21,7 +21,7 @@ class WritingPhaseViewNotifier extends _$WritingPhaseViewNotifier {
     }
   }
 
-  WritingPhaseViewModel _buildViewModel(GameRoom game, Map<String, PlayerWithAvatar> players,
+  WritingPhaseViewModel _buildViewModel(GameRoom game, Map<String, PublicPlayer> players,
       String userId) 
       {
     return WritingPhaseViewModel(

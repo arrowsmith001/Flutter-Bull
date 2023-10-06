@@ -10,6 +10,7 @@ class UtterBullTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return UglyOutlinedText(
       'Utter Bull',
+      maxLines: 2,
       outlineColor: const Color.fromARGB(255, 112, 112, 112) // Theme.of(context).colorScheme.primary,
     );
   }

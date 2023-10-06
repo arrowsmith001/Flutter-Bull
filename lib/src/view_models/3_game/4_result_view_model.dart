@@ -5,6 +5,7 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/player_breakdown.dart';
 import 'package:flutter_bull/src/notifiers/states/round_breakdown.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/utils/result_generator.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logger/logger.dart';
@@ -17,7 +18,7 @@ part '4_result_view_model.freezed.dart';
 class ResultViewModel with _$ResultViewModel {
   factory ResultViewModel({
     required GameRoom game,
-    required Map<String, PlayerWithAvatar> players,
+    required Map<String, PublicPlayer> players,
     required ResultGenerator rg,
     required String userId,
   }) {
@@ -29,29 +30,38 @@ class ResultViewModel with _$ResultViewModel {
 
       final PlayerBreakdown pb = rg.playerBreakdowns[i];
       final String id = rg.playerBreakdowns[i].playerId;
-      final PlayerWithAvatar player = players[id]!;
+      final PublicPlayer player = players[id]!;
 
       // Round
-
+      late TextSpan middleText;
       switch (pb.ownRoundFooledProportion.type) {
         case FooledProportionType.none:
-          summaryItems.add(PlayerResultSummaryItem.round(
-              '${player.player.name} fooled NOBODY during their round...',
-              positive: false));
+          middleText = TextSpan(
+              text: 'NOBODY', style: TextStyle(color: UtterBullGlobal.badVibe));
           break;
         case FooledProportionType.some:
-          summaryItems.add(PlayerResultSummaryItem.round(
-              '${player.player.name} fooled SOME during their round...'));
+          middleText = TextSpan(
+              text: 'SOME', style: TextStyle(color: UtterBullGlobal.okayVibe));
           break;
         case FooledProportionType.most:
-          summaryItems.add(PlayerResultSummaryItem.round(
-              '${player.player.name} fooled MOST during their round...'));
+          middleText = TextSpan(
+              text: 'MOST', style: TextStyle(color: UtterBullGlobal.goodVibe));
           break;
         case FooledProportionType.all:
-          summaryItems.add(PlayerResultSummaryItem.round(
-              '${player.player.name} fooled EVERYBODY during their round...'));
+          middleText = TextSpan(
+              text: 'ALL', style: TextStyle(color: UtterBullGlobal.greatVibe));
           break;
       }
+      final bool isPositive =
+          pb.ownRoundFooledProportion.type != FooledProportionType.none;
+
+      summaryItems.add(PlayerResultSummaryItem.round(
+          [
+            TextSpan(text: '${player.player.name} fooled '),
+            middleText,
+            const TextSpan(text: ' during their round...'),
+          ],
+          positive: isPositive));
 
       // Votes
       final int correctVotes = pb.correctVotes;
@@ -59,27 +69,49 @@ class ResultViewModel with _$ResultViewModel {
         final String leading = summaryItems.last.positive ? "BUT" : "AND";
 
         summaryItems.add(PlayerResultSummaryItem.votes(
-            '$leading didn\'t vote correctly in ANY round...', positive: false));
+         [
+            TextSpan(text: '$leading '), 
+            TextSpan(text: 'didn\'t vote correctly', style: TextStyle(color: UtterBullGlobal.badVibe)),
+            const TextSpan(text: ' in ANY round...'), 
+          ]
+            ,
+            positive: false));
       } else {
         final String leading = summaryItems.last.positive ? "AND" : "BUT";
         final String s = correctVotes > 1 ? 's' : '';
 
         summaryItems.add(PlayerResultSummaryItem.votes(
-            '$leading voted correctly in $correctVotes round$s...'));
+          [
+            TextSpan(text: '$leading '), 
+            TextSpan(text: 'voted correctly', style: TextStyle(color: UtterBullGlobal.greatVibe)),
+            TextSpan(text: ' in $correctVotes round$s...'), 
+          ]
+            ,
+            positive: true));
       }
 
       final int fastestCorrectVotes = pb.fastestCorrectVotes;
       if (fastestCorrectVotes > 0) {
         final String s = correctVotes > 1 ? 's' : '';
         summaryItems.add(PlayerResultSummaryItem.time(
-            'AND voted correctly the quickest $fastestCorrectVotes time$s'));
+          [
+            const TextSpan(text: 'AND voted correctly '), 
+            TextSpan(text: 'the quickest', style: TextStyle(color: UtterBullGlobal.greatVibe)),
+            TextSpan(text: ' $fastestCorrectVotes time$s'), 
+          ]
+            ));
       }
 
       final int minorityVotes = pb.minorityVotes;
       if (minorityVotes > 0) {
         final String s = minorityVotes > 1 ? 's' : '';
-        summaryItems.add(PlayerResultSummaryItem.minority(
-            'AND voted in the minority $minorityVotes time$s'));
+        summaryItems.add(PlayerResultSummaryItem.time(
+          [
+            const TextSpan(text: 'AND voted '), 
+            TextSpan(text: 'in the minority', style: TextStyle(color: UtterBullGlobal.greatVibe)),
+            TextSpan(text: ' $minorityVotes time$s'), 
+          ])
+            );
       }
 
       final PlayerResultSummary summary = PlayerResultSummary(
@@ -94,7 +126,7 @@ class ResultViewModel with _$ResultViewModel {
   }
 
   factory ResultViewModel._(
-          {required Map<String, PlayerWithAvatar> playerMap,
+          {required Map<String, PublicPlayer> playerMap,
           required List<PlayerResultSummary> playerResultSummaries}) =
       _ResultViewModel;
 }

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 
 // TODO: Move to cloud
@@ -33,7 +34,9 @@ abstract class UtterBullServer {
 
   Future<void> revealNext(String roomId, String userId);
 
-  Future<void> calculateResults(String s);
+  Future<void> calculateResults(String roomId);
+
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState);
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
@@ -145,11 +148,16 @@ class UtterBullClientSideServer implements UtterBullServer {
     final func = FirebaseFunctions.instance.httpsCallable('revealNext');
     await func.call({'roomId': roomId, 'userId': userId});
   }
-  
+
   @override
   Future<void> calculateResults(String roomId) async {
     final func = FirebaseFunctions.instance.httpsCallable('calculateResults');
     await func.call({'roomId': roomId});
+  }
+
+  @override
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) async {
+    await data.setPlayerState(roomId, userId, playerState);
   }
 }
 
@@ -178,66 +186,52 @@ class FiveDigit3Alpha2NumericCodeGenerator implements RoomCodeGenerator {
   }
 }
 
-
 class MockServer extends UtterBullServer {
   @override
-  Future<void> calculateResults(String s) async {
-  }
+  Future<void> calculateResults(String s) async {}
 
   @override
-  Future<void> createPlayerWithID(String userId) async {
-  }
+  Future<void> createPlayerWithID(String userId) async {}
 
   @override
-  Future<void> createRoom(String userId)async {
-  }
+  Future<void> createRoom(String userId) async {}
 
   @override
-  Future<void> endRound(String roomId, String userId) async {
-  }
+  Future<void> endRound(String roomId, String userId) async {}
 
   @override
-  Future<void> joinRoom(String userId, String roomCode) async{
-  }
+  Future<void> joinRoom(String userId, String roomCode) async {}
 
   @override
-  Future<void> removeFromRoom(String userId, String roomId) async{
-  }
+  Future<void> removeFromRoom(String userId, String roomId) async {}
 
   @override
-  Future<void> returnToLobby(String roomId) async{
-  }
+  Future<void> returnToLobby(String roomId) async {}
 
   @override
-  Future<void> reveal(String roomId, String userId)async {
-  }
+  Future<void> reveal(String roomId, String userId) async {}
 
   @override
-  Future<void> revealNext(String roomId, String userId) async{
-  }
+  Future<void> revealNext(String roomId, String userId) async {}
 
   @override
-  Future<void> setRoomPhase(String gameRoomId, GamePhase newPhase) async{
-  }
+  Future<void> setRoomPhase(String gameRoomId, GamePhase newPhase) async {}
 
   @override
-  Future<void> setSubPhase(String roomId, int phaseNum)async {
-  }
+  Future<void> setSubPhase(String roomId, int phaseNum) async {}
 
   @override
-  Future<void> startGame(String roomId)async {
-  }
+  Future<void> startGame(String roomId) async {}
 
   @override
-  Future<void> startRound(String roomId, String userId)async {
-  }
+  Future<void> startRound(String roomId, String userId) async {}
 
   @override
-  Future<void> submitText(String roomId, String userId, String? text)async {
-  }
+  Future<void> submitText(String roomId, String userId, String? text) async {}
 
   @override
-  Future<void> vote(String roomId, String userId, bool truthOrLie)async {
-  }
+  Future<void> vote(String roomId, String userId, bool truthOrLie) async {}
 
+  @override
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) async {}
 }

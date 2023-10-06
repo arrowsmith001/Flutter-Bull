@@ -45,7 +45,8 @@ class UtterBullButton extends StatefulWidget {
       this.maxHeight,
       this.isLoading = false,
       this.isShimmering = true,
-      this.color, this.gradient});
+      this.color,
+      this.gradient});
 
   final VoidCallback? onPressed;
   final String title;
@@ -96,9 +97,8 @@ class _UtterBullButtonState extends State<UtterBullButton>
   }
 
   double radius = 24.0;
-  Color get color =>
-      isEnabled ? 
-      (widget.color ?? Theme.of(context).colorScheme.primary) 
+  Color get color => isEnabled
+      ? (widget.color ?? Theme.of(context).colorScheme.primary)
       : Colors.grey;
 
   @override
@@ -188,10 +188,11 @@ class _UtterBullButtonState extends State<UtterBullButton>
   Container _buildInnerLayer() {
     return Container(
         decoration: BoxDecoration(
-            gradient: widget.gradient ?? LinearGradient(
-                colors: [Color.lerp(color, Colors.white, 0.7)!, color],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter),
+            gradient: widget.gradient ??
+                LinearGradient(
+                    colors: [Color.lerp(color, Colors.white, 0.7)!, color],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter),
             borderRadius: BorderRadius.circular(radius)),
         child: Padding(
           padding: EdgeInsets.all(8.0),
@@ -224,11 +225,15 @@ class _UtterBullButtonState extends State<UtterBullButton>
 }
 
 class UglyOutlinedText extends StatelessWidget {
-  const UglyOutlinedText(this.text, {this.outlineColor, this.fillColor});
+  UglyOutlinedText(this.text,
+      {this.outlineColor, this.fillColor, this.maxLines = 1});
 
   final String text;
   final Color? fillColor;
   final Color? outlineColor;
+  final int maxLines;
+
+  final AutoSizeGroup group = AutoSizeGroup();
 
   @override
   Widget build(BuildContext context) {
@@ -238,6 +243,7 @@ class UglyOutlinedText extends StatelessWidget {
         AutoSizeText(
           text.toUpperCase(),
           minFontSize: 4,
+          maxLines: maxLines,
           style: TextStyle(
               fontSize: 100,
               fontWeight: FontWeight.bold,
@@ -248,8 +254,9 @@ class UglyOutlinedText extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         AutoSizeText(
+          group: group,
           text.toUpperCase(),
-          minFontSize: 4,
+          maxLines: maxLines,
           style: TextStyle(
               fontSize: 100,
               fontWeight: FontWeight.bold,

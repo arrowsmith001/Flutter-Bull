@@ -5,7 +5,9 @@ import 'package:flutter_bull/src/custom/widgets/rounded_border.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/result_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/3_game/4_result_view_model.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,20 +38,16 @@ class _ResultViewViewState extends ConsumerState<ResultView>
             padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.2,
                 vertical: 24),
-            child: AutoSizeText(
+            child: UglyOutlinedText(
               'RESULTS',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge!
-                  .copyWith(fontSize: 200),
-              maxLines: 1,
+              outlineColor: Colors.grey,
             ),
           ),
           ListView.builder(
               itemCount: vm.playerResultSummaries.length,
               itemBuilder: (context, i) {
                 final prs = vm.playerResultSummaries[i];
-                final PlayerWithAvatar player = vm.playerMap[prs.playerId]!;
+                final PublicPlayer player = vm.playerMap[prs.playerId]!;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(
@@ -69,7 +67,7 @@ class PlayerResultSummaryView extends StatefulWidget {
       {super.key});
 
   final PlayerResultSummary prs;
-  final PlayerWithAvatar player;
+  final PublicPlayer player;
   final int podiumPosition;
 
   @override
@@ -79,66 +77,91 @@ class PlayerResultSummaryView extends StatefulWidget {
 
 class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
   late final PlayerResultSummary prs = widget.prs;
-  late final PlayerWithAvatar player = widget.player;
+  late final PublicPlayer player = widget.player;
   late final int podiumPosition = widget.podiumPosition;
 
   @override
   Widget build(BuildContext context) {
-    return RoundedBorder(
-      background: _getPodiumBackground(podiumPosition),
-      child: Column(children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.width / 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                    height: MediaQuery.of(context).size.width / 4,
-                    child: UtterBullPlayerAvatar(null, player.avatarData)),
-                AutoSizeText(player.player.name!,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                    maxLines: 1),
-                Text(
-                  prs.roundScore.toString(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge!
-                      .copyWith(color: const Color.fromARGB(255, 255, 190, 13)),
-                )
-              ],
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: RoundedBorder(
+            radius: 24.0,
+            background: _getPodiumBackground(podiumPosition),
+            child: Column(children: 
+            [
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.3,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                          height: MediaQuery.of(context).size.width / 4,
+                          child: UtterBullPlayerAvatar(null, player.avatarData)),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(4.0,0,4,0),
+                          child: AutoSizeText(player.player.name!,
+                          textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineLarge,
+                              maxLines: 1),
+                        ),
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0.0, 0,4,0),
+                          child: SizedBox(
+                            width: 50,
+                            child: UglyOutlinedText(
+                              prs.roundScore.toString(),
+                              // style: Theme.of(context)
+                              //     .textTheme
+                              //     .headlineLarge!
+                              //     .copyWith(color: const Color.fromARGB(255, 255, 190, 13) )
+                                  
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ]),
           ),
         ),
-        ListView(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          children: widget.prs.items
-              .map((summaryItem) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: PlayerResultSummaryItemView(summaryItem),
-                    ),
-                  ))
-              .toList(),
+
+        
+        Flexible(
+          child: ListView(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: widget.prs.items
+                .map((summaryItem) => Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: PlayerResultSummaryItemView(summaryItem),
+                ))
+                .toList(),
+          ),
         )
-      ]),
+      ],
     );
   }
 
   Widget? _getPodiumBackground(int podiumPosition) {
-    return Container(color: Colors.green); // TODO: Replace with podium color
     if (podiumPosition > 3) return null;
-    if (podiumPosition == 3)
-      return ShimmeringBackground(color: Color.fromARGB(255, 209, 101, 0));
-    if (podiumPosition == 2)
-      return ShimmeringBackground(color: Color.fromARGB(255, 211, 211, 211));
-    if (podiumPosition == 1)
-      return ShimmeringBackground(color: Color.fromARGB(255, 255, 199, 14));
-    else
-      return null;
+    switch (podiumPosition) {
+      case 3:
+        return ShimmeringBackground(color: UtterBullGlobal.bronzeColor);
+      case 2:
+        return ShimmeringBackground(color: UtterBullGlobal.silverColor);
+      case 1:
+        return ShimmeringBackground(color: UtterBullGlobal.goldColor);
+    }
+    return null;
   }
 }
 
@@ -148,16 +171,13 @@ class ShimmeringBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-            child: Shimmer(
-          gradient: LinearGradient(
-              colors: [Colors.white, color ?? Colors.white, Colors.white]),
-          child: Container(),
-        ))
-      ],
-    );
+    return Shimmer.fromColors(
+      period: const Duration(seconds: 3),
+      
+        child: Container(color: Colors.white.withAlpha(100),),
+       highlightColor: Colors.white,
+         baseColor: color ?? Colors.white,);
+   
   }
 }
 
@@ -179,7 +199,7 @@ class _PlayerResultSummaryItemViewState
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
-            title: Text(summaryItem.message), leading: summaryItem.icon),
+            title: RichText(text: TextSpan(children: summaryItem.message, style: Theme.of(context).textTheme.headlineSmall)), leading: summaryItem.icon),
       ),
     );
   }

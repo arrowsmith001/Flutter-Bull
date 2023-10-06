@@ -7,7 +7,7 @@ part of 'voting_phase_view_notifier.dart';
 // **************************************************************************
 
 String _$votingPhaseViewNotifierHash() =>
-    r'6aa40ed6a11dab6722886f50f88def142ae65dd5';
+    r'148188e2eabc7bec9ed7b0f3be27609d21b5f262';
 
 /// Copied from Dart SDK
 class _SystemHash {

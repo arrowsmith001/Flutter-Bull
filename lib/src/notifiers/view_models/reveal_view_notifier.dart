@@ -35,7 +35,7 @@ class RevealViewNotifier extends _$RevealViewNotifier {
 
   RevealViewModel _buildViewModel(
       GameRoom game,
-      Map<String, PlayerWithAvatar> players,
+      Map<String, PublicPlayer> players,
       String userId,
       String whoseTurnId, 
       ResultGenerator resultGenerator, 

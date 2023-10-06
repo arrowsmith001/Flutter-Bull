@@ -89,7 +89,10 @@ class _MainViewState extends ConsumerState<MainView> {
     return Scaffold(
       body: signedInPlayerAsync.when(data: (playerStatus) {
         return ControlledNavigator<SignedInPlayerStatusNotifierState>(
-          observers: [CoordinatedRouteObserver(), HeroController()],
+          observers: [
+            CoordinatedRouteObserver(), 
+            HeroController()
+            ],
           data: playerStatus,
           controller: nav,
         );

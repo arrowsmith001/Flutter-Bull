@@ -10,7 +10,7 @@ part '3_voting_phase_view_model.freezed.dart';
 class VotingPhaseViewModel with _$VotingPhaseViewModel {
   factory VotingPhaseViewModel(
       {required GameRoom game,
-      required Map<String, PlayerWithAvatar> players,
+      required Map<String, PublicPlayer> players,
       required String userId,
       required String whoseTurnId,
       required Duration? timeRemaining}) {
@@ -66,7 +66,7 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
   }
 
   const factory VotingPhaseViewModel._(
-          {required PlayerWithAvatar playerWhoseTurn,
+          {required PublicPlayer playerWhoseTurn,
           required String playersWhoseTurnStatement,
           required Duration timeRemaining,
           required String timeString,
@@ -81,7 +81,7 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
           required List<String> playersNotVotedIds,
           required List<String> eligibleVoterIds,
           required Map<String, bool> eligibleVoterStatus,
-          required Map<String, PlayerWithAvatar> playerMap}) =
+          required Map<String, PublicPlayer> playerMap}) =
       _VotingPhaseViewModel;
 
   static String generateTimeString(Duration? timeRemaining) {

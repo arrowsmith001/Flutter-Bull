@@ -16,8 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ResultViewModel {
-  Map<String, PlayerWithAvatar> get playerMap =>
-      throw _privateConstructorUsedError;
+  Map<String, PublicPlayer> get playerMap => throw _privateConstructorUsedError;
   List<PlayerResultSummary> get playerResultSummaries =>
       throw _privateConstructorUsedError;
 
@@ -33,7 +32,7 @@ abstract class $ResultViewModelCopyWith<$Res> {
       _$ResultViewModelCopyWithImpl<$Res, ResultViewModel>;
   @useResult
   $Res call(
-      {Map<String, PlayerWithAvatar> playerMap,
+      {Map<String, PublicPlayer> playerMap,
       List<PlayerResultSummary> playerResultSummaries});
 }
 
@@ -57,7 +56,7 @@ class _$ResultViewModelCopyWithImpl<$Res, $Val extends ResultViewModel>
       playerMap: null == playerMap
           ? _value.playerMap
           : playerMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
       playerResultSummaries: null == playerResultSummaries
           ? _value.playerResultSummaries
           : playerResultSummaries // ignore: cast_nullable_to_non_nullable
@@ -75,7 +74,7 @@ abstract class _$$_ResultViewModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {Map<String, PlayerWithAvatar> playerMap,
+      {Map<String, PublicPlayer> playerMap,
       List<PlayerResultSummary> playerResultSummaries});
 }
 
@@ -97,7 +96,7 @@ class __$$_ResultViewModelCopyWithImpl<$Res>
       playerMap: null == playerMap
           ? _value._playerMap
           : playerMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
       playerResultSummaries: null == playerResultSummaries
           ? _value._playerResultSummaries
           : playerResultSummaries // ignore: cast_nullable_to_non_nullable
@@ -110,14 +109,14 @@ class __$$_ResultViewModelCopyWithImpl<$Res>
 
 class _$_ResultViewModel implements _ResultViewModel {
   _$_ResultViewModel(
-      {required final Map<String, PlayerWithAvatar> playerMap,
+      {required final Map<String, PublicPlayer> playerMap,
       required final List<PlayerResultSummary> playerResultSummaries})
       : _playerMap = playerMap,
         _playerResultSummaries = playerResultSummaries;
 
-  final Map<String, PlayerWithAvatar> _playerMap;
+  final Map<String, PublicPlayer> _playerMap;
   @override
-  Map<String, PlayerWithAvatar> get playerMap {
+  Map<String, PublicPlayer> get playerMap {
     if (_playerMap is EqualUnmodifiableMapView) return _playerMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_playerMap);
@@ -163,12 +162,12 @@ class _$_ResultViewModel implements _ResultViewModel {
 
 abstract class _ResultViewModel implements ResultViewModel {
   factory _ResultViewModel(
-          {required final Map<String, PlayerWithAvatar> playerMap,
+          {required final Map<String, PublicPlayer> playerMap,
           required final List<PlayerResultSummary> playerResultSummaries}) =
       _$_ResultViewModel;
 
   @override
-  Map<String, PlayerWithAvatar> get playerMap;
+  Map<String, PublicPlayer> get playerMap;
   @override
   List<PlayerResultSummary> get playerResultSummaries;
   @override

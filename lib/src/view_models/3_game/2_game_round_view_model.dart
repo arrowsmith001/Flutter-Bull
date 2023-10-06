@@ -15,13 +15,13 @@ class GameRoundViewModel with _$GameRoundViewModel {
   factory GameRoundViewModel(
       {required RoundPhase roundPhase,
       required GameRoom game,
-      required Map<String, PlayerWithAvatar> players,
+      required Map<String, PublicPlayer> players,
       required String userId,
       required String whoseTurnId}) {
 
     final int progress = game.progress; // TODO: Define progress in terms of whoseTurnId?
 
-    final PlayerWithAvatar playerWhoseTurn =
+    final PublicPlayer playerWhoseTurn =
         players[whoseTurnId]!;
 
     final bool isTruth = game.truths[whoseTurnId] ?? false;
@@ -66,8 +66,8 @@ class GameRoundViewModel with _$GameRoundViewModel {
   const factory GameRoundViewModel._({
     required RoundPhase roundPhase,
     required List<String> playersLeftToPlayIds,
-    required Map<String, PlayerWithAvatar> players,
-    required PlayerWithAvatar playerWhoseTurn,
+    required Map<String, PublicPlayer> players,
+    required PublicPlayer playerWhoseTurn,
     required String playerWhoseTurnStatement,
     required List<String> roleDescriptionStrings,
     required bool isMyTurn,
@@ -78,7 +78,7 @@ class GameRoundViewModel with _$GameRoundViewModel {
   }) = _GameRoundViewModel;
 
   static List<String> getRoleDescriptionStrings(
-      PlayerRole role, bool isTruth, PlayerWithAvatar playerWhoseTurn) {
+      PlayerRole role, bool isTruth, PublicPlayer playerWhoseTurn) {
     switch (role) {
       case PlayerRole.reading:
         return [

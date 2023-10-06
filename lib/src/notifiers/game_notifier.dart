@@ -41,7 +41,6 @@ class GameNotifier extends _$GameNotifier {
   Future<GameNotifierState> _buildState(GameRoom room) async {
     final playerAvatars = await _getPlayerAvatars(room.playerIds);
 
-    Logger().d('playerAvatars: $playerAvatars');
 
     //final result = await _getResult(room.resultId);
     //final achievementsWithIcons = await _getAchievements(result);
@@ -54,11 +53,12 @@ class GameNotifier extends _$GameNotifier {
     );
   }
 
-  Future<Map<String, PlayerWithAvatar>> _getPlayerAvatars(
-      List<String> playerIds) async {
+  Future<Map<String, PublicPlayer>> _getPlayerAvatars(
+      List<String> playerIds) async 
+      {
+
     final prevList = state.valueOrNull?.players.keys ?? [];
     final allPlayers = {...playerIds, ...prevList}.toList();
-    Logger().d('prevList: $prevList allPlayers: $allPlayers');
 
     final playerFutureAvatars =
         allPlayers.map((p) => ref.read(playerNotifierProvider(p).future));
@@ -66,6 +66,10 @@ class GameNotifier extends _$GameNotifier {
     final avatarList = await Future.wait(playerFutureAvatars);
 
     return Map.fromEntries(avatarList.map((e) => MapEntry(e.player.id!, e)));
+  }
+
+  Future<void> setReady(String userId, PlayerState playerState) async {
+    await _server.setPlayerState(state.value!.gameRoom.id!, userId, playerState);
   }
 
   Future<void> vote(String userId, bool truthOrLie) async {

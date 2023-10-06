@@ -85,9 +85,9 @@ class _RevealViewTestState extends State<RevealViewTest> {
           builder: ((context, snapshot) {
             if (!snapshot.hasData) return CircularProgressIndicator();
 
-            final List<PlayerWithAvatar> players = List.generate(
+            final List<PublicPlayer> players = List.generate(
                     RevealViewTest.numberOfPlayers,
-                    (i) => PlayerWithAvatar(
+                    (i) => PublicPlayer(
                         Player(id: '$i', name: 'Player $i'), snapshot.data));
 
             _revealViewModel = RevealViewModel(

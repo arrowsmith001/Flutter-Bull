@@ -6,7 +6,7 @@ part of 'player_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playerNotifierHash() => r'63d69167fade4e10f7d4b537289819e91967597e';
+String _$playerNotifierHash() => r'76ab40597b71720fef7c2a102d69d38f02344477';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,11 +29,10 @@ class _SystemHash {
   }
 }
 
-abstract class _$PlayerNotifier
-    extends BuildlessStreamNotifier<PlayerWithAvatar> {
+abstract class _$PlayerNotifier extends BuildlessStreamNotifier<PublicPlayer> {
   late final String userId;
 
-  Stream<PlayerWithAvatar> build(
+  Stream<PublicPlayer> build(
     String userId,
   );
 }
@@ -43,7 +42,7 @@ abstract class _$PlayerNotifier
 const playerNotifierProvider = PlayerNotifierFamily();
 
 /// See also [PlayerNotifier].
-class PlayerNotifierFamily extends Family<AsyncValue<PlayerWithAvatar>> {
+class PlayerNotifierFamily extends Family<AsyncValue<PublicPlayer>> {
   /// See also [PlayerNotifier].
   const PlayerNotifierFamily();
 
@@ -82,7 +81,7 @@ class PlayerNotifierFamily extends Family<AsyncValue<PlayerWithAvatar>> {
 
 /// See also [PlayerNotifier].
 class PlayerNotifierProvider
-    extends StreamNotifierProviderImpl<PlayerNotifier, PlayerWithAvatar> {
+    extends StreamNotifierProviderImpl<PlayerNotifier, PublicPlayer> {
   /// See also [PlayerNotifier].
   PlayerNotifierProvider(
     String userId,
@@ -113,7 +112,7 @@ class PlayerNotifierProvider
   final String userId;
 
   @override
-  Stream<PlayerWithAvatar> runNotifierBuild(
+  Stream<PublicPlayer> runNotifierBuild(
     covariant PlayerNotifier notifier,
   ) {
     return notifier.build(
@@ -138,8 +137,7 @@ class PlayerNotifierProvider
   }
 
   @override
-  StreamNotifierProviderElement<PlayerNotifier, PlayerWithAvatar>
-      createElement() {
+  StreamNotifierProviderElement<PlayerNotifier, PublicPlayer> createElement() {
     return _PlayerNotifierProviderElement(this);
   }
 
@@ -157,13 +155,13 @@ class PlayerNotifierProvider
   }
 }
 
-mixin PlayerNotifierRef on StreamNotifierProviderRef<PlayerWithAvatar> {
+mixin PlayerNotifierRef on StreamNotifierProviderRef<PublicPlayer> {
   /// The parameter `userId` of this provider.
   String get userId;
 }
 
 class _PlayerNotifierProviderElement
-    extends StreamNotifierProviderElement<PlayerNotifier, PlayerWithAvatar>
+    extends StreamNotifierProviderElement<PlayerNotifier, PublicPlayer>
     with PlayerNotifierRef {
   _PlayerNotifierProviderElement(super.provider);
 

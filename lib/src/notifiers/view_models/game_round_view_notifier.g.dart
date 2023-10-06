@@ -7,7 +7,7 @@ part of 'game_round_view_notifier.dart';
 // **************************************************************************
 
 String _$gameRoundViewNotifierHash() =>
-    r'170175e946f09000225036cb7ec37075bd766ec4';
+    r'6279273b7663c44e143096ba23829d8ca5170f66';
 
 /// Copied from Dart SDK
 class _SystemHash {

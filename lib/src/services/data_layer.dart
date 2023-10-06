@@ -37,6 +37,8 @@ abstract class DataService {
   Future<Achievement> getAchievement(String achievementId);
 
   Future<Map<String, Achievement>> getAllAchievements();
+
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState);
 }
 
 class DatabaseDrivenDataLayer extends DataService {
@@ -132,6 +134,11 @@ class DatabaseDrivenDataLayer extends DataService {
         .getItemsByIds(AchievementId.values.map((e) => e.name));
 
     return {for (Achievement ach in achievementsByIds) ach.id!: ach};
+  }
+  
+  @override
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) async {
+    return await gameRoomRepo.setField(roomId, 'playerStates.$userId', playerState.index);
   }
 }
 
@@ -276,6 +283,12 @@ class InMemoryDataLayer extends DataService implements DataStreamService {
     // TODO: implement getAllAchievements
     throw UnimplementedError();
   }
+  
+  @override
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) {
+    // TODO: implement setPlayerState
+    throw UnimplementedError();
+  }
 }
 
 class StaticDataLayer extends DataService implements DataStreamService {
@@ -376,6 +389,12 @@ class StaticDataLayer extends DataService implements DataStreamService {
   @override
   Stream<PlayerStatus> streamPlayerStatus(String userId) {
     // TODO: implement streamPlayerStatus
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) {
+    // TODO: implement setPlayerState
     throw UnimplementedError();
   }
 }

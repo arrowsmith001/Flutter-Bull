@@ -22,16 +22,19 @@ GameRoom _$GameRoomFromJson(Map<String, dynamic> json) {
 mixin _$GameRoom {
   String? get id => throw _privateConstructorUsedError; //String? resultId,
   String get roomCode => throw _privateConstructorUsedError;
+  String? get leaderId => throw _privateConstructorUsedError;
   GamePhase get phase => throw _privateConstructorUsedError;
   int get subPhase => throw _privateConstructorUsedError;
   String? get state => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
+  List<String> get playerOrder => throw _privateConstructorUsedError;
+  Map<String, PlayerState> get playerStates =>
+      throw _privateConstructorUsedError;
   Map<String, String> get targets => throw _privateConstructorUsedError;
   Map<String, bool> get truths => throw _privateConstructorUsedError;
   Map<String, String?> get texts => throw _privateConstructorUsedError;
   Map<String, List<String>> get votes => throw _privateConstructorUsedError;
   Map<String, List<int>> get voteTimes => throw _privateConstructorUsedError;
-  List<String> get playerOrder => throw _privateConstructorUsedError;
   int get progress => throw _privateConstructorUsedError;
   int? get roundEndUTC => throw _privateConstructorUsedError;
   GameRoomSettings get settings => throw _privateConstructorUsedError;
@@ -50,16 +53,18 @@ abstract class $GameRoomCopyWith<$Res> {
   $Res call(
       {String? id,
       String roomCode,
+      String? leaderId,
       GamePhase phase,
       int subPhase,
       String? state,
       List<String> playerIds,
+      List<String> playerOrder,
+      Map<String, PlayerState> playerStates,
       Map<String, String> targets,
       Map<String, bool> truths,
       Map<String, String?> texts,
       Map<String, List<String>> votes,
       Map<String, List<int>> voteTimes,
-      List<String> playerOrder,
       int progress,
       int? roundEndUTC,
       GameRoomSettings settings});
@@ -82,16 +87,18 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
   $Res call({
     Object? id = freezed,
     Object? roomCode = null,
+    Object? leaderId = freezed,
     Object? phase = null,
     Object? subPhase = null,
     Object? state = freezed,
     Object? playerIds = null,
+    Object? playerOrder = null,
+    Object? playerStates = null,
     Object? targets = null,
     Object? truths = null,
     Object? texts = null,
     Object? votes = null,
     Object? voteTimes = null,
-    Object? playerOrder = null,
     Object? progress = null,
     Object? roundEndUTC = freezed,
     Object? settings = null,
@@ -105,6 +112,10 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
+      leaderId: freezed == leaderId
+          ? _value.leaderId
+          : leaderId // ignore: cast_nullable_to_non_nullable
+              as String?,
       phase: null == phase
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
@@ -121,6 +132,14 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      playerOrder: null == playerOrder
+          ? _value.playerOrder
+          : playerOrder // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      playerStates: null == playerStates
+          ? _value.playerStates
+          : playerStates // ignore: cast_nullable_to_non_nullable
+              as Map<String, PlayerState>,
       targets: null == targets
           ? _value.targets
           : targets // ignore: cast_nullable_to_non_nullable
@@ -141,10 +160,6 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.voteTimes
           : voteTimes // ignore: cast_nullable_to_non_nullable
               as Map<String, List<int>>,
-      playerOrder: null == playerOrder
-          ? _value.playerOrder
-          : playerOrder // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       progress: null == progress
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
@@ -179,16 +194,18 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
   $Res call(
       {String? id,
       String roomCode,
+      String? leaderId,
       GamePhase phase,
       int subPhase,
       String? state,
       List<String> playerIds,
+      List<String> playerOrder,
+      Map<String, PlayerState> playerStates,
       Map<String, String> targets,
       Map<String, bool> truths,
       Map<String, String?> texts,
       Map<String, List<String>> votes,
       Map<String, List<int>> voteTimes,
-      List<String> playerOrder,
       int progress,
       int? roundEndUTC,
       GameRoomSettings settings});
@@ -210,16 +227,18 @@ class __$$_GameRoomCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? roomCode = null,
+    Object? leaderId = freezed,
     Object? phase = null,
     Object? subPhase = null,
     Object? state = freezed,
     Object? playerIds = null,
+    Object? playerOrder = null,
+    Object? playerStates = null,
     Object? targets = null,
     Object? truths = null,
     Object? texts = null,
     Object? votes = null,
     Object? voteTimes = null,
-    Object? playerOrder = null,
     Object? progress = null,
     Object? roundEndUTC = freezed,
     Object? settings = null,
@@ -233,6 +252,10 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
+      leaderId: freezed == leaderId
+          ? _value.leaderId
+          : leaderId // ignore: cast_nullable_to_non_nullable
+              as String?,
       phase: null == phase
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
@@ -249,6 +272,14 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value._playerIds
           : playerIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      playerOrder: null == playerOrder
+          ? _value._playerOrder
+          : playerOrder // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      playerStates: null == playerStates
+          ? _value._playerStates
+          : playerStates // ignore: cast_nullable_to_non_nullable
+              as Map<String, PlayerState>,
       targets: null == targets
           ? _value._targets
           : targets // ignore: cast_nullable_to_non_nullable
@@ -269,10 +300,6 @@ class __$$_GameRoomCopyWithImpl<$Res>
           ? _value._voteTimes
           : voteTimes // ignore: cast_nullable_to_non_nullable
               as Map<String, List<int>>,
-      playerOrder: null == playerOrder
-          ? _value._playerOrder
-          : playerOrder // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       progress: null == progress
           ? _value.progress
           : progress // ignore: cast_nullable_to_non_nullable
@@ -295,26 +322,29 @@ class _$_GameRoom implements _GameRoom {
   _$_GameRoom(
       {this.id,
       required this.roomCode,
+      this.leaderId,
       this.phase = GamePhase.lobby,
       this.subPhase = 0,
       this.state,
       final List<String> playerIds = const [],
+      final List<String> playerOrder = const [],
+      final Map<String, PlayerState> playerStates = const {},
       final Map<String, String> targets = const {},
       final Map<String, bool> truths = const {},
       final Map<String, String?> texts = const {},
       final Map<String, List<String>> votes = const {},
       final Map<String, List<int>> voteTimes = const {},
-      final List<String> playerOrder = const [],
       this.progress = 0,
       this.roundEndUTC,
       this.settings = const GameRoomSettings(roundTimeSeconds: 60 * 3)})
       : _playerIds = playerIds,
+        _playerOrder = playerOrder,
+        _playerStates = playerStates,
         _targets = targets,
         _truths = truths,
         _texts = texts,
         _votes = votes,
-        _voteTimes = voteTimes,
-        _playerOrder = playerOrder;
+        _voteTimes = voteTimes;
 
   factory _$_GameRoom.fromJson(Map<String, dynamic> json) =>
       _$$_GameRoomFromJson(json);
@@ -324,6 +354,8 @@ class _$_GameRoom implements _GameRoom {
 //String? resultId,
   @override
   final String roomCode;
+  @override
+  final String? leaderId;
   @override
   @JsonKey()
   final GamePhase phase;
@@ -339,6 +371,24 @@ class _$_GameRoom implements _GameRoom {
     if (_playerIds is EqualUnmodifiableListView) return _playerIds;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_playerIds);
+  }
+
+  final List<String> _playerOrder;
+  @override
+  @JsonKey()
+  List<String> get playerOrder {
+    if (_playerOrder is EqualUnmodifiableListView) return _playerOrder;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_playerOrder);
+  }
+
+  final Map<String, PlayerState> _playerStates;
+  @override
+  @JsonKey()
+  Map<String, PlayerState> get playerStates {
+    if (_playerStates is EqualUnmodifiableMapView) return _playerStates;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_playerStates);
   }
 
   final Map<String, String> _targets;
@@ -386,15 +436,6 @@ class _$_GameRoom implements _GameRoom {
     return EqualUnmodifiableMapView(_voteTimes);
   }
 
-  final List<String> _playerOrder;
-  @override
-  @JsonKey()
-  List<String> get playerOrder {
-    if (_playerOrder is EqualUnmodifiableListView) return _playerOrder;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_playerOrder);
-  }
-
   @override
   @JsonKey()
   final int progress;
@@ -406,7 +447,7 @@ class _$_GameRoom implements _GameRoom {
 
   @override
   String toString() {
-    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, subPhase: $subPhase, state: $state, playerIds: $playerIds, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, playerOrder: $playerOrder, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
+    return 'GameRoom(id: $id, roomCode: $roomCode, leaderId: $leaderId, phase: $phase, subPhase: $subPhase, state: $state, playerIds: $playerIds, playerOrder: $playerOrder, playerStates: $playerStates, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
   }
 
   @override
@@ -417,20 +458,24 @@ class _$_GameRoom implements _GameRoom {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
+            (identical(other.leaderId, leaderId) ||
+                other.leaderId == leaderId) &&
             (identical(other.phase, phase) || other.phase == phase) &&
             (identical(other.subPhase, subPhase) ||
                 other.subPhase == subPhase) &&
             (identical(other.state, state) || other.state == state) &&
             const DeepCollectionEquality()
                 .equals(other._playerIds, _playerIds) &&
+            const DeepCollectionEquality()
+                .equals(other._playerOrder, _playerOrder) &&
+            const DeepCollectionEquality()
+                .equals(other._playerStates, _playerStates) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality().equals(other._truths, _truths) &&
             const DeepCollectionEquality().equals(other._texts, _texts) &&
             const DeepCollectionEquality().equals(other._votes, _votes) &&
             const DeepCollectionEquality()
                 .equals(other._voteTimes, _voteTimes) &&
-            const DeepCollectionEquality()
-                .equals(other._playerOrder, _playerOrder) &&
             (identical(other.progress, progress) ||
                 other.progress == progress) &&
             (identical(other.roundEndUTC, roundEndUTC) ||
@@ -445,16 +490,18 @@ class _$_GameRoom implements _GameRoom {
       runtimeType,
       id,
       roomCode,
+      leaderId,
       phase,
       subPhase,
       state,
       const DeepCollectionEquality().hash(_playerIds),
+      const DeepCollectionEquality().hash(_playerOrder),
+      const DeepCollectionEquality().hash(_playerStates),
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_truths),
       const DeepCollectionEquality().hash(_texts),
       const DeepCollectionEquality().hash(_votes),
       const DeepCollectionEquality().hash(_voteTimes),
-      const DeepCollectionEquality().hash(_playerOrder),
       progress,
       roundEndUTC,
       settings);
@@ -477,16 +524,18 @@ abstract class _GameRoom implements GameRoom {
   factory _GameRoom(
       {final String? id,
       required final String roomCode,
+      final String? leaderId,
       final GamePhase phase,
       final int subPhase,
       final String? state,
       final List<String> playerIds,
+      final List<String> playerOrder,
+      final Map<String, PlayerState> playerStates,
       final Map<String, String> targets,
       final Map<String, bool> truths,
       final Map<String, String?> texts,
       final Map<String, List<String>> votes,
       final Map<String, List<int>> voteTimes,
-      final List<String> playerOrder,
       final int progress,
       final int? roundEndUTC,
       final GameRoomSettings settings}) = _$_GameRoom;
@@ -498,6 +547,8 @@ abstract class _GameRoom implements GameRoom {
   @override //String? resultId,
   String get roomCode;
   @override
+  String? get leaderId;
+  @override
   GamePhase get phase;
   @override
   int get subPhase;
@@ -505,6 +556,10 @@ abstract class _GameRoom implements GameRoom {
   String? get state;
   @override
   List<String> get playerIds;
+  @override
+  List<String> get playerOrder;
+  @override
+  Map<String, PlayerState> get playerStates;
   @override
   Map<String, String> get targets;
   @override
@@ -515,8 +570,6 @@ abstract class _GameRoom implements GameRoom {
   Map<String, List<String>> get votes;
   @override
   Map<String, List<int>> get voteTimes;
-  @override
-  List<String> get playerOrder;
   @override
   int get progress;
   @override

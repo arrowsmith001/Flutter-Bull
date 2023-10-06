@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$WritingPhaseViewModel {
-  PlayerWithAvatar get playerWritingFor => throw _privateConstructorUsedError;
+  PublicPlayer get playerWritingFor => throw _privateConstructorUsedError;
   bool get writingTruthOrLie => throw _privateConstructorUsedError;
   WritingPrompt get writingPrompt => throw _privateConstructorUsedError;
   bool get hasSubmitted => throw _privateConstructorUsedError;
@@ -35,7 +35,7 @@ abstract class $WritingPhaseViewModelCopyWith<$Res> {
       _$WritingPhaseViewModelCopyWithImpl<$Res, WritingPhaseViewModel>;
   @useResult
   $Res call(
-      {PlayerWithAvatar playerWritingFor,
+      {PublicPlayer playerWritingFor,
       bool writingTruthOrLie,
       WritingPrompt writingPrompt,
       bool hasSubmitted,
@@ -68,7 +68,7 @@ class _$WritingPhaseViewModelCopyWithImpl<$Res,
       playerWritingFor: null == playerWritingFor
           ? _value.playerWritingFor
           : playerWritingFor // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       writingTruthOrLie: null == writingTruthOrLie
           ? _value.writingTruthOrLie
           : writingTruthOrLie // ignore: cast_nullable_to_non_nullable
@@ -102,7 +102,7 @@ abstract class _$$_WritingPhaseViewModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {PlayerWithAvatar playerWritingFor,
+      {PublicPlayer playerWritingFor,
       bool writingTruthOrLie,
       WritingPrompt writingPrompt,
       bool hasSubmitted,
@@ -132,7 +132,7 @@ class __$$_WritingPhaseViewModelCopyWithImpl<$Res>
       playerWritingFor: null == playerWritingFor
           ? _value.playerWritingFor
           : playerWritingFor // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       writingTruthOrLie: null == writingTruthOrLie
           ? _value.writingTruthOrLie
           : writingTruthOrLie // ignore: cast_nullable_to_non_nullable
@@ -169,7 +169,7 @@ class _$_WritingPhaseViewModel implements _WritingPhaseViewModel {
       required this.playersSubmittedTextPrompt});
 
   @override
-  final PlayerWithAvatar playerWritingFor;
+  final PublicPlayer playerWritingFor;
   @override
   final bool writingTruthOrLie;
   @override
@@ -227,7 +227,7 @@ class _$_WritingPhaseViewModel implements _WritingPhaseViewModel {
 
 abstract class _WritingPhaseViewModel implements WritingPhaseViewModel {
   factory _WritingPhaseViewModel(
-          {required final PlayerWithAvatar playerWritingFor,
+          {required final PublicPlayer playerWritingFor,
           required final bool writingTruthOrLie,
           required final WritingPrompt writingPrompt,
           required final bool hasSubmitted,
@@ -236,7 +236,7 @@ abstract class _WritingPhaseViewModel implements WritingPhaseViewModel {
       _$_WritingPhaseViewModel;
 
   @override
-  PlayerWithAvatar get playerWritingFor;
+  PublicPlayer get playerWritingFor;
   @override
   bool get writingTruthOrLie;
   @override

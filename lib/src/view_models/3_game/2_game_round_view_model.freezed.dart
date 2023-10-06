@@ -18,9 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$GameRoundViewModel {
   RoundPhase get roundPhase => throw _privateConstructorUsedError;
   List<String> get playersLeftToPlayIds => throw _privateConstructorUsedError;
-  Map<String, PlayerWithAvatar> get players =>
-      throw _privateConstructorUsedError;
-  PlayerWithAvatar get playerWhoseTurn => throw _privateConstructorUsedError;
+  Map<String, PublicPlayer> get players => throw _privateConstructorUsedError;
+  PublicPlayer get playerWhoseTurn => throw _privateConstructorUsedError;
   String get playerWhoseTurnStatement => throw _privateConstructorUsedError;
   List<String> get roleDescriptionStrings => throw _privateConstructorUsedError;
   bool get isMyTurn => throw _privateConstructorUsedError;
@@ -43,8 +42,8 @@ abstract class $GameRoundViewModelCopyWith<$Res> {
   $Res call(
       {RoundPhase roundPhase,
       List<String> playersLeftToPlayIds,
-      Map<String, PlayerWithAvatar> players,
-      PlayerWithAvatar playerWhoseTurn,
+      Map<String, PublicPlayer> players,
+      PublicPlayer playerWhoseTurn,
       String playerWhoseTurnStatement,
       List<String> roleDescriptionStrings,
       bool isMyTurn,
@@ -91,11 +90,11 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
       players: null == players
           ? _value.players
           : players // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       playerWhoseTurnStatement: null == playerWhoseTurnStatement
           ? _value.playerWhoseTurnStatement
           : playerWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
@@ -139,8 +138,8 @@ abstract class _$$_GameRoundViewModelCopyWith<$Res>
   $Res call(
       {RoundPhase roundPhase,
       List<String> playersLeftToPlayIds,
-      Map<String, PlayerWithAvatar> players,
-      PlayerWithAvatar playerWhoseTurn,
+      Map<String, PublicPlayer> players,
+      PublicPlayer playerWhoseTurn,
       String playerWhoseTurnStatement,
       List<String> roleDescriptionStrings,
       bool isMyTurn,
@@ -185,11 +184,11 @@ class __$$_GameRoundViewModelCopyWithImpl<$Res>
       players: null == players
           ? _value._players
           : players // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       playerWhoseTurnStatement: null == playerWhoseTurnStatement
           ? _value.playerWhoseTurnStatement
           : playerWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
@@ -228,7 +227,7 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
   const _$_GameRoundViewModel(
       {required this.roundPhase,
       required final List<String> playersLeftToPlayIds,
-      required final Map<String, PlayerWithAvatar> players,
+      required final Map<String, PublicPlayer> players,
       required this.playerWhoseTurn,
       required this.playerWhoseTurnStatement,
       required final List<String> roleDescriptionStrings,
@@ -252,16 +251,16 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
     return EqualUnmodifiableListView(_playersLeftToPlayIds);
   }
 
-  final Map<String, PlayerWithAvatar> _players;
+  final Map<String, PublicPlayer> _players;
   @override
-  Map<String, PlayerWithAvatar> get players {
+  Map<String, PublicPlayer> get players {
     if (_players is EqualUnmodifiableMapView) return _players;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_players);
   }
 
   @override
-  final PlayerWithAvatar playerWhoseTurn;
+  final PublicPlayer playerWhoseTurn;
   @override
   final String playerWhoseTurnStatement;
   final List<String> _roleDescriptionStrings;
@@ -344,8 +343,8 @@ abstract class _GameRoundViewModel implements GameRoundViewModel {
   const factory _GameRoundViewModel(
       {required final RoundPhase roundPhase,
       required final List<String> playersLeftToPlayIds,
-      required final Map<String, PlayerWithAvatar> players,
-      required final PlayerWithAvatar playerWhoseTurn,
+      required final Map<String, PublicPlayer> players,
+      required final PublicPlayer playerWhoseTurn,
       required final String playerWhoseTurnStatement,
       required final List<String> roleDescriptionStrings,
       required final bool isMyTurn,
@@ -359,9 +358,9 @@ abstract class _GameRoundViewModel implements GameRoundViewModel {
   @override
   List<String> get playersLeftToPlayIds;
   @override
-  Map<String, PlayerWithAvatar> get players;
+  Map<String, PublicPlayer> get players;
   @override
-  PlayerWithAvatar get playerWhoseTurn;
+  PublicPlayer get playerWhoseTurn;
   @override
   String get playerWhoseTurnStatement;
   @override

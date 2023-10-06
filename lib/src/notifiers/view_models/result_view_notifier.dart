@@ -29,7 +29,7 @@ class ResultViewNotifier extends _$ResultViewNotifier {
     }
   }
 
-  ResultViewModel _buildViewModel(GameRoom game, Map<String, PlayerWithAvatar> players, 
+  ResultViewModel _buildViewModel(GameRoom game, Map<String, PublicPlayer> players, 
   String userId, ResultGenerator resultGenerator) {
         
     return ResultViewModel(

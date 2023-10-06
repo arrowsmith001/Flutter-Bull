@@ -16,7 +16,7 @@ part 'reveal_view_model.freezed.dart';
 class RevealViewModel with _$RevealViewModel {
   factory RevealViewModel(
       {required GameRoom game,
-      required Map<String, PlayerWithAvatar> players,
+      required Map<String, PublicPlayer> players,
       required String userId,
       required String whoseTurnId,
       required List<Achievement> myAchievements}) {
@@ -44,7 +44,7 @@ class RevealViewModel with _$RevealViewModel {
 
       Logger().e('Failed to create RevealViewModel: $e');
       return RevealViewModel._(
-          playerWhoseTurn: PlayerWithAvatar(Player(name: 'player.name'), Uint8List(0)),
+          playerWhoseTurn: PublicPlayer(Player(name: 'player.name'), Uint8List(0)),
           playerWhoseTurnStatement: 'playerWhoseTurnStatement',
           isStatementTruth: false,
           playersVotedLie: [],
@@ -56,11 +56,11 @@ class RevealViewModel with _$RevealViewModel {
   }
 
   factory RevealViewModel._(
-      {required PlayerWithAvatar playerWhoseTurn,
+      {required PublicPlayer playerWhoseTurn,
       required String playerWhoseTurnStatement,
       required bool isStatementTruth,
-      required List<PlayerWithAvatar> playersVotedLie,
-      required List<PlayerWithAvatar> playersVotedTruth,
+      required List<PublicPlayer> playersVotedLie,
+      required List<PublicPlayer> playersVotedTruth,
       required bool isRevealed,
       required bool isMyTurn,
       required List<Achievement> achievements}) = _RevealViewModel;

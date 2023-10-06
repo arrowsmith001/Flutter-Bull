@@ -7,17 +7,17 @@ import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 
 class GameDataFunctions {
-  static PlayerWithAvatar playerWhoseTurn(
-      Map<String, PlayerWithAvatar> players, String whoseTurnId) {
+  static PublicPlayer playerWhoseTurn(
+      Map<String, PublicPlayer> players, String whoseTurnId) {
     try {
       return players[whoseTurnId]!;
     } catch (e) {
-      return PlayerWithAvatar(const Player(), Uint8List(0));
+      return PublicPlayer(const Player(), Uint8List(0));
     }
   }
 
-  static PlayerWithAvatar playerFromId(
-      String id, Map<String, PlayerWithAvatar> players) {
+  static PublicPlayer playerFromId(
+      String id, Map<String, PublicPlayer> players) {
       return players[id]!;
   }
 
@@ -31,12 +31,12 @@ class GameDataFunctions {
     return _playersVotedX(game, whoseTurnId, 'L');
   }
 
-  static PlayerWithAvatar getTargetPlayer(
-      GameRoom game, Map<String, PlayerWithAvatar> players, String userId) {
+  static PublicPlayer getTargetPlayer(
+      GameRoom game, Map<String, PublicPlayer> players, String userId) {
     try {
       return players[game.targets[userId]]!;
     } catch (e) {
-      return PlayerWithAvatar(const Player(), Uint8List(0));
+      return PublicPlayer(const Player(), Uint8List(0));
     }
   }
 

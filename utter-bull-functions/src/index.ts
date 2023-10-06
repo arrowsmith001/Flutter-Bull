@@ -215,7 +215,9 @@ async function createGameRoomImpl(userId: string) {
         var newRoom = {
             'id': newRoomDoc.id,
             'roomCode': newCode,
+            'leaderId': userId,
             'playerIds': [userId],
+            'playerStates': {},
             'phase': 0,
             'subPhase': 0,
             'settings':
@@ -277,6 +279,8 @@ async function joinGameRoomImpl(userId: string, roomCode: string) {
 
 }
 
+// TODO: IMPORTANT!! Reassign leader
+// TODO: Delete if empty
 async function removeFromRoomImpl(userId: string, roomId: string) {
 
     await db.runTransaction(async (txn) => {
@@ -290,11 +294,26 @@ async function removeFromRoomImpl(userId: string, roomId: string) {
         var playerIds: string[] = roomData['playerIds'];
         var newPlayerIds = playerIds.filter((s) => s != userId);
 
-        var roomUpdatePromise = txn.update(roomDoc, { 'playerIds': newPlayerIds });
-        var playerUpdatePromise = txn.update(playerDoc, { 'occupiedRoomId': null });
+        txn
+            .update(playerDoc, { 'occupiedRoomId': null })
+            .update(roomDoc, { 'playerIds': newPlayerIds });
+
+        if (newPlayerIds.length == 0) {
+            // Delete room
+        }
+        else {
+            var newLeaderId = newPlayerIds[0];
+
+            console.log('newLeaderId: ' + newLeaderId + ', currentLeaderId: ' + roomData.leaderId)
+
+            const currentLeaderId = roomData.leaderId;
+            if (newLeaderId != currentLeaderId) {
+                txn.update(roomDoc, { 'leaderId': newLeaderId });
+            }
+        }
 
 
-        await Promise.all([roomUpdatePromise, playerUpdatePromise]);
+
     });
 
 }

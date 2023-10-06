@@ -23,7 +23,7 @@ class VotingPhaseViewNotifier extends _$VotingPhaseViewNotifier {
   }
 
   VotingPhaseViewModel _buildViewModel(GameRoom game,
-      Map<String, PlayerWithAvatar> players, String userId, String whoseTurnId) {
+      Map<String, PublicPlayer> players, String userId, String whoseTurnId) {
 
     final int? roundEndUTC = game.roundEndUTC;
     final duration = ref.watch(timerNotifierProvider(roundEndUTC));

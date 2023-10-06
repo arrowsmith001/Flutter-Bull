@@ -6,6 +6,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'game_room.freezed.dart';
 part 'game_room.g.dart';
 
+enum PlayerState {
+  @JsonValue(0)
+  unready,
+  @JsonValue(1) 
+  ready
+}
 
 @freezed
 class GameRoom extends Entity with _$GameRoom {
@@ -14,16 +20,18 @@ class GameRoom extends Entity with _$GameRoom {
     String? id,
     //String? resultId,
     required String roomCode,
+    String? leaderId,
     @Default(GamePhase.lobby) GamePhase phase,
     @Default(0) int subPhase,
     String? state,
     @Default([]) List<String> playerIds,
+    @Default([]) List<String> playerOrder,
+    @Default({}) Map<String, PlayerState> playerStates,
     @Default({}) Map<String, String> targets,
     @Default({}) Map<String, bool> truths,
     @Default({}) Map<String, String?> texts,
     @Default({}) Map<String, List<String>> votes,
     @Default({}) Map<String, List<int>> voteTimes,
-    @Default([]) List<String> playerOrder,
     @Default(0) int progress,
     int? roundEndUTC,
     @Default(GameRoomSettings(roundTimeSeconds: 60*3)) GameRoomSettings settings,

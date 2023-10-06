@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$VotingPhaseViewModel {
-  PlayerWithAvatar get playerWhoseTurn => throw _privateConstructorUsedError;
+  PublicPlayer get playerWhoseTurn => throw _privateConstructorUsedError;
   String get playersWhoseTurnStatement => throw _privateConstructorUsedError;
   Duration get timeRemaining => throw _privateConstructorUsedError;
   String get timeString => throw _privateConstructorUsedError;
@@ -32,8 +32,7 @@ mixin _$VotingPhaseViewModel {
   List<String> get eligibleVoterIds => throw _privateConstructorUsedError;
   Map<String, bool> get eligibleVoterStatus =>
       throw _privateConstructorUsedError;
-  Map<String, PlayerWithAvatar> get playerMap =>
-      throw _privateConstructorUsedError;
+  Map<String, PublicPlayer> get playerMap => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $VotingPhaseViewModelCopyWith<VotingPhaseViewModel> get copyWith =>
@@ -47,7 +46,7 @@ abstract class $VotingPhaseViewModelCopyWith<$Res> {
       _$VotingPhaseViewModelCopyWithImpl<$Res, VotingPhaseViewModel>;
   @useResult
   $Res call(
-      {PlayerWithAvatar playerWhoseTurn,
+      {PublicPlayer playerWhoseTurn,
       String playersWhoseTurnStatement,
       Duration timeRemaining,
       String timeString,
@@ -62,7 +61,7 @@ abstract class $VotingPhaseViewModelCopyWith<$Res> {
       List<String> playersNotVotedIds,
       List<String> eligibleVoterIds,
       Map<String, bool> eligibleVoterStatus,
-      Map<String, PlayerWithAvatar> playerMap});
+      Map<String, PublicPlayer> playerMap});
 }
 
 /// @nodoc
@@ -100,7 +99,7 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       playersWhoseTurnStatement: null == playersWhoseTurnStatement
           ? _value.playersWhoseTurnStatement
           : playersWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
@@ -160,7 +159,7 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
       playerMap: null == playerMap
           ? _value.playerMap
           : playerMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
     ) as $Val);
   }
 }
@@ -174,7 +173,7 @@ abstract class _$$_VotingPhaseViewModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {PlayerWithAvatar playerWhoseTurn,
+      {PublicPlayer playerWhoseTurn,
       String playersWhoseTurnStatement,
       Duration timeRemaining,
       String timeString,
@@ -189,7 +188,7 @@ abstract class _$$_VotingPhaseViewModelCopyWith<$Res>
       List<String> playersNotVotedIds,
       List<String> eligibleVoterIds,
       Map<String, bool> eligibleVoterStatus,
-      Map<String, PlayerWithAvatar> playerMap});
+      Map<String, PublicPlayer> playerMap});
 }
 
 /// @nodoc
@@ -224,7 +223,7 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
-              as PlayerWithAvatar,
+              as PublicPlayer,
       playersWhoseTurnStatement: null == playersWhoseTurnStatement
           ? _value.playersWhoseTurnStatement
           : playersWhoseTurnStatement // ignore: cast_nullable_to_non_nullable
@@ -284,7 +283,7 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
       playerMap: null == playerMap
           ? _value._playerMap
           : playerMap // ignore: cast_nullable_to_non_nullable
-              as Map<String, PlayerWithAvatar>,
+              as Map<String, PublicPlayer>,
     ));
   }
 }
@@ -308,7 +307,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
       required final List<String> playersNotVotedIds,
       required final List<String> eligibleVoterIds,
       required final Map<String, bool> eligibleVoterStatus,
-      required final Map<String, PlayerWithAvatar> playerMap})
+      required final Map<String, PublicPlayer> playerMap})
       : _playersVotedIds = playersVotedIds,
         _playersNotVotedIds = playersNotVotedIds,
         _eligibleVoterIds = eligibleVoterIds,
@@ -316,7 +315,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
         _playerMap = playerMap;
 
   @override
-  final PlayerWithAvatar playerWhoseTurn;
+  final PublicPlayer playerWhoseTurn;
   @override
   final String playersWhoseTurnStatement;
   @override
@@ -372,9 +371,9 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
     return EqualUnmodifiableMapView(_eligibleVoterStatus);
   }
 
-  final Map<String, PlayerWithAvatar> _playerMap;
+  final Map<String, PublicPlayer> _playerMap;
   @override
-  Map<String, PlayerWithAvatar> get playerMap {
+  Map<String, PublicPlayer> get playerMap {
     if (_playerMap is EqualUnmodifiableMapView) return _playerMap;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_playerMap);
@@ -455,7 +454,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
 
 abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
   const factory _VotingPhaseViewModel(
-          {required final PlayerWithAvatar playerWhoseTurn,
+          {required final PublicPlayer playerWhoseTurn,
           required final String playersWhoseTurnStatement,
           required final Duration timeRemaining,
           required final String timeString,
@@ -470,11 +469,11 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
           required final List<String> playersNotVotedIds,
           required final List<String> eligibleVoterIds,
           required final Map<String, bool> eligibleVoterStatus,
-          required final Map<String, PlayerWithAvatar> playerMap}) =
+          required final Map<String, PublicPlayer> playerMap}) =
       _$_VotingPhaseViewModel;
 
   @override
-  PlayerWithAvatar get playerWhoseTurn;
+  PublicPlayer get playerWhoseTurn;
   @override
   String get playersWhoseTurnStatement;
   @override
@@ -504,7 +503,7 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
   @override
   Map<String, bool> get eligibleVoterStatus;
   @override
-  Map<String, PlayerWithAvatar> get playerMap;
+  Map<String, PublicPlayer> get playerMap;
   @override
   @JsonKey(ignore: true)
   _$$_VotingPhaseViewModelCopyWith<_$_VotingPhaseViewModel> get copyWith =>
