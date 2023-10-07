@@ -44,6 +44,7 @@ class FixedSizeRegularRectanglePacker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     if (cellRatio <= 0.0) {
       return ErrorWidget(Exception('\'cellRatio\' must be greater than 0.0'));
     }

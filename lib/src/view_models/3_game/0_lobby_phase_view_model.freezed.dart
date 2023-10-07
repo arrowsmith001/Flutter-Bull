@@ -19,6 +19,8 @@ mixin _$LobbyPhaseViewModel {
   String get roomCode => throw _privateConstructorUsedError;
   String get leaderId => throw _privateConstructorUsedError;
   bool get isLeader => throw _privateConstructorUsedError;
+  bool get isReady => throw _privateConstructorUsedError;
+  bool get canStartGame => throw _privateConstructorUsedError;
   Map<String, LobbyPlayer> get presentPlayers =>
       throw _privateConstructorUsedError;
   Set<PublicPlayer> get absentPlayers => throw _privateConstructorUsedError;
@@ -44,6 +46,8 @@ abstract class $LobbyPhaseViewModelCopyWith<$Res> {
       {String roomCode,
       String leaderId,
       bool isLeader,
+      bool isReady,
+      bool canStartGame,
       Map<String, LobbyPlayer> presentPlayers,
       Set<PublicPlayer> absentPlayers,
       ListChangeData<LobbyPlayer> listChangeData,
@@ -69,6 +73,8 @@ class _$LobbyPhaseViewModelCopyWithImpl<$Res, $Val extends LobbyPhaseViewModel>
     Object? roomCode = null,
     Object? leaderId = null,
     Object? isLeader = null,
+    Object? isReady = null,
+    Object? canStartGame = null,
     Object? presentPlayers = null,
     Object? absentPlayers = null,
     Object? listChangeData = null,
@@ -89,6 +95,14 @@ class _$LobbyPhaseViewModelCopyWithImpl<$Res, $Val extends LobbyPhaseViewModel>
       isLeader: null == isLeader
           ? _value.isLeader
           : isLeader // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isReady: null == isReady
+          ? _value.isReady
+          : isReady // ignore: cast_nullable_to_non_nullable
+              as bool,
+      canStartGame: null == canStartGame
+          ? _value.canStartGame
+          : canStartGame // ignore: cast_nullable_to_non_nullable
               as bool,
       presentPlayers: null == presentPlayers
           ? _value.presentPlayers
@@ -134,6 +148,8 @@ abstract class _$$_LobbyPhaseViewModelCopyWith<$Res>
       {String roomCode,
       String leaderId,
       bool isLeader,
+      bool isReady,
+      bool canStartGame,
       Map<String, LobbyPlayer> presentPlayers,
       Set<PublicPlayer> absentPlayers,
       ListChangeData<LobbyPlayer> listChangeData,
@@ -157,6 +173,8 @@ class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
     Object? roomCode = null,
     Object? leaderId = null,
     Object? isLeader = null,
+    Object? isReady = null,
+    Object? canStartGame = null,
     Object? presentPlayers = null,
     Object? absentPlayers = null,
     Object? listChangeData = null,
@@ -177,6 +195,14 @@ class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
       isLeader: null == isLeader
           ? _value.isLeader
           : isLeader // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isReady: null == isReady
+          ? _value.isReady
+          : isReady // ignore: cast_nullable_to_non_nullable
+              as bool,
+      canStartGame: null == canStartGame
+          ? _value.canStartGame
+          : canStartGame // ignore: cast_nullable_to_non_nullable
               as bool,
       presentPlayers: null == presentPlayers
           ? _value._presentPlayers
@@ -217,6 +243,8 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
       {required this.roomCode,
       required this.leaderId,
       required this.isLeader,
+      required this.isReady,
+      required this.canStartGame,
       required final Map<String, LobbyPlayer> presentPlayers,
       required final Set<PublicPlayer> absentPlayers,
       required this.listChangeData,
@@ -234,6 +262,10 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
   final String leaderId;
   @override
   final bool isLeader;
+  @override
+  final bool isReady;
+  @override
+  final bool canStartGame;
   final Map<String, LobbyPlayer> _presentPlayers;
   @override
   Map<String, LobbyPlayer> get presentPlayers {
@@ -269,7 +301,7 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
 
   @override
   String toString() {
-    return 'LobbyPhaseViewModel._(roomCode: $roomCode, leaderId: $leaderId, isLeader: $isLeader, presentPlayers: $presentPlayers, absentPlayers: $absentPlayers, listChangeData: $listChangeData, playerReadies: $playerReadies, numberOfPlayersString: $numberOfPlayersString, enoughPlayers: $enoughPlayers, isStartingGame: $isStartingGame)';
+    return 'LobbyPhaseViewModel._(roomCode: $roomCode, leaderId: $leaderId, isLeader: $isLeader, isReady: $isReady, canStartGame: $canStartGame, presentPlayers: $presentPlayers, absentPlayers: $absentPlayers, listChangeData: $listChangeData, playerReadies: $playerReadies, numberOfPlayersString: $numberOfPlayersString, enoughPlayers: $enoughPlayers, isStartingGame: $isStartingGame)';
   }
 
   @override
@@ -283,6 +315,9 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
                 other.leaderId == leaderId) &&
             (identical(other.isLeader, isLeader) ||
                 other.isLeader == isLeader) &&
+            (identical(other.isReady, isReady) || other.isReady == isReady) &&
+            (identical(other.canStartGame, canStartGame) ||
+                other.canStartGame == canStartGame) &&
             const DeepCollectionEquality()
                 .equals(other._presentPlayers, _presentPlayers) &&
             const DeepCollectionEquality()
@@ -305,6 +340,8 @@ class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
       roomCode,
       leaderId,
       isLeader,
+      isReady,
+      canStartGame,
       const DeepCollectionEquality().hash(_presentPlayers),
       const DeepCollectionEquality().hash(_absentPlayers),
       listChangeData,
@@ -326,6 +363,8 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
       {required final String roomCode,
       required final String leaderId,
       required final bool isLeader,
+      required final bool isReady,
+      required final bool canStartGame,
       required final Map<String, LobbyPlayer> presentPlayers,
       required final Set<PublicPlayer> absentPlayers,
       required final ListChangeData<LobbyPlayer> listChangeData,
@@ -340,6 +379,10 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
   String get leaderId;
   @override
   bool get isLeader;
+  @override
+  bool get isReady;
+  @override
+  bool get canStartGame;
   @override
   Map<String, LobbyPlayer> get presentPlayers;
   @override

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
@@ -123,6 +124,7 @@ class _UtterBullDeveloperPanelState
   String _jsonPrettyString(Object? obj) =>
       obj == null ? 'null' : JsonEncoder.withIndent('\t').convert(obj);
 
+
   Widget _buildPlayerFunctions(String? id) {
     if (id == null) return Container();
     return Column(children: [
@@ -131,6 +133,12 @@ class _UtterBullDeveloperPanelState
               ? null
               : () => _server.removeFromRoom(id, roomId!),
           child: Text('Remove from room')),
+      ElevatedButton(
+          onPressed: roomId == null || !_playerIsInRoom(id)
+              ? null
+              : () => _server.setPlayerState(
+        roomId!, id, roomAsync.requireValue.gameRoom.playerStates[id] != PlayerState.ready ? PlayerState.ready : PlayerState.unready),
+          child: Text('Toggle Ready')),
       ElevatedButton(
           onPressed: roomId == null
               ? null

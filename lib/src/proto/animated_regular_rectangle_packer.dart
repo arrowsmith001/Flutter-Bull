@@ -5,6 +5,7 @@ import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier
 import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:logger/logger.dart';
 
+// TODO: Optimize and generalize
 class AnimatedRegularRectanglePacker<T> extends StatefulWidget {
   AnimatedRegularRectanglePacker(
       {super.key,
@@ -17,7 +18,7 @@ class AnimatedRegularRectanglePacker<T> extends StatefulWidget {
 
   final List<T> initialData;
   final Widget Function(T) builder;
-  final Object Function(T) itemToId;
+  final String Function(T) itemToId;
 
   final HeroController hc = HeroController(
       createRectTween: (r1, r2) => CustomRectTween(a: r1!, b: r2!));
@@ -29,8 +30,15 @@ class AnimatedRegularRectanglePacker<T> extends StatefulWidget {
 
 class AnimatedRegularRectanglePackerState<T>
     extends State<AnimatedRegularRectanglePacker<T>> {
-  late List<ShrinkingWidget> items =
-      widget.initialData.map(getHeroedItem).toList();
+  late List<T> items = widget.initialData;
+  late Map<String, int> itemIdsToIndex = _generateMap();
+
+  late List<ShrinkingWidget> views = items.map(getHeroedItem).toList();
+
+  void _buildViewsFromItems() {
+    views.clear();
+    views.addAll(items.map(getHeroedItem).toList());
+  }
 
   ShrinkingWidget getHeroedItem(T item, [bool shrink = false]) {
     final built = widget.builder(item);
@@ -54,35 +62,80 @@ class AnimatedRegularRectanglePackerState<T>
 
   void removeItem(T itemToRemove) async {
     final itemTag = widget.itemToId(itemToRemove);
-    final itemIndex =
-        items.indexWhere((element) => element.child.tag == itemTag);
-    final oldItem = items[itemIndex];
-
-    // items = List.generate(items.length, (i) {
-    //   if (i != itemIndex)
-    //     return items[i];
-    //   else
-    //     return getHeroedItem(itemToRemove, true);
-    // });
-
-    // items[itemIndex] = Hero(tag: itemTag, placeholderBuilder: (_, __, ___) => Text("HI"), child: Text("HOP") );
-
-    // items[itemIndex] = Hero(
-    //     tag: itemTag,
-    //     child: oldItem,
-    //     placeholderBuilder: (context, heroSize, child) =>
-    //         ShrinkingWidget(oldItem));
-
+    final itemIndex = itemIdsToIndex[itemTag]!;
+    
+    final oldItem = views[itemIndex];
     oldItem.control.start();
+
+    views.removeAt(itemIndex);
     items.removeAt(itemIndex);
+    itemIdsToIndex.remove(itemTag);
 
     navKey.currentState?.pushReplacement(_getRoute());
   }
 
   void addItem(T item) {
-    items.add(getHeroedItem(item));
+    items.add(item);
+    itemIdsToIndex.addAll({widget.itemToId(item): items.indexOf(item)});
+    views.add(getHeroedItem(item));
 
     navKey.currentState?.pushReplacement(_getRoute());
+  }
+
+  void setItems(List<T> newItems) {
+    items.clear();
+    items.addAll(newItems);
+    itemIdsToIndex = _generateMap();
+
+    setState(() {
+      _buildViewsFromItems();
+    });
+
+    //navKey.currentState?.pushReplacement(_getRoute(0));
+  }
+
+  void updateItem(String key, T Function(T) transform) 
+  {
+    final index = itemIdsToIndex[key];
+    if (index == null) return;
+
+    final item = items[index];
+    final newItem = transform(item);
+
+    items.removeAt(index);
+    items.insert(
+      index, newItem
+    );
+
+    setState(() {
+      _buildViewsFromItems();
+    });
+    //navKey.currentState?.pushReplacement(_getRoute(0));
+  }
+
+  void updateItems(List<T> items) {
+    final Map<String, T> map =
+        Map.fromEntries(items.map((e) => MapEntry(widget.itemToId(e), e)));
+
+    final List<T> newItemList = <T>[];
+
+    for (int i = 0; i < this.items.length; i++) {
+      final tag = widget.itemToId(items[i]);
+      if (map.containsKey(tag)) {
+        newItemList.add(map[tag]!);
+      } else {
+        newItemList.add(this.items[i]);
+      }
+    }
+
+    this.items.clear();
+    this.items.addAll(newItemList);
+
+    setState(() {
+      _buildViewsFromItems();
+    });
+
+    //navKey.currentState?.pushReplacement(_getRoute(0));
   }
 
   final navKey = GlobalKey<NavigatorState>();
@@ -101,12 +154,17 @@ class AnimatedRegularRectanglePackerState<T>
     );
   }
 
-  PageRoute _getRoute() {
+  PageRoute _getRoute([int milliseconds = 500]) {
     return PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 500),
+        transitionDuration: Duration(milliseconds: milliseconds),
         pageBuilder: (_, __, ___) {
-          return RegularRectanglePacker(items: List.from(items));
+          return RegularRectanglePacker(items: List.from(views));
         });
+  }
+
+  Map<String, int> _generateMap() {
+    return Map.fromEntries(items
+        .map((item) => MapEntry(widget.itemToId(item), items.indexOf(item))));
   }
 }
 
@@ -187,6 +245,6 @@ class _ShrinkingWidgetState extends State<ShrinkingWidget>
   }
 
   void onShrink() {
-      if (widget.control.value == 1) start();
+    if (widget.control.value == 1) start();
   }
 }

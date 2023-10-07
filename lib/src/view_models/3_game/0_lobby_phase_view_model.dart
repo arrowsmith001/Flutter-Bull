@@ -3,6 +3,8 @@ import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../notifiers/view_models/lobby_player.dart';
+
 part '0_lobby_phase_view_model.freezed.dart';
 
 // TODO: Outsource variable
@@ -26,12 +28,14 @@ class ListChangeData<T> {
 
 @freezed
 class LobbyPhaseViewModel with _$LobbyPhaseViewModel {
+
   factory LobbyPhaseViewModel({
     required GameRoom game,
     required Map<String, LobbyPlayer> players,
     required String userId,
     required ListChangeData<LobbyPlayer> listChangeData,
   }) {
+
     final presentPlayers = Map.fromEntries(
         players.entries.where((entry) => game.playerIds.contains(entry.key)));
 
@@ -55,10 +59,12 @@ class LobbyPhaseViewModel with _$LobbyPhaseViewModel {
         roomCode: game.roomCode,
         leaderId: game.leaderId ?? '',
         isLeader: game.leaderId == userId,
+        isReady: readyRoster.contains(userId),
+        canStartGame: game.playerIds.every((id) => readyRoster.contains(id) || id == game.leaderId),
         listChangeData: listChangeData,
         presentPlayers: presentPlayers,
         absentPlayers: absentPlayers,
-        playerReadies: {},
+        playerReadies: game.playerStates.map((key, value) => MapEntry(key, value == PlayerState.ready)),
         numberOfPlayersString: numberOfPlayersString,
         enoughPlayers: numberOfPlayersPresent >= numberOfPlayersNeededForGame,
         isStartingGame: game.state == 'startingGame');
@@ -68,6 +74,8 @@ class LobbyPhaseViewModel with _$LobbyPhaseViewModel {
     required String roomCode,
     required String leaderId,
     required bool isLeader,
+    required bool isReady,
+    required bool canStartGame,
     required Map<String, LobbyPlayer> presentPlayers,
     required Set<PublicPlayer> absentPlayers,
     required ListChangeData<LobbyPlayer> listChangeData,

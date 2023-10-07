@@ -7,7 +7,7 @@ part of 'lobby_phase_view_notifier.dart';
 // **************************************************************************
 
 String _$lobbyPhaseViewNotifierHash() =>
-    r'1726870250784394865ed1e8437f1467ac50f9b4';
+    r'b5b7e0f8a93775f72f8acaec9655938f08a0aeeb';
 
 /// Copied from Dart SDK
 class _SystemHash {

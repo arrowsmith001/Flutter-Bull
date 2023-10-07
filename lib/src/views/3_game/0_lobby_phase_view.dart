@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
@@ -15,8 +16,11 @@ import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dar
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
+
+import '../../notifiers/view_models/lobby_player.dart';
 
 class LobbyPhaseView extends ConsumerStatefulWidget {
   const LobbyPhaseView({super.key});
@@ -27,6 +31,12 @@ class LobbyPhaseView extends ConsumerStatefulWidget {
 
 class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     with UserID, RoomID, TickerProviderStateMixin {
+  late final _vmProvider = lobbyPhaseViewNotifierProvider(roomId, userId);
+  final _rectKey =
+      GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
+
+  UtterBullServer get _getServer => ref.read(utterBullServerProvider);
+
   //late AnimationController _controller;
 
   @override
@@ -39,17 +49,30 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     }); */
   }
 
-  UtterBullServer get _getServer => ref.read(utterBullServerProvider);
-
-  late final vmProvider = lobbyPhaseViewNotifierProvider(roomId, userId);
-
-  final rectKey = GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
+  void onReadyUp(bool isReady) {
+    _getServer.setPlayerState(
+        roomId, userId, isReady ? PlayerState.unready : PlayerState.ready);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final vmAsync = ref.watch(vmProvider);
+    final vmAsync = ref.watch(_vmProvider);
 
-    ref.listen(vmProvider.select((state) => state.value?.listChangeData),
+
+    ref.listen(_vmProvider.select((state) => state.valueOrNull?.presentPlayers),
+        (prev, next) {
+
+      if (prev != null && next != null) {
+
+        if (setEquals(prev.keys.toSet(), next.keys.toSet())) {
+          _rectKey.currentState?.setItems(next.values.toList());
+        }
+
+      }
+    });
+
+
+    ref.listen(_vmProvider.select((state) => state.value?.listChangeData),
         (_, next) {
       if (next == null) return;
 
@@ -57,10 +80,10 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
       if (next.listChangeType == ListChangeType.add) {
         final newPlayer = next.data!;
-        rectKey.currentState!.addItem(newPlayer);
+        _rectKey.currentState!.addItem(newPlayer);
       }
       if (next.listChangeType == ListChangeType.remove) {
-        rectKey.currentState!.removeItem(next.data!);
+        _rectKey.currentState!.removeItem(next.data!);
       }
 
       // if (next.listChangeType == ListChangeType.add) {
@@ -68,7 +91,8 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
       // } else if (next.listChangeType == ListChangeType.remove) {
       //   _removeFromPlayerList(next.data, next.changeIndex);
       // }
-    });
+    });    
+    
 
     return Scaffold(body: vmAsync.whenDefault((vm) {
       return Stack(
@@ -76,87 +100,14 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.white, Colors.white.withOpacity(0)])),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Column(children: [
-                    Text(
-                      'Game Code:',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    AutoSizeText(vm.roomCode,
-                        maxLines: 1, style: TextStyle(fontSize: 64))
-                  ]),
-                ),
-              ),
+              _buildGameCodeDisplay(context, vm),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.45),
-                        borderRadius: BorderRadius.circular(16.0)),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Players',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          Expanded(
-                              child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: _buildRectanglePacker(vm),
-                          )),
-                        ],
-                      ),
-                    ),
-                  ),
+                  child: _buildPlayerDisplay(context, vm),
                 ),
               ),
-              Container(
-                color: Colors.white.withOpacity(0.75),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Text(vm.numberOfPlayersString),
-                    Flexible(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                                onPressed: () =>
-                                    _getServer.removeFromRoom(userId, roomId),
-                                icon: Transform.flip(
-                                    flipX: true,
-                                    child: Icon(Icons.exit_to_app_rounded))),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: SizedBox(
-                                height: 85,
-                                child: vm.isStartingGame
-                                    ? UtterBullCircularProgressIndicator()
-                                    : UtterBullButton(
-                                        onPressed: vm.enoughPlayers
-                                            ? () => _onStartGamePressed()
-                                            : null,
-                                        title: 'Start Game'),
-                              ),
-                            )
-                          ]),
-                    ),
-                  ]),
-                ),
-              )
+              _buildBottomControls(vm)
             ],
           )
         ],
@@ -164,7 +115,98 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     }));
   }
 
-  final ScrollController _scrollController = ScrollController();
+  Container _buildGameCodeDisplay(
+      BuildContext context, LobbyPhaseViewModel vm) {
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.white.withOpacity(0)])),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Column(children: [
+          Text(
+            'Game Code:',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          AutoSizeText(vm.roomCode, maxLines: 1, style: TextStyle(fontSize: 64))
+        ]),
+      ),
+    );
+  }
+
+  Container _buildPlayerDisplay(BuildContext context, LobbyPhaseViewModel vm) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.45),
+          borderRadius: BorderRadius.circular(16.0)),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
+        child: Column(
+          children: [
+            Text(
+              'Players',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: __buildRectanglePacker(vm),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container _buildBottomControls(LobbyPhaseViewModel vm) {
+    final bool isLeader = vm.isLeader;
+    final bool isReady = vm.isReady;
+
+    final button = isLeader
+        ? UtterBullButton(
+            onPressed: vm.enoughPlayers
+                ? () => onStartGamePressed(vm.canStartGame)
+                : null,
+            title: 'Start Game')
+        : UtterBullButton(
+            onPressed: () => onReadyUp(isReady),
+            isShimmering: !isReady,
+            title: isReady ? 'UNREADY' : 'READY UP');
+
+    return Container(
+      color: Colors.white.withOpacity(0.75),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(vm.numberOfPlayersString),
+          Flexible(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: () =>
+                          _getServer.removeFromRoom(userId, roomId),
+                      icon: Transform.flip(
+                          flipX: true, child: Icon(Icons.exit_to_app_rounded))),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: SizedBox(
+                      height: 85,
+                      child: vm.isStartingGame
+                          ? UtterBullCircularProgressIndicator()
+                          : button,
+                    ),
+                  )
+                ]),
+          ),
+        ]),
+      ),
+    );
+  }
 
   // TODO: Change to RegularRectanglePacker
   // Widget _buildAnimatedList(LobbyPhaseViewModel vm) {
@@ -200,31 +242,49 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   //       ));
   // }
 
-  Widget _buildListItem(
+  Widget __buildListItem(
       PublicPlayer playerWithAvatar, bool isReady, bool isLeader) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final double h = constraints.maxHeight * 0.2;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Stack(
-          children: [
-            UtterBullPlayerAvatar(
-                playerWithAvatar.player.name!, playerWithAvatar.avatarData),
-            isLeader
-                ? Positioned(
-                    top: 10,
-                    right: 0,
-                    child: SizedBox(height: h, child: LeaderLabel()))
-                : isReady
-                    ? Positioned(
+    return LayoutBuilder(
+        key: ValueKey<String>(playerWithAvatar.player.id!),
+        builder: (context, constraints) {
+          final double h = constraints.maxHeight * 0.2;
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Stack(
+              children: [
+
+                UtterBullPlayerAvatar(
+                    playerWithAvatar.player.name!, playerWithAvatar.avatarData),
+
+                Positioned(
                         top: 10,
                         right: 0,
-                        child: SizedBox(height: h, child: ReadyLabel()))
-                    : SizedBox.shrink()
-          ],
-        ),
-      );
-    });
+                        child: SizedBox(height: h, child: AvatarStateLabel('LEADER', isActive: isLeader,
+                        outline: Color.lerp(Theme.of(context).primaryColor, Colors.white, 0.65))))
+                    ,
+
+
+                Positioned(
+                        top: 10,
+                        right: 0,
+                        child:
+                            SizedBox(height: h, child: AvatarStateLabel('READY', isActive: isReady && !isLeader)))
+              ],
+            ),
+          );
+        });
+  }
+
+  AnimatedRegularRectanglePacker<LobbyPlayer>? rectPacker;
+
+  Widget __buildRectanglePacker(LobbyPhaseViewModel vm) {
+    rectPacker ??= AnimatedRegularRectanglePacker<LobbyPlayer>(
+        key: _rectKey,
+        initialData: vm.presentPlayers.values.toList(),
+        builder: (LobbyPlayer e) =>
+            __buildListItem(e.player, e.isReady, e.isLeader),
+        itemToId: (LobbyPlayer lp) => lp.player.player.id!);
+    return rectPacker!;
   }
 
   // void _insertIntoPlayerList(String? changedItemId, int? changeIndex) {
@@ -249,60 +309,58 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   //   );
   // }
 
-  void _onStartGamePressed() {
-    _getServer.setPlayerState(roomId, userId, PlayerState.ready);
-    //_getServer.startGame(roomId);
-  }
-
-  AnimatedRegularRectanglePacker<LobbyPlayer>? rectPacker;
-
-  Widget _buildRectanglePacker(LobbyPhaseViewModel vm) {
-    rectPacker ??= AnimatedRegularRectanglePacker<LobbyPlayer>(
-        key: rectKey,
-        initialData: vm.presentPlayers.values.toList(),
-        builder: (LobbyPlayer e) => _buildListItem(e.player, e.isReady, e.isLeader),
-        itemToId: (LobbyPlayer lp) => lp.player.player.id!);
-    return rectPacker!;
-  }
-}
-
-class ReadyLabel extends StatelessWidget {
-  const ReadyLabel({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AvatarStateLabel('READY');
+  void onStartGamePressed(bool canStartGame) {
+    if (canStartGame) {
+      _getServer.startGame(roomId);
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) => Column(
+                children: [
+                  UtterBullTextBox('Not everyone is ready'),
+                  UtterBullButton(
+                      title: 'OK',
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ],
+              ));
+    }
   }
 }
 
-class LeaderLabel extends StatelessWidget {
-  const LeaderLabel({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return AvatarStateLabel('LEADER',
-        outline:
-            Color.lerp(Theme.of(context).primaryColor, Colors.white, 0.65));
-  }
-}
 
 class AvatarStateLabel extends StatelessWidget {
-  const AvatarStateLabel(
-    this.text, {
-    this.outline,
-    super.key,
-  });
+  AvatarStateLabel(this.text,
+      {this.outline, super.key, required this.isActive});
 
   final String text;
   final Color? outline;
+
+  final bool isActive;
+  final Duration duration = Duration(milliseconds: 300);
+
   @override
   Widget build(BuildContext context) {
-    return Transform.rotate(
-        angle: pi * 0.06,
-        child: UglyOutlinedText(
-          text,
-          outlineColor: outline ?? Colors.white,
-          fillColor: Colors.black,
-        ));
+
+    return AnimatedOpacity(
+        curve: Curves.decelerate,
+        duration: duration,
+      opacity: isActive ? 1 : 0,
+      child: AnimatedContainer(
+        curve: Curves.elasticInOut,
+        transform: isActive ? Matrix4.identity() : Matrix4.identity()*0.01,
+        transformAlignment: Alignment.center,
+        duration: duration,
+        child: Transform.rotate(
+            angle: pi * 0.06,
+            child: UglyOutlinedText(
+              text,
+              outlineColor: outline ?? Colors.white,
+              fillColor: Colors.black,
+            )),
+      ),
+    );
   }
 }

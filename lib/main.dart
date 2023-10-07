@@ -22,6 +22,7 @@ import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
+import 'package:flutter_bull/src/proto/animated_regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -43,17 +44,9 @@ import 'package:logger/logger.dart';
 import 'src/custom/data/implemented/firebase.dart';
 import 'src/widgets/main/mobile_app_layout_container.dart';
 
-// Immediate
-// TODO: Implement saboteur guessing minigame
-// TODO: Reveal screen - navigate to a mini round results view
-// TODO: Remove reading screen, subsume into reader screen
-
-// Future
-// TODO: Consider firebase function listeners in TS file
-
 ////////////////////////////////////////////////////////////////
 
-String fakeId = '';
+String fakeId = 'AJOKzquHwyxNSG35yV9AwOBmXaEi';
 const bool testModeOn = false;
 
 ////////////////////////////////////////////////////////////////
@@ -95,7 +88,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (testModeOn) return ResultViewTest();
+    if (testModeOn) return (true ? Test() : ResultViewTest());
     return instances > 1
         ? _buildMultipleInstances(instances)
         : _buildInstance();
@@ -199,8 +192,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
 class ProvisionedUtterBullFunctionUser extends StatelessWidget {
   final AuthService authService;
   final UtterBullServer server;
@@ -238,7 +229,6 @@ class ResultViewTest extends StatefulWidget {
 }
 
 class _ResultViewTestState extends State<ResultViewTest> {
-
   void onFab() {
     //_revealController.onRevealed();
   }
@@ -263,7 +253,12 @@ class _ResultViewTestState extends State<ResultViewTest> {
 
     final Map<String, String> targets = {};
     final Map<String, bool> truths = {};
-    final Map<String, PlayerState> playerStates = Map.fromEntries(playerOrder.map((e) => MapEntry(e, (int.parse(e) % 2) == 0 ? PlayerState.ready : PlayerState.unready)));
+    final Map<String, PlayerState> playerStates = Map.fromEntries(
+        playerOrder.map((e) => MapEntry(
+            e,
+            (int.parse(e) % 2) == 0
+                ? PlayerState.ready
+                : PlayerState.unready)));
     final int n = playerOrder.length;
     for (var i = 0; i < n; i++) {
       final String playerId = playerOrder[i];
@@ -317,13 +312,10 @@ class _ResultViewTestState extends State<ResultViewTest> {
   late final RevealViewController _revealController =
       RevealViewController(_revealViewModel);
 
-    
-
   // TODO: Test reveal with 1 voter: squash or align?
 
   @override
   Widget build(BuildContext context) {
-
     final data = StaticDataLayer(game, players);
 
     return ProvisionedUtterBullFunctionUser(
@@ -355,6 +347,55 @@ class _ResultViewTestState extends State<ResultViewTest> {
                 ),
               )),
         ),
+      ),
+    );
+  }
+}
+
+class Test extends StatefulWidget {
+  Test({super.key});
+
+  final _key = GlobalKey<AnimatedRegularRectanglePackerState>();
+
+  @override
+  State<Test> createState() => _TestState();
+}
+
+class _TestState extends State<Test> {
+  bool b = true;
+
+  double width = 500;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+
+      home: AnimatedRegularRectanglePacker(
+        key: widget._key,
+        itemToId: (i) => '0',
+        builder: (i) => Stack(children: [
+          AnimatedContainer(
+            duration: Duration(seconds: 1),
+            child: Column(
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        b = !b;
+                        widget._key.currentState!.setItems(<int>[0, 2, 4]);
+                      });
+                    },
+                    child: Text('hi')),
+                Expanded(
+                    child: AvatarStateLabel(
+                  'label',
+                  isActive: i % 2 == 0,
+                ))
+              ],
+            ),
+          )
+        ]),
+        initialData: [0, 1, 2],
       ),
     );
   }

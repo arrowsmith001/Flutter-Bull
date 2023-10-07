@@ -323,6 +323,7 @@ enum GameRoomPhase {
 }
 
 // TODO: Ensure player cannot join while starting game
+// TODO: Ensure all players are ready/spectating before starting game
 async function startGameImpl(roomId: string) {
 
     await db.collection('rooms').doc(roomId).update({ 'state': 'startingGame' });
