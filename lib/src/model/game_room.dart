@@ -10,7 +10,9 @@ enum PlayerState {
   @JsonValue(0)
   unready,
   @JsonValue(1) 
-  ready
+  ready,
+  @JsonValue(2)  
+  inGame
 }
 
 @freezed

@@ -19,7 +19,7 @@ class GameRoundViewModel with _$GameRoundViewModel {
       required String userId,
       required String whoseTurnId}) {
 
-    final int progress = game.progress; // TODO: Define progress in terms of whoseTurnId?
+    final int progress = game.playerOrder.indexOf(whoseTurnId);
 
     final PublicPlayer playerWhoseTurn =
         players[whoseTurnId]!;
@@ -40,9 +40,8 @@ class GameRoundViewModel with _$GameRoundViewModel {
         GameDataFunctions.getShuffledIds(game);
 
     final List<String> playersLeftToPlay = pseudoShuffledIds
-        .where((id) => game.progress <= game.playerOrder.indexOf(id))
+        .where((id) => (progress - 1) < game.playerOrder.indexOf(id))
         .toList();
-    final int whoseTurnIndex = playersLeftToPlay.indexOf(whoseTurnId);
     
     final String statement =
         GameDataFunctions.playersWhoseTurnStatement(game, whoseTurnId);
@@ -51,7 +50,7 @@ class GameRoundViewModel with _$GameRoundViewModel {
     return GameRoundViewModel._(
         roundPhase: roundPhase,
         playersLeftToPlayIds: playersLeftToPlay,
-        whoseTurnIndex: whoseTurnIndex,
+        whoseTurnIndex: progress,
         players: players,
         playerWhoseTurn: playerWhoseTurn,
         playerWhoseTurnStatement: statement,
@@ -60,7 +59,8 @@ class GameRoundViewModel with _$GameRoundViewModel {
         isMyTurn: userId == whoseTurnId,
         isSaboteur: isSaboteur,
         timeToReadOut: GameDataFunctions.calculateTimeToReadOut(statement),
-        isTruth: isTruth);
+        isTruth: isTruth,
+        isFinalRound: progress == (game.playerOrder.length - 1),);
   }
 
   const factory GameRoundViewModel._({
@@ -73,6 +73,7 @@ class GameRoundViewModel with _$GameRoundViewModel {
     required bool isMyTurn,
     required bool isSaboteur,
     required bool isTruth,
+    required bool isFinalRound,
     required int whoseTurnIndex,
     required int timeToReadOut,
   }) = _GameRoundViewModel;

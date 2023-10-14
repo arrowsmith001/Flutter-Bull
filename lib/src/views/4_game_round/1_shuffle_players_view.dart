@@ -9,6 +9,7 @@ import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -25,14 +26,15 @@ class ShufflePlayersAnimationView extends ConsumerStatefulWidget {
 class _ShufflePlayersAnimationViewState
     extends ConsumerState<ShufflePlayersAnimationView>
     with RoomID, WhoseTurnID, UserID {
+  late Duration duration = UtterBullGlobal.playerSelectionAnimationDuration;
+
   @override
   void initState() {
     super.initState();
-    _timer = Timer(Duration(milliseconds: animationTimerMs), () {});
+    _timer = Timer(duration, () {});
   }
 
   late Timer _timer;
-  int animationTimerMs = 2500;
 
   void _onTimerEnd() {
     Navigator.of(context).pushReplacementNamed(RoundPhase.reader.name);
@@ -47,10 +49,10 @@ class _ShufflePlayersAnimationViewState
     return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {
       final PlayerSelector playerSelector = LinearScrollingPlayerSelector(
           width: MediaQuery.of(context).size.width,
-          maxDuration: Duration(milliseconds: animationTimerMs),
+          maxDuration: duration,
           shuffledPlayerIds: vm.playersLeftToPlayIds,
           playerAvatars: vm.players,
-          selectedIndex: vm.whoseTurnIndex,
+          whoseTurn: whoseTurnId,
           onAnimationEnd: () => _onTimerEnd());
 
       return playerSelector;
@@ -62,7 +64,7 @@ abstract class PlayerSelector extends StatefulWidget {
   final Duration maxDuration;
   final Map<String, PublicPlayer> playerAvatars;
   final List<String> shuffledPlayerIds;
-  final int selectedIndex;
+  final String whoseTurn;
   final double width;
 
   const PlayerSelector({
@@ -70,7 +72,7 @@ abstract class PlayerSelector extends StatefulWidget {
     required this.shuffledPlayerIds,
     required this.playerAvatars,
     required this.maxDuration,
-    required this.selectedIndex,
+    required this.whoseTurn,
     required this.width,
   });
 }
@@ -81,7 +83,7 @@ class LinearScrollingPlayerSelector extends PlayerSelector {
       required super.shuffledPlayerIds,
       required super.playerAvatars,
       required super.maxDuration,
-      required super.selectedIndex,
+      required super.whoseTurn,
       required VoidCallback onAnimationEnd,
       required super.width});
 
@@ -97,10 +99,19 @@ class _LinearScrollingPlayerSelectorState
 
   double get w => widget.width;
 
-  late AnimationController animController;
-  late Animation<double> anim;
+  late AnimationController wrapUpAnimController =
+      AnimationController(vsync: this, duration: duration2)
+        ..addListener(() {
+          setState(() {});
+        });
+  late Animation<double> wrapUpAnim =
+      CurvedAnimation(parent: wrapUpAnimController, curve: Curves.decelerate);
+
   late double startPosition = itemW / 2;
   late double endPosition = (itemW * n) - itemW * 2.5;
+
+  late Duration duration1 = widget.maxDuration * 0.9;
+  late Duration duration2 = widget.maxDuration * 0.1;
 
   @override
   void initState() {
@@ -113,9 +124,15 @@ class _LinearScrollingPlayerSelectorState
     });
   }
 
+  @override
+  void dispose() {
+    wrapUpAnimController.dispose();
+    super.dispose();
+  }
+
   void _initializeList() {
     final shuffledIds = widget.shuffledPlayerIds;
-    final whoseTurn = widget.shuffledPlayerIds[widget.selectedIndex];
+    final whoseTurn = widget.whoseTurn;
 
     List<String> idsForward = List.empty(growable: true);
 
@@ -125,9 +142,12 @@ class _LinearScrollingPlayerSelectorState
       i++;
     }
 
+    Logger().d(idsForward);
+    int j = shuffledIds.length - 1;
     while (idsForward[n - 2] != whoseTurn) {
-      final String removedId = idsForward.removeAt(n - 1);
-      idsForward = [removedId, ...idsForward];
+      idsForward = [shuffledIds[j], ...idsForward.sublist(0, n - 1)];
+      Logger().d('new: ' + idsForward.toString());
+      j = (j - 1) % shuffledIds.length;
     }
 
     ids = List.from(idsForward);
@@ -141,10 +161,7 @@ class _LinearScrollingPlayerSelectorState
       upper = pos + w;
 
       if (0 <= i && i < n) {
-        currentPlayerName = widget.playerAvatars[ids[i]]!
-                .player
-                .name ??
-            '';
+        currentPlayerName = widget.playerAvatars[ids[i]]!.player.name ?? '';
       }
     });
   }
@@ -154,7 +171,6 @@ class _LinearScrollingPlayerSelectorState
 
   late List<String> ids;
 
-  double sliderVal = 0.0;
   String currentPlayerName = "";
 
   late double itemW = w / 2;
@@ -168,13 +184,12 @@ class _LinearScrollingPlayerSelectorState
       mainAxisSize: MainAxisSize.min,
       children: [
         AutoSizeText(currentPlayerName,
-        maxLines: 1,
-            style: Theme.of(context).textTheme.displayLarge),
+            maxLines: 1, style: Theme.of(context).textTheme.displayLarge),
         Flexible(
           child: SizedBox(
             height: itemW,
             child: ListView.builder(
-              //cacheExtent: MediaQuery.of(context).size.width,
+              clipBehavior: Clip.none,
               controller: _controller,
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
@@ -189,10 +204,6 @@ class _LinearScrollingPlayerSelectorState
 
                 final double dx = (x - _controller.offset) / (w + itemW);
 
-                // Logger().d('offset:' + _controller.offset.toString());
-                // Logger().d('w:' + w.toString());
-                //final double scale = ;
-
                 final avatar = widget.playerAvatars[ids[i]]!;
 
                 final int sign = dx < 0 ? -1 : 1;
@@ -204,38 +215,25 @@ class _LinearScrollingPlayerSelectorState
                       child: UtterBullPlayerAvatar(null, avatar.avatarData)),
                 );
 
-                if (i == n - 2) {
-                  return Hero(tag: 'avatar', child: child);
-                }
+                bool isChosen = i == n - 2;
 
-                return child;
+                if (isChosen) {
+                  return Hero(tag: 'avatar', child: child);
+                } else {
+                  return Opacity(
+                    opacity: 1 - wrapUpAnimController.value,
+                    child: Transform.translate(
+                        offset: Offset(
+                            0,
+                            (MediaQuery.of(context).size.height * 0.1) *
+                                wrapUpAnim.value),
+                        child: child),
+                  );
+                }
               },
             ),
           ),
         ),
-        Slider(
-            value: sliderVal,
-            onChanged: (v) {
-              final double pos = _controller.offset;
-
-              // Calculate index for name
-              final int i = (pos / itemW).ceil();
-
-              setState(() {
-                lower = pos - (1.5 * itemW);
-                upper = pos + w;
-
-                if (0 <= i && i < n) {
-                  currentPlayerName = widget.playerAvatars[ids[i]]!
-                          .player
-                          .name ??
-                      '';
-                }
-
-                sliderVal = v;
-                _controller.jumpTo(v * itemW * 50);
-              });
-            })
       ],
     );
   }
@@ -248,7 +246,9 @@ class _LinearScrollingPlayerSelectorState
     });
 
     await _controller.animateTo(endPosition,
-        duration: widget.maxDuration, curve: Curves.decelerate);
+        duration: duration1, curve: Curves.decelerate);
+
+    await wrapUpAnimController.forward(from: 0);
 
     navigator.pushReplacementNamed(RoundPhase.reader.name);
   }
@@ -261,7 +261,7 @@ class RotaryPlayerSelector extends PlayerSelector {
       required super.shuffledPlayerIds,
       required super.playerAvatars,
       required super.maxDuration,
-      required super.selectedIndex,
+      required super.whoseTurn,
       required super.width});
 
   @override

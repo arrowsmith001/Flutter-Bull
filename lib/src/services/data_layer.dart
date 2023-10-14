@@ -38,7 +38,10 @@ abstract class DataService {
 
   Future<Map<String, Achievement>> getAllAchievements();
 
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState);
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState);
+
+  Future<void> setTruth(String roomId, String userId, bool truth);
 }
 
 class DatabaseDrivenDataLayer extends DataService {
@@ -135,10 +138,17 @@ class DatabaseDrivenDataLayer extends DataService {
 
     return {for (Achievement ach in achievementsByIds) ach.id!: ach};
   }
-  
+
   @override
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) async {
-    return await gameRoomRepo.setField(roomId, 'playerStates.$userId', playerState.index);
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState) async {
+    return await gameRoomRepo.setField(
+        roomId, 'playerStates.$userId', playerState.index);
+  }
+
+  @override
+  Future<void> setTruth(String roomId, String userId, bool truth) async {
+    return await gameRoomRepo.setField(roomId, 'truths.$userId', truth);
   }
 }
 
@@ -283,10 +293,17 @@ class InMemoryDataLayer extends DataService implements DataStreamService {
     // TODO: implement getAllAchievements
     throw UnimplementedError();
   }
-  
+
   @override
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) {
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState) {
     // TODO: implement setPlayerState
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setTruth(String roomId, String userId, bool truth) {
+    // TODO: implement setTruth
     throw UnimplementedError();
   }
 }
@@ -299,9 +316,16 @@ class StaticDataLayer extends DataService implements DataStreamService {
 
   final LocalAchievementService achievementService = LocalAchievementService();
 
+  void staticSetRoom(GameRoom newGame) {
+    gameStream.add(newGame);
+  }
+
+  late BehaviorSubject<GameRoom> gameStream = BehaviorSubject.seeded(game);
+  //late BehaviorSubject<Map<String, Player>> playersStream = BehaviorSubject.seeded(game);
+
   @override
   Stream<GameRoom> streamGameRoom(String gameRoomId) {
-    return Stream.value(game);
+    return gameStream;
   }
 
   @override
@@ -391,10 +415,18 @@ class StaticDataLayer extends DataService implements DataStreamService {
     // TODO: implement streamPlayerStatus
     throw UnimplementedError();
   }
-  
+
   @override
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) {
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState) {
     // TODO: implement setPlayerState
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setTruth(String roomId, String userId, bool truth) async {
+    staticSetRoom(gameStream.value.copyWith(
+        truths: gameStream.value.truths.map(
+            (key, value) => MapEntry(key, key == userId ? truth : value))));
   }
 }

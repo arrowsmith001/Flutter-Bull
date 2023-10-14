@@ -42,6 +42,8 @@ dependencies:
   percent_indicator: ^4.2.3
   assorted_layout_widgets: ^8.0.4
   image: ^4.1.0
+  dots_indicator: ^3.0.0
+  jumping_dot: ^0.0.6
 
 dev_dependencies:
   flutter_test:
@@ -58,10 +60,12 @@ dev_dependencies:
 
 flutter:
   assets:
+    - assets/images/bull-head.png
     - assets/images/bull-outline.png
     - assets/images/bull-outline-padded.png
     - assets/images/google.png
     - assets/images/at.png
+    - assets/images/loading.png
     - assets/images/icons/achievements/correct.png
     - assets/images/icons/achievements/fastest.png
     - assets/images/icons/achievements/minority.png

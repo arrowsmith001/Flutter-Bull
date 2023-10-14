@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 abstract class NavigationController<T> {
-
+  
   String? _initialRoute;
   String? _currentRouteName;
   Iterator<String>? _routePathIterator;
@@ -23,6 +23,15 @@ abstract class NavigationController<T> {
     return route ?? defaultRoute;
   }
 
+  void navigateTo(String s) {
+    if (canNavigate) {
+      Navigator.of(_navigatorContext!).pushReplacementNamed(s);
+      Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
+    } else {
+      Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
+    }
+  }
+  
   @protected
   PageRoute? generateRoute();
 
@@ -35,15 +44,6 @@ abstract class NavigationController<T> {
   @protected
   String generateInitialRoute(T data);
 
-  @protected
-  void navigateTo(String s) {
-    if (canNavigate) {
-      Navigator.of(_navigatorContext!).pushReplacementNamed(s);
-      Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
-    } else {
-      Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
-    }
-  }
 
   @protected
   Route get defaultRoute;

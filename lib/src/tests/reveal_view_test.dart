@@ -30,7 +30,7 @@ class RevealViewTest extends StatefulWidget {
 class _RevealViewTestState extends State<RevealViewTest> {
 
   void onFab() {
-    _revealController.onRevealed();
+    
   }
 
   GameRoom get createGame {
@@ -71,7 +71,6 @@ class _RevealViewTestState extends State<RevealViewTest> {
   }
 
   RevealViewModel? _revealViewModel;
-  late final RevealViewController _revealController = RevealViewController(_revealViewModel);
 
   // TODO: Test reveal with 1 voter: squash or align?
   
@@ -116,8 +115,7 @@ class _RevealViewTestState extends State<RevealViewTest> {
                       onGenerateRoute: (settings) {
                         return PageRouteBuilder(pageBuilder:
                             (_, __, ___) {
-                          return RevealView(
-                              controller: _revealController);
+                          return RevealView();
                         });
                       },
                     ),

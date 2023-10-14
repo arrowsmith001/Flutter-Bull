@@ -17,7 +17,7 @@ class PlayerBreakdown with _$PlayerBreakdown {
     required bool? targetsLieTurnedOutTrue,
     required int? saboteursUncovered,
     required FooledProportion? saboteurfooledProportion,
-    required int roundScore,
+    required int totalScore,
   }) = _PlayerBreakdown;
 }
 

@@ -15,7 +15,12 @@ import * as logger from "firebase-functions/logger";
 import * as promises from 'node:timers/promises';
 
 
-const subphaseStartVoting = 4;
+enum PlayerStates {
+    unready = 0, inLobby = 1, inGame = 2
+}
+
+const lobbyPhase = 0;
+const startVotingSubphase = 4;
 
 
 const delaysOn = false;
@@ -251,7 +256,7 @@ async function joinGameRoomImpl(userId: string, roomCode: string) {
         var roomCount = await txn.get(roomCountQuery);
         var count = roomCount.data().count;
 
-        if (count != 1) throw Error('Not a single room');
+        if (count != 1) throw Error('Error: No room with code \'' + roomCode + '\'');
 
         var roomDoc = await txn.get(roomsWhereCode);
         var room = roomDoc.docs[0];
@@ -259,7 +264,12 @@ async function joinGameRoomImpl(userId: string, roomCode: string) {
         var roomRef = room.ref;
         var roomData = room.data();
 
+        var isInLobbyPhase = (roomData['phase'] as number) == lobbyPhase;
+        if (!isInLobbyPhase) throw Error('Error: Player \'' + userId + '\' cannot join game with code \'' + roomCode + '\' (game id: \'' + roomRef.id + '\' because game \'' + roomRef.id + '\' is in progress');
+
         var playerIds = roomData['playerIds'] as string[];
+        if (playerIds.includes(userId)) throw Error('Error: Player \'' + userId + '\' is already in game with code \'' + roomCode + '\' (game id: \'' + roomRef.id + '\'');
+
         var newPlayerIds = playerIds.concat([userId]);
 
         var roomUpdates = { 'playerIds': newPlayerIds };
@@ -349,9 +359,10 @@ async function startGameImpl(roomId: string) {
         var playerOrder = Array.from(playerIds);
         _shuffleArray(playerOrder);
 
-        // Generate empty votes & vote times
+        // Generate empty votes & vote times & states
         var votes = new Map<String, String[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? 'p' : '-')]));
         var voteTimes = new Map<String, Number[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? -999 : -1)]));
+        var states = new Map<String, number>(Array.from(playerIds, (id) => [id, PlayerStates.inGame]));
 
         txn
             .update(roomRef, { 'targets': Object.fromEntries(targets) })
@@ -360,6 +371,7 @@ async function startGameImpl(roomId: string) {
             .update(roomRef, { 'voteTimes': Object.fromEntries(voteTimes) })
             .update(roomRef, { 'texts': Object.fromEntries(texts) })
             .update(roomRef, { 'playerOrder': playerOrder })
+            .update(roomRef, { 'playerStates': Object.fromEntries(states) })
             .update(roomRef, { 'progress': 0 })
             .update(roomRef, { 'phase': GameRoomPhase.writing })
             .update(roomRef, { 'subPhase': 0 });
@@ -424,7 +436,7 @@ async function startRoundImpl(roomId: string, userId: string) {
         // TODO: Account for time zones!!
         var roundEndTime = Date.now().valueOf() + (totalTime * 1000);
 
-        txn.update(roomRef, { 'roundEndUTC': roundEndTime, 'subPhase': subphaseStartVoting });
+        txn.update(roomRef, { 'roundEndUTC': roundEndTime, 'subPhase': startVotingSubphase });
 
     });
 
@@ -441,6 +453,12 @@ async function voteImpl(roomId: string, userId: string, truthOrLie: boolean) {
 
         // Calculate time taken to vote
         var roundEndUTC = currentRoomData['roundEndUTC'];
+
+        if (roundEndUTC == null || roundEndUTC == undefined) {
+            console.error('Voting error: roundEndUTC is null or undefined. Vote time cannot be determined.');
+            return;
+        }
+
         var roundTimeSeconds: number = currentRoomData['settings']['roundTimeSeconds'];
         var timeTakenToVoteMilliseconds: number = (roundTimeSeconds * 1000) - (roundEndUTC - Date.now().valueOf());
         var timeTakenToVoteSeconds = Math.floor(timeTakenToVoteMilliseconds / 1000);
@@ -724,11 +742,11 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
     if (liars.length == 0) {
         // Switch 2 to liars
         var playersTemp = Array.from(playerIds);
-        var randomIndex1 = Math.random() * playersTemp.length;
+        var randomIndex1 = Math.floor(Math.random() * playersTemp.length);
         var firstToSwitch = playersTemp[randomIndex1];
 
         playersTemp.filter(id => id != firstToSwitch);
-        var randomIndex2 = Math.random() * playersTemp.length;
+        var randomIndex2 = Math.floor(Math.random() * playersTemp.length);
         var secondToSwitch = playersTemp[randomIndex2];
 
         truthOrLieMap.set(firstToSwitch, false);
@@ -741,7 +759,7 @@ function _getTruthOrLieTargetMap(playerIds: string[]): Map<string, string> {
         var truthers = Array.from(truthOrLieMap.keys()).filter((k) => truthOrLieMap.get(k));
 
         // Convert 1 random truther into a liar
-        var randomIndex = Math.random() * truthers.length;
+        var randomIndex = Math.floor(Math.random() * truthers.length);;
         var randomPlayerId = truthers.at(randomIndex)!;
 
         truthOrLieMap.set(randomPlayerId, false);

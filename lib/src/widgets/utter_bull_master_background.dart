@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'dart:ui' as ui;
 
-// TODO: Move master background to login screen only
+// TODO: Move master background to login screen only?
 class UtterBullMasterBackground extends StatefulWidget {
   const UtterBullMasterBackground({super.key, required this.child});
 
@@ -26,13 +26,9 @@ class _UtterBullMasterBackgroundState extends State<UtterBullMasterBackground>
     super.initState();
 
     animController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 3));
+        AnimationController(vsync: this, duration: const Duration(seconds: 5));
 
     doubleAnim = CurvedAnimation(parent: animController, curve: Curves.linear);
-
-    animController.addListener(() {
-      setState(() {});
-    });
 
     animController.repeat();
   }
@@ -56,23 +52,20 @@ class _UtterBullMasterBackgroundState extends State<UtterBullMasterBackground>
                   Colors.white,
                   Color.lerp(primaryColor, Colors.white, 0.2)!
                 ])),
-                child: _buildStaticBackground())),
+                child: _buildScrollingBackground())),
         widget.child,
       ],
     );
   }
 
   Widget _buildStaticBackground() {
-
-    final imageTiled = 
-      Image.asset(Assets.images.bullOutlinePadded.path,
+    final imageTiled = Image.asset(Assets.images.bullOutline.path,
         scale: 3,
         repeat: ImageRepeat.repeat,
         color: Colors.grey.withOpacity(0.2));
 
     return imageTiled;
   }
-
 
   // TODO: Have scrolling background (alternate left-right by row)
   Widget _buildScrollingBackground() {
@@ -88,20 +81,25 @@ class _UtterBullMasterBackgroundState extends State<UtterBullMasterBackground>
           return Stack(
             children: [
               Positioned.fill(
-                  child: CustomPaint(
-                      painter: BullBackgroundPainter(snapshot.data!)))
+                  child: AnimatedBuilder(
+                    animation: animController,
+                    builder: (_, __) => CustomPaint(
+                        painter: BullBackgroundPainter(
+                            snapshot.data!, animController.value)),
+                  ))
             ],
           );
         });
   }
 
   Future<ui.Image> _loadImage() async {
-    final ByteData data = await rootBundle.load(Assets.images.at.path);
+    final ByteData data =
+        await rootBundle.load(Assets.images.bullOutline.path);
 
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(),
-      targetHeight: 100,
-      targetWidth: 100,
+      targetHeight: 125,
+      targetWidth: 125,
     );
 
     var frame = await codec.getNextFrame();
@@ -110,16 +108,35 @@ class _UtterBullMasterBackgroundState extends State<UtterBullMasterBackground>
 }
 
 class BullBackgroundPainter extends CustomPainter {
-  BullBackgroundPainter(this.image);
+  BullBackgroundPainter(this.image, this.value);
 
   final ui.Image image;
+  final double value;
+  final Color color = Colors.grey.withAlpha(15);
+  final double hPadding = 50.0;
+  final double vPadding = 15.0;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final height = image.height;
-    final int numberOfRows = (size.height / height).ceil();
 
-    canvas.drawImage(image, Offset.zero, Paint());
+    final double width = image.width.toDouble() + hPadding;
+    final double height = image.height.toDouble() + vPadding;
+
+    final int numberOfRows = (size.height / height).ceil();
+    final int numberPerRow = (size.width / width).ceil() + 2;
+
+    final double hOffset = width * value;
+
+    for (int i = 0; i < numberOfRows; i++) {
+      for (int j = 0; j < numberPerRow; j++) {
+
+        final bool b = (i % 2) == 0;
+        final hAdj = b ? hOffset : -hOffset;
+
+        canvas.drawImage(image, Offset((width * (j - 1)) + hAdj, height * i),
+            Paint()..color = color);
+      }
+    }
   }
 
   @override

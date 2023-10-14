@@ -1,10 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/rounded_border.dart';
+import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/result_view_notifier.dart';
+import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/3_game/4_result_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -26,39 +30,113 @@ class ResultView extends ConsumerStatefulWidget {
 
 class _ResultViewViewState extends ConsumerState<ResultView>
     with RoomID, UserID {
+  UtterBullServer get server => ref.read(utterBullServerProvider);
+
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = true;
+  @override
+  void initState() {
+    super.initState();
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        setState(() {
+          _isVisible = false;
+        });
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        setState(() {
+          _isVisible = true;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final vmProvider = resultViewNotifierProvider(roomId, userId);
     final vmAsync = ref.watch(vmProvider);
 
-    return Scaffold(body: vmAsync.whenDefault((ResultViewModel vm) {
-      return SingleChildScrollView(
-        child: Column(children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.2,
-                vertical: 24),
-            child: UglyOutlinedText(
-              'RESULTS',
-              outlineColor: Colors.grey,
+    return Scaffold(
+      bottomNavigationBar: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        height: _isVisible ? MediaQuery.of(context).size.height * 0.15 : 0.0,
+        child: BottomAppBar(
+          //height: ,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24.0),
+              topRight: Radius.circular(24.0),
+            ),
+            child: Container(
+              color: Theme.of(context).primaryColor,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: UtterBullButton(
+                    title: 'Return to Lobby',
+                    onPressed: () => onReturnToLobby(),
+                    ),
+              ),
             ),
           ),
-          ListView.builder(
-              itemCount: vm.playerResultSummaries.length,
-              itemBuilder: (context, i) {
-                final prs = vm.playerResultSummaries[i];
-                final PublicPlayer player = vm.playerMap[prs.playerId]!;
+        ),
+      ),
+      body: vmAsync.whenDefault((vm) {
+        return CustomScrollView(
+          controller: _hideButtonController,
+          slivers: <Widget>[
+            SliverPersistentHeader(delegate: ResultViewHeader()),
+            SliverList.builder(
+                itemCount: vm.playerResultSummaries.length,
+                itemBuilder: (context, i) {
+                  final prs = vm.playerResultSummaries[i];
+                  final PublicPlayer player = vm.playerMap[prs.playerId]!;
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 16.0),
-                  child: PlayerResultSummaryView(prs, player, i + 1),
-                );
-              },
-              shrinkWrap: true)
-        ]),
-      );
-    }));
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 16.0),
+                    child: PlayerResultSummaryView(prs, player, i + 1),
+                  );
+                }),
+          ],
+        );
+      }),
+    );
+  }
+
+  void onReturnToLobby() {
+    server.setPlayerState(roomId, userId, PlayerState.unready);
+  }
+}
+
+class ResultViewHeader extends SliverPersistentHeaderDelegate {
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.2, vertical: 24),
+      child: UglyOutlinedText(
+        'RESULTS',
+        outlineColor: Colors.grey,
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 120;
+
+  @override
+  double get minExtent => 120;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }
 
@@ -89,8 +167,7 @@ class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
           child: RoundedBorder(
             radius: 24.0,
             background: _getPodiumBackground(podiumPosition),
-            child: Column(children: 
-            [
+            child: Column(children: [
               SizedBox(
                 height: MediaQuery.of(context).size.width * 0.3,
                 child: Padding(
@@ -100,19 +177,20 @@ class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
                     children: [
                       SizedBox(
                           height: MediaQuery.of(context).size.width / 4,
-                          child: UtterBullPlayerAvatar(null, player.avatarData)),
+                          child:
+                              UtterBullPlayerAvatar(null, player.avatarData)),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(4.0,0,4,0),
+                          padding: const EdgeInsets.fromLTRB(4.0, 0, 4, 0),
                           child: AutoSizeText(player.player.name!,
-                          textAlign: TextAlign.center,
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.headlineLarge,
                               maxLines: 1),
                         ),
                       ),
                       Flexible(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0.0, 0,4,0),
+                          padding: const EdgeInsets.fromLTRB(0.0, 0, 4, 0),
                           child: SizedBox(
                             width: 50,
                             child: UglyOutlinedText(
@@ -121,7 +199,6 @@ class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
                               //     .textTheme
                               //     .headlineLarge!
                               //     .copyWith(color: const Color.fromARGB(255, 255, 190, 13) )
-                                  
                             ),
                           ),
                         ),
@@ -133,17 +210,15 @@ class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
             ]),
           ),
         ),
-
-        
         Flexible(
           child: ListView(
-            physics: const NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             children: widget.prs.items
                 .map((summaryItem) => Padding(
-                  padding: const EdgeInsets.all(6.0),
-                  child: PlayerResultSummaryItemView(summaryItem),
-                ))
+                      padding: const EdgeInsets.all(6.0),
+                      child: PlayerResultSummaryItemView(summaryItem),
+                    ))
                 .toList(),
           ),
         )
@@ -173,11 +248,12 @@ class ShimmeringBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
       period: const Duration(seconds: 3),
-      
-        child: Container(color: Colors.white.withAlpha(100),),
-       highlightColor: Colors.white,
-         baseColor: color ?? Colors.white,);
-   
+      child: Container(
+        color: Colors.white.withAlpha(100),
+      ),
+      highlightColor: Colors.white,
+      baseColor: color ?? Colors.white,
+    );
   }
 }
 
@@ -199,7 +275,11 @@ class _PlayerResultSummaryItemViewState
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
-            title: RichText(text: TextSpan(children: summaryItem.message, style: Theme.of(context).textTheme.headlineSmall)), leading: summaryItem.icon),
+            title: RichText(
+                text: TextSpan(
+                    children: summaryItem.message,
+                    style: Theme.of(context).textTheme.headlineSmall)),
+            leading: summaryItem.icon),
       ),
     );
   }

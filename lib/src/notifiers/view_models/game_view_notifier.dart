@@ -10,25 +10,39 @@ part 'game_view_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class GameViewNotifier extends _$GameViewNotifier {
-
   @override
-  Stream<GameViewModel> build(String roomId) async* {
+  Stream<GameViewModel> build(String roomId, String userId) async* {
     final game = ref.watch(gameNotifierProvider(roomId));
-    
+
     if (game is AsyncData) {
-      yield _buildViewModel(game.requireValue.gameRoom);
+      yield _buildViewModel(game.requireValue.gameRoom, userId);
     }
   }
 
-
-  GameViewModel _buildViewModel(GameRoom game) {
+  GameViewModel _buildViewModel(GameRoom game, String userId) {
+    
     final phase = game.phase;
-    String path = phase.name;
+    final playerState = game.playerStates[userId];
+
+    String? arg;
+
     if (phase == GamePhase.round) {
       final whoseTurn = game.playerOrder[game.progress];
-      path += '/$whoseTurn';
+      arg = whoseTurn;
     }
-    
-    return GameViewModel(path: path);
+
+    return GameViewModel(
+        path: GamePath(phase: phase, arg: arg), playerState: playerState);
   }
+}
+
+class GamePath {
+  final GamePhase phase;
+  final String? arg;
+
+  GamePath({required this.phase, required this.arg});
+
+  String get getPathString => arg == null ? phase.name : '${phase.name}/$arg';
+
+  
 }

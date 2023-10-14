@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
+import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_bull/src/views/3_game/3_reveals_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../enums/game_phases.dart';
+
 class GameView extends ConsumerStatefulWidget {
   const GameView({super.key});
 
@@ -23,15 +26,30 @@ class GameView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _GameViewState();
 }
 
-class _GameViewState extends ConsumerState<GameView> with RoomID {
+class _GameViewState extends ConsumerState<GameView> with UserID, RoomID {
   final navController = GameRouteNavigationController();
 
-  late final vmProvider = gameViewNotifierProvider(roomId);
+  late final vmProvider = gameViewNotifierProvider(roomId, userId);
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(vmProvider.select((value) => value.value?.path), (_, next) {
-      if (next != null) navController.navigateTo(next);
+    // Reacts to changes
+    ref.listen(vmProvider.select((value) => value.value?.path), (prev, next) {
+      if (next != null) {
+        if (prev?.phase != GamePhase.results) {
+          if(prev?.getPathString != next.getPathString)
+          {
+            navController.navigateTo(next.getPathString);
+          }
+        }
+      }
+    });
+
+    ref.listen(vmProvider.select((value) => value.value?.playerState),
+        (prev, next) {
+      if (prev == PlayerState.inGame && next != PlayerState.inGame) {
+        navController.navigateTo(GamePhase.lobby.name);
+      }
     });
 
     final vmAsync = ref.watch(vmProvider);
@@ -60,7 +78,8 @@ class GameRouteNavigationController
 
   @override
   String generateInitialRoute(GameViewModel data) {
-    return data.path;
+    if (data.path.phase == GamePhase.results) return GamePhase.lobby.name;
+    return data.path.getPathString;
   }
 
   @override
@@ -84,4 +103,3 @@ class GameRouteNavigationController
     return null;
   }
 }
-

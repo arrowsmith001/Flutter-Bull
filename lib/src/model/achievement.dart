@@ -24,5 +24,5 @@ class Achievement extends Entity with _$Achievement
 
 
 enum AchievementId {
-  correctVote, fastestVote, fooledSome, fooledMost, fooledAll, minorityVote
+  correctVote, fastestVote, fooledSome, fooledMost, fooledAll, minorityVote, lieTurnedOutTrue
 }

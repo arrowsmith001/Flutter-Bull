@@ -30,7 +30,7 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
 
   late Timer _timer;
 
-  static const int timerDurationMs = UtterBullGlobal.revealsPreambleTimeMilliseconds; // 1500;
+  late Duration timerDuration = UtterBullGlobal.revealsPreambleTimeMilliseconds; // 1500;
   int seconds = 0;
 
   @override
@@ -40,7 +40,7 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
   }
 
   void _startTimer() {
-    _timer = Timer(const Duration(milliseconds: timerDurationMs), () {
+    _timer = Timer(timerDuration, () {
       _onTimerEnd();
     });
   }

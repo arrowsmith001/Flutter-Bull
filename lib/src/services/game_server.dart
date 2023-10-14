@@ -36,7 +36,10 @@ abstract class UtterBullServer {
 
   Future<void> calculateResults(String roomId);
 
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState);
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState);
+
+  Future<void> setTruth(String roomId, String userId, bool truth);
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
@@ -156,8 +159,14 @@ class UtterBullClientSideServer implements UtterBullServer {
   }
 
   @override
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) async {
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState) async {
     await data.setPlayerState(roomId, userId, playerState);
+  }
+  
+  @override
+  Future<void> setTruth(String roomId, String userId, bool truth) async {
+    await data.setTruth(roomId, userId, truth);
   }
 }
 
@@ -233,5 +242,10 @@ class MockServer extends UtterBullServer {
   Future<void> vote(String roomId, String userId, bool truthOrLie) async {}
 
   @override
-  Future<void> setPlayerState(String roomId, String userId, PlayerState playerState) async {}
+  Future<void> setPlayerState(
+      String roomId, String userId, PlayerState playerState) async {}
+      
+        @override
+        Future<void> setTruth(String roomId, String userId, bool truth) async {
+        }
 }

@@ -6,7 +6,7 @@ part of 'game_view_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameViewNotifierHash() => r'61977590e869fec1ab35cd9facea5415950233e9';
+String _$gameViewNotifierHash() => r'bca6da9c65609b521bef8307d8f06ba45b6e3233';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,9 +32,11 @@ class _SystemHash {
 abstract class _$GameViewNotifier
     extends BuildlessStreamNotifier<GameViewModel> {
   late final String roomId;
+  late final String userId;
 
   Stream<GameViewModel> build(
     String roomId,
+    String userId,
   );
 }
 
@@ -50,9 +52,11 @@ class GameViewNotifierFamily extends Family<AsyncValue<GameViewModel>> {
   /// See also [GameViewNotifier].
   GameViewNotifierProvider call(
     String roomId,
+    String userId,
   ) {
     return GameViewNotifierProvider(
       roomId,
+      userId,
     );
   }
 
@@ -62,6 +66,7 @@ class GameViewNotifierFamily extends Family<AsyncValue<GameViewModel>> {
   ) {
     return call(
       provider.roomId,
+      provider.userId,
     );
   }
 
@@ -86,8 +91,11 @@ class GameViewNotifierProvider
   /// See also [GameViewNotifier].
   GameViewNotifierProvider(
     String roomId,
+    String userId,
   ) : this._internal(
-          () => GameViewNotifier()..roomId = roomId,
+          () => GameViewNotifier()
+            ..roomId = roomId
+            ..userId = userId,
           from: gameViewNotifierProvider,
           name: r'gameViewNotifierProvider',
           debugGetCreateSourceHash:
@@ -98,6 +106,7 @@ class GameViewNotifierProvider
           allTransitiveDependencies:
               GameViewNotifierFamily._allTransitiveDependencies,
           roomId: roomId,
+          userId: userId,
         );
 
   GameViewNotifierProvider._internal(
@@ -108,9 +117,11 @@ class GameViewNotifierProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.roomId,
+    required this.userId,
   }) : super.internal();
 
   final String roomId;
+  final String userId;
 
   @override
   Stream<GameViewModel> runNotifierBuild(
@@ -118,6 +129,7 @@ class GameViewNotifierProvider
   ) {
     return notifier.build(
       roomId,
+      userId,
     );
   }
 
@@ -126,13 +138,16 @@ class GameViewNotifierProvider
     return ProviderOverride(
       origin: this,
       override: GameViewNotifierProvider._internal(
-        () => create()..roomId = roomId,
+        () => create()
+          ..roomId = roomId
+          ..userId = userId,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         roomId: roomId,
+        userId: userId,
       ),
     );
   }
@@ -145,13 +160,16 @@ class GameViewNotifierProvider
 
   @override
   bool operator ==(Object other) {
-    return other is GameViewNotifierProvider && other.roomId == roomId;
+    return other is GameViewNotifierProvider &&
+        other.roomId == roomId &&
+        other.userId == userId;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, roomId.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -160,6 +178,9 @@ class GameViewNotifierProvider
 mixin GameViewNotifierRef on StreamNotifierProviderRef<GameViewModel> {
   /// The parameter `roomId` of this provider.
   String get roomId;
+
+  /// The parameter `userId` of this provider.
+  String get userId;
 }
 
 class _GameViewNotifierProviderElement
@@ -169,6 +190,8 @@ class _GameViewNotifierProviderElement
 
   @override
   String get roomId => (origin as GameViewNotifierProvider).roomId;
+  @override
+  String get userId => (origin as GameViewNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

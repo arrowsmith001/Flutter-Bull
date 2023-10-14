@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 
 class LoadingWidget extends StatefulWidget {
   const LoadingWidget({this.message, super.key});
@@ -25,20 +26,24 @@ class _LoadingWidgetState extends State<LoadingWidget> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnimatedSwitcher(
-                        duration: Duration(milliseconds: 300),
-                        layoutBuilder: (child, prev) {
-                          return widget.message == null
-                              ? const SizedBox.shrink()
-                              : Text(widget.message!,
-                                  style: Theme.of(context).textTheme.bodyLarge);
-                        }),
-                    const SizedBox(
+                    Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 300),
+                          layoutBuilder: (child, prev) {
+                            return widget.message == null
+                                ? const SizedBox.shrink()
+                                : Text(widget.message!,
+                                    style: Theme.of(context).textTheme.bodyLarge);
+                          }),
+                    ),
+                    SizedBox(
                         width: 50,
                         height: 50,
-                        child: CircularProgressIndicator()),
+                        child: UtterBullCircularProgressIndicator()),
                   ],
                 ),
               )),

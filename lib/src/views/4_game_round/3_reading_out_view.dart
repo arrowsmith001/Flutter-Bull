@@ -5,6 +5,7 @@ import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
@@ -37,48 +38,52 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {
-      final playerWhoseTurn =
-          vm.players[whoseTurnId]!;
-
-      Widget avatar = Hero(
-          tag: 'avatar',
-          child: UtterBullPlayerAvatar(null, playerWhoseTurn.avatarData));
-
-      Widget prompt = Hero(
-        tag: 'prompt',
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(16.0)),
-          child: Column(children: [
-            Expanded(
-              child: UtterBullTextBox(vm.playerWhoseTurnStatement),
-            ),
-          ]),
-        ),
-      );
-
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: avatar,
+    return Scaffold(body: 
+    Container(
+      decoration: UtterBullGlobal.gameViewDecoration,
+      child: Center(child: vmAsync.whenDefault((vm) {
+        final playerWhoseTurn =
+            vm.players[whoseTurnId]!;
+    
+        Widget avatar = Hero(
+            tag: 'avatar',
+            child: UtterBullPlayerAvatar(null, playerWhoseTurn.avatarData));
+    
+        Widget prompt = Hero(
+          tag: 'prompt',
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(16.0)),
+            child: Column(children: [
+              Expanded(
+                child: UtterBullTextBox(vm.playerWhoseTurnStatement),
+              ),
+            ]),
           ),
-          Flexible(
-            child: Padding(
+        );
+    
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
               padding: const EdgeInsets.all(16.0),
-              child: prompt,
+              child: avatar,
             ),
-          ),
-          SizedBox(
-              height: 200,
-              child: CircularTimer(vm.timeToReadOut,
-                  onComplete: () => onTimerEnd()))
-        ],
-      );
-    })));
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: prompt,
+              ),
+            ),
+            SizedBox(
+                height: 200,
+                child: CircularTimer(vm.timeToReadOut,
+                    onComplete: () => onTimerEnd()))
+          ],
+        );
+      })),
+    ));
   }
 }
 

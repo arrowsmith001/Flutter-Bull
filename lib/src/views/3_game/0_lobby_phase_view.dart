@@ -58,19 +58,14 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   Widget build(BuildContext context) {
     final vmAsync = ref.watch(_vmProvider);
 
-
     ref.listen(_vmProvider.select((state) => state.valueOrNull?.presentPlayers),
         (prev, next) {
-
       if (prev != null && next != null) {
-
-        if (setEquals(prev.keys.toSet(), next.keys.toSet())) {
-          _rectKey.currentState?.setItems(next.values.toList());
-        }
-
+        //if (setEquals(prev.keys.toSet(), next.keys.toSet())) {
+        _rectKey.currentState?.setItems(next.values.toList());
+        //}
       }
     });
-
 
     ref.listen(_vmProvider.select((state) => state.value?.listChangeData),
         (_, next) {
@@ -78,21 +73,20 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
       Logger().d('$userId lobby.playerIds: \n\t$next');
 
-      if (next.listChangeType == ListChangeType.add) {
-        final newPlayer = next.data!;
-        _rectKey.currentState!.addItem(newPlayer);
-      }
-      if (next.listChangeType == ListChangeType.remove) {
-        _rectKey.currentState!.removeItem(next.data!);
-      }
+      // if (next.listChangeType == ListChangeType.add) {
+      //   final newPlayer = next.data!;
+      //   _rectKey.currentState!.addItem(newPlayer);
+      // }
+      // if (next.listChangeType == ListChangeType.remove) {
+      //   _rectKey.currentState!.removeItem(next.data!);
+      // }
 
       // if (next.listChangeType == ListChangeType.add) {
       //   _insertIntoPlayerList(next.data?.player.id, next.changeIndex);
       // } else if (next.listChangeType == ListChangeType.remove) {
       //   _removeFromPlayerList(next.data, next.changeIndex);
       // }
-    });    
-    
+    });
 
     return Scaffold(body: vmAsync.whenDefault((vm) {
       return Stack(
@@ -118,11 +112,11 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   Container _buildGameCodeDisplay(
       BuildContext context, LobbyPhaseViewModel vm) {
     return Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.white, Colors.white.withOpacity(0)])),
+      // decoration: BoxDecoration(
+      //     gradient: LinearGradient(
+      //         begin: Alignment.topCenter,
+      //         end: Alignment.bottomCenter,
+      //         colors: [Colors.white, Colors.white.withOpacity(0)])),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
         child: Column(children: [
@@ -172,10 +166,17 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
                 ? () => onStartGamePressed(vm.canStartGame)
                 : null,
             title: 'Start Game')
-        : UtterBullButton(
-            onPressed: () => onReadyUp(isReady),
-            isShimmering: !isReady,
-            title: isReady ? 'UNREADY' : 'READY UP');
+        : isReady
+            ? UtterBullButton(
+                key: UniqueKey(),
+                onPressed: () => onReadyUp(true),
+                isShimmering: false,
+                title: 'UNREADY')
+            : UtterBullButton(
+                key: UniqueKey(),
+                onPressed: () => onReadyUp(false),
+                isShimmering: true,
+                title: 'READY UP');
 
     return Container(
       color: Colors.white.withOpacity(0.75),
@@ -243,32 +244,22 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   // }
 
   Widget __buildListItem(
-      PublicPlayer playerWithAvatar, bool isReady, bool isLeader) {
+      PublicPlayer publicPlayer, bool isReady, bool isLeader, bool isAbsent) {
     return LayoutBuilder(
-        key: ValueKey<String>(playerWithAvatar.player.id!),
+        key: ValueKey<String>(publicPlayer.player.id!),
         builder: (context, constraints) {
-          final double h = constraints.maxHeight * 0.2;
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Stack(
-              children: [
-
-                UtterBullPlayerAvatar(
-                    playerWithAvatar.player.name!, playerWithAvatar.avatarData),
-
-                Positioned(
-                        top: 10,
-                        right: 0,
-                        child: SizedBox(height: h, child: AvatarStateLabel('LEADER', isActive: isLeader,
-                        outline: Color.lerp(Theme.of(context).primaryColor, Colors.white, 0.65))))
-                    ,
-
-
-                Positioned(
-                        top: 10,
-                        right: 0,
-                        child:
-                            SizedBox(height: h, child: AvatarStateLabel('READY', isActive: isReady && !isLeader)))
+            child: LabelledAvatar(
+              avatar: UtterBullPlayerAvatar(
+                  publicPlayer.player.name!, publicPlayer.avatarData),
+              labels: [
+                AvatarStateLabel(
+                    text: 'LEADER',
+                    isActive: isLeader,
+                    outline: Color.lerp(
+                        Theme.of(context).primaryColor, Colors.white, 0.65)),
+                AvatarStateLabel(text: 'READY', isActive: isReady && !isLeader)
               ],
             ),
           );
@@ -281,8 +272,13 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     rectPacker ??= AnimatedRegularRectanglePacker<LobbyPlayer>(
         key: _rectKey,
         initialData: vm.presentPlayers.values.toList(),
-        builder: (LobbyPlayer e) =>
-            __buildListItem(e.player, e.isReady, e.isLeader),
+        builder: (LobbyPlayer e) => __buildListItem(
+            e.player,
+            e.isReady,
+            e.isLeader,
+            vm.absentPlayers
+                .map((e) => e.player.id)
+                .contains(e.player.player.id)),
         itemToId: (LobbyPlayer lp) => lp.player.player.id!);
     return rectPacker!;
   }
@@ -329,37 +325,74 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   }
 }
 
+class LabelledAvatar extends StatelessWidget {
+  const LabelledAvatar({
+    super.key,
+    required this.avatar,
+    required this.labels,
+  });
 
+  final Widget avatar;
+  final List<AvatarStateLabel> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double h = constraints.maxHeight * 0.2;
+
+        return Stack(
+          children: [
+            avatar,
+            ...labels.map((e) => Positioned(
+                top: 10, right: 0, child: SizedBox(height: h, child: e)))
+          ],
+        );
+      },
+    );
+  }
+}
 
 class AvatarStateLabel extends StatelessWidget {
-  AvatarStateLabel(this.text,
-      {this.outline, super.key, required this.isActive});
+  AvatarStateLabel(
+      {this.text,
+      this.child,
+      this.fill,
+      this.outline,
+      super.key,
+      required this.isActive}) {
+    assert(text != null || child != null);
+    assert(text == null || child == null);
+  }
 
-  final String text;
+  final String? text;
+  final Widget? child;
   final Color? outline;
+  final Color? fill;
 
   final bool isActive;
   final Duration duration = Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
-
     return AnimatedOpacity(
-        curve: Curves.decelerate,
-        duration: duration,
+      curve: Curves.decelerate,
+      duration: duration,
       opacity: isActive ? 1 : 0,
       child: AnimatedContainer(
         curve: Curves.elasticInOut,
-        transform: isActive ? Matrix4.identity() : Matrix4.identity()*0.01,
+        transform: isActive ? Matrix4.identity() : Matrix4.identity() * 0.01,
         transformAlignment: Alignment.center,
         duration: duration,
         child: Transform.rotate(
             angle: pi * 0.06,
-            child: UglyOutlinedText(
-              text,
-              outlineColor: outline ?? Colors.white,
-              fillColor: Colors.black,
-            )),
+            child: text != null
+                ? UglyOutlinedText(
+                    text!,
+                    outlineColor: outline ?? Colors.white,
+                    fillColor: fill ?? Colors.black,
+                  )
+                : child),
       ),
     );
   }

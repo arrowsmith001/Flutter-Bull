@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
+import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/utils/game_data_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logger/logger.dart';
@@ -10,12 +14,14 @@ part '3_voting_phase_view_model.freezed.dart';
 class VotingPhaseViewModel with _$VotingPhaseViewModel {
   factory VotingPhaseViewModel(
       {required GameRoom game,
-      required Map<String, PublicPlayer> players,
+      required Map<String, VotingPlayer> players,
       required String userId,
       required String whoseTurnId,
-      required Duration? timeRemaining}) {
-        
+      required Duration? timeRemaining,
+      required RoundStatus roundStatus}) {
     final int progress = game.playerOrder.indexOf(whoseTurnId);
+    final bool isReading = userId == whoseTurnId;
+    final bool isTruth = game.truths[whoseTurnId]!;
 
     final List<String> pseudoShuffledIds =
         GameDataFunctions.getShuffledIds(game);
@@ -43,63 +49,128 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
     final String? vote = game.votes[userId]![progress];
     final bool hasVoted = vote != '-';
 
-    final playerWhoseTurn = GameDataFunctions.playerWhoseTurn(players, whoseTurnId);
+    final PublicPlayer playerWhoseTurn = players[whoseTurnId]!.player;
+    final Map<String, VotingPlayer> votingPlayers = Map.fromEntries(players
+        .entries
+        .where((element) => eligibleVoterIds.contains(element.key)));
+
+    final int numberOfPlayersVoted =
+        GameDataFunctions.playersVoted(game, whoseTurnId);
+    final int numberOfPlayersVoting = game.playerOrder.length - 1;
+
+    final int? secondsElapsed = timeRemaining == null
+        ? null
+        : game.settings.roundTimeSeconds - timeRemaining.inSeconds;
+    final int? timeForReaderToSwitchToTruth =
+        secondsElapsed == null ? null : max(0, 30 - secondsElapsed);
+
+    VoteOptionsState? voteOptionsState;
+
+    if (isReading) {
+      if (
+        !isTruth &&
+        timeForReaderToSwitchToTruth != null &&
+          timeForReaderToSwitchToTruth > 0) {
+        voteOptionsState = VoteOptionsState.readerCanSwitchToTruth;
+      } else {
+        if (roundStatus == RoundStatus.inProgress) {
+          voteOptionsState = VoteOptionsState.readerAwaitingVoters;
+        } else {
+          voteOptionsState = VoteOptionsState.readerRoundEnd;
+        }
+      }
+    } else {
+      if (roundStatus == RoundStatus.inProgress) {
+        if (hasVoted) {
+          voteOptionsState = VoteOptionsState.voterCannotVote;
+        } else {
+          voteOptionsState = VoteOptionsState.voterCanVote;
+        }
+      } else {
+        voteOptionsState = VoteOptionsState.voterRoundEnd;
+      }
+    }
 
     return VotingPhaseViewModel._(
         playerWhoseTurn: playerWhoseTurn,
+        votingPlayers: votingPlayers,
         playersWhoseTurnStatement:
             GameDataFunctions.playersWhoseTurnStatement(game, whoseTurnId),
         playersVotedIds: playerVotedIds,
         playersNotVotedIds: playerNotVotedIds,
         eligibleVoterIds: eligibleVoterIds,
         eligibleVoterStatus: eligibleVoterStatus,
-        playerMap: players,
-        timeString: generateTimeString(timeRemaining),
-        timeRemaining: timeRemaining ?? Duration.zero,
-        isRoundInProgress: timeRemaining != Duration.zero,
-        numberOfPlayersVoted: GameDataFunctions.playersVoted(game, whoseTurnId),
-        numberOfPlayersVoting: game.playerOrder.length,
+        timeData: TimeData(timeRemaining),
+        timeForReaderToSwitchToTruth: timeForReaderToSwitchToTruth,
+        voteOptionsState: voteOptionsState,
+        isThereTimeRemaining: timeRemaining != Duration.zero,
+        roundStatus: roundStatus,
+        hasEveryoneVoted: numberOfPlayersVoted == numberOfPlayersVoting,
+        numberOfPlayersVoted: numberOfPlayersVoted,
+        numberOfPlayersVoting: numberOfPlayersVoting,
         isSaboteur: false,
         waitingForPlayerText: "Waiting for ${playerWhoseTurn.player.name!}",
         hasVoted: hasVoted,
-        isReading: userId == whoseTurnId);
+        isReading: isReading);
   }
 
   const factory VotingPhaseViewModel._(
-          {required PublicPlayer playerWhoseTurn,
-          required String playersWhoseTurnStatement,
-          required Duration timeRemaining,
-          required String timeString,
-          required String waitingForPlayerText,
-          required int numberOfPlayersVoted,
-          required int numberOfPlayersVoting,
-          required bool isRoundInProgress,
-          required bool isSaboteur,
-          required bool isReading,
-          required bool hasVoted,
-          required List<String> playersVotedIds,
-          required List<String> playersNotVotedIds,
-          required List<String> eligibleVoterIds,
-          required Map<String, bool> eligibleVoterStatus,
-          required Map<String, PublicPlayer> playerMap}) =
-      _VotingPhaseViewModel;
+      {required PublicPlayer playerWhoseTurn,
+      required Map<String, VotingPlayer> votingPlayers,
+      required String playersWhoseTurnStatement,
+      required TimeData timeData,
+      required String waitingForPlayerText,
+      required int numberOfPlayersVoted,
+      required int numberOfPlayersVoting,
+      required bool isThereTimeRemaining,
+      required bool hasEveryoneVoted,
+      required bool isSaboteur,
+      required bool isReading,
+      required bool hasVoted,
+      required VoteOptionsState voteOptionsState,
+      required RoundStatus roundStatus,
+      required int? timeForReaderToSwitchToTruth,
+      required List<String> playersVotedIds,
+      required List<String> playersNotVotedIds,
+      required List<String> eligibleVoterIds,
+      required Map<String, bool> eligibleVoterStatus}) = _VotingPhaseViewModel;
+}
 
-  static String generateTimeString(Duration? timeRemaining) {
-    if (timeRemaining == null) return '-- : --';
+enum RoundStatus { inProgress, endedDueToTime, endedDueToVotes, notInProgress }
 
-    final int secondsLeft = timeRemaining.inSeconds % 60;
-    final int minutesLeft = timeRemaining.inMinutes;
+class TimeData {
+  TimeData(this.timeRemaining) {
+    if (timeRemaining == null) {
+      minuteString = "--";
+      secondString = "--";
+    } else {
+      final int secondsLeft = timeRemaining!.inSeconds % 60;
+      final int minutesLeft = timeRemaining!.inMinutes;
 
-    return '$minutesLeft : $secondsLeft';
+      secondString = (secondsLeft.toString().length == 1)
+          ? '0$secondsLeft'
+          : '$secondsLeft';
 
-/*     final int ms = millisecondsLeft - (secondsLeft * 1000);
-    final int s = secondsLeft - (minutesLeft * 60);
-    final int m = minutesLeft;
-
-    final String millisecondString = ms == 0 ? '--' : ms.toString().padLeft(3 - ms.toString().length, '0');
-    final String secondString = s == 0 ? '--' : s.toString().padLeft(2 - s.toString().length, '0');
-    final String minuteString = m == 0 ? '--' : m.toString();
-
-    return '$minuteString:$secondString:$millisecondString'; */
+      minuteString = '$minutesLeft';
+    }
   }
+
+  @override
+  String toString() {
+    return "$minuteString : $secondString";
+  }
+
+  final Duration? timeRemaining;
+
+  late final String minuteString;
+  late final String secondString;
+}
+
+enum VoteOptionsState {
+  voterCanVote,
+  voterCannotVote,
+  voterRoundEnd,
+  readerCanSwitchToTruth,
+  readerAwaitingVoters,
+  readerRoundEnd
 }

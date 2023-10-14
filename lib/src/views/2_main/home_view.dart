@@ -58,7 +58,10 @@ class _MyHomePageState extends ConsumerState<HomeView> with UserID {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Flexible(child: _buildPlayerAvatar(avatarAsync)),
-            const Expanded(child: UtterBullTitle()),
+            const Expanded(child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: UtterBullTitle(),
+            )),
             Expanded(
               child: Row(
                 children: [

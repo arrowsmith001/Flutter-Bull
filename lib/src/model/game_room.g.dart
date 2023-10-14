@@ -88,6 +88,7 @@ const _$GamePhaseEnumMap = {
 const _$PlayerStateEnumMap = {
   PlayerState.unready: 0,
   PlayerState.ready: 1,
+  PlayerState.inGame: 2,
 };
 
 _$_GameRoomSettings _$$_GameRoomSettingsFromJson(Map<String, dynamic> json) =>

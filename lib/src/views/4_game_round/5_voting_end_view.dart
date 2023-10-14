@@ -7,6 +7,7 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -59,9 +60,9 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
                         UtterBullPlayerAvatar(vm.playerWhoseTurn.player.name!, vm.playerWhoseTurn.avatarData)),
               ]),
             ),
-            Flexible(child: _buildTimer(vm.timeString)),
+            Flexible(child: _buildTimer(vm.timeData.toString())),
             Flexible(flex: 5, child: _buildVoteButtons()),
-            vm.isReading && vm.isRoundInProgress == false
+            vm.isReading && vm.roundStatus != RoundStatus.inProgress
                 ? SizedBox.shrink()
                 : Flexible(
                     flex: 1,

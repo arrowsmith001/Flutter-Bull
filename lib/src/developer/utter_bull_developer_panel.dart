@@ -29,7 +29,7 @@ class UtterBullDeveloperPanel extends ConsumerStatefulWidget {
 }
 
 class _UtterBullDeveloperPanelState
-    extends ConsumerState<UtterBullDeveloperPanel> {
+    extends ConsumerState<UtterBullDeveloperPanel>  {
   late ScrollController _scrollController = ScrollController();
 
   String? get userId => authAsync.value?.userId;
@@ -61,20 +61,15 @@ class _UtterBullDeveloperPanelState
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.grey.shade100,
+        color: const Color.fromRGBO(245, 245, 245, 1),
         child: SingleChildScrollView(
           controller: _scrollController,
-          child: Column(
-            mainAxisSize: MainAxisSize.min, 
-            children: [
-
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
             ElevatedButton(
                 onPressed: () => authNotifier.signOut(),
                 child: Text("Sign out")),
-
             LabelledAsyncData('userId', authAsync.valueOrNull,
                 stringifyValue: (data) => data?.userId),
-
             Row(
               children: [
                 LabelledAsyncData('player', playerAsync.valueOrNull,
@@ -82,22 +77,18 @@ class _UtterBullDeveloperPanelState
                         _jsonPrettyString(p?.player?.toJson())),
               ],
             ),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start, 
-              children: [
-
-              Flexible(
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
                 child: Column(
                   children: [
                     Container(child: _buildRoomFunctions()),
+                    Container(child: _buildExtendedRoomFunctions()),
                     LabelledAsyncData('room', roomAsync.valueOrNull,
                         stringifyValue: (r) =>
                             _jsonPrettyString(r?.gameRoom.toJson())),
                   ],
                 ),
               ),
-
               Expanded(
                   child: Row(children: [
                 Flexible(
@@ -110,7 +101,6 @@ class _UtterBullDeveloperPanelState
                   buildTextColor: (s, str) => _getColorCode(s.player.id),
                 ))
               ])),
-              
             ]),
           ]),
         ));
@@ -124,7 +114,6 @@ class _UtterBullDeveloperPanelState
   String _jsonPrettyString(Object? obj) =>
       obj == null ? 'null' : JsonEncoder.withIndent('\t').convert(obj);
 
-
   Widget _buildPlayerFunctions(String? id) {
     if (id == null) return Container();
     return Column(children: [
@@ -137,7 +126,12 @@ class _UtterBullDeveloperPanelState
           onPressed: roomId == null || !_playerIsInRoom(id)
               ? null
               : () => _server.setPlayerState(
-        roomId!, id, roomAsync.requireValue.gameRoom.playerStates[id] != PlayerState.ready ? PlayerState.ready : PlayerState.unready),
+                  roomId!,
+                  id,
+                  roomAsync.requireValue.gameRoom.playerStates[id] !=
+                          PlayerState.ready
+                      ? PlayerState.ready
+                      : PlayerState.unready),
           child: Text('Toggle Ready')),
       ElevatedButton(
           onPressed: roomId == null
@@ -223,6 +217,39 @@ Row(children: [
     );
   }
 
+  Widget _buildExtendedRoomFunctions() {
+    if (roomId == null) return Container();
+    return Column(
+      children: [
+        Wrap(children: [
+          ElevatedButton(
+              onPressed: () => readyAllUp(), child: Text('Ready All Up')),
+        ]),
+
+        // TODO: Test with arbitrary phase changing
+/*       
+Row(children: [
+          ElevatedButton(
+              onPressed: () => _server.setRoomPhase(roomId!, _phasePlus(-1)),
+              child: Text('-')),
+          Text('Phase'),
+          ElevatedButton(
+              onPressed: () => _server.setRoomPhase(roomId!, _phasePlus(1)),
+              child: Text('+')),
+        ]), */
+        Row(children: [
+          ElevatedButton(
+              onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
+              child: Text('-')),
+          Text('Sub'),
+          ElevatedButton(
+              onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
+              child: Text('+')),
+        ])
+      ],
+    );
+  }
+
   void addRandomPlayer() async {
     final id = FirebaseFirestore.instance.collection('players').doc().id;
     final name = _getRandomName(id);
@@ -278,6 +305,13 @@ Row(children: [
     final index =
         Random(name.codeUnits.reduce((v, e) => v + e)).nextInt(photos.length);
     return photos[index];
+  }
+
+  void readyAllUp() {
+    for(String id in roomAsync.requireValue.gameRoom.playerIds)
+    {
+      roomNotifier.setReady(id, PlayerState.ready);
+    }
   }
 }
 
@@ -406,10 +440,8 @@ const Map<String, Gender> randomFirstNames = {
 };
 
 final femalePhotos = [
-  ...List.generate(8, (i) => 'pp/default/female${i+1}.jpg'),  
+  ...List.generate(8, (i) => 'pp/default/female${i + 1}.jpg'),
   'pp/default/beauty.png'
-  ];
+];
 
-final malePhotos = [
-  ...List.generate(7, (i) => 'pp/default/male${i+1}.jpg')
-  ];
+final malePhotos = [...List.generate(7, (i) => 'pp/default/male${i + 1}.jpg')];

@@ -42,6 +42,12 @@ class LocalAchievementService extends DatabaseService<Achievement> {
         description: '* voted correctly in the quickest time',
         score: 20,
         iconPath: Assets.images.icons.achievements.fastest.path),
+    Achievement(
+        id: AchievementId.lieTurnedOutTrue.name,
+        title: 'Accidental Truth',
+        description: 'The lie * wrote turned out to be true!',
+        score: -30,
+        iconPath: Assets.images.icons.achievements.saboteur.path),
   ];
 
 //builder: (context, constraints) =>

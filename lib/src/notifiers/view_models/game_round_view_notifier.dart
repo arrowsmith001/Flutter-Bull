@@ -42,3 +42,5 @@ class GameRoundViewNotifier extends _$GameRoundViewNotifier {
   bool _isStrictIncrease(RoundPhase roundPhase) =>
       (state.valueOrNull?.roundPhase.index ?? -1) < roundPhase.index;
 }
+
+

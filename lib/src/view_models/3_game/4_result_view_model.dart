@@ -29,7 +29,7 @@ class ResultViewModel with _$ResultViewModel {
       final List<PlayerResultSummaryItem> summaryItems = [];
 
       final PlayerBreakdown pb = rg.playerBreakdowns[i];
-      final String id = rg.playerBreakdowns[i].playerId;
+      final String id = pb.playerId;
       final PublicPlayer player = players[id]!;
 
       // Round
@@ -62,6 +62,57 @@ class ResultViewModel with _$ResultViewModel {
             const TextSpan(text: ' during their round...'),
           ],
           positive: isPositive));
+
+
+      // Saboteur outcome
+      if(pb.lieTarget != null)
+      {
+        if(pb.targetsLieTurnedOutTrue == true)
+        {
+          final String leading = summaryItems.last.positive ? "BUT" : "AND";
+          summaryItems.add(PlayerResultSummaryItem.saboteur(
+              [
+                TextSpan(text: '$leading the lie they wrote '),
+                TextSpan(text: 'turned out to be true...', style: TextStyle(color: UtterBullGlobal.badVibe)),
+              ],
+              positive: false));
+        }
+        else
+        {
+             late TextSpan middleText;
+            switch (pb.saboteurfooledProportion!.type) {
+              case FooledProportionType.none:
+                middleText = TextSpan(
+                    text: 'NO', style: TextStyle(color: UtterBullGlobal.badVibe));
+                break;
+              case FooledProportionType.some:
+                middleText = TextSpan(
+                    text: 'SOME', style: TextStyle(color: UtterBullGlobal.okayVibe));
+                break;
+              case FooledProportionType.most:
+                middleText = TextSpan(
+                    text: 'MOST', style: TextStyle(color: UtterBullGlobal.goodVibe));
+                break;
+              case FooledProportionType.all:
+                middleText = TextSpan(
+                    text: 'ALL', style: TextStyle(color: UtterBullGlobal.greatVibe));
+                break;
+            }
+            final bool isPositive =
+                pb.saboteurfooledProportion!.type != FooledProportionType.none;
+
+            final String leading = summaryItems.last.positive != isPositive ? "BUT" : "AND";
+
+            summaryItems.add(PlayerResultSummaryItem.round(
+                [
+                  TextSpan(text: '$leading the lie they wrote fooled '),
+                  middleText,
+                  const TextSpan(text: ' voters...'),
+                ],
+                positive: isPositive));
+              }
+      }
+ 
 
       // Votes
       final int correctVotes = pb.correctVotes;

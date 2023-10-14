@@ -36,8 +36,7 @@ class ResultGenerator {
           Map.fromIterable(game.playerOrder, value: (_) => []);
 
       final String whoseTurnId = game.playerOrder[roundNum];
-      final bool isTruth =
-          game.truths[whoseTurnId] ?? game.targets[whoseTurnId] == whoseTurnId;
+      final bool isTruth = game.truths[whoseTurnId]!;
 
       final String writerId = game.targets.keys
           .singleWhere((id) => game.targets[id] == whoseTurnId);
@@ -45,6 +44,13 @@ class ResultGenerator {
       final String? saboteurId = writerId == whoseTurnId ? null : writerId;
       final String? saboteurVote =
           saboteurId == null ? null : game.votes[saboteurId]![roundNum];
+
+      final bool isAccidentalTruth = isTruth && saboteurId != null;
+      if(isAccidentalTruth)
+      {
+          achievementsMap[saboteurId]!
+              .add(achievements[AchievementId.lieTurnedOutTrue.name]!);
+      }
 
       final List<String> eligibleVoters = game.playerOrder
           .where((id) => id != whoseTurnId && id != saboteurId)
@@ -115,15 +121,18 @@ class ResultGenerator {
         final bool isFastest = (id == fastestVoterId);
         final bool isMinority = isCorrect && (fooledProportion.value < 0.5);
 
-        if (isCorrect)
+        if (isCorrect) {
           achievementsMap[id]!
               .add(achievements[AchievementId.correctVote.name]!);
-        if (isFastest)
+        }
+        if (isFastest) {
           achievementsMap[id]!
               .add(achievements[AchievementId.fastestVote.name]!);
-        if (isMinority)
+        }
+        if (isMinority) {
           achievementsMap[id]!
               .add(achievements[AchievementId.minorityVote.name]!);
+        }
 
         if (vote == 't') {
           return Vote(
@@ -176,13 +185,14 @@ class ResultGenerator {
   void _generatePlayerBreakdowns() {
     final List<PlayerBreakdown> playerBreakdowns = [];
 
-    for (var i = 0; i < game.playerOrder.length; i++) {
+    for (var i = 0; i < roundBreakdowns.length; i++) {
       final RoundBreakdown round = roundBreakdowns[i];
-
       final String id = roundBreakdowns[i].whoseTurnId;
 
-      final String? target = game.targets[id];
+      final String target = game.targets[id]!;
       final String? lieTarget = target == id ? null : target;
+      final bool? lieTargetPlayedTruth =
+          lieTarget == null ? null : game.truths[lieTarget]!;
 
       final int correctVotes = roundBreakdowns
           .where((rb) => rb.votes[id]?.isCorrect ?? false)
@@ -194,6 +204,10 @@ class ResultGenerator {
           .where((rb) => rb.votes[id]?.isMinority ?? false)
           .length;
 
+      final thisPlayerScoresByRound =
+          playerScoresByRound.map<int>((round) => round[id] ?? 0);
+      final int totalScore = thisPlayerScoresByRound.reduce((v, e) => v + e);
+
       final playerBreakdown = PlayerBreakdown(
           playerId: id,
           turnNumber: i,
@@ -202,9 +216,9 @@ class ResultGenerator {
           fastestCorrectVotes: fastestVotes,
           minorityVotes: minorityVotes,
           lieTarget: lieTarget,
-          roundScore: playerScoresByRound[i][id] ?? 0,
-          // TODO: all this
-          targetsLieTurnedOutTrue: false,
+          totalScore: totalScore,
+          targetsLieTurnedOutTrue: lieTargetPlayedTruth,
+          // TODO: All of below
           saboteursUncovered: 0,
           saboteurfooledProportion: FooledProportion(0));
 
@@ -212,7 +226,7 @@ class ResultGenerator {
     }
 
     playerBreakdowns
-        .sort((pb1, pb2) => pb2.roundScore.compareTo(pb1.roundScore));
+        .sort((pb1, pb2) => pb2.totalScore.compareTo(pb1.totalScore));
 
     this.playerBreakdowns = List.from(playerBreakdowns);
   }
@@ -272,9 +286,9 @@ enum VoteType { truth, lie, didNotVote, saboteur, player, unknown }
 
 class FooledProportion {
   FooledProportion(this.value) {
-    if (value <= 0.0)
+    if (value <= 0.0) {
       type = FooledProportionType.none;
-    else if (value <= 0.5)
+    } else if (value <= 0.5)
       type = FooledProportionType.some;
     else if (value < 1.0)
       type = FooledProportionType.most;

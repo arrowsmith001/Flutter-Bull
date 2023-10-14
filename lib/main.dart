@@ -34,8 +34,8 @@ import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
+import 'package:flutter_bull/src/views/4_game_round/4_voting_view.dart';
 import 'package:flutter_bull/src/views/5_reveals_phase/reveal_view.dart';
-import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_app.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
@@ -46,7 +46,7 @@ import 'src/widgets/main/mobile_app_layout_container.dart';
 
 ////////////////////////////////////////////////////////////////
 
-String fakeId = 'AJOKzquHwyxNSG35yV9AwOBmXaEi';
+String fakeId = 'jEi2zE6LOHBkvhFCCck9Iczboc2B';
 const bool testModeOn = false;
 
 ////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (testModeOn) return (true ? Test() : ResultViewTest());
+    if (testModeOn) return (false ? Test() : WidgetTest());
     return instances > 1
         ? _buildMultipleInstances(instances)
         : _buildInstance();
@@ -221,20 +221,29 @@ class ProvisionedUtterBullFunctionUser extends StatelessWidget {
   }
 }
 
-class ResultViewTest extends StatefulWidget {
-  ResultViewTest({super.key});
+class WidgetTest extends StatefulWidget {
+  WidgetTest({super.key});
 
   @override
-  State<ResultViewTest> createState() => _ResultViewTestState();
+  State<WidgetTest> createState() => _WidgetTestState();
 }
 
-class _ResultViewTestState extends State<ResultViewTest> {
+class _WidgetTestState extends State<WidgetTest> {
+  Widget _buildChild() {
+    return VotingPhaseView();
+  }
+
   void onFab() {
+    (data as StaticDataLayer).staticSetRoom(
+        game.copyWith(votes: _generateRandomVotes(game.playerOrder)));
     //_revealController.onRevealed();
   }
 
+  late final data = StaticDataLayer(game, players);
+  late final fakeAuth = FakeAuthService('0');
+
   static const userId = '0';
-  static const roomId = '';
+  static const roomId = '42069';
   static const whoseTurnId = '0';
 
   static int numberOfPlayers = 5;
@@ -259,11 +268,13 @@ class _ResultViewTestState extends State<ResultViewTest> {
             (int.parse(e) % 2) == 0
                 ? PlayerState.ready
                 : PlayerState.unready)));
+
     final int n = playerOrder.length;
     for (var i = 0; i < n; i++) {
       final String playerId = playerOrder[i];
+
       if (i % 2 == 0) {
-        targets.addAll({playerId: playerOrder[(i + 2) % n]});
+        targets.addAll({playerId: playerOrder[(i + 2) % (n + 1)]});
         truths.addAll({playerId: false});
       } else {
         targets.addAll({playerId: playerId});
@@ -271,16 +282,8 @@ class _ResultViewTestState extends State<ResultViewTest> {
       }
     }
 
-    final votes = Map.fromEntries(playerOrder.map((p) => MapEntry(
-        p,
-        List.generate(numberOfPlayers, (id) {
-          final i = int.parse(p);
-          return p == whoseTurnId
-              ? 'p'
-              : (i % 2) == 1
-                  ? 't'
-                  : 'l';
-        }))));
+    //final votes = _generateRandomVotes(playerOrder);
+    final votes = _generateNoVotes(playerOrder);
 
     final voteTimes = Map.fromEntries(playerOrder.map((p) => MapEntry(
         p,
@@ -292,12 +295,14 @@ class _ResultViewTestState extends State<ResultViewTest> {
         .map((p) => MapEntry(p, 'Player statement statement statement')));
 
     return GameRoom(
-        roomCode: "42069",
+         id: "OK THENNNNNNN",
+         roomCode: "42069",
         leaderId: userId,
         playerOrder: playerOrder,
         playerIds: playerOrder,
         playerStates: playerStates,
         subPhase: 0,
+        roundEndUTC: DateTime.now().millisecondsSinceEpoch + (60 * 3 * 1000),
         votes: votes,
         voteTimes: voteTimes,
         truths: truths,
@@ -308,19 +313,13 @@ class _ResultViewTestState extends State<ResultViewTest> {
 
   late GameRoom game = createGame;
 
-  RevealViewModel? _revealViewModel;
-  late final RevealViewController _revealController =
-      RevealViewController(_revealViewModel);
-
   // TODO: Test reveal with 1 voter: squash or align?
 
   @override
   Widget build(BuildContext context) {
-    final data = StaticDataLayer(game, players);
-
     return ProvisionedUtterBullFunctionUser(
-      authService: FakeAuthService('0'),
-      server: MockServer(),
+      authService: fakeAuth,
+      server: UtterBullClientSideServer(data, [fakeAuth]),
       streamService: data,
       dataService: data,
       imageService: FirebaseImageStorageService(),
@@ -341,7 +340,7 @@ class _ResultViewTestState extends State<ResultViewTest> {
                     return PageRouteBuilder(pageBuilder: (_, __, ___) {
                       return Container(
                           decoration: UtterBullGlobal.gameViewDecoration,
-                          child: const LobbyPhaseView());
+                          child: _buildChild());
                     });
                   },
                 ),
@@ -350,12 +349,34 @@ class _ResultViewTestState extends State<ResultViewTest> {
       ),
     );
   }
+
+  _generateRandomVotes(List<String> playerOrder) {
+    return Map.fromEntries(playerOrder.map((p) => MapEntry(
+        p,
+        List.generate(numberOfPlayers, (id) {
+          final i = int.parse(p);
+          return p == whoseTurnId
+              ? 'p'
+              : (i % 2) == 1
+                  ? 't'
+                  : 'l';
+        }))));
+  }
+
+  _generateNoVotes(List<String> playerOrder) {
+    return Map.fromEntries(playerOrder.map((p) => MapEntry(
+        p,
+        List.generate(numberOfPlayers, (id) {
+          final i = int.parse(p);
+          return p == whoseTurnId ? 'p' : '-';
+        }))));
+  }
 }
 
 class Test extends StatefulWidget {
   Test({super.key});
 
-  final _key = GlobalKey<AnimatedRegularRectanglePackerState>();
+  final _key = GlobalKey<AnimatedRegularRectanglePackerState<vm>>();
 
   @override
   State<Test> createState() => _TestState();
@@ -366,37 +387,70 @@ class _TestState extends State<Test> {
 
   double width = 500;
 
+  var activeTags = [0, 2, 3, 4];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      home: AnimatedRegularRectanglePacker(
-        key: widget._key,
-        itemToId: (i) => '0',
-        builder: (i) => Stack(children: [
-          AnimatedContainer(
-            duration: Duration(seconds: 1),
-            child: Column(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        b = !b;
-                        widget._key.currentState!.setItems(<int>[0, 2, 4]);
-                      });
-                    },
-                    child: Text('hi')),
-                Expanded(
-                    child: AvatarStateLabel(
-                  'label',
-                  isActive: i % 2 == 0,
-                ))
-              ],
+      home: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                widget._key.currentState!.setItems([0, 1, 2, 3, 4]
+                    .map<vm>(((e) => vm(activeTags.contains(e), e)))
+                    .toList());
+              },
+              child: Text('1')),
+          ElevatedButton(
+              onPressed: () {
+                widget._key.currentState!.setItems([0, 1, 2, 3]
+                    .map<vm>(((e) => vm(activeTags.contains(e), e)))
+                    .toList());
+              },
+              child: Text('2')),
+          ElevatedButton(
+              onPressed: () {
+                activeTags.clear();
+                activeTags.addAll([0, 2, 4]);
+              },
+              child: Text('3')),
+          Expanded(
+            child: AnimatedRegularRectanglePacker<vm>(
+              key: widget._key,
+              itemToId: (i) => i.key,
+              builder: (v) => Container(
+                color: Colors.grey.withAlpha(100),
+                child: Stack(children: [
+                  AnimatedContainer(
+                    transform: v.isActive
+                        ? Matrix4.identity()
+                        : Matrix4.identity() * 0.01,
+                    duration: Duration(seconds: 1),
+                    child: Column(
+                      children: [
+                        Expanded(
+                            child: AvatarStateLabel(
+                          text: 'label ${v.key}',
+                          isActive: v.isActive,
+                        ))
+                      ],
+                    ),
+                  )
+                ]),
+              ),
+              initialData:
+                  [0, 1, 2].map((e) => vm(activeTags.contains(e), e)).toList(),
             ),
-          )
-        ]),
-        initialData: [0, 1, 2],
+          ),
+        ],
       ),
     );
   }
+}
+
+class vm {
+  final bool isActive;
+  final int key;
+
+  vm(this.isActive, this.key);
 }

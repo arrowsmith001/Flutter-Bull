@@ -25,6 +25,7 @@ mixin _$GameRoundViewModel {
   bool get isMyTurn => throw _privateConstructorUsedError;
   bool get isSaboteur => throw _privateConstructorUsedError;
   bool get isTruth => throw _privateConstructorUsedError;
+  bool get isFinalRound => throw _privateConstructorUsedError;
   int get whoseTurnIndex => throw _privateConstructorUsedError;
   int get timeToReadOut => throw _privateConstructorUsedError;
 
@@ -49,6 +50,7 @@ abstract class $GameRoundViewModelCopyWith<$Res> {
       bool isMyTurn,
       bool isSaboteur,
       bool isTruth,
+      bool isFinalRound,
       int whoseTurnIndex,
       int timeToReadOut});
 }
@@ -75,6 +77,7 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
     Object? isMyTurn = null,
     Object? isSaboteur = null,
     Object? isTruth = null,
+    Object? isFinalRound = null,
     Object? whoseTurnIndex = null,
     Object? timeToReadOut = null,
   }) {
@@ -115,6 +118,10 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
           ? _value.isTruth
           : isTruth // ignore: cast_nullable_to_non_nullable
               as bool,
+      isFinalRound: null == isFinalRound
+          ? _value.isFinalRound
+          : isFinalRound // ignore: cast_nullable_to_non_nullable
+              as bool,
       whoseTurnIndex: null == whoseTurnIndex
           ? _value.whoseTurnIndex
           : whoseTurnIndex // ignore: cast_nullable_to_non_nullable
@@ -145,6 +152,7 @@ abstract class _$$_GameRoundViewModelCopyWith<$Res>
       bool isMyTurn,
       bool isSaboteur,
       bool isTruth,
+      bool isFinalRound,
       int whoseTurnIndex,
       int timeToReadOut});
 }
@@ -169,6 +177,7 @@ class __$$_GameRoundViewModelCopyWithImpl<$Res>
     Object? isMyTurn = null,
     Object? isSaboteur = null,
     Object? isTruth = null,
+    Object? isFinalRound = null,
     Object? whoseTurnIndex = null,
     Object? timeToReadOut = null,
   }) {
@@ -209,6 +218,10 @@ class __$$_GameRoundViewModelCopyWithImpl<$Res>
           ? _value.isTruth
           : isTruth // ignore: cast_nullable_to_non_nullable
               as bool,
+      isFinalRound: null == isFinalRound
+          ? _value.isFinalRound
+          : isFinalRound // ignore: cast_nullable_to_non_nullable
+              as bool,
       whoseTurnIndex: null == whoseTurnIndex
           ? _value.whoseTurnIndex
           : whoseTurnIndex // ignore: cast_nullable_to_non_nullable
@@ -234,6 +247,7 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
       required this.isMyTurn,
       required this.isSaboteur,
       required this.isTruth,
+      required this.isFinalRound,
       required this.whoseTurnIndex,
       required this.timeToReadOut})
       : _playersLeftToPlayIds = playersLeftToPlayIds,
@@ -279,13 +293,15 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
   @override
   final bool isTruth;
   @override
+  final bool isFinalRound;
+  @override
   final int whoseTurnIndex;
   @override
   final int timeToReadOut;
 
   @override
   String toString() {
-    return 'GameRoundViewModel._(roundPhase: $roundPhase, playersLeftToPlayIds: $playersLeftToPlayIds, players: $players, playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, roleDescriptionStrings: $roleDescriptionStrings, isMyTurn: $isMyTurn, isSaboteur: $isSaboteur, isTruth: $isTruth, whoseTurnIndex: $whoseTurnIndex, timeToReadOut: $timeToReadOut)';
+    return 'GameRoundViewModel._(roundPhase: $roundPhase, playersLeftToPlayIds: $playersLeftToPlayIds, players: $players, playerWhoseTurn: $playerWhoseTurn, playerWhoseTurnStatement: $playerWhoseTurnStatement, roleDescriptionStrings: $roleDescriptionStrings, isMyTurn: $isMyTurn, isSaboteur: $isSaboteur, isTruth: $isTruth, isFinalRound: $isFinalRound, whoseTurnIndex: $whoseTurnIndex, timeToReadOut: $timeToReadOut)';
   }
 
   @override
@@ -310,6 +326,8 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
             (identical(other.isSaboteur, isSaboteur) ||
                 other.isSaboteur == isSaboteur) &&
             (identical(other.isTruth, isTruth) || other.isTruth == isTruth) &&
+            (identical(other.isFinalRound, isFinalRound) ||
+                other.isFinalRound == isFinalRound) &&
             (identical(other.whoseTurnIndex, whoseTurnIndex) ||
                 other.whoseTurnIndex == whoseTurnIndex) &&
             (identical(other.timeToReadOut, timeToReadOut) ||
@@ -328,6 +346,7 @@ class _$_GameRoundViewModel implements _GameRoundViewModel {
       isMyTurn,
       isSaboteur,
       isTruth,
+      isFinalRound,
       whoseTurnIndex,
       timeToReadOut);
 
@@ -350,6 +369,7 @@ abstract class _GameRoundViewModel implements GameRoundViewModel {
       required final bool isMyTurn,
       required final bool isSaboteur,
       required final bool isTruth,
+      required final bool isFinalRound,
       required final int whoseTurnIndex,
       required final int timeToReadOut}) = _$_GameRoundViewModel;
 
@@ -371,6 +391,8 @@ abstract class _GameRoundViewModel implements GameRoundViewModel {
   bool get isSaboteur;
   @override
   bool get isTruth;
+  @override
+  bool get isFinalRound;
   @override
   int get whoseTurnIndex;
   @override

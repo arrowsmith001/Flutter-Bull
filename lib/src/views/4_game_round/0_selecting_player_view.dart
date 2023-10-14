@@ -4,10 +4,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SelectingPlayerPhaseView extends ConsumerStatefulWidget {
-  const SelectingPlayerPhaseView({super.key});
+
+  const SelectingPlayerPhaseView({super.key, this.isFinalRound = false});
+
+  final bool isFinalRound;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -19,8 +23,8 @@ class _SelectingPlayerPhaseViewState
     with RoomID, WhoseTurnID, UserID {
   late Timer _timer;
 
-  static const int timerDurationMs = 100; // 1500;
-  int seconds = 0;
+  late Duration timerDurationMs =
+      UtterBullGlobal.selectingPlayerScreenDuration;
 
   @override
   void initState() {
@@ -29,13 +33,20 @@ class _SelectingPlayerPhaseViewState
   }
 
   void _startTimer() {
-    _timer = Timer(const Duration(milliseconds: timerDurationMs), () {
+    _timer = Timer(timerDurationMs, () {
       _onTimerEnd();
     });
   }
 
   void _onTimerEnd() {
-    Navigator.of(context).pushReplacementNamed(RoundPhase.shuffling.name);
+    if(widget.isFinalRound)
+    {
+      Navigator.of(context).pushReplacementNamed(RoundPhase.reader.name);
+    }
+    else
+    {
+      Navigator.of(context).pushReplacementNamed(RoundPhase.shuffling.name);
+    }
   }
 
   final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
@@ -48,10 +59,10 @@ class _SelectingPlayerPhaseViewState
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: 'Selecting Next Player'
+            children: (widget.isFinalRound ? 'One More To Go!' : 'Selecting Next Player')
                 .split(' ')
                 .map((s) => AutoSizeText(s,
-                maxLines: 1,
+                    maxLines: 1,
                     group: _autoSizeGroup,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.displayLarge))

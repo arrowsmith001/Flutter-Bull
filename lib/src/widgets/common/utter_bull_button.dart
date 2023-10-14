@@ -40,18 +40,23 @@ class PlaceholderButton extends StatelessWidget {
 class UtterBullButton extends StatefulWidget {
   const UtterBullButton(
       {this.onPressed,
+      super.key,
       required this.title,
       this.leading,
+      this.below,
       this.maxHeight,
       this.isLoading = false,
       this.isShimmering = true,
+      this.aspectRatio = 3,
       this.color,
       this.gradient});
 
   final VoidCallback? onPressed;
   final String title;
   final Widget? leading;
+  final Widget? below;
   final double? maxHeight;
+  final double aspectRatio;
   final bool isLoading;
   final bool isShimmering;
   final Color? color;
@@ -63,27 +68,33 @@ class UtterBullButton extends StatefulWidget {
 
 class _UtterBullButtonState extends State<UtterBullButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController animController;
-  late Animation<double> doubleAnim;
-  late Animation<Offset> offsetAnim;
+  late AnimationController animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 25),
+      reverseDuration: const Duration(milliseconds: 100));
+
+  late Animation<double> doubleAnim = CurvedAnimation(
+          parent: animController,
+          curve: Curves.linear,
+          reverseCurve: Curves.decelerate)
+      .drive(Tween(begin: 1, end: reactionEndScale));
+
+  late Animation<Offset> offsetAnim =
+      animController.drive(Tween(begin: Offset(0, -3), end: Offset(0, 3)));
+
+  late Animation<Color?> colorAnim =
+      ColorTween(begin: baseColor, end: reactionColor).animate(animController);
+
+  final double reactionEndScale = 0.95;
+  late final Color baseColor =
+      widget.color ?? Theme.of(context).colorScheme.primary;
+  late final Color reactionColor = Color.lerp(baseColor, Colors.white, 0.5)!;
 
   bool get isEnabled => widget.onPressed != null;
 
   @override
   void initState() {
     super.initState();
-
-    animController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
-
-    doubleAnim =
-        CurvedAnimation(parent: animController, curve: Curves.easeInOut);
-    offsetAnim =
-        animController.drive(Tween(begin: Offset(0, -3), end: Offset(0, 3)));
-
-    animController.addListener(() {
-      setState(() {});
-    });
 
     if (isEnabled) {
       //animController.repeat(reverse: true);
@@ -96,19 +107,28 @@ class _UtterBullButtonState extends State<UtterBullButton>
     super.dispose();
   }
 
+  void _onPressed() async {
+    if (animController.isAnimating) {
+      animController.stop();
+    }
+    widget.onPressed!();
+    await animController
+        .forward(from: 0)
+        .then((_) => animController.reverse(from: 1));
+  }
+
+
   double radius = 24.0;
-  Color get color => isEnabled
-      ? (widget.color ?? Theme.of(context).colorScheme.primary)
-      : Colors.grey;
+  Color get color => isEnabled ? colorAnim.value! : Colors.grey;
 
   @override
   Widget build(BuildContext context) {
     final main = GestureDetector(
-      onTap: isEnabled ? () => widget.onPressed!() : null,
+      onTap: isEnabled && widget.onPressed != null ? () => _onPressed() : null,
       child: SizedBox(
         height: widget.maxHeight,
         child: AspectRatio(
-          aspectRatio: 3,
+          aspectRatio: widget.aspectRatio,
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: _buildOuterEdge(),
@@ -117,21 +137,28 @@ class _UtterBullButtonState extends State<UtterBullButton>
       ),
     );
 
-    if (!isEnabled) return main;
+    // final Widget transformedMain = Transform.translate(
+    //   offset: offsetAnim.value,
+    //   child: GestureDetector(
+    //     onTap: isEnabled ? () => widget.onPressed!() : null,
+    //     child: AspectRatio(
+    //       aspectRatio: widget.aspectRatio,
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(4.0),
+    //         child: _buildOuterEdge(),
+    //       ),
+    //     ),
+    //   ),
+    // );
 
-    return Transform.translate(
-      offset: offsetAnim.value,
-      child: GestureDetector(
-        onTap: isEnabled ? () => widget.onPressed!() : null,
-        child: AspectRatio(
-          aspectRatio: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: _buildOuterEdge(),
-          ),
-        ),
-      ),
-    );
+    return AnimatedBuilder(
+        animation: doubleAnim,
+        builder: (context, _) {
+          return Transform.scale(
+            scale: doubleAnim.value,
+            child: main,
+          );
+        });
   }
 
   Container _buildOuterEdge() {
@@ -185,22 +212,29 @@ class _UtterBullButtonState extends State<UtterBullButton>
     );
   }
 
-  Container _buildInnerLayer() {
-    return Container(
-        decoration: BoxDecoration(
-            gradient: widget.gradient ??
-                LinearGradient(
-                    colors: [Color.lerp(color, Colors.white, 0.7)!, color],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter),
-            borderRadius: BorderRadius.circular(radius)),
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Stack(children: [_buildContents()]),
-        ));
+  Widget _buildInnerLayer() {
+    final lightenedColor = Color.lerp(color, Colors.white, 0.7)!;
+
+    return AnimatedBuilder(
+        animation: colorAnim,
+        builder: (context, _) {
+          return Container(
+              decoration: BoxDecoration(
+                  gradient: widget.gradient ??
+                      LinearGradient(
+                          colors: [lightenedColor, color],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter),
+                  borderRadius: BorderRadius.circular(radius)),
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Stack(children: [_buildContents()]),
+              ));
+        });
   }
 
   Widget _buildContents() {
+    final text = UglyOutlinedText(widget.title);
     return Column(
       children: [
         Expanded(
@@ -210,7 +244,51 @@ class _UtterBullButtonState extends State<UtterBullButton>
               widget.isLoading
                   ? UtterBullCircularProgressIndicator()
                   : _buildLeading(),
-              Expanded(child: UglyOutlinedText(widget.title))
+              Expanded(child: LayoutBuilder(builder: (context, constraints) {
+                final hFull = constraints.biggest.height;
+                final wFull = constraints.biggest.width;
+
+                return text;
+
+                return Container(
+                  color: Colors.pink,
+                  height: hFull,
+                  width: wFull,
+                  child: AnimatedSwitcher(
+                      layoutBuilder: (currentChild, previousChildren) =>
+                          currentChild!,
+                      transitionBuilder: (child, animation) {
+                        return AnimatedBuilder(
+                          animation: animation,
+                          builder: (context, _) {
+                            bool isWidgetEmpty =
+                                (child.key as ValueKey<bool>).value == true;
+
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                LayoutBuilder(builder: (context, c2) {
+                                  final h = c2.biggest.height;
+                                  final w = c2.biggest.width;
+
+                                  return Container(
+                                      color: Colors.green,
+                                      height: h,
+                                      width: w,
+                                      child: text);
+                                })
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      duration: Duration(milliseconds: 500),
+                      child: Container(
+                        key: ValueKey<bool>(widget.below == null),
+                        child: widget.below,
+                      )),
+                );
+              }))
             ],
           ),
         ),
@@ -226,9 +304,14 @@ class _UtterBullButtonState extends State<UtterBullButton>
 
 class UglyOutlinedText extends StatelessWidget {
   UglyOutlinedText(this.text,
-      {this.outlineColor, this.fillColor, this.maxLines = 1});
+      {this.outlineColor,
+      this.fillColor,
+      this.textAlign,
+      this.maxLines = 1,
+      super.key});
 
   final String text;
+  final TextAlign? textAlign;
   final Color? fillColor;
   final Color? outlineColor;
   final int maxLines;
@@ -251,7 +334,7 @@ class UglyOutlinedText extends StatelessWidget {
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = 4
                 ..color = outlineColor ?? Colors.grey.withAlpha(150)),
-          textAlign: TextAlign.center,
+          textAlign: textAlign ?? TextAlign.center,
         ),
         AutoSizeText(
           group: group,
@@ -263,7 +346,7 @@ class UglyOutlinedText extends StatelessWidget {
               foreground: Paint()
                 ..style = PaintingStyle.fill
                 ..color = fillColor ?? Colors.white),
-          textAlign: TextAlign.center,
+          textAlign: textAlign ?? TextAlign.center,
         )
       ],
     );

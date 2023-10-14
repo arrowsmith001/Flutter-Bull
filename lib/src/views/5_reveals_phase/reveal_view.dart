@@ -21,30 +21,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../custom/widgets/conditional_overlay.dart';
 import '../../custom/widgets/rounded_border.dart';
 
-class RevealViewController {
-  RevealViewController(this.vm);
-  RevealViewModel? vm;
-
-  void setViewState(RevealViewState _revealViewState) {
-    _state = _revealViewState;
-  }
-
-  RevealViewState? _state;
-
-  void onRevealed() {
-    _state?.setState(() {
-      vm = vm?.copyWith(isRevealed: true);
-    });
-
-    _state?.onRevealed();
-  }
-}
-
 // TODO: Clean up this friggin mess
 class RevealView extends ConsumerStatefulWidget {
-  const RevealView({this.controller, super.key});
-
-  final RevealViewController? controller;
+  const RevealView({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => RevealViewState();
@@ -52,23 +31,15 @@ class RevealView extends ConsumerStatefulWidget {
 
 class RevealViewState extends ConsumerState<RevealView>
     with WhoseTurnID, UserID, RoomID, SingleTickerProviderStateMixin {
-  late AnimationController animController;
-  late Animation anim;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller?.setViewState(this);
-
-    animController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800));
-
-    anim = CurvedAnimation(parent: animController, curve: Curves.elasticInOut);
-
-    animController.addListener(() {
+      
+  late AnimationController animController = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 800))
+    ..addListener(() {
       setState(() {});
     });
-  }
+
+  late Animation anim =
+      CurvedAnimation(parent: animController, curve: Curves.elasticInOut);
 
   late final vmProvider =
       revealViewNotifierProvider(roomId, userId, whoseTurnId);
@@ -76,9 +47,13 @@ class RevealViewState extends ConsumerState<RevealView>
   GameNotifier get gameNotifier =>
       ref.read(gameNotifierProvider(roomId).notifier);
 
-  AsyncValue<RevealViewModel> get vmAsync => widget.controller?.vm != null
-      ? AsyncData(widget.controller!.vm!)
-      : ref.watch(vmProvider);
+  AsyncValue<RevealViewModel> get vmAsync => ref.watch(vmProvider);
+
+  @override
+  void dispose() {
+    animController.dispose();
+    super.dispose();
+  }
 
   void onRevealed() async {
     await animController.forward();
@@ -107,61 +82,62 @@ class RevealViewState extends ConsumerState<RevealView>
               vm.isRevealed,
               vm.isStatementTruth);
 
-          final preReveal =
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
-                children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24),
-              child: preamble,
-            ),
-            vm.isRevealed
-                ? ListView(
-                    shrinkWrap: true,
-                    children: vm.achievements
-                        .map((e) => ListTile(
-                              title: Text(e.title),
-                              leading: Image.asset(e.iconPath),
-                            ))
-                        .toList())
-                : Container(),
-            Flexible(
-                child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: RoundedBorder(
-                  child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: ConditionalOverlay(
-                            isActive: vm.isRevealed && !vm.isStatementTruth,
-                            child: _buildVoteList(true, vm.playersVotedTruth,
-                                maxNumberInVoteList))),
-                    Expanded(
-                        child: ConditionalOverlay(
-                            isActive: vm.isRevealed && vm.isStatementTruth,
-                            child: _buildVoteList(false, vm.playersVotedLie,
-                                maxNumberInVoteList))),
-                  ],
+          final preReveal = Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 24),
+                  child: preamble,
                 ),
-              )),
-            )),
-            vm.isMyTurn
-                ? _buildRevealerControls(vm.isRevealed)
-                : AnimatedSwitcher(
-                    duration: Duration(seconds: 1),
+                vm.isRevealed
+                    ? ListView(
+                        shrinkWrap: true,
+                        children: vm.achievements
+                            .map((e) => ListTile(
+                                  title: Text(e.title),
+                                  leading: Image.asset(e.iconPath),
+                                ))
+                            .toList())
+                    : Container(),
+                Flexible(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 24.0),
-                      child: AutoSizeText(
-                          'Waiting for ${vm.playerWhoseTurn.player.name} to ${vm.isRevealed ? 'continue' : 'reveal'}...',
-                          style: Theme.of(context).textTheme.headlineLarge,
-                          maxLines: 1),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: RoundedBorder(
+                      child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: ConditionalOverlay(
+                                isActive: vm.isRevealed && !vm.isStatementTruth,
+                                child: _buildVoteList(
+                                    true,
+                                    vm.playersVotedTruth,
+                                    maxNumberInVoteList))),
+                        Expanded(
+                            child: ConditionalOverlay(
+                                isActive: vm.isRevealed && vm.isStatementTruth,
+                                child: _buildVoteList(false, vm.playersVotedLie,
+                                    maxNumberInVoteList))),
+                      ],
                     ),
-                  )
-          ]);
+                  )),
+                )),
+                vm.isMyTurn
+                    ? _buildRevealerControls(vm.isRevealed)
+                    : AnimatedSwitcher(
+                        duration: Duration(seconds: 1),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 24.0),
+                          child: AutoSizeText(
+                              'Waiting for ${vm.playerWhoseTurn.player.name} to ${vm.isRevealed ? 'continue' : 'reveal'}...',
+                              style: Theme.of(context).textTheme.headlineLarge,
+                              maxLines: 1),
+                        ),
+                      )
+              ]);
 
           return Stack(
             alignment: Alignment.center,
@@ -302,8 +278,7 @@ class RevealViewState extends ConsumerState<RevealView>
               child: Stack(alignment: Alignment.center, children: [
                 Positioned(
                     child: LayoutBuilder(builder: (context, constraints) {
-
-                      // Size adjusted against potentially small number of voters
+                  // Size adjusted against potentially small number of voters
                   final Size sizeAdj = Size(
                       constraints.biggest.width,
                       min(constraints.biggest.height,
@@ -311,8 +286,7 @@ class RevealViewState extends ConsumerState<RevealView>
 
                   return SizedBox.fromSize(
                     size: sizeAdj,
-                    child: RegularRectanglePacker(
-                        items: avatarList),
+                    child: RegularRectanglePacker(items: avatarList),
                   );
                 }))
               ] // ListView(children: avatarList),

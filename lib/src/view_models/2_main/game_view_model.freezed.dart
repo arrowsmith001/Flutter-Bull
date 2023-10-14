@@ -16,7 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$GameViewModel {
-  String get path => throw _privateConstructorUsedError;
+  GamePath get path => throw _privateConstructorUsedError;
+  PlayerState? get playerState => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameViewModelCopyWith<GameViewModel> get copyWith =>
@@ -29,7 +30,7 @@ abstract class $GameViewModelCopyWith<$Res> {
           GameViewModel value, $Res Function(GameViewModel) then) =
       _$GameViewModelCopyWithImpl<$Res, GameViewModel>;
   @useResult
-  $Res call({String path});
+  $Res call({GamePath path, PlayerState? playerState});
 }
 
 /// @nodoc
@@ -46,12 +47,17 @@ class _$GameViewModelCopyWithImpl<$Res, $Val extends GameViewModel>
   @override
   $Res call({
     Object? path = null,
+    Object? playerState = freezed,
   }) {
     return _then(_value.copyWith(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
-              as String,
+              as GamePath,
+      playerState: freezed == playerState
+          ? _value.playerState
+          : playerState // ignore: cast_nullable_to_non_nullable
+              as PlayerState?,
     ) as $Val);
   }
 }
@@ -64,7 +70,7 @@ abstract class _$$_GameViewModelCopyWith<$Res>
       __$$_GameViewModelCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String path});
+  $Res call({GamePath path, PlayerState? playerState});
 }
 
 /// @nodoc
@@ -79,12 +85,17 @@ class __$$_GameViewModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? path = null,
+    Object? playerState = freezed,
   }) {
     return _then(_$_GameViewModel(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
-              as String,
+              as GamePath,
+      playerState: freezed == playerState
+          ? _value.playerState
+          : playerState // ignore: cast_nullable_to_non_nullable
+              as PlayerState?,
     ));
   }
 }
@@ -92,14 +103,16 @@ class __$$_GameViewModelCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_GameViewModel implements _GameViewModel {
-  _$_GameViewModel({required this.path});
+  _$_GameViewModel({required this.path, required this.playerState});
 
   @override
-  final String path;
+  final GamePath path;
+  @override
+  final PlayerState? playerState;
 
   @override
   String toString() {
-    return 'GameViewModel(path: $path)';
+    return 'GameViewModel(path: $path, playerState: $playerState)';
   }
 
   @override
@@ -107,11 +120,13 @@ class _$_GameViewModel implements _GameViewModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_GameViewModel &&
-            (identical(other.path, path) || other.path == path));
+            (identical(other.path, path) || other.path == path) &&
+            (identical(other.playerState, playerState) ||
+                other.playerState == playerState));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, path);
+  int get hashCode => Object.hash(runtimeType, path, playerState);
 
   @JsonKey(ignore: true)
   @override
@@ -121,10 +136,14 @@ class _$_GameViewModel implements _GameViewModel {
 }
 
 abstract class _GameViewModel implements GameViewModel {
-  factory _GameViewModel({required final String path}) = _$_GameViewModel;
+  factory _GameViewModel(
+      {required final GamePath path,
+      required final PlayerState? playerState}) = _$_GameViewModel;
 
   @override
-  String get path;
+  GamePath get path;
+  @override
+  PlayerState? get playerState;
   @override
   @JsonKey(ignore: true)
   _$$_GameViewModelCopyWith<_$_GameViewModel> get copyWith =>

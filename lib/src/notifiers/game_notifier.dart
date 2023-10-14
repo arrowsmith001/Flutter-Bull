@@ -41,10 +41,9 @@ class GameNotifier extends _$GameNotifier {
   Future<GameNotifierState> _buildState(GameRoom room) async {
     final playerAvatars = await _getPlayerAvatars(room.playerIds);
 
-
     //final result = await _getResult(room.resultId);
     //final achievementsWithIcons = await _getAchievements(result);
-
+    
     return GameNotifierState(
       players: playerAvatars,
       gameRoom: room,
@@ -54,9 +53,7 @@ class GameNotifier extends _$GameNotifier {
   }
 
   Future<Map<String, PublicPlayer>> _getPlayerAvatars(
-      List<String> playerIds) async 
-      {
-
+      List<String> playerIds) async {
     final prevList = state.valueOrNull?.players.keys ?? [];
     final allPlayers = {...playerIds, ...prevList}.toList();
 
@@ -69,7 +66,8 @@ class GameNotifier extends _$GameNotifier {
   }
 
   Future<void> setReady(String userId, PlayerState playerState) async {
-    await _server.setPlayerState(state.value!.gameRoom.id!, userId, playerState);
+    await _server.setPlayerState(
+        state.value!.gameRoom.id!, userId, playerState);
   }
 
   Future<void> vote(String userId, bool truthOrLie) async {
@@ -92,6 +90,11 @@ class GameNotifier extends _$GameNotifier {
   Future<void> revealNext(String userId) async {
     Logger().d('revealNext: $userId $roomId');
     await _server.revealNext(roomId!, userId);
+  }
+
+  Future<void> setTruth(String userId, bool truth) async {
+    Logger().d('setTruth: $roomId $userId');
+    await _server.setTruth(roomId!, userId, truth);
   }
 
   // Future<GameResult?> _getResult(String? resultId) async {

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class UtterBullGlobal {
+  
   static Color backgroundDark = Color.fromARGB(255, 196, 196, 196);
 
   static Color truthColor = Color.fromARGB(255, 86, 111, 255);
   static Color lieColor = Color.fromARGB(255, 255, 49, 49);
 
   static ThemeData theme = ThemeData(
+    bottomAppBarTheme: BottomAppBarTheme(color: Colors.transparent),
       scaffoldBackgroundColor: Colors.transparent,
       shadowColor: backgroundDark,
       fontFamily: 'LapsusPro',
@@ -17,13 +19,14 @@ class UtterBullGlobal {
         tertiary: Color.fromARGB(235, 255, 255, 255),
       ));
 
-  static const int revealsPreambleTimeMilliseconds = 100;
 
-  static Decoration gameViewDecoration = const BoxDecoration(
+  static Decoration gameViewDecoration = BoxDecoration(
       gradient: RadialGradient(
-          center: AlignmentDirectional.topCenter,
+          center: AlignmentDirectional.center,
           radius: 2.5,
-          colors: [Colors.white, Color.fromARGB(255, 109, 221, 255)]));
+          colors: [
+            Colors.white, 
+            Color.lerp(theme.primaryColor, Colors.white, 0.3)!]));
 
   static Color bronzeColor = const Color.fromARGB(255, 209, 101, 0);
   static Color silverColor = const Color.fromARGB(255, 211, 211, 211);
@@ -33,6 +36,17 @@ class UtterBullGlobal {
   static Color goodVibe = Color.fromARGB(255, 116, 179, 0);
   static Color okayVibe = Color.fromARGB(255, 192, 157, 0);
   static Color badVibe = Color.fromARGB(255, 121, 0, 0);
+
+
+  static const Duration playerSelectionAnimationDuration = Duration(milliseconds: 2500);
+  static const Duration selectingPlayerScreenDuration = Duration(milliseconds: 500);
+  static const Duration revealsPreambleTimeMilliseconds =  Duration(milliseconds: 500);
+
+  static const Duration votingPhaseTransitionToDuration =  Duration(milliseconds: 1000);
+
+  static const Duration votingEndAnimationDuration =  Duration(milliseconds: 2000);
+  static const Duration votingEndAnimationReverseDuration =  Duration(milliseconds: 800);
+
 
 /*     static ColorScheme appColorScheme = ColorScheme(
       background: Color.fromARGB(255, 207, 207, 207), 

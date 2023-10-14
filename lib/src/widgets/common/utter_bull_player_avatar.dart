@@ -5,48 +5,50 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 
 // TODO: Incorporate
-enum NamePosition {
-  below, rightCenter
-}
+enum NamePosition { below, rightCenter }
 
 class UtterBullPlayerAvatar extends StatefulWidget {
-  const UtterBullPlayerAvatar(this.name, this.data);
+  const UtterBullPlayerAvatar(this.name, this.data, {this.whiteout = 0.0});
 
   final Uint8List? data;
   final String? name;
+  final double whiteout;
 
   @override
   State<UtterBullPlayerAvatar> createState() => _UtterBullPlayerAvatarState();
 }
 
 class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
-
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(aspectRatio: 1, child: 
-    Container(
-      color: Colors.transparent,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Stack(
-                clipBehavior: Clip.none,
-            alignment: Alignment.center, 
-            children: [
-    
-              _buildAvatar(context),
-    
-              widget.name == null ? SizedBox.shrink() : 
-              PositionedDirectional(
-                  bottom: -constraints.maxHeight * 0.05,
-                  child: SizedBox(
-                  height: constraints.maxHeight * 0.2, 
-                  child: Center(child: UglyOutlinedText(widget.name! , outlineColor: Color.lerp(Theme.of(context).colorScheme.primary, Colors.black, 0.4)),)),
-                )
-            ],
-          );
-        }
-      ),
-    ));
+    return AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          color: Colors.transparent,
+          child: LayoutBuilder(builder: (context, constraints) {
+            return Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                _buildAvatar(context),
+                widget.name == null
+                    ? SizedBox.shrink()
+                    : PositionedDirectional(
+                        bottom: -constraints.maxHeight * 0.05,
+                        child: SizedBox(
+                            height: constraints.maxHeight * 0.2,
+                            child: Center(
+                              child: UglyOutlinedText(widget.name!,
+                                  outlineColor: Color.lerp(
+                                      Theme.of(context).colorScheme.primary,
+                                      Colors.black,
+                                      0.4)),
+                            )),
+                      )
+              ],
+            );
+          }),
+        ));
   }
 
   Widget _buildAvatar(BuildContext context) {
@@ -57,6 +59,21 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
       height: 100,
       fit: BoxFit.cover,
       frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+
+        if (widget.whiteout > 0.0) {
+          child = Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(child: child),
+              Positioned.fill(
+                child: Container(
+                  color: Colors.white.withOpacity(widget.whiteout),
+                ),
+              )
+            ],
+          );
+        }
+
         if (wasSynchronouslyLoaded) return CropCircled(child: child);
         return frame != null
             ? CropCircled(child: child)

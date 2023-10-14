@@ -28,7 +28,7 @@ mixin _$PlayerBreakdown {
   int? get saboteursUncovered => throw _privateConstructorUsedError;
   FooledProportion? get saboteurfooledProportion =>
       throw _privateConstructorUsedError;
-  int get roundScore => throw _privateConstructorUsedError;
+  int get totalScore => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $PlayerBreakdownCopyWith<PlayerBreakdown> get copyWith =>
@@ -52,7 +52,7 @@ abstract class $PlayerBreakdownCopyWith<$Res> {
       bool? targetsLieTurnedOutTrue,
       int? saboteursUncovered,
       FooledProportion? saboteurfooledProportion,
-      int roundScore});
+      int totalScore});
 }
 
 /// @nodoc
@@ -78,7 +78,7 @@ class _$PlayerBreakdownCopyWithImpl<$Res, $Val extends PlayerBreakdown>
     Object? targetsLieTurnedOutTrue = freezed,
     Object? saboteursUncovered = freezed,
     Object? saboteurfooledProportion = freezed,
-    Object? roundScore = null,
+    Object? totalScore = null,
   }) {
     return _then(_value.copyWith(
       playerId: null == playerId
@@ -121,9 +121,9 @@ class _$PlayerBreakdownCopyWithImpl<$Res, $Val extends PlayerBreakdown>
           ? _value.saboteurfooledProportion
           : saboteurfooledProportion // ignore: cast_nullable_to_non_nullable
               as FooledProportion?,
-      roundScore: null == roundScore
-          ? _value.roundScore
-          : roundScore // ignore: cast_nullable_to_non_nullable
+      totalScore: null == totalScore
+          ? _value.totalScore
+          : totalScore // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -148,7 +148,7 @@ abstract class _$$_PlayerBreakdownCopyWith<$Res>
       bool? targetsLieTurnedOutTrue,
       int? saboteursUncovered,
       FooledProportion? saboteurfooledProportion,
-      int roundScore});
+      int totalScore});
 }
 
 /// @nodoc
@@ -172,7 +172,7 @@ class __$$_PlayerBreakdownCopyWithImpl<$Res>
     Object? targetsLieTurnedOutTrue = freezed,
     Object? saboteursUncovered = freezed,
     Object? saboteurfooledProportion = freezed,
-    Object? roundScore = null,
+    Object? totalScore = null,
   }) {
     return _then(_$_PlayerBreakdown(
       playerId: null == playerId
@@ -215,9 +215,9 @@ class __$$_PlayerBreakdownCopyWithImpl<$Res>
           ? _value.saboteurfooledProportion
           : saboteurfooledProportion // ignore: cast_nullable_to_non_nullable
               as FooledProportion?,
-      roundScore: null == roundScore
-          ? _value.roundScore
-          : roundScore // ignore: cast_nullable_to_non_nullable
+      totalScore: null == totalScore
+          ? _value.totalScore
+          : totalScore // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
@@ -237,7 +237,7 @@ class _$_PlayerBreakdown implements _PlayerBreakdown {
       required this.targetsLieTurnedOutTrue,
       required this.saboteursUncovered,
       required this.saboteurfooledProportion,
-      required this.roundScore});
+      required this.totalScore});
 
   @override
   final String playerId;
@@ -260,11 +260,11 @@ class _$_PlayerBreakdown implements _PlayerBreakdown {
   @override
   final FooledProportion? saboteurfooledProportion;
   @override
-  final int roundScore;
+  final int totalScore;
 
   @override
   String toString() {
-    return 'PlayerBreakdown(playerId: $playerId, turnNumber: $turnNumber, ownRoundFooledProportion: $ownRoundFooledProportion, correctVotes: $correctVotes, fastestCorrectVotes: $fastestCorrectVotes, minorityVotes: $minorityVotes, lieTarget: $lieTarget, targetsLieTurnedOutTrue: $targetsLieTurnedOutTrue, saboteursUncovered: $saboteursUncovered, saboteurfooledProportion: $saboteurfooledProportion, roundScore: $roundScore)';
+    return 'PlayerBreakdown(playerId: $playerId, turnNumber: $turnNumber, ownRoundFooledProportion: $ownRoundFooledProportion, correctVotes: $correctVotes, fastestCorrectVotes: $fastestCorrectVotes, minorityVotes: $minorityVotes, lieTarget: $lieTarget, targetsLieTurnedOutTrue: $targetsLieTurnedOutTrue, saboteursUncovered: $saboteursUncovered, saboteurfooledProportion: $saboteurfooledProportion, totalScore: $totalScore)';
   }
 
   @override
@@ -295,8 +295,8 @@ class _$_PlayerBreakdown implements _PlayerBreakdown {
             (identical(
                     other.saboteurfooledProportion, saboteurfooledProportion) ||
                 other.saboteurfooledProportion == saboteurfooledProportion) &&
-            (identical(other.roundScore, roundScore) ||
-                other.roundScore == roundScore));
+            (identical(other.totalScore, totalScore) ||
+                other.totalScore == totalScore));
   }
 
   @override
@@ -312,7 +312,7 @@ class _$_PlayerBreakdown implements _PlayerBreakdown {
       targetsLieTurnedOutTrue,
       saboteursUncovered,
       saboteurfooledProportion,
-      roundScore);
+      totalScore);
 
   @JsonKey(ignore: true)
   @override
@@ -333,7 +333,7 @@ abstract class _PlayerBreakdown implements PlayerBreakdown {
       required final bool? targetsLieTurnedOutTrue,
       required final int? saboteursUncovered,
       required final FooledProportion? saboteurfooledProportion,
-      required final int roundScore}) = _$_PlayerBreakdown;
+      required final int totalScore}) = _$_PlayerBreakdown;
 
   @override
   String get playerId;
@@ -356,7 +356,7 @@ abstract class _PlayerBreakdown implements PlayerBreakdown {
   @override
   FooledProportion? get saboteurfooledProportion;
   @override
-  int get roundScore;
+  int get totalScore;
   @override
   @JsonKey(ignore: true)
   _$$_PlayerBreakdownCopyWith<_$_PlayerBreakdown> get copyWith =>
