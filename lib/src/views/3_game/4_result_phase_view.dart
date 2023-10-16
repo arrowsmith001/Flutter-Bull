@@ -29,7 +29,7 @@ class ResultView extends ConsumerStatefulWidget {
 }
 
 class _ResultViewViewState extends ConsumerState<ResultView>
-    with RoomID, UserID {
+    with RoomID, UserID, MediaDimensions {
   UtterBullServer get server => ref.read(utterBullServerProvider);
 
   late ScrollController _hideButtonController;
@@ -64,7 +64,7 @@ class _ResultViewViewState extends ConsumerState<ResultView>
     return Scaffold(
       bottomNavigationBar: AnimatedContainer(
         duration: Duration(milliseconds: 200),
-        height: _isVisible ? MediaQuery.of(context).size.height * 0.15 : 0.0,
+        height: _isVisible ? height * 0.15 : 0.0,
         child: BottomAppBar(
           //height: ,
           child: ClipRRect(
@@ -121,7 +121,7 @@ class ResultViewHeader extends SliverPersistentHeaderDelegate {
     return Padding(
       padding: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width * 0.2, vertical: 24),
-      child: UglyOutlinedText(
+      child: UglyOutlinedText(text: 
         'RESULTS',
         outlineColor: Colors.grey,
       ),
@@ -193,7 +193,7 @@ class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
                           padding: const EdgeInsets.fromLTRB(0.0, 0, 4, 0),
                           child: SizedBox(
                             width: 50,
-                            child: UglyOutlinedText(
+                            child: UglyOutlinedText(text: 
                               prs.roundScore.toString(),
                               // style: Theme.of(context)
                               //     .textTheme

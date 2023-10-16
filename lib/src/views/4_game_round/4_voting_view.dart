@@ -323,7 +323,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   Widget _buildTruthSwitchPrompt(int i) {
     return UtterBullButton(
         onPressed: () => onSwitchToTruth(),
-        leading: UglyOutlinedText("${i}s"),
+        leading: UglyOutlinedText(text: "${i}s"),
         title: 'Switch to truth?');
   }
 
@@ -507,7 +507,7 @@ class _TimesUpAnimationViewState extends State<TimesUpAnimationView> {
           decoration: BoxDecoration(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: UglyOutlinedText(widget.message,
+            child: UglyOutlinedText(text: widget.message,
                 outlineColor: Theme.of(context).primaryColorDark, maxLines: 1),
           ),
         ));
@@ -626,7 +626,7 @@ class TimeDisplayWidgetState extends State<TimeDisplayWidget>
                     builder: (context, _) {
                       return Transform.scale(
                           scale: _mAnimation.value,
-                          child: UglyOutlinedText(
+                          child: UglyOutlinedText(text: 
                             time.minuteString,
                             fillColor: textColor,
                             outlineColor: textOutlineColor,
@@ -635,7 +635,7 @@ class TimeDisplayWidgetState extends State<TimeDisplayWidget>
                     })
               ],
             )),
-        UglyOutlinedText(': ', fillColor: textColor),
+        UglyOutlinedText(text: ': ', fillColor: textColor),
         Flexible(
             flex: 1,
             child: Row(
@@ -646,7 +646,7 @@ class TimeDisplayWidgetState extends State<TimeDisplayWidget>
                     builder: (context, _) {
                       return Transform.scale(
                           scale: _sAnimation.value,
-                          child: UglyOutlinedText(
+                          child: UglyOutlinedText(text: 
                             time.secondString,
                             fillColor: textColor,
                             outlineColor: textOutlineColor,

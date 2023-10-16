@@ -16,6 +16,7 @@ import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dar
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_single_option_dismissable_dialog.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -311,16 +312,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     } else {
       showDialog(
           context: context,
-          builder: (context) => Column(
-                children: [
-                  UtterBullTextBox('Not everyone is ready'),
-                  UtterBullButton(
-                      title: 'OK',
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      })
-                ],
-              ));
+          builder: (context) => UtterBullSingleOptionDismissableDialog(message: 'Not everyone is ready'));
     }
   }
 }
@@ -387,7 +379,7 @@ class AvatarStateLabel extends StatelessWidget {
         child: Transform.rotate(
             angle: pi * 0.06,
             child: text != null
-                ? UglyOutlinedText(
+                ? UglyOutlinedText(text: 
                     text!,
                     outlineColor: outline ?? Colors.white,
                     fillColor: fill ?? Colors.black,

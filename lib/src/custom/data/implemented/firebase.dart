@@ -123,7 +123,14 @@ class FirebaseAuthService extends AuthService {
 
   @override
   Future<void> signInWithEmailAndPassword(String email, String password) async {
+    
     await auth.signInWithEmailAndPassword(email: email, password: password);
+  }
+
+  @override
+  Future<void> createUserWithEmailAndPassword(String email, String password) async {
+    
+    await auth.createUserWithEmailAndPassword(email: email, password: password);
   }
 
   @override

@@ -21,10 +21,10 @@ class UtterBullTextBox extends StatelessWidget {
         padding: padding,
         child: Center(
             child: AutoSizeText(
-          text,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.displayLarge,
-        )),
+                    text,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displayLarge,
+                  )),
       ),
     );
   }

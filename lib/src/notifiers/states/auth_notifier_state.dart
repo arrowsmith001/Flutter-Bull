@@ -6,8 +6,13 @@ part 'auth_notifier_state.freezed.dart';
 class AuthNotifierState with _$AuthNotifierState {
   factory AuthNotifierState({
     String? userId,
-    @Default(false) bool playerProfileExists,
-    @Default('') String message,
+    String? route,
+    bool? playerProfileExists,
+    bool? isSigningUp,
+    bool? isValidatingSigningUp,
+    @Default('') String message, 
+    String? errorMessage,
   }) = _AuthNotifierState;
+
 
 }

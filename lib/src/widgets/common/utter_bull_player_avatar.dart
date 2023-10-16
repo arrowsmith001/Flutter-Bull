@@ -38,7 +38,7 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
                         child: SizedBox(
                             height: constraints.maxHeight * 0.2,
                             child: Center(
-                              child: UglyOutlinedText(widget.name!,
+                              child: UglyOutlinedText(text: widget.name!,
                                   outlineColor: Color.lerp(
                                       Theme.of(context).colorScheme.primary,
                                       Colors.black,

@@ -32,6 +32,7 @@ import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/services/local_achievement_service.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
+import 'package:flutter_bull/src/views/2_main/home_view.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/4_voting_view.dart';
@@ -46,7 +47,7 @@ import 'src/widgets/main/mobile_app_layout_container.dart';
 
 ////////////////////////////////////////////////////////////////
 
-String fakeId = 'jEi2zE6LOHBkvhFCCck9Iczboc2B';
+String fakeId = '';
 const bool testModeOn = false;
 
 ////////////////////////////////////////////////////////////////
@@ -76,7 +77,7 @@ void main() async {
     await FirebaseStorage.instance.useStorageEmulator(host, 9199);
   }
 
-  FirebaseAuth.instance.setPersistence(Persistence.NONE);
+  FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -230,7 +231,7 @@ class WidgetTest extends StatefulWidget {
 
 class _WidgetTestState extends State<WidgetTest> {
   Widget _buildChild() {
-    return VotingPhaseView();
+    return HomeView();
   }
 
   void onFab() {

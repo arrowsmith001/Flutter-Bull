@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zwidget/zwidget.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -22,6 +25,9 @@ class HomeView extends ConsumerStatefulWidget {
 class _MyHomePageState extends ConsumerState<HomeView> with UserID {
   final TextEditingController _roomCodeTextEditController =
       TextEditingController();
+
+  double _sliderVal = 0.0;
+  double _sliderVal2 = 0.0;
 
   AuthNotifier get authNotifier => ref.read(authNotifierProvider.notifier);
   SignedInPlayerStatusNotifier get signedInPlayerNotifier =>
@@ -58,7 +64,8 @@ class _MyHomePageState extends ConsumerState<HomeView> with UserID {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Flexible(child: _buildPlayerAvatar(avatarAsync)),
-            const Expanded(child: Padding(
+            Expanded(
+                child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: UtterBullTitle(),
             )),
@@ -73,7 +80,7 @@ class _MyHomePageState extends ConsumerState<HomeView> with UserID {
                       )),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),

@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
+import 'package:zwidget/zwidget.dart';
+import 'package:logger/logger.dart';
 
 class UtterBullTitle extends StatefulWidget {
   const UtterBullTitle({
@@ -18,20 +21,51 @@ class _UtterBullTitleState extends State<UtterBullTitle>
   late AnimationController animController =
       AnimationController(vsync: this, duration: const Duration(seconds: 5))
         ..repeat(reverse: false);
-  final double rotateFactor = 0.05;
-  late Animation<double> rotateAnim = TweenSequence<double>([
+
+  final double bullImgRotateFactor = 0.05;
+
+  late Animation<double> bullImgRotateAnim = TweenSequence<double>([
     TweenSequenceItem(
-        tween: Tween<double>(begin: 0, end: -rotateFactor * pi)
+        tween: Tween<double>(begin: 0, end: -bullImgRotateFactor * pi)
             .chain(CurveTween(curve: Curves.easeInOut)),
         weight: 1),
     TweenSequenceItem(
-        tween: Tween(begin: -rotateFactor * pi, end: rotateFactor * pi)
+        tween: Tween(
+                begin: -bullImgRotateFactor * pi, end: bullImgRotateFactor * pi)
             .chain(CurveTween(curve: Curves.easeInOut)),
         weight: 1),
     TweenSequenceItem(
-        tween: Tween<double>(begin: rotateFactor* pi, end: 0)
+        tween: Tween<double>(begin: bullImgRotateFactor * pi, end: 0)
             .chain(CurveTween(curve: Curves.easeInOut)),
         weight: 1),
+  ]).animate(animController);
+
+  final double utterRotateFactor = 0.1;
+  late final double utterRotateExtent = utterRotateFactor * pi;
+
+  late Animation<double> utterAnim = TweenSequence<double>([
+    TweenSequenceItem(
+        tween: Tween<double>(begin: -1.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 1),
+    TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: -1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 2)
+  ]).animate(animController);
+
+  final double bullRotateFactor = 0.1;
+  late final double bullRotateExtent = bullRotateFactor * pi;
+
+  late Animation<double> bullAnim = TweenSequence<double>([
+    TweenSequenceItem(
+        tween: Tween<double>(begin: -1.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 2),
+    TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: -1.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 1)
   ]).animate(animController);
 
   @override
@@ -43,45 +77,135 @@ class _UtterBullTitleState extends State<UtterBullTitle>
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-
       builder: (context, constraints) => Stack(
         alignment: Alignment.center,
         children: [
           Positioned(
             bottom: constraints.biggest.height * 0.45,
-            left: constraints.biggest.width *0.1,
-            child: UglyOutlinedText('Utter',
-            
-                maxLines: 1,
-                outlineColor: const Color.fromARGB(
-                    255, 112, 112, 112) // Theme.of(context).colorScheme.primary,
-                ),
+            left: constraints.biggest.width * 0.1,
+            child: AnimatedBuilder(
+              animation: utterAnim,
+              builder: (context, child) {
+                return ZWidget.builder(
+                  rotationY: utterAnim.value * utterRotateExtent,
+                  builder: (_) => UglyOutlinedText(
+                    textSpan: TextSpan(children: [
+                      TextSpan(
+                          text: 'U',
+                          style: TextStyle(
+                            color: Color.lerp(UtterBullGlobal.truthColor,
+                                Colors.white, 0.3 + (1 + utterAnim.value) * 0.1),
+                          )),
+                      TextSpan(
+                          text: 'T',
+                          style: TextStyle(
+                            color: Color.lerp(
+                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.15),
+                          )),
+                      TextSpan(
+                          text: 'T',
+                          style: TextStyle(
+                            color: Color.lerp(
+                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.2),
+                          )),
+                      TextSpan(
+                          text: 'E',
+                          style: TextStyle(
+                            color: Color.lerp(
+                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.25),
+                          )),
+                      TextSpan(
+                          text: 'R',
+                          style: TextStyle(
+                            color: Color.lerp(
+                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.3),
+                          )),
+                    ]),
+
+                    maxLines: 1,
+                    fillColor: Color.lerp(
+                        UtterBullGlobal.truthColor, Colors.white, 0.7),
+                    outlineColor: Color.lerp(
+                        UtterBullGlobal.truthColor,
+                        Colors.black,
+                        0.85), //const Color.fromARGB( 255, 112, 112, 112)
+                  ),
+                );
+              },
+            ),
           ),
           Positioned(
-            left: 0, bottom: 0,
+            left: 0,
+            bottom: constraints.biggest.height * 0.1,
             child: AnimatedBuilder(
                 animation: animController,
                 builder: (context, _) {
                   return Transform.rotate(
-                    angle: rotateAnim.value,
+                    angle: bullImgRotateAnim.value,
                     child: Transform.translate(
                       offset: Offset(10 * cos(animController.value * 2 * pi),
                           5 * sin(animController.value * 2 * pi)),
-                      child: Assets.images.bullHead.image(width: constraints.biggest.width * 0.5),
+                      child: Assets.images.bullHeadMouthOpen
+                          .image(width: constraints.biggest.width * 0.5),
                     ),
                   );
                 }),
           ),
           Positioned(
             top: constraints.biggest.height * 0.45,
-            right: constraints.biggest.width *0.1,
-            child: Transform.rotate(
-              angle: -0.076 * pi,
-              child: UglyOutlinedText('Bull',
-                  maxLines: 1,
-                  outlineColor: const Color.fromARGB(
-                      255, 112, 112, 112) // Theme.of(context).colorScheme.primary,
-                  ),
+            right: constraints.biggest.width * 0.05,
+            child: Transform.scale(
+              scale: 1.1,
+              child: Transform.rotate(
+                angle: -0.076 * pi,
+                child: AnimatedBuilder(
+                  animation: bullAnim,
+                  builder: (context, child) {
+                    // Logger().d(bullRotateFactor.toString() +
+                    //     " " +
+                    //     bullAnim.value.toString());
+                    return ZWidget.builder(
+                      rotationY: bullAnim.value * bullRotateExtent,
+                      builder: (_) => UglyOutlinedText(
+                        textSpan: TextSpan(children: [
+                          TextSpan(
+                              text: 'B',
+                              style: TextStyle(
+                                color: Color.lerp(UtterBullGlobal.lieColor,
+                                    Colors.white, (1 + bullAnim.value) * 0.1),
+                              )),
+                          TextSpan(
+                              text: 'U',
+                              style: TextStyle(
+                                color: Color.lerp(UtterBullGlobal.lieColor,
+                                    Colors.white, (1 + bullAnim.value) * 0.15),
+                              )),
+                          TextSpan(
+                              text: 'L',
+                              style: TextStyle(
+                                color: Color.lerp(UtterBullGlobal.lieColor,
+                                    Colors.white, (1 + bullAnim.value) * 0.2),
+                              )),
+                          TextSpan(
+                              text: 'L',
+                              style: TextStyle(
+                                color: Color.lerp(UtterBullGlobal.lieColor,
+                                    Colors.white, (1 + bullAnim.value) * 0.25),
+                              )),
+                        ]),
+
+                        fillColor: Color.lerp(
+                            UtterBullGlobal.lieColor, Colors.white, 0.2),
+                        maxLines: 1,
+                        outlineColor: Color.lerp(
+                            UtterBullGlobal.lieColor,
+                            Colors.black,
+                            0.85), //const Color.fromARGB( 255, 112, 112, 112)
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],

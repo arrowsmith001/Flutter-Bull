@@ -1,3 +1,4 @@
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 
 class UtterBullGlobal {
@@ -10,6 +11,11 @@ class UtterBullGlobal {
   static ThemeData theme = ThemeData(
     bottomAppBarTheme: BottomAppBarTheme(color: Colors.transparent),
       scaffoldBackgroundColor: Colors.transparent,
+      buttonTheme: ButtonThemeData(
+    height: 140.0,
+    minWidth: double.infinity,
+    textTheme: ButtonTextTheme.primary,
+  ),
       shadowColor: backgroundDark,
       fontFamily: 'LapsusPro',
       colorScheme: const ColorScheme.light(

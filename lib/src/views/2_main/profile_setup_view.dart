@@ -159,12 +159,44 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView>
 }
 
 class InputValidators {
-
   static String? nameValidator(String s) {
     return emptyValidator(s);
   }
 
   static String? emptyValidator(String s) {
     return s.trim() == "" ? "Name cannot be blank" : null;
+  }
+
+  static String? emailValidator(String text) {
+    final bool emailValid = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(text);
+
+    if (text == "utterbullfan@gmail.com") {
+      return "Delighted to meet you, fellow fan, but we need your actual email address :)";
+    }
+
+    return emailValid
+        ? null
+        : 'Please enter a valid email address i.e. utterbullfan@gmail.com';
+  }
+
+  static String? stringMatchValidator(String s1, String s2) {
+    if (s1 != s2) {
+      return "Passwords much match";
+    }
+
+    return null;
+  }
+
+  static String? passwordValidator(String password) {
+    
+    if (password.length < 8)
+      return 'Password must be at least 8 characters long';
+
+    if (password.contains(' '))
+      return 'Password must not contain whitespace';
+
+    return null;
   }
 }

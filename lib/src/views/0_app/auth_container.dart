@@ -8,6 +8,7 @@ import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/1_auth/login_view.dart';
 import 'package:flutter_bull/src/views/1_auth/main_view.dart';
+import 'package:flutter_bull/src/views/1_auth/sign_up_email_view.dart';
 import 'package:flutter_bull/src/widgets/common/error_popup.dart';
 import 'package:flutter_bull/src/widgets/common/loading_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

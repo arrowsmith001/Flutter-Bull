@@ -23,26 +23,23 @@ class AuthNotifier extends _$AuthNotifier {
       } else {
         yield* _streamService
             .streamPlayer(userId)
-            .map((player) =>
-                AuthNotifierState(userId: userId, playerProfileExists: true))
-            .startWith(
-                AuthNotifierState(userId: userId, playerProfileExists: false));
+            .map((player) => AuthNotifierState(
+                userId: userId, playerProfileExists: true))
+            .startWith(AuthNotifierState(
+                userId: userId, playerProfileExists: false));
       }
     });
   }
 
-
   Future<void> signIn() async {
-  
     state = const AsyncLoading<AuthNotifierState>()
-      .copyWithPrevious(AsyncData<AuthNotifierState>(AuthNotifierState(message: "Signing you in as a guest...")))
-      .copyWithPrevious(state);
+        .copyWithPrevious(AsyncData<AuthNotifierState>(AuthNotifierState(
+            message: "Signing you in as a guest...")))
+        .copyWithPrevious(state);
 
     try {
-      
       await Future.delayed(const Duration(seconds: 1));
       await _authService.signInAnonymously();
-
     } on Exception catch (e) {
       state = AsyncError(e, StackTrace.fromString(e.toString()));
     }
@@ -63,4 +60,31 @@ class AuthNotifier extends _$AuthNotifier {
 
     await _authService.signOut();
   }
+
+  Future<void> signUpWithEmailAndPassword(String email, String password) async {
+    state = AsyncData<AuthNotifierState>(
+            AuthNotifierState(isSigningUp: true, isValidatingSigningUp: false))
+        .copyWithPrevious(state);
+
+    try {
+      await Future.delayed(Duration(seconds: 1));
+      await _authService.createUserWithEmailAndPassword(email, password);
+    } catch (e) {
+      state = AsyncData<AuthNotifierState>(AuthNotifierState(
+              errorMessage: "Error signing up: $e", isSigningUp: false))
+          .copyWithPrevious(state);
+    }
+  }
+
+  void setRoute(String route) {
+    state = AsyncData<AuthNotifierState>(AuthNotifierState(route: route))
+        .copyWithPrevious(state);
+  }
+
+  void setValidateSignUpForm(bool validate) {
+    state = AsyncData<AuthNotifierState>(
+            AuthNotifierState(isValidatingSigningUp: validate))
+        .copyWithPrevious(state);
+  }
+
 }

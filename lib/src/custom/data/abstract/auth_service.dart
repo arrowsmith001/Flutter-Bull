@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class AuthService implements Listenable {
-  
   String? get getUserId;
   bool get isSignedIn;
 
@@ -16,6 +15,8 @@ abstract class AuthService implements Listenable {
   Future<void> signInAnonymously();
   Future<void> signInWithEmailAndPassword(String email, String password);
   Future<void> signInWithGoogle();
+
+  Future<void> createUserWithEmailAndPassword(String email, String password);
 
   final List<VoidCallback> _listeners = [];
 
@@ -78,5 +79,10 @@ class FakeAuthService extends AuthService {
 
   @override
   bool get isSignedIn => _subject.value;
+  
+  @override
+  Future<void> createUserWithEmailAndPassword(String email, String password) {
+    // TODO: implement createUserWithEmailAndPassword
+    throw UnimplementedError();
+  }
 }
-

@@ -111,12 +111,11 @@ class _UtterBullButtonState extends State<UtterBullButton>
     if (animController.isAnimating) {
       animController.stop();
     }
-    widget.onPressed!();
-    await animController
+    animController
         .forward(from: 0)
         .then((_) => animController.reverse(from: 1));
+    widget.onPressed!();
   }
-
 
   double radius = 24.0;
   Color get color => isEnabled ? colorAnim.value! : Colors.grey;
@@ -234,7 +233,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
   }
 
   Widget _buildContents() {
-    final text = UglyOutlinedText(widget.title);
+    final text = UglyOutlinedText(text: widget.title);
     return Column(
       children: [
         Expanded(
@@ -303,14 +302,17 @@ class _UtterBullButtonState extends State<UtterBullButton>
 }
 
 class UglyOutlinedText extends StatelessWidget {
-  UglyOutlinedText(this.text,
-      {this.outlineColor,
+  UglyOutlinedText(
+      {
+        this.text,
+      this.textSpan,
+      this.outlineColor,
       this.fillColor,
       this.textAlign,
       this.maxLines = 1,
       super.key});
-
-  final String text;
+  final TextSpan? textSpan;
+  final String? text;
   final TextAlign? textAlign;
   final Color? fillColor;
   final Color? outlineColor;
@@ -320,11 +322,46 @@ class UglyOutlinedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(textSpan != null)
+    {
+ return Stack(
+      alignment: Alignment.center,
+      children: [
+        AutoSizeText.rich(
+          textSpan!,
+          minFontSize: 4,
+          maxLines: maxLines,
+          style: TextStyle(
+              fontSize: 100,
+              fontWeight: FontWeight.bold,
+              foreground: Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 4
+                ..color = outlineColor ?? Colors.grey.withAlpha(150)
+                ),
+          textAlign: textAlign ?? TextAlign.center,
+        ),
+        AutoSizeText.rich(
+          group: group,
+          textSpan!,
+          maxLines: maxLines,
+          style: TextStyle(
+              fontSize: 100,
+              fontWeight: FontWeight.bold,
+              // foreground: Paint()
+              //   ..style = PaintingStyle.fill
+              //   ..color = fillColor ?? Colors.white
+                ),
+          textAlign: textAlign ?? TextAlign.center,
+        )
+      ],
+    );
+    }
     return Stack(
       alignment: Alignment.center,
       children: [
         AutoSizeText(
-          text.toUpperCase(),
+          text!.toUpperCase(),
           minFontSize: 4,
           maxLines: maxLines,
           style: TextStyle(
@@ -338,7 +375,7 @@ class UglyOutlinedText extends StatelessWidget {
         ),
         AutoSizeText(
           group: group,
-          text.toUpperCase(),
+          text!.toUpperCase(),
           maxLines: maxLines,
           style: TextStyle(
               fontSize: 100,

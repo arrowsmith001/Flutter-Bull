@@ -16,6 +16,8 @@ class UtterBullTextField extends StatelessWidget {
       this.inputFormatters = const [],
       this.readOnly = false,
       this.errorText,
+      this.obscureText = false,
+      this.style
       
       });
 
@@ -26,13 +28,20 @@ class UtterBullTextField extends StatelessWidget {
   final int? maxLines;
   final bool expands;
   final bool readOnly;
+  final bool obscureText;
   final String? hintText;
   final String? errorText;
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
     return AutoSizeTextField(
-        decoration: InputDecoration(errorText: errorText),
+      obscureText: obscureText,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.7),
+          errorText: errorText, errorMaxLines: 2, errorStyle: const TextStyle(fontSize: 16)),
         readOnly: readOnly,
         textAlignVertical: TextAlignVertical.center,
         expands: expands,
@@ -41,7 +50,7 @@ class UtterBullTextField extends StatelessWidget {
         maxLength: maxLength,
         maxLines: maxLines,
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.displayMedium,
+        style: style ?? Theme.of(context).textTheme.displayMedium,
         inputFormatters: inputFormatters);
   }
 }

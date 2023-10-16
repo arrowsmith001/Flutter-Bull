@@ -5,8 +5,8 @@ import 'package:flutter/src/animation/animation.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class SwapRoute extends CoordinatedPageRoute {
-  SwapRoute(super.builder)
-      : super(transitionDuration: const Duration(milliseconds: 350));
+  SwapRoute(super.builder, {Duration? duration})
+      : super(transitionDuration: duration ?? const Duration(milliseconds: 350));
 
   final curve = Curves.bounceInOut;
 

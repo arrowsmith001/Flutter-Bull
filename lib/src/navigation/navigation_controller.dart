@@ -2,36 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
-abstract class NavigationController<T> {
-  
+abstract class NavigationController<T> extends ValueNotifier<String?> {
+  NavigationController() : super(null);
+
   String? _initialRoute;
   String? _currentRouteName;
   Iterator<String>? _routePathIterator;
-  BuildContext? get _navigatorContext => navigatorKey.currentContext;
+
+  @protected
+  BuildContext? get navigatorContext => navigatorKey.currentContext;
 
   final navigatorKey = GlobalKey<NavigatorState>();
-  bool get canNavigate => _navigatorContext != null;
+  bool get canNavigate => navigatorContext != null;
 
   Route onGenerateRoute(RouteSettings settings) {
     final routePathIterable = settings.name!.split('/');
-    final nextRoute = routePathIterable.first;
     _routePathIterator = routePathIterable.iterator;
 
     PageRoute? route = generateRoute();
+    value = routePathIterable.first;
 
-    setCurrentRouteName = nextRoute;
     return route ?? defaultRoute;
   }
 
   void navigateTo(String s) {
     if (canNavigate) {
-      Navigator.of(_navigatorContext!).pushReplacementNamed(s);
+      Navigator.of(navigatorContext!).pushReplacementNamed(s);
       Logger().d('Navigated to: $s ${DateTime.now().toIso8601String()}');
     } else {
       Logger().d('Error navigating to: $s ${DateTime.now().toIso8601String()}');
     }
   }
-  
+
   @protected
   PageRoute? generateRoute();
 
@@ -43,7 +45,6 @@ abstract class NavigationController<T> {
 
   @protected
   String generateInitialRoute(T data);
-
 
   @protected
   Route get defaultRoute;
@@ -61,10 +62,10 @@ abstract class NavigationController<T> {
   }
 
   @protected
-  String get getCurrentRouteName => _currentRouteName ?? '';
+  String? get getCurrentRouteName => _currentRouteName;
 
   @protected
-  set setCurrentRouteName(String s) => _currentRouteName = s;
+  set setCurrentRouteName(String? s) => _currentRouteName = s;
 
   @protected
   ProviderScope scoped(Widget child,
