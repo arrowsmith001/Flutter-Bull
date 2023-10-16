@@ -7,7 +7,7 @@ import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifi
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/change_avatar_view.dart';
 import 'package:flutter_bull/src/views/2_main/game_view.dart';
-import 'package:flutter_bull/src/views/2_main/home_view.dart';
+import 'package:flutter_bull/src/views/home/utter_bull.dart';
 import 'package:flutter_bull/src/views/2_main/join_game_view.dart';
 import 'package:flutter_bull/src/views/2_main/pending_view.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
@@ -149,7 +149,7 @@ class MainRouteNavigatorController
         return UpwardPushRoute((context) => child);
 
       case 'home':
-        final child = ProviderScope(child: HomeView());
+        final child = ProviderScope(child: UtterBull());
         return getCurrentRouteName == 'profile'
             ? DownwardPushRoute((context) => child)
             : BackwardPushRoute((context) => child);

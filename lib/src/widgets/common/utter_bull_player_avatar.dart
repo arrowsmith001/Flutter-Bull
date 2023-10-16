@@ -52,7 +52,7 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
   }
 
   Widget _buildAvatar(BuildContext context) {
-    if (widget.data == null) return UtterBullCircularProgressIndicator();
+    if (widget.data == null) return CropCircled(child: Container(decoration: BoxDecoration(gradient: RadialGradient(colors: [Colors.white, Colors.grey[100]!])), width: 100, height: 100,));
     return Image.memory(
       widget.data!,
       width: 100,

@@ -16,25 +16,27 @@ class AuthNotifier extends _$AuthNotifier {
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
 
   @override
-  Stream<AuthNotifierState> build() {
-    return _authService.streamUserId().switchMap((userId) async* {
+  Stream<AuthNotifierState> build() async* {
+    yield* _authService.streamUserId().switchMap((userId) async* {
       if (userId == null) {
-        yield AuthNotifierState();
+        Logger().d('yielding Null');
+        yield AuthNotifierState(userId: null);
       } else {
+        Logger().d('yielding Not Null');
         yield* _streamService
             .streamPlayer(userId)
-            .map((player) => AuthNotifierState(
-                userId: userId, playerProfileExists: true))
-            .startWith(AuthNotifierState(
-                userId: userId, playerProfileExists: false));
+            .map((player) =>
+                AuthNotifierState(userId: userId, playerProfileExists: true))
+            .startWith(
+                AuthNotifierState(userId: userId, playerProfileExists: false));
       }
     });
   }
 
   Future<void> signIn() async {
     state = const AsyncLoading<AuthNotifierState>()
-        .copyWithPrevious(AsyncData<AuthNotifierState>(AuthNotifierState(
-            message: "Signing you in as a guest...")))
+        .copyWithPrevious(AsyncData<AuthNotifierState>(
+            AuthNotifierState(message: "Signing you in as a guest...")))
         .copyWithPrevious(state);
 
     try {
@@ -87,4 +89,16 @@ class AuthNotifier extends _$AuthNotifier {
         .copyWithPrevious(state);
   }
 
+  void setState(AsyncValue<AuthNotifierState> newState) {
+    state = newState.copyWithPrevious(state);
+  }
+  
+  void onSignUp() {
+    setState(AsyncData(AuthNotifierState(signUpEvent: true)));
+  }
+
+
+  void onExitSignUp() {
+    setState(AsyncData(AuthNotifierState(signUpEvent: false)));
+    }
 }

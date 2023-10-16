@@ -34,13 +34,9 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   void _onSignUp() async {
     final bool isValid = _formKey.currentState!.validate();
     if (isValid) {
-
       await auth.signUpWithEmailAndPassword(
           _emailInputController.text.trim(), _passwordInputController.text);
-    }
-    else
-    {
-      
+    } else {
       auth.setValidateSignUpForm(false);
     }
   }
@@ -75,9 +71,8 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     });
 
     ref.listen(
-        authNotifierProvider
-            .select((value) => value.valueOrNull?.isValidatingSigningUp),
-        (prev, next) {
+        authNotifierProvider.select(
+            (value) => value.valueOrNull?.isValidatingSigningUp), (prev, next) {
       if (next == true) {
         _onSignUp();
       }
@@ -90,12 +85,17 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     });
 
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
           child: Form(
         key: _formKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Flexible(
+                child: Hero(
+                    tag: 'signUpTitle',
+                    child: UglyOutlinedText(text: "Sign up"))),
             Expanded(
                 flex: 4,
                 child: Column(
@@ -237,57 +237,10 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
                         ))
                   ],
                 )),
-            // AnimatedSwitcher(
-            //   switchInCurve: Curves.elasticOut,
-            //   layoutBuilder: (currentChild, previousChildren) {
-            //     return Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //       child: Stack(
-            //         alignment: Alignment.bottomCenter,
-            //         children: [
-            //           Container(height: height*0.05, color: Theme.of(context).primaryColor),
-            //           currentChild!
-            //         ],
-            //       ),
-            //     );
-            //   },
-            //   transitionBuilder: (child, animation) {
-            //     return AnimatedBuilder(
-            //       animation: animation,
-            //       builder: (context, child) {
-            //         return Transform.translate(
-            //             offset:
-            //                 Offset(0, (1 - animation.value) * (height * 0.15)),
-            //             child: child);
-            //       },
-            //       child: child,
-            //     );
-            //   },
-            //   duration: Duration(milliseconds: 600),
-            //   child: isSigningUp
-            //       ? BottomBar(
-            //           height: height * 0.15,
-            //           key: UniqueKey(),
-            //           child: Row(
-            //             children: [
-            //               SizedBox.fromSize(
-            //                   size: Size(100, 100),
-            //                   child: UtterBullCircularProgressIndicator()),
-            //               Flexible(
-            //                 child: AutoSizeText(
-            //                   "Signing you up...",
-            //                   maxLines: 1,
-            //                   style: TextStyle(fontSize: 50),
-            //                 ),
-            //               )
-            //             ],
-            //           ))
-            //       : BottomBar(
-            //           height: height * 0.15,
-            //           key: UniqueKey(),
-            //           child: UtterBullButton(
-            //               title: 'Sign Up', onPressed: () => _onSignUp())),
-            // ),
+            Flexible(
+              child: SizedBox.fromSize(
+                  size: Size(width, height * 0.1), child: SignUpControlBar()),
+            )
           ],
         ),
       )),
@@ -308,6 +261,37 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   //     return UtterBullButton(
   //                       title: 'Sign Up', onPressed: () => _onSignUp());
   // }
+}
+
+class SignUpControlBar extends ConsumerStatefulWidget {
+  const SignUpControlBar({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _SignUpControlBarState();
+}
+
+class _SignUpControlBarState extends ConsumerState<SignUpControlBar> {
+  void onExitSignUp() {
+    ref.read(authNotifierProvider.notifier).onExitSignUp();
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(color: Theme.of(context).primaryColorDark),
+      child: Row(children: [
+        IconButton(
+            onPressed: () => onExitSignUp(),
+            icon: Icon(Icons.exit_to_app_sharp)),
+        UtterBullButton(
+            color: Theme.of(context).primaryColorDark,
+            onPressed: () {},
+            title: 'Let\'s go!')
+      ]),
+    );
+  }
 }
 
 class BottomBar extends StatelessWidget {

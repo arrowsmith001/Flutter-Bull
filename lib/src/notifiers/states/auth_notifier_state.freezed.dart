@@ -16,13 +16,14 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AuthNotifierState {
+  bool? get signUpEvent => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get route => throw _privateConstructorUsedError;
   bool? get playerProfileExists => throw _privateConstructorUsedError;
   bool? get isSigningUp => throw _privateConstructorUsedError;
   bool? get isValidatingSigningUp => throw _privateConstructorUsedError;
-  String get message => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
+  String get message => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AuthNotifierStateCopyWith<AuthNotifierState> get copyWith =>
@@ -36,13 +37,14 @@ abstract class $AuthNotifierStateCopyWith<$Res> {
       _$AuthNotifierStateCopyWithImpl<$Res, AuthNotifierState>;
   @useResult
   $Res call(
-      {String? userId,
+      {bool? signUpEvent,
+      String? userId,
       String? route,
       bool? playerProfileExists,
       bool? isSigningUp,
       bool? isValidatingSigningUp,
-      String message,
-      String? errorMessage});
+      String? errorMessage,
+      String message});
 }
 
 /// @nodoc
@@ -58,15 +60,20 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? signUpEvent = freezed,
     Object? userId = freezed,
     Object? route = freezed,
     Object? playerProfileExists = freezed,
     Object? isSigningUp = freezed,
     Object? isValidatingSigningUp = freezed,
-    Object? message = null,
     Object? errorMessage = freezed,
+    Object? message = null,
   }) {
     return _then(_value.copyWith(
+      signUpEvent: freezed == signUpEvent
+          ? _value.signUpEvent
+          : signUpEvent // ignore: cast_nullable_to_non_nullable
+              as bool?,
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -87,14 +94,14 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
           ? _value.isValidatingSigningUp
           : isValidatingSigningUp // ignore: cast_nullable_to_non_nullable
               as bool?,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -108,13 +115,14 @@ abstract class _$$_AuthNotifierStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? userId,
+      {bool? signUpEvent,
+      String? userId,
       String? route,
       bool? playerProfileExists,
       bool? isSigningUp,
       bool? isValidatingSigningUp,
-      String message,
-      String? errorMessage});
+      String? errorMessage,
+      String message});
 }
 
 /// @nodoc
@@ -128,15 +136,20 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? signUpEvent = freezed,
     Object? userId = freezed,
     Object? route = freezed,
     Object? playerProfileExists = freezed,
     Object? isSigningUp = freezed,
     Object? isValidatingSigningUp = freezed,
-    Object? message = null,
     Object? errorMessage = freezed,
+    Object? message = null,
   }) {
     return _then(_$_AuthNotifierState(
+      signUpEvent: freezed == signUpEvent
+          ? _value.signUpEvent
+          : signUpEvent // ignore: cast_nullable_to_non_nullable
+              as bool?,
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -157,14 +170,14 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
           ? _value.isValidatingSigningUp
           : isValidatingSigningUp // ignore: cast_nullable_to_non_nullable
               as bool?,
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -173,14 +186,17 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
 
 class _$_AuthNotifierState implements _AuthNotifierState {
   _$_AuthNotifierState(
-      {this.userId,
+      {this.signUpEvent,
+      this.userId,
       this.route,
       this.playerProfileExists,
       this.isSigningUp,
       this.isValidatingSigningUp,
-      this.message = '',
-      this.errorMessage});
+      this.errorMessage,
+      this.message = ''});
 
+  @override
+  final bool? signUpEvent;
   @override
   final String? userId;
   @override
@@ -192,14 +208,14 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   @override
   final bool? isValidatingSigningUp;
   @override
+  final String? errorMessage;
+  @override
   @JsonKey()
   final String message;
-  @override
-  final String? errorMessage;
 
   @override
   String toString() {
-    return 'AuthNotifierState(userId: $userId, route: $route, playerProfileExists: $playerProfileExists, isSigningUp: $isSigningUp, isValidatingSigningUp: $isValidatingSigningUp, message: $message, errorMessage: $errorMessage)';
+    return 'AuthNotifierState(signUpEvent: $signUpEvent, userId: $userId, route: $route, playerProfileExists: $playerProfileExists, isSigningUp: $isSigningUp, isValidatingSigningUp: $isValidatingSigningUp, errorMessage: $errorMessage, message: $message)';
   }
 
   @override
@@ -207,6 +223,8 @@ class _$_AuthNotifierState implements _AuthNotifierState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_AuthNotifierState &&
+            (identical(other.signUpEvent, signUpEvent) ||
+                other.signUpEvent == signUpEvent) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.route, route) || other.route == route) &&
             (identical(other.playerProfileExists, playerProfileExists) ||
@@ -215,21 +233,22 @@ class _$_AuthNotifierState implements _AuthNotifierState {
                 other.isSigningUp == isSigningUp) &&
             (identical(other.isValidatingSigningUp, isValidatingSigningUp) ||
                 other.isValidatingSigningUp == isValidatingSigningUp) &&
-            (identical(other.message, message) || other.message == message) &&
             (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+                other.errorMessage == errorMessage) &&
+            (identical(other.message, message) || other.message == message));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      signUpEvent,
       userId,
       route,
       playerProfileExists,
       isSigningUp,
       isValidatingSigningUp,
-      message,
-      errorMessage);
+      errorMessage,
+      message);
 
   @JsonKey(ignore: true)
   @override
@@ -241,14 +260,17 @@ class _$_AuthNotifierState implements _AuthNotifierState {
 
 abstract class _AuthNotifierState implements AuthNotifierState {
   factory _AuthNotifierState(
-      {final String? userId,
+      {final bool? signUpEvent,
+      final String? userId,
       final String? route,
       final bool? playerProfileExists,
       final bool? isSigningUp,
       final bool? isValidatingSigningUp,
-      final String message,
-      final String? errorMessage}) = _$_AuthNotifierState;
+      final String? errorMessage,
+      final String message}) = _$_AuthNotifierState;
 
+  @override
+  bool? get signUpEvent;
   @override
   String? get userId;
   @override
@@ -260,9 +282,9 @@ abstract class _AuthNotifierState implements AuthNotifierState {
   @override
   bool? get isValidatingSigningUp;
   @override
-  String get message;
-  @override
   String? get errorMessage;
+  @override
+  String get message;
   @override
   @JsonKey(ignore: true)
   _$$_AuthNotifierStateCopyWith<_$_AuthNotifierState> get copyWith =>
