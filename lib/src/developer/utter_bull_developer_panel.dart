@@ -7,7 +7,7 @@ import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/home/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';

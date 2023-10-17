@@ -1,13 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/home/auth_notifier.dart';
+import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_back_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
+
+import 'sign_up_control_bar.dart';
 
 class SignUpEmailView extends ConsumerStatefulWidget {
   const SignUpEmailView({super.key});
@@ -19,9 +23,11 @@ class SignUpEmailView extends ConsumerStatefulWidget {
 
 class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     with Auth, MediaDimensions {
-  final _emailInputController = TextEditingController();
-  final _passwordInputController = TextEditingController();
-  final _confirmPasswordInputController = TextEditingController();
+  final _emailInputController =
+      TextEditingController(text: "example@gmail.com");
+  final _passwordInputController = TextEditingController(text: "aaaaaaaa");
+  final _confirmPasswordInputController =
+      TextEditingController(text: "aaaaaaaa");
 
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
@@ -31,14 +37,32 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
 
   bool isSigningUp = false;
 
-  void _onSignUp() async {
+  void onSignUpFormValidation() async {
     final bool isValid = _formKey.currentState!.validate();
     if (isValid) {
+      if (mounted) {
+        setState(() {
+          isSigningUp = true;
+        });
+      }
+
       await auth.signUpWithEmailAndPassword(
           _emailInputController.text.trim(), _passwordInputController.text);
+
+      if (mounted) {
+        setState(() {
+          isSigningUp = false;
+        });
+      }
     } else {
       auth.setValidateSignUpForm(false);
     }
+  }
+
+  void onSignUpChanged(bool isSigningUp) async {
+    setState(() {
+      this.isSigningUp = isSigningUp;
+    });
   }
 
   @override
@@ -61,26 +85,24 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   @override
   Widget build(BuildContext context) {
     ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.isSigningUp),
-        (prev, next) {
-      if (next != null) {
-        setState(() {
-          isSigningUp = next;
-        });
+        authNotifierProvider.select(
+            (value) => value.valueOrNull?.validateSignUpForm), (_, next) {
+      if (next == true) {
+        onSignUpFormValidation();
       }
     });
 
     ref.listen(
-        authNotifierProvider.select(
-            (value) => value.valueOrNull?.isValidatingSigningUp), (prev, next) {
-      if (next == true) {
-        _onSignUp();
+        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
+        (_, next) {
+      if (next != null) {
+        onSignUpChanged(next);
       }
     });
 
     ref.listen(
         authNotifierProvider.select((value) => value.valueOrNull?.errorMessage),
-        (prev, next) {
+        (_, next) {
       if (next != null) onAuthError(next);
     });
 
@@ -93,9 +115,24 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-                child: Hero(
-                    tag: 'signUpTitle',
-                    child: UglyOutlinedText(text: "Sign up"))),
+                child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorDark),
+                    child: Hero(
+                        tag: 'signUpTitle',
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: width * 0.1,
+                              vertical: height * 0.025),
+                          child: UglyOutlinedText(text: "Sign up"),
+                        )),
+                  ),
+                ),
+              ],
+            )),
             Expanded(
                 flex: 4,
                 child: Column(
@@ -105,7 +142,7 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
                         flex: 1,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                              horizontal: width * 0.1, vertical: 16.0),
+                              horizontal: width * 0.1, vertical: 8.0),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -261,69 +298,4 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   //     return UtterBullButton(
   //                       title: 'Sign Up', onPressed: () => _onSignUp());
   // }
-}
-
-class SignUpControlBar extends ConsumerStatefulWidget {
-  const SignUpControlBar({super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SignUpControlBarState();
-}
-
-class _SignUpControlBarState extends ConsumerState<SignUpControlBar> {
-  void onExitSignUp() {
-    ref.read(authNotifierProvider.notifier).onExitSignUp();
-    Navigator.of(context).pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(color: Theme.of(context).primaryColorDark),
-      child: Row(children: [
-        IconButton(
-            onPressed: () => onExitSignUp(),
-            icon: Icon(Icons.exit_to_app_sharp)),
-        UtterBullButton(
-            color: Theme.of(context).primaryColorDark,
-            onPressed: () {},
-            title: 'Let\'s go!')
-      ]),
-    );
-  }
-}
-
-class BottomBar extends StatelessWidget {
-  const BottomBar({required this.child, super.key, this.height});
-  final Widget child;
-  final double? height;
-
-  @override
-  Widget build(BuildContext context) {
-    final main = ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(24.0),
-        topRight: Radius.circular(24.0),
-      ),
-      child: Container(
-        color: Theme.of(context).primaryColor,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: child,
-        ),
-      ),
-    );
-
-    if (height == null) return child;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Row(
-          children: [Expanded(child: SizedBox(height: height, child: main))],
-        )
-      ],
-    );
-  }
 }

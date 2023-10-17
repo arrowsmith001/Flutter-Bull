@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/home/auth_notifier.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,7 +26,7 @@ class HomeAuthButtons extends ConsumerWidget {
     void onLoginPressed() {}
 
     void onSignUpPressed(WidgetRef ref) {
-      ref.read(authNotifierProvider.notifier).onSignUp();
+      ref.read(authNotifierProvider.notifier).onSignUpPage();
 
     }
 

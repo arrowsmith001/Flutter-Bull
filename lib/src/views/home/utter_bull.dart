@@ -4,13 +4,13 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/home/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 // ignore: unused_import
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/1_auth/sign_up_email_view.dart';
+import 'package:flutter_bull/src/views/home/sign_up_email_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
@@ -59,8 +59,8 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
     final player = ref.watch(playerNotifierProvider(userId)).requireValue; */
 
 
-    ref.listen(authNotifierProvider.select((data) => data.requireValue.signUpEvent), (_, signUpEvent) {
-      if(signUpEvent == true)
+    ref.listen(authNotifierProvider.select((data) => data.requireValue.signUpPage), (_, signUpPage) {
+      if(signUpPage == true)
       {
         _navKey.currentState?.pushNamed('signUp');
       }

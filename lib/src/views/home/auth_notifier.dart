@@ -20,24 +20,23 @@ class AuthNotifier extends _$AuthNotifier {
     yield* _authService.streamUserId().switchMap((userId) async* {
       if (userId == null) {
         Logger().d('yielding Null');
-        yield AuthNotifierState(userId: null);
+        yield value.copyWith(userId: null);
       } else {
         Logger().d('yielding Not Null');
         yield* _streamService
             .streamPlayer(userId)
             .map((player) =>
-                AuthNotifierState(userId: userId, playerProfileExists: true))
+                value.copyWith(userId: userId, playerProfileExists: true))
             .startWith(
-                AuthNotifierState(userId: userId, playerProfileExists: false));
+                value.copyWith(userId: userId, playerProfileExists: false));
       }
     });
   }
 
   Future<void> signIn() async {
-    state = const AsyncLoading<AuthNotifierState>()
-        .copyWithPrevious(AsyncData<AuthNotifierState>(
-            AuthNotifierState(message: "Signing you in as a guest...")))
-        .copyWithPrevious(state);
+    state = const AsyncLoading<AuthNotifierState>().copyWithPrevious(
+        AsyncData<AuthNotifierState>(
+            value.copyWith(message: "Signing you in as a guest...")));
 
     try {
       await Future.delayed(const Duration(seconds: 1));
@@ -48,7 +47,7 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signUp() async {
-    state = state.copyWithPrevious(AsyncLoading());
+    state = state.copyWithPrevious(const AsyncLoading());
 
     //await Future.delayed(Duration(seconds: 1));
 
@@ -56,7 +55,7 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signOut() async {
-    state = state.copyWithPrevious(AsyncLoading());
+    state = state.copyWithPrevious(const AsyncLoading());
 
     //await Future.delayed(Duration(seconds: 1));
 
@@ -64,41 +63,41 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signUpWithEmailAndPassword(String email, String password) async {
-    state = AsyncData<AuthNotifierState>(
-            AuthNotifierState(isSigningUp: true, isValidatingSigningUp: false))
-        .copyWithPrevious(state);
+
+    setData(value.copyWith(signUp: true, validateSignUpForm: false));
 
     try {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       await _authService.createUserWithEmailAndPassword(email, password);
+
+      setData(value.copyWith(signUp: false));
     } catch (e) {
-      state = AsyncData<AuthNotifierState>(AuthNotifierState(
-              errorMessage: "Error signing up: $e", isSigningUp: false))
-          .copyWithPrevious(state);
+      setData(
+          value.copyWith(errorMessage: "Error signing up: $e", signUp: false));
     }
   }
 
   void setRoute(String route) {
-    state = AsyncData<AuthNotifierState>(AuthNotifierState(route: route))
-        .copyWithPrevious(state);
+    setData(value.copyWith(route: route));
   }
 
   void setValidateSignUpForm(bool validate) {
-    state = AsyncData<AuthNotifierState>(
-            AuthNotifierState(isValidatingSigningUp: validate))
-        .copyWithPrevious(state);
-  }
-
-  void setState(AsyncValue<AuthNotifierState> newState) {
-    state = newState.copyWithPrevious(state);
-  }
-  
-  void onSignUp() {
-    setState(AsyncData(AuthNotifierState(signUpEvent: true)));
+    setData(value.copyWith(validateSignUpForm: validate));
   }
 
 
-  void onExitSignUp() {
-    setState(AsyncData(AuthNotifierState(signUpEvent: false)));
-    }
+  void onSignUpPage() {
+    setData(value.copyWith(signUpPage: true));
+  }
+
+  void onExitSignUpPage() {
+    setData(value.copyWith(signUpPage: false));
+  }
+
+  void setData(AuthNotifierState newState) {
+    Logger().d('newState $newState');
+    state = AsyncData(newState);
+  }
+
+  AuthNotifierState get value => state.value ?? AuthNotifierState();
 }

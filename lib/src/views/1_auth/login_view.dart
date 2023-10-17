@@ -7,10 +7,10 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/navigation/coordinated_routes/swap_route.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/home/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/1_auth/sign_up_email_view.dart';
+import 'package:flutter_bull/src/views/home/sign_up_email_view.dart';
 import 'package:flutter_bull/src/widgets/common/error_popup.dart';
 import 'package:flutter_bull/src/widgets/common/loading_widget.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -19,6 +19,7 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_single_option_dismiss
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '../home/bottom_bar.dart';
 import 'login_options_view.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -57,7 +58,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     });
 
     ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.isSigningUp),
+        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
         (prev, next) {
       if (next == true) {
         _navFooterController.navigateTo('isSigningUp');
@@ -262,9 +263,10 @@ class SignUpFooter extends ConsumerStatefulWidget {
 
 class _SignUpFooterState extends ConsumerState<SignUpFooter>
     with Auth, MediaDimensions {
+
   bool isSigningUp = false;
 
-  void _onIsSigningUpChanged(bool value) {
+  void onIsSigningUpChanged(bool value) {
     setState(() {
       isSigningUp = value;
     });
@@ -273,9 +275,9 @@ class _SignUpFooterState extends ConsumerState<SignUpFooter>
   @override
   Widget build(BuildContext context) {
     ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.isSigningUp),
+        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
         (prev, next) {
-      if (next != null) _onIsSigningUpChanged(next);
+      if (next != null) onIsSigningUpChanged(next);
     });
 
     return AnimatedSwitcher(

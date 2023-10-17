@@ -1,6 +1,6 @@
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/home/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/home/utter_bull.dart';
@@ -18,22 +18,43 @@ class AuthBar extends ConsumerStatefulWidget {
 class _AuthBarState extends ConsumerState<AuthBar> with Auth {
   final _navKey = GlobalKey<NavigatorState>();
 
+
   @override
   Widget build(BuildContext context) {
+
     ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.signUpEvent),
+        authNotifierProvider.select((value) => value.valueOrNull?.signUpPage),
         (prev, next) {
- if(next != null)
- {
-       if (next == true) {
-        _navKey.currentState?.pushNamed('signUpEmail');
+      if (next != null) {
+        if (next == true) {
+          _navKey.currentState?.pushNamed('signUpEmail');
+        } else {
+          _navKey.currentState?.pushNamed('');
+        }
       }
-      else
-      {
-        
-        _navKey.currentState?.pushNamed('');
+    });
+
+    ref.listen(
+        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
+        (prev, next) {
+      if (next != null) {
+        if (next == true) {
+          setInfoText('Signing up');
+        }
+        else
+        {
+          setInfoText('Signing up');
+        }
       }
- }
+    });
+
+    ref.listen(
+        authNotifierProvider.select((value) => value.valueOrNull?.userId),
+        (prev, next) {
+      if (next != null) {
+        setInfoText('Hi $next');
+      } else
+        setInfoText('Not signed in');
     });
 
     return Navigator(
@@ -54,13 +75,15 @@ class _AuthBarState extends ConsumerState<AuthBar> with Auth {
                     Theme.of(context).primaryColor,
                     Theme.of(context).primaryColorDark
                   ])),
-              child: watchAuthState.when(
+              child: ref.watch(authNotifierProvider).when(
+
                 data: (AuthNotifierState state) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Spacer(),
-                      Expanded(child: Text("Not signed in")),
+                      Expanded(child: Text(state.userId.toString())),
+                      Expanded(child: Text(state.toString())),
                       Expanded(
                           child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -76,5 +99,12 @@ class _AuthBarState extends ConsumerState<AuthBar> with Auth {
             ));
       },
     );
+  }
+
+  void setInfoText(String infoText) {
+    if (mounted)
+      setState(() {
+        //this.infoText = infoText;
+      });
   }
 }
