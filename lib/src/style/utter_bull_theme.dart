@@ -53,6 +53,8 @@ class UtterBullGlobal {
   static const Duration votingEndAnimationDuration =  Duration(milliseconds: 2000);
   static const Duration votingEndAnimationReverseDuration =  Duration(milliseconds: 800);
 
+  static const String defaultAvatarPath = "pp/default/avatar.jpg";
+
 
 /*     static ColorScheme appColorScheme = ColorScheme(
       background: Color.fromARGB(255, 207, 207, 207), 

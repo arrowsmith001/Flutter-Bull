@@ -16,12 +16,14 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AuthNotifierState {
+  AuthState? get authState => throw _privateConstructorUsedError;
+  AuthBarState? get authBarState => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get route => throw _privateConstructorUsedError;
-  bool? get playerProfileExists => throw _privateConstructorUsedError;
-  bool? get signUpPage => throw _privateConstructorUsedError;
   bool? get validateSignUpForm => throw _privateConstructorUsedError;
   bool? get signUp => throw _privateConstructorUsedError;
+  bool? get signUpPage => throw _privateConstructorUsedError;
+  bool? get profilePhotoExists => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
 
@@ -37,12 +39,14 @@ abstract class $AuthNotifierStateCopyWith<$Res> {
       _$AuthNotifierStateCopyWithImpl<$Res, AuthNotifierState>;
   @useResult
   $Res call(
-      {String? userId,
+      {AuthState? authState,
+      AuthBarState? authBarState,
+      String? userId,
       String? route,
-      bool? playerProfileExists,
-      bool? signUpPage,
       bool? validateSignUpForm,
       bool? signUp,
+      bool? signUpPage,
+      bool? profilePhotoExists,
       String? errorMessage,
       String message});
 }
@@ -60,16 +64,26 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? authState = freezed,
+    Object? authBarState = freezed,
     Object? userId = freezed,
     Object? route = freezed,
-    Object? playerProfileExists = freezed,
-    Object? signUpPage = freezed,
     Object? validateSignUpForm = freezed,
     Object? signUp = freezed,
+    Object? signUpPage = freezed,
+    Object? profilePhotoExists = freezed,
     Object? errorMessage = freezed,
     Object? message = null,
   }) {
     return _then(_value.copyWith(
+      authState: freezed == authState
+          ? _value.authState
+          : authState // ignore: cast_nullable_to_non_nullable
+              as AuthState?,
+      authBarState: freezed == authBarState
+          ? _value.authBarState
+          : authBarState // ignore: cast_nullable_to_non_nullable
+              as AuthBarState?,
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -78,14 +92,6 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
           ? _value.route
           : route // ignore: cast_nullable_to_non_nullable
               as String?,
-      playerProfileExists: freezed == playerProfileExists
-          ? _value.playerProfileExists
-          : playerProfileExists // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      signUpPage: freezed == signUpPage
-          ? _value.signUpPage
-          : signUpPage // ignore: cast_nullable_to_non_nullable
-              as bool?,
       validateSignUpForm: freezed == validateSignUpForm
           ? _value.validateSignUpForm
           : validateSignUpForm // ignore: cast_nullable_to_non_nullable
@@ -93,6 +99,14 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
       signUp: freezed == signUp
           ? _value.signUp
           : signUp // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      signUpPage: freezed == signUpPage
+          ? _value.signUpPage
+          : signUpPage // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      profilePhotoExists: freezed == profilePhotoExists
+          ? _value.profilePhotoExists
+          : profilePhotoExists // ignore: cast_nullable_to_non_nullable
               as bool?,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
@@ -115,12 +129,14 @@ abstract class _$$_AuthNotifierStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? userId,
+      {AuthState? authState,
+      AuthBarState? authBarState,
+      String? userId,
       String? route,
-      bool? playerProfileExists,
-      bool? signUpPage,
       bool? validateSignUpForm,
       bool? signUp,
+      bool? signUpPage,
+      bool? profilePhotoExists,
       String? errorMessage,
       String message});
 }
@@ -136,16 +152,26 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? authState = freezed,
+    Object? authBarState = freezed,
     Object? userId = freezed,
     Object? route = freezed,
-    Object? playerProfileExists = freezed,
-    Object? signUpPage = freezed,
     Object? validateSignUpForm = freezed,
     Object? signUp = freezed,
+    Object? signUpPage = freezed,
+    Object? profilePhotoExists = freezed,
     Object? errorMessage = freezed,
     Object? message = null,
   }) {
     return _then(_$_AuthNotifierState(
+      authState: freezed == authState
+          ? _value.authState
+          : authState // ignore: cast_nullable_to_non_nullable
+              as AuthState?,
+      authBarState: freezed == authBarState
+          ? _value.authBarState
+          : authBarState // ignore: cast_nullable_to_non_nullable
+              as AuthBarState?,
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -154,14 +180,6 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
           ? _value.route
           : route // ignore: cast_nullable_to_non_nullable
               as String?,
-      playerProfileExists: freezed == playerProfileExists
-          ? _value.playerProfileExists
-          : playerProfileExists // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      signUpPage: freezed == signUpPage
-          ? _value.signUpPage
-          : signUpPage // ignore: cast_nullable_to_non_nullable
-              as bool?,
       validateSignUpForm: freezed == validateSignUpForm
           ? _value.validateSignUpForm
           : validateSignUpForm // ignore: cast_nullable_to_non_nullable
@@ -169,6 +187,14 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
       signUp: freezed == signUp
           ? _value.signUp
           : signUp // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      signUpPage: freezed == signUpPage
+          ? _value.signUpPage
+          : signUpPage // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      profilePhotoExists: freezed == profilePhotoExists
+          ? _value.profilePhotoExists
+          : profilePhotoExists // ignore: cast_nullable_to_non_nullable
               as bool?,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
@@ -186,27 +212,33 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
 
 class _$_AuthNotifierState implements _AuthNotifierState {
   _$_AuthNotifierState(
-      {this.userId,
+      {this.authState,
+      this.authBarState,
+      this.userId,
       this.route,
-      this.playerProfileExists,
-      this.signUpPage,
       this.validateSignUpForm,
       this.signUp,
+      this.signUpPage,
+      this.profilePhotoExists,
       this.errorMessage,
       this.message = ''});
 
+  @override
+  final AuthState? authState;
+  @override
+  final AuthBarState? authBarState;
   @override
   final String? userId;
   @override
   final String? route;
   @override
-  final bool? playerProfileExists;
-  @override
-  final bool? signUpPage;
-  @override
   final bool? validateSignUpForm;
   @override
   final bool? signUp;
+  @override
+  final bool? signUpPage;
+  @override
+  final bool? profilePhotoExists;
   @override
   final String? errorMessage;
   @override
@@ -215,7 +247,7 @@ class _$_AuthNotifierState implements _AuthNotifierState {
 
   @override
   String toString() {
-    return 'AuthNotifierState(userId: $userId, route: $route, playerProfileExists: $playerProfileExists, signUpPage: $signUpPage, validateSignUpForm: $validateSignUpForm, signUp: $signUp, errorMessage: $errorMessage, message: $message)';
+    return 'AuthNotifierState(authState: $authState, authBarState: $authBarState, userId: $userId, route: $route, validateSignUpForm: $validateSignUpForm, signUp: $signUp, signUpPage: $signUpPage, profilePhotoExists: $profilePhotoExists, errorMessage: $errorMessage, message: $message)';
   }
 
   @override
@@ -223,15 +255,19 @@ class _$_AuthNotifierState implements _AuthNotifierState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_AuthNotifierState &&
+            (identical(other.authState, authState) ||
+                other.authState == authState) &&
+            (identical(other.authBarState, authBarState) ||
+                other.authBarState == authBarState) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.route, route) || other.route == route) &&
-            (identical(other.playerProfileExists, playerProfileExists) ||
-                other.playerProfileExists == playerProfileExists) &&
-            (identical(other.signUpPage, signUpPage) ||
-                other.signUpPage == signUpPage) &&
             (identical(other.validateSignUpForm, validateSignUpForm) ||
                 other.validateSignUpForm == validateSignUpForm) &&
             (identical(other.signUp, signUp) || other.signUp == signUp) &&
+            (identical(other.signUpPage, signUpPage) ||
+                other.signUpPage == signUpPage) &&
+            (identical(other.profilePhotoExists, profilePhotoExists) ||
+                other.profilePhotoExists == profilePhotoExists) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
             (identical(other.message, message) || other.message == message));
@@ -240,12 +276,14 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      authState,
+      authBarState,
       userId,
       route,
-      playerProfileExists,
-      signUpPage,
       validateSignUpForm,
       signUp,
+      signUpPage,
+      profilePhotoExists,
       errorMessage,
       message);
 
@@ -259,27 +297,33 @@ class _$_AuthNotifierState implements _AuthNotifierState {
 
 abstract class _AuthNotifierState implements AuthNotifierState {
   factory _AuthNotifierState(
-      {final String? userId,
+      {final AuthState? authState,
+      final AuthBarState? authBarState,
+      final String? userId,
       final String? route,
-      final bool? playerProfileExists,
-      final bool? signUpPage,
       final bool? validateSignUpForm,
       final bool? signUp,
+      final bool? signUpPage,
+      final bool? profilePhotoExists,
       final String? errorMessage,
       final String message}) = _$_AuthNotifierState;
 
+  @override
+  AuthState? get authState;
+  @override
+  AuthBarState? get authBarState;
   @override
   String? get userId;
   @override
   String? get route;
   @override
-  bool? get playerProfileExists;
-  @override
-  bool? get signUpPage;
-  @override
   bool? get validateSignUpForm;
   @override
   bool? get signUp;
+  @override
+  bool? get signUpPage;
+  @override
+  bool? get profilePhotoExists;
   @override
   String? get errorMessage;
   @override

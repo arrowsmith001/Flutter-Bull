@@ -90,7 +90,9 @@ class GameRoundNavigationController
 
 class ExitDropTurnRoute extends CoordinatedPageRoute {
   ExitDropTurnRoute(super.builder, {this.turn = 0.0})
-      : super(transitionDuration: UtterBullGlobal.votingPhaseTransitionToDuration);
+      : super(
+            transitionDuration:
+                UtterBullGlobal.votingPhaseTransitionToDuration);
 
   final double turn;
 
@@ -103,35 +105,43 @@ class ExitDropTurnRoute extends CoordinatedPageRoute {
   @override
   Widget getExitTransition(
       BuildContext context, Animation<double> animation, Widget child) {
-
-    final anim =
-        CurvedAnimation(parent: animation, curve: Curves.easeIn);
+    final anim = CurvedAnimation(parent: animation, curve: Curves.easeIn);
 
     return SlideTransition(
       position: anim.drive(Tween(begin: Offset.zero, end: Offset(0, 1))),
       child: RotationTransition(
-        child: child,
-          turns: anim
-              .drive(Tween(begin: 0, end: turn * (pi / 4)))),
+          child: child,
+          turns: anim.drive(Tween(begin: 0, end: turn * (pi / 4)))),
     );
   }
 }
+
 class ForwardPopRoute extends CoordinatedPageRoute {
   ForwardPopRoute(super.builder)
-      : super(transitionDuration: UtterBullGlobal.votingPhaseTransitionToDuration);
-
+      : super(
+            transitionDuration:
+                UtterBullGlobal.votingPhaseTransitionToDuration);
+  double overlap = 0.2;
   @override
   Widget getEntryTransition(
       BuildContext context, Animation<double> animation, Widget child) {
     return ScaleTransition(
-      scale: CurvedAnimation(
-        parent: animation, curve: Curves.elasticOut).drive(Tween(begin: 0.5, end: 1.0)), child: child,);
+      scale: CurvedAnimation(parent: animation, curve: Interval(0.5 - (overlap / 2), 1.0, curve: Curves.elasticOut))
+          .drive(Tween(begin: 0.0, end: 1.0)),
+      child: child,
+    );
   }
 
   @override
-  Widget getExitTransition(BuildContext context, Animation<double> animation, Widget child) {
-    return SlideTransition(position: CurvedAnimation(
-        parent: animation, curve: Curves.easeInOut).drive(Tween(begin: Offset.zero, end: const Offset(-1, 0))), child: child,);
+  Widget getExitTransition(
+      BuildContext context, Animation<double> animation, Widget child) {
+    return SlideTransition(
+      position: CurvedAnimation(
+              parent: animation,
+              curve: Interval(0.0, 0.5 + (overlap / 2), curve: Curves.easeOut)
+                  )
+          .drive(Tween(begin: Offset.zero, end: const Offset(-1, 0))),
+      child: child,
+    );
   }
-
 }

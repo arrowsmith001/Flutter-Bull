@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/views/0_app/auth_container.dart';
-import 'package:flutter_bull/src/views/home/utter_bull.dart';
+import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_master_background.dart';
 
 class UtterBullApp extends StatelessWidget {

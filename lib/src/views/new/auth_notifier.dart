@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
+import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
+import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:logger/logger.dart';
@@ -14,21 +16,28 @@ part 'auth_notifier.g.dart';
 class AuthNotifier extends _$AuthNotifier {
   AuthService get _authService => ref.read(authServiceProvider);
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
+  DataService get _dataService => ref.read(dataServiceProvider);
 
   @override
   Stream<AuthNotifierState> build() async* {
     yield* _authService.streamUserId().switchMap((userId) async* {
       if (userId == null) {
         Logger().d('yielding Null');
-        yield value.copyWith(userId: null);
+        yield value.copyWith(userId: null, authState: AuthState.signedOut);
       } else {
         Logger().d('yielding Not Null');
         yield* _streamService
             .streamPlayer(userId)
-            .map((player) =>
-                value.copyWith(userId: userId, playerProfileExists: true))
-            .startWith(
-                value.copyWith(userId: userId, playerProfileExists: false));
+            .map((player) => value.copyWith(
+                userId: userId,
+                authState: player.name == null
+                    ? AuthState.signedInNoName
+                    : player.profilePhotoPath == null
+                        ? AuthState.signedInNoPic
+                        : AuthState.signedIn,
+                profilePhotoExists: player.profilePhotoPath != null))
+            .startWith(value.copyWith(
+                userId: userId, authState: AuthState.signedInNoPlayerProfile));
       }
     });
   }
@@ -63,14 +72,13 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signUpWithEmailAndPassword(String email, String password) async {
-
     setData(value.copyWith(signUp: true, validateSignUpForm: false));
 
     try {
       await Future.delayed(const Duration(seconds: 1));
       await _authService.createUserWithEmailAndPassword(email, password);
 
-      setData(value.copyWith(signUp: false));
+      setData(value.copyWith(signUp: false, signUpPage: false));
     } catch (e) {
       setData(
           value.copyWith(errorMessage: "Error signing up: $e", signUp: false));
@@ -85,13 +93,27 @@ class AuthNotifier extends _$AuthNotifier {
     setData(value.copyWith(validateSignUpForm: validate));
   }
 
-
-  void onSignUpPage() {
+ void onSignUpPage()
+ {
+  
     setData(value.copyWith(signUpPage: true));
-  }
-
-  void onExitSignUpPage() {
+ }
+ 
+ void onExitSignUpPage()
+ {
+  
     setData(value.copyWith(signUpPage: false));
+ }
+
+  Future<void> submitName(String name) async {
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      await _dataService.setName(value.userId!, name);
+
+      setData(value.copyWith(message: "Name successfully set to $name"));
+    } catch (e) {
+      setData(value.copyWith(errorMessage: "Error setting name: $e"));
+    }
   }
 
   void setData(AuthNotifierState newState) {
@@ -100,4 +122,11 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   AuthNotifierState get value => state.value ?? AuthNotifierState();
+}
+
+class SignUpPageState {
+  final bool modalActive;
+  final bool onSignUpPage;
+
+  SignUpPageState({required this.modalActive, required this.onSignUpPage});
 }

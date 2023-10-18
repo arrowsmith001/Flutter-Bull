@@ -32,7 +32,7 @@ import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/services/local_achievement_service.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
-import 'package:flutter_bull/src/views/home/utter_bull.dart';
+import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/4_voting_view.dart';

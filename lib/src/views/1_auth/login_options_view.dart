@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import 'package:flutter_bull/src/views/home/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/auth_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/1_auth/login_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';

@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/views/home/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
@@ -65,6 +65,7 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     });
   }
 
+
   @override
   void dispose() {
     _emailInputController.dispose();
@@ -99,6 +100,16 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
         onSignUpChanged(next);
       }
     });
+
+
+
+    // ref.listen(
+    //     authNotifierProvider.select((value) => value.valueOrNull?.signUpPage),
+    //     (_, next) {
+    //   if (next == false) {
+    //     Navigator.of(context).pop();
+    //   }
+    // });
 
     ref.listen(
         authNotifierProvider.select((value) => value.valueOrNull?.errorMessage),

@@ -4,13 +4,16 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/views/home/auth_notifier.dart';
+import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
+import 'package:flutter_bull/src/views/new/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 // ignore: unused_import
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/home/sign_up_email_view.dart';
+import 'package:flutter_bull/src/views/new/home/buttons/name_form_view.dart';
+import 'package:flutter_bull/src/views/new/home/auth/sign_up_email_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
@@ -18,8 +21,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zwidget/zwidget.dart';
 import 'package:logger/logger.dart';
 
-import 'auth_bar.dart';
-import 'home_main_buttons.dart';
+import 'home/bar/auth_bar.dart';
+import 'home/home_main_buttons.dart';
+import 'home/home_view.dart';
 
 class UtterBull extends ConsumerStatefulWidget {
   const UtterBull({super.key});
@@ -45,7 +49,21 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
     //     .joinRoom(_roomCodeTextEditController.text.trim().toUpperCase());
   }
 
-    final _navKey = GlobalKey<NavigatorState>();
+  final _navKey = GlobalKey<NavigatorState>();
+
+  OverlayEntry? overlayEntry;
+
+  _getSignUpRoute(BuildContext context) {
+    return PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 750),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return SlideTransition(
+              position:
+                  CurvedAnimation(parent: animation, curve: Curves.easeInOut)
+                      .drive(Tween(begin: Offset(0, 1), end: Offset.zero)),
+              child: SignUpEmailView());
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,31 +76,73 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
     final userId = ref.watch(getSignedInPlayerIdProvider);
     final player = ref.watch(playerNotifierProvider(userId)).requireValue; */
 
+    ref.listen(
+        authNotifierProvider.select(
+            (data) => data.valueOrNull?.signUpPage), (_, signUpPage) {
+      if (signUpPage == true) {
 
-    ref.listen(authNotifierProvider.select((data) => data.requireValue.signUpPage), (_, signUpPage) {
-      if(signUpPage == true)
+          // showModalBottomSheet(
+          //     isScrollControlled: true,
+          //     enableDrag: false,
+          //     constraints: BoxConstraints(
+          //         maxWidth: width * 0.9, maxHeight: height * 0.7),
+          //     context: context,
+          //     builder: (_) =>
+          //         SignUpEmailView()).whenComplete(
+          //     () {
+          //     });
+        
+        _navKey.currentState?.pushNamed('signUp',);
+      }
+      else
       {
-        _navKey.currentState?.pushNamed('signUp');
+        _navKey.currentState?.pop();
       }
     });
+
+    ref.listen(
+        authNotifierProvider
+            .select((data) => data.valueOrNull?.profilePhotoExists), (_, next) {
+      // if (next == false) {
+      //   overlayEntry = OverlayEntry(
+      //     builder: (context) {
+      //       return Stack(
+      //         children: [
+      //           Positioned.fromRect(
+      //               rect: Rect.fromLTWH(
+      //                   width / 2, height * 0.1, width / 2, height * 0.2),
+      //               child: Container(
+      //                 color: Colors.green,
+      //               ))
+      //         ],
+      //       );
+      //     },
+      //   );
+      //   _navKey.currentState?.overlay?.insert(overlayEntry!);
+      // } else {
+      //   if (next == true) {
+      //     overlayEntry?.remove();
+      //   }
+      // }
+    });
+
+    // ref.listen(
+    //     authNotifierProvider.select((data) => data.requireValue.authState),
+    //     (_, authState) {
+    //   if (authState == AuthState.signedInNoName) {
+    //     _navKey.currentState?.pushNamed(authState!.name);
+    //   }
+    // });
 
     return Scaffold(
       body: Center(
         child: Navigator(
-          key: _navKey,
+            key: _navKey,
             observers: [CoordinatedRouteObserver(), HeroController()],
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case 'signUp':
-                  return PageRouteBuilder(
-                    transitionDuration: Duration(seconds: 1),
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                    return SlideTransition(
-                      
-                        position: CurvedAnimation(parent: animation, curve: Curves.easeInOut).drive(
-                            Tween(begin: Offset(0, 1), end: Offset.zero)),
-                        child: SignUpEmailView());
-                  });
+                  return _getSignUpRoute(context);
               }
               return PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
@@ -109,37 +169,6 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
                     Navigator.of(context).pushReplacementNamed('avatar'),
                 child: UtterBullPlayerAvatar(null, data!)));
       }),
-    );
-  }
-}
-
-class HomeView extends ConsumerStatefulWidget {
-  const HomeView({super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomeViewState();
-}
-
-class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Flexible(child: SizedBox.fromSize(size: Size(width, height * 0.1), child: AuthBar())),
-        Expanded(
-            child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: UtterBullTitle(),
-        )),
-        Expanded(
-          child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: width * 0.1),
-            child: Center(child: 
-            HomeMainButtons()),
-          ),
-        )
-      ],
     );
   }
 }

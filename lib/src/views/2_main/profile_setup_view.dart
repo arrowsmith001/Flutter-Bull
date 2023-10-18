@@ -190,13 +190,15 @@ class InputValidators {
   }
 
   static String? passwordValidator(String password) {
-    
     if (password.length < 8)
       return 'Password must be at least 8 characters long';
 
-    if (password.contains(' '))
-      return 'Password must not contain whitespace';
+    if (password.contains(' ')) return 'Password must not contain whitespace';
 
     return null;
+  }
+
+  static String? nonEmptyStringValidator(String text) {
+    return text.trim().isNotEmpty ? null : "Name field must not be empty";
   }
 }
