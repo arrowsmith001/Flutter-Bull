@@ -1,9 +1,9 @@
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/3_game/2_game_round_view.dart';
-import 'package:flutter_bull/src/views/new/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/name_form_view.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/photo_prompt_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';

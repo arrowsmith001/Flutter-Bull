@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 
 class UtterBullBackButton extends StatelessWidget {
-  const UtterBullBackButton({super.key, this.onPressed});
+  const UtterBullBackButton(
+      {super.key, this.onPressed, this.color = Colors.blue});
 
   final VoidCallback? onPressed;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-
     return Ink(
-  decoration: ShapeDecoration(
-    color: Colors.blue,
-    shape: CircleBorder(),
-  ),
-  child: IconButton(onPressed: onPressed,
-            icon: Icon(
-              Icons.exit_to_app_sharp, color: Theme.of(context).primaryColorLight,)),
-);
+      decoration: ShapeDecoration(
+        color: color,
+        shape: CircleBorder(),
+      ),
+      child: IconButton(
+          onPressed: onPressed,
+          icon: Icon(
+            Icons.exit_to_app_sharp,
+            color: Theme.of(context).primaryColorLight,
+          )),
+    );
   }
 }

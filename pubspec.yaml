@@ -45,6 +45,7 @@ dependencies:
   dots_indicator: ^3.0.0
   jumping_dot: ^0.0.6
   zwidget: ^0.0.2
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:

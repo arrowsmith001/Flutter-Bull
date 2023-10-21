@@ -4,15 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 
-// TODO: Debug this shit (breakpointn at camcontroller initialize)
+// TODO: Debug this shit (breakpointn at camcontroller initialize), fails particularly on first invoke
 class CameraService {
-  static final CameraService _cameraService = CameraService._internal();
-
-  factory CameraService() {
-    return _cameraService;
-  }
-
-  CameraService._internal();
 
   List<CameraDescription>? cameras;
 
@@ -79,9 +72,12 @@ class CameraService {
     await _controller?.pausePreview();
     final currentImageFile = await controller?.takePicture();
     if (currentImageFile != null) {
+      
       imageData = await currentImageFile.readAsBytes();
       imageDataAvailable = true;
     }
+
+
   }
 
   Future<void> dispose() async {

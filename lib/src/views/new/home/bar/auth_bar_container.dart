@@ -1,9 +1,11 @@
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/new/home/bar/auth_bar.dart';
-import 'package:flutter_bull/src/views/new/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/camera_notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthBarContainer extends ConsumerStatefulWidget {
@@ -18,11 +20,23 @@ class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
 
   @override
   Widget build(BuildContext context) {
+
     ref.listen(
         authNotifierProvider.select((value) => value.valueOrNull?.authBarState),
         (prev, next) {
       if (next != null) {
-          _navKey.currentState?.pushNamed(next.name);
+          _navKey.currentState?.pushReplacementNamed(next.name);
+      }
+    });
+
+    ref.listen(
+        cameraNotifierProvider.select((value) => value.valueOrNull?.cameraState),
+        (prev, next) {
+      if (next == CameraState.ready) {
+          _navKey.currentState?.pushReplacementNamed('hide');
+      }
+      else if (next == CameraState.closed) {
+          _navKey.currentState?.pushReplacementNamed('show');
       }
     });
 
@@ -48,6 +62,7 @@ class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
     });
 
     return Navigator(
+      clipBehavior: Clip.none,
       key: _navKey,
       observers: [CoordinatedRouteObserver()],
       initialRoute: AuthBarState.show.name,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/views/new/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

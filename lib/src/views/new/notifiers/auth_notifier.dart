@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
-import 'package:flutter_bull/src/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
@@ -122,6 +122,8 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   AuthNotifierState get value => state.value ?? AuthNotifierState();
+
+
 }
 
 class SignUpPageState {

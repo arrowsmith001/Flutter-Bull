@@ -1,4 +1,4 @@
-import 'package:flutter_bull/src/views/new/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_notifier_state.freezed.dart';
@@ -22,6 +22,8 @@ class AuthNotifierState with _$AuthNotifierState {
 enum AuthState {
   signedOut, signedInNoPlayerProfile, signedInNoName, signedInNoPic, signedIn
 }
+
+
 enum AuthBarState {
   hide, show
 }

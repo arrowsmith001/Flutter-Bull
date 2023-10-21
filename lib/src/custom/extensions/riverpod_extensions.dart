@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 extension RiverpodExtensions<T> on AsyncValue<T> {
@@ -14,13 +15,13 @@ extension RiverpodExtensions<T> on AsyncValue<T> {
       bool skipError = false}) {
     return when<R>(skipLoadingOnReload: skipLoadingOnReload, skipLoadingOnRefresh: skipLoadingOnRefresh, skipError: skipError,
       data: data, 
-      error: error ?? (e,_) => Text(e.toString() + _.toString()) as R, 
+      error: (error, stackTrace) => ErrorWidget(error) as R, 
       loading: loading ?? () => 
       Center(
         child: Column(
           children: [
             Spacer(),
-            Flexible(child: AspectRatio(aspectRatio: 1.0, child: CircularProgressIndicator())),
+            Flexible(child: AspectRatio(aspectRatio: 1.0, child: UtterBullCircularProgressIndicator())),
             Spacer(),
           ],
         )) as R);
