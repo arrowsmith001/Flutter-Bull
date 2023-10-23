@@ -22,27 +22,25 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Flexible(
-          child: SizedBox.fromSize(
-              size: Size(width, height * 0.1), child: AuthBarContainer()),
-        ),
+        SizedBox.fromSize(
+            size: Size(width, height * 0.1)),
         
         Expanded(
-          child: SizedBox.fromSize(
-              child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: UtterBullTitle(),
-          )),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          child: UtterBullTitle(),
         ),
+        ),
+
         Expanded(
-          child: SizedBox.fromSize(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Flexible(child: HomeMainButtons()),
-              ],
-            ),
+        child: SizedBox.fromSize(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Flexible(child: HomeMainButtons()),
+            ],
           ),
+        ),
         )
       ],
     );

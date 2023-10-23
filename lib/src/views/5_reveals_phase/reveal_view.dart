@@ -42,7 +42,7 @@ class RevealViewState extends ConsumerState<RevealView>
       CurvedAnimation(parent: animController, curve: Curves.elasticInOut);
 
   late final vmProvider =
-      revealViewNotifierProvider(roomId, userId, whoseTurnId);
+      revealViewNotifierProvider(roomId, userId!, whoseTurnId);
 
   GameNotifier get gameNotifier =>
       ref.read(gameNotifierProvider(roomId).notifier);
@@ -157,11 +157,11 @@ class RevealViewState extends ConsumerState<RevealView>
   }
 
   void _onRevealPressed() {
-    ref.read(gameNotifierProvider(roomId).notifier).reveal(userId);
+    ref.read(gameNotifierProvider(roomId).notifier).reveal(userId!);
   }
 
   void _onRevealNextPressed() {
-    ref.read(gameNotifierProvider(roomId).notifier).revealNext(userId);
+    ref.read(gameNotifierProvider(roomId).notifier).revealNext(userId!);
   }
 
   Widget _buildPlayerStatementPreamble(PublicPlayer playerWhoseTurn,
@@ -307,13 +307,13 @@ class RevealViewState extends ConsumerState<RevealView>
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight),
             title: 'Reveal',
-            onPressed: () => gameNotifier.reveal(userId)),
+            onPressed: () => gameNotifier.reveal(userId!)),
       );
     } else {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: UtterBullButton(
-            title: 'Advance', onPressed: () => gameNotifier.revealNext(userId)),
+            title: 'Advance', onPressed: () => gameNotifier.revealNext(userId!)),
       );
     }
   }

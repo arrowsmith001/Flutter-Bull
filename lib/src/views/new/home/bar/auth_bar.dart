@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
+import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/photo_prompt_view.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_bull/src/views/new/loading.dart';
 import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -21,7 +23,19 @@ class AuthBar extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _AuthBarState();
 }
 
-class _AuthBarState extends ConsumerState<AuthBar> with MediaDimensions {
+class _AuthBarState extends ConsumerState<AuthBar>
+    with MediaDimensions, SingleTickerProviderStateMixin {
+  late final _animController =
+      AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+  late final _zoomAnim =
+      CurvedAnimation(parent: _animController, curve: Curves.easeInOut)
+          .drive(Tween(begin: 1.0, end: _avatarScale));
+
+  bool isEditingName = false;
+
+  TextEditingController _nameController = TextEditingController();
+  FocusNode _nameFocus = FocusNode();
+  final _nameFieldKey = GlobalKey<FormFieldState>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,74 +60,154 @@ class _AuthBarState extends ConsumerState<AuthBar> with MediaDimensions {
                         opacity: 0.5, child: UtterBullPlayerAvatar(null, null))
                     : ref.watch(playerNotifierProvider(userId)).when(
                         data: (data) {
-                          return Transform.scale(
-                            alignment: Alignment.topRight,
-                            scale: _avatarScale,
+                          return AnimatedBuilder(
+                            animation: _animController,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                alignment: Alignment.topRight,
+                                scale: _zoomAnim.value,
+                                child: child,
+                              );
+                            },
                             child: MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              onEnter: (event) {
-                                setState(() {
-                                  _avatarScale = 2.5;
-                                });
-                              },
-                              onExit: (event) {
-                                setState(() {
-                                  _avatarScale = 1.0;
-                                });
-                              },
-                              child: GestureDetector(
-                                onTap: () => _onAvatarPressed(),
-                                child: Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    Positioned(
-                                      child: UtterBullPlayerAvatar(
-                                          null, data.avatarData),
+                                  cursor: SystemMouseCursors.click,
+                                  onEnter: (event) {
+                                      _animController.forward(from: 0);
+                                      //_avatarScale = 2.5;
+                                  },
+                                  onExit: (event) {
+                                      _animController.reverse();
+                                      // _avatarScale = 1.0;
+                                  },
+                                  child: GestureDetector(
+                                    onTap: () => _onAvatarPressed(),
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        Positioned(
+                                          child: UtterBullPlayerAvatar(
+                                              null, data.avatarData),
+                                        ),
+                                        // Positioned(
+                                        //     bottom: -height*0.1,
+                                        //   child: Container(
+                                        //     color: Colors.amber,
+                                        //     height: 100, width: width*0.8,
+                                        //   ),
+                                        // ),
+                                      ],
                                     ),
-                                    // Positioned(
-                                    //     bottom: -height*0.1,
-                                    //   child: Container(
-                                    //     color: Colors.amber,
-                                    //     height: 100, width: width*0.8,
-                                    //   ),
-                                    // ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
                           );
                         },
                         error: (e, st) => ErrorWidget(e),
                         loading: () => const Loading(dim: 25)),
               );
 
+              final buttons = Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.red)),
+                        onPressed: () {
+                          setState(() {
+                            isEditingName = false;
+                          });
+                        },
+                        child: Text('X')),
+                    ElevatedButton(
+                        onPressed: () async {
+                          if (!(_nameFieldKey.currentState?.validate() ??
+                              false)) return;
+                          await ref
+                              .read(playerNotifierProvider(userId!).notifier)
+                              .setName(_nameController.text);
+                          setState(() {
+                            isEditingName = false;
+                          });
+                        },
+                        child: Text('OK')),
+                  ],
+                ),
+              );
+
               final name = userId == null
+                  ? const SizedBox.shrink()
+                  : ref.watch(playerNotifierProvider(userId)).when(
+                      data: (data) {
+                        if (isEditingName) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: FormField(
+                              validator: (_) => InputValidators.emptyValidator(
+                                  _nameController.text),
+                              key: _nameFieldKey,
+                              builder: (context) => UtterBullTextField(
+                                  maxLength: 25,
+                                  errorText:
+                                      _nameFieldKey.currentState?.errorText,
+                                  focusNode: _nameFocus,
+                                  controller: _nameController),
+                            ),
+                          );
+                        }
+
+                        return data.player.name == null
                             ? const SizedBox.shrink()
-                            : ref.watch(playerNotifierProvider(userId)).when(
-                                data: (data) {
-                                  return data.player.name == null
-                                      ? const SizedBox.shrink()
-                                      : Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 4.0, horizontal: 8.0),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Expanded(
-                                                  child: AutoSizeText(
-                                                    'Hi ${data.player.name}',
+                            : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0, horizontal: 8.0),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                          child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Flexible(
+                                            child: AutoSizeText('Hi',
+                                                textAlign: TextAlign.end,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headlineLarge),
+                                          ),
+                                          Flexible(
+                                            child: MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _nameController.text =
+                                                        data.player.name ?? '';
+                                                    _nameFocus.requestFocus();
+                                                    isEditingName = true;
+                                                  });
+                                                },
+                                                child: AutoSizeText(
+                                                    '${data.player.name}',
                                                     textAlign: TextAlign.end,
                                                     style: Theme.of(context)
                                                         .textTheme
-                                                        .headlineLarge,
-                                                  ),
-                                                )
-                                              ]),
-                                        );
-                                },
-                                error: (e, st) => const SizedBox.shrink(),
-                                loading: () => const SizedBox.shrink());
+                                                        .headlineLarge!
+                                                        .copyWith(
+                                                            color:
+                                                                Colors.white)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ))
+                                    ]),
+                              );
+                      },
+                      error: (e, st) => const SizedBox.shrink(),
+                      loading: () => const SizedBox.shrink());
 
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
@@ -125,23 +219,26 @@ class _AuthBarState extends ConsumerState<AuthBar> with MediaDimensions {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                      Expanded(
-                          child: IconButton.filled(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.settings,
-                                size: 60,
-                              )))
+                          Expanded(
+                              child: IconButton.filled(
+                                  onPressed: () {},
+                                  icon:  Icon(
+                                    Icons.settings,
+                                    color: Theme.of(context).primaryColorLight,
+                                    size: 60,
+                                  )))
                         ],
                       ),
                     ),
                     Expanded(
-                      flex: 2,
+                        flex: 4,
                         child: Row(
                           children: [
-                          Expanded(child: name), 
-                          avatar
-                        ],)),
+                            isEditingName ? buttons : SizedBox.shrink(),
+                            Expanded(child: name),
+                            avatar
+                          ],
+                        )),
                   ],
                 ),
               );
@@ -153,9 +250,12 @@ class _AuthBarState extends ConsumerState<AuthBar> with MediaDimensions {
     );
   }
 
-  double _avatarScale = 1.0;
+  double _avatarScale = 2.5;
 
   void _onAvatarPressed() async {
+    setState(() {
+      isEditingName = false;
+    });
     showDialog(
         context: context,
         builder: (context) => Stack(

@@ -79,11 +79,11 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   void onVoteBull() => vote(false);
 
   void onEndRound() {
-    gameNotifier.endRound(userId);
+    gameNotifier.endRound(userId!);
   }
 
   void vote(bool trueOrFalse) {
-    gameNotifier.vote(userId, trueOrFalse);
+    gameNotifier.vote(userId!, trueOrFalse);
   }
 
   void onTimerChange(TimeData time) {
@@ -115,7 +115,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   @override
   Widget build(BuildContext context) {
     final vmProvider =
-        votingPhaseViewNotifierProvider(roomId, userId, whoseTurnId);
+        votingPhaseViewNotifierProvider(roomId, userId!, whoseTurnId);
     final vmAsync = ref.watch(vmProvider);
 
     ref.listen(vmProvider.select((vm) => vm.valueOrNull?.timeData),
@@ -328,7 +328,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   }
 
   void onSwitchToTruth() {
-    gameNotifier.setTruth(userId, true);
+    gameNotifier.setTruth(userId!, true);
   }
 }
 

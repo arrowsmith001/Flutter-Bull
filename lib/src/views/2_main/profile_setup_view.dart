@@ -35,10 +35,10 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView>
 
   @override
   Widget build(BuildContext context) {
-    final asyncPlayer = ref.watch(playerNotifierProvider(userId));
+    final asyncPlayer = ref.watch(playerNotifierProvider(userId!));
 
     ref.listen(
-        playerNotifierProvider(userId)
+        playerNotifierProvider(userId!)
             .select((value) => value.value?.player.name), (_, next) {
       if (next != null) {
         _nameInputController.text = next;
@@ -129,7 +129,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView>
     bool isValid = _formFieldKey.currentState?.validate() ?? false;
     if (isValid) {
       return ref
-          .read(playerNotifierProvider(userId).notifier)
+          .read(playerNotifierProvider(userId!).notifier)
           .setName(_nameInputController.text);
     }
   }
@@ -163,8 +163,9 @@ class InputValidators {
     return emptyValidator(s);
   }
 
-  static String? emptyValidator(String s) {
-    return s.trim() == "" ? "Name cannot be blank" : null;
+  static String? emptyValidator(Object? s) {
+    if (s == null) return 'Input is null';
+    return s.toString().trim() == "" ? "Name cannot be blank" : null;
   }
 
   static String? emailValidator(String text) {

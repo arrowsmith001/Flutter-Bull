@@ -43,7 +43,7 @@ class _ShufflePlayersAnimationViewState
   @override
   Widget build(BuildContext context) {
     final vmProvider =
-        gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
+        gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {

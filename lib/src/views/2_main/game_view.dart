@@ -29,7 +29,7 @@ class GameView extends ConsumerStatefulWidget {
 class _GameViewState extends ConsumerState<GameView> with UserID, RoomID {
   final navController = GameRouteNavigationController();
 
-  late final vmProvider = gameViewNotifierProvider(roomId, userId);
+  late final vmProvider = gameViewNotifierProvider(roomId, userId!);
 
   @override
   Widget build(BuildContext context) {

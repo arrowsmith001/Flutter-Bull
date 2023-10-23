@@ -32,17 +32,17 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
   void onVoteBull() => vote(false);
 
   void onEndRound() {
-    gameNotifier.endRound(userId);
+    gameNotifier.endRound(userId!);
   }
 
   void vote(bool trueOrFalse) {
-    gameNotifier.vote(userId, trueOrFalse);
+    gameNotifier.vote(userId!, trueOrFalse);
   }
 
   @override
   Widget build(BuildContext context) {
     final vmProvider =
-        votingPhaseViewNotifierProvider(roomId, userId, whoseTurnId);
+        votingPhaseViewNotifierProvider(roomId, userId!, whoseTurnId);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(

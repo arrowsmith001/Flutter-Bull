@@ -24,6 +24,11 @@ class HomeMainButtons extends ConsumerStatefulWidget {
 
 class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
     with MediaDimensions {
+
+  late String initialRoute =
+      ref.read(authNotifierProvider).valueOrNull?.authState?.name ??
+          AuthState.signedOut.name;
+
   final _navKey = GlobalKey<NavigatorState>();
 
   @override
@@ -32,7 +37,6 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
         authNotifierProvider.select((value) => value.valueOrNull?.authState),
         (prev, next) {
       if (next != null) {
-
         // // Only prompt for photo when first signing up
         // if (next == AuthState.signedInNoPic) {
         //   if(prev == AuthState.signedInNoName)
@@ -49,7 +53,7 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
         child: Navigator(
       observers: [CoordinatedRouteObserver()],
       key: _navKey,
-      initialRoute: 'signedOut',
+      initialRoute: initialRoute,
       onGenerateRoute: (settings) {
         Widget? child;
         final padding = EdgeInsets.symmetric(horizontal: width * 0.1);

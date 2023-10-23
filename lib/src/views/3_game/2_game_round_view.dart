@@ -34,7 +34,7 @@ class _GameRoundViewState extends ConsumerState<GameRoundView>
   @override
   Widget build(BuildContext context) {
     final vmProvider =
-        gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
+        gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
 
     ref.listen(vmProvider.select((value) => value.value), (_, next) {
       if (next != null) navController.navigate(next);

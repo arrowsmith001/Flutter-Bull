@@ -7,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'app_states.g.dart';
 
 mixin UserID<T extends ConsumerStatefulWidget> on ConsumerState<T> {
-  String get userId => ref.watch(getSignedInPlayerIdProvider);
+  String? get userId => ref.watch(authNotifierProvider).valueOrNull?.userId;
 }
 
 @Riverpod(keepAlive: true)

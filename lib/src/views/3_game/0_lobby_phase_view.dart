@@ -32,7 +32,7 @@ class LobbyPhaseView extends ConsumerStatefulWidget {
 
 class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     with UserID, RoomID, TickerProviderStateMixin {
-  late final _vmProvider = lobbyPhaseViewNotifierProvider(roomId, userId);
+  late final _vmProvider = lobbyPhaseViewNotifierProvider(roomId, userId!);
   final _rectKey =
       GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
 
@@ -52,7 +52,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   void onReadyUp(bool isReady) {
     _getServer.setPlayerState(
-        roomId, userId, isReady ? PlayerState.unready : PlayerState.ready);
+        roomId, userId!, isReady ? PlayerState.unready : PlayerState.ready);
   }
 
   @override
@@ -191,7 +191,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
                 children: [
                   IconButton(
                       onPressed: () =>
-                          _getServer.removeFromRoom(userId, roomId),
+                          _getServer.removeFromRoom(userId!, roomId),
                       icon: Transform.flip(
                           flipX: true, child: Icon(Icons.exit_to_app_rounded))),
                   Padding(

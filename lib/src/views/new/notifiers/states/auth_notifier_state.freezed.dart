@@ -18,10 +18,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AuthNotifierState {
   AuthState? get authState => throw _privateConstructorUsedError;
   AuthBarState? get authBarState => throw _privateConstructorUsedError;
+  HomePageState? get homePageState => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get route => throw _privateConstructorUsedError;
+  String? get occupiedRoomId => throw _privateConstructorUsedError;
   bool? get validateSignUpForm => throw _privateConstructorUsedError;
   bool? get signUp => throw _privateConstructorUsedError;
+  bool? get login => throw _privateConstructorUsedError;
   bool? get signUpPage => throw _privateConstructorUsedError;
   bool? get profilePhotoExists => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
@@ -41,10 +44,13 @@ abstract class $AuthNotifierStateCopyWith<$Res> {
   $Res call(
       {AuthState? authState,
       AuthBarState? authBarState,
+      HomePageState? homePageState,
       String? userId,
       String? route,
+      String? occupiedRoomId,
       bool? validateSignUpForm,
       bool? signUp,
+      bool? login,
       bool? signUpPage,
       bool? profilePhotoExists,
       String? errorMessage,
@@ -66,10 +72,13 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
   $Res call({
     Object? authState = freezed,
     Object? authBarState = freezed,
+    Object? homePageState = freezed,
     Object? userId = freezed,
     Object? route = freezed,
+    Object? occupiedRoomId = freezed,
     Object? validateSignUpForm = freezed,
     Object? signUp = freezed,
+    Object? login = freezed,
     Object? signUpPage = freezed,
     Object? profilePhotoExists = freezed,
     Object? errorMessage = freezed,
@@ -84,6 +93,10 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
           ? _value.authBarState
           : authBarState // ignore: cast_nullable_to_non_nullable
               as AuthBarState?,
+      homePageState: freezed == homePageState
+          ? _value.homePageState
+          : homePageState // ignore: cast_nullable_to_non_nullable
+              as HomePageState?,
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -92,6 +105,10 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
           ? _value.route
           : route // ignore: cast_nullable_to_non_nullable
               as String?,
+      occupiedRoomId: freezed == occupiedRoomId
+          ? _value.occupiedRoomId
+          : occupiedRoomId // ignore: cast_nullable_to_non_nullable
+              as String?,
       validateSignUpForm: freezed == validateSignUpForm
           ? _value.validateSignUpForm
           : validateSignUpForm // ignore: cast_nullable_to_non_nullable
@@ -99,6 +116,10 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
       signUp: freezed == signUp
           ? _value.signUp
           : signUp // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      login: freezed == login
+          ? _value.login
+          : login // ignore: cast_nullable_to_non_nullable
               as bool?,
       signUpPage: freezed == signUpPage
           ? _value.signUpPage
@@ -131,10 +152,13 @@ abstract class _$$_AuthNotifierStateCopyWith<$Res>
   $Res call(
       {AuthState? authState,
       AuthBarState? authBarState,
+      HomePageState? homePageState,
       String? userId,
       String? route,
+      String? occupiedRoomId,
       bool? validateSignUpForm,
       bool? signUp,
+      bool? login,
       bool? signUpPage,
       bool? profilePhotoExists,
       String? errorMessage,
@@ -154,10 +178,13 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
   $Res call({
     Object? authState = freezed,
     Object? authBarState = freezed,
+    Object? homePageState = freezed,
     Object? userId = freezed,
     Object? route = freezed,
+    Object? occupiedRoomId = freezed,
     Object? validateSignUpForm = freezed,
     Object? signUp = freezed,
+    Object? login = freezed,
     Object? signUpPage = freezed,
     Object? profilePhotoExists = freezed,
     Object? errorMessage = freezed,
@@ -172,6 +199,10 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
           ? _value.authBarState
           : authBarState // ignore: cast_nullable_to_non_nullable
               as AuthBarState?,
+      homePageState: freezed == homePageState
+          ? _value.homePageState
+          : homePageState // ignore: cast_nullable_to_non_nullable
+              as HomePageState?,
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
@@ -180,6 +211,10 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
           ? _value.route
           : route // ignore: cast_nullable_to_non_nullable
               as String?,
+      occupiedRoomId: freezed == occupiedRoomId
+          ? _value.occupiedRoomId
+          : occupiedRoomId // ignore: cast_nullable_to_non_nullable
+              as String?,
       validateSignUpForm: freezed == validateSignUpForm
           ? _value.validateSignUpForm
           : validateSignUpForm // ignore: cast_nullable_to_non_nullable
@@ -187,6 +222,10 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
       signUp: freezed == signUp
           ? _value.signUp
           : signUp // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      login: freezed == login
+          ? _value.login
+          : login // ignore: cast_nullable_to_non_nullable
               as bool?,
       signUpPage: freezed == signUpPage
           ? _value.signUpPage
@@ -214,10 +253,13 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   _$_AuthNotifierState(
       {this.authState,
       this.authBarState,
+      this.homePageState,
       this.userId,
       this.route,
+      this.occupiedRoomId,
       this.validateSignUpForm,
       this.signUp,
+      this.login,
       this.signUpPage,
       this.profilePhotoExists,
       this.errorMessage,
@@ -228,13 +270,19 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   @override
   final AuthBarState? authBarState;
   @override
+  final HomePageState? homePageState;
+  @override
   final String? userId;
   @override
   final String? route;
   @override
+  final String? occupiedRoomId;
+  @override
   final bool? validateSignUpForm;
   @override
   final bool? signUp;
+  @override
+  final bool? login;
   @override
   final bool? signUpPage;
   @override
@@ -247,7 +295,7 @@ class _$_AuthNotifierState implements _AuthNotifierState {
 
   @override
   String toString() {
-    return 'AuthNotifierState(authState: $authState, authBarState: $authBarState, userId: $userId, route: $route, validateSignUpForm: $validateSignUpForm, signUp: $signUp, signUpPage: $signUpPage, profilePhotoExists: $profilePhotoExists, errorMessage: $errorMessage, message: $message)';
+    return 'AuthNotifierState(authState: $authState, authBarState: $authBarState, homePageState: $homePageState, userId: $userId, route: $route, occupiedRoomId: $occupiedRoomId, validateSignUpForm: $validateSignUpForm, signUp: $signUp, login: $login, signUpPage: $signUpPage, profilePhotoExists: $profilePhotoExists, errorMessage: $errorMessage, message: $message)';
   }
 
   @override
@@ -259,11 +307,16 @@ class _$_AuthNotifierState implements _AuthNotifierState {
                 other.authState == authState) &&
             (identical(other.authBarState, authBarState) ||
                 other.authBarState == authBarState) &&
+            (identical(other.homePageState, homePageState) ||
+                other.homePageState == homePageState) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.route, route) || other.route == route) &&
+            (identical(other.occupiedRoomId, occupiedRoomId) ||
+                other.occupiedRoomId == occupiedRoomId) &&
             (identical(other.validateSignUpForm, validateSignUpForm) ||
                 other.validateSignUpForm == validateSignUpForm) &&
             (identical(other.signUp, signUp) || other.signUp == signUp) &&
+            (identical(other.login, login) || other.login == login) &&
             (identical(other.signUpPage, signUpPage) ||
                 other.signUpPage == signUpPage) &&
             (identical(other.profilePhotoExists, profilePhotoExists) ||
@@ -278,10 +331,13 @@ class _$_AuthNotifierState implements _AuthNotifierState {
       runtimeType,
       authState,
       authBarState,
+      homePageState,
       userId,
       route,
+      occupiedRoomId,
       validateSignUpForm,
       signUp,
+      login,
       signUpPage,
       profilePhotoExists,
       errorMessage,
@@ -299,10 +355,13 @@ abstract class _AuthNotifierState implements AuthNotifierState {
   factory _AuthNotifierState(
       {final AuthState? authState,
       final AuthBarState? authBarState,
+      final HomePageState? homePageState,
       final String? userId,
       final String? route,
+      final String? occupiedRoomId,
       final bool? validateSignUpForm,
       final bool? signUp,
+      final bool? login,
       final bool? signUpPage,
       final bool? profilePhotoExists,
       final String? errorMessage,
@@ -313,13 +372,19 @@ abstract class _AuthNotifierState implements AuthNotifierState {
   @override
   AuthBarState? get authBarState;
   @override
+  HomePageState? get homePageState;
+  @override
   String? get userId;
   @override
   String? get route;
   @override
+  String? get occupiedRoomId;
+  @override
   bool? get validateSignUpForm;
   @override
   bool? get signUp;
+  @override
+  bool? get login;
   @override
   bool? get signUpPage;
   @override

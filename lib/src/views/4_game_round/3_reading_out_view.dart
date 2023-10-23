@@ -22,7 +22,7 @@ class ReadingOutView extends ConsumerStatefulWidget {
 
 class _ReadingOutViewState extends ConsumerState<ReadingOutView>
     with RoomID, WhoseTurnID, UserID {
-  get vmProvider => gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
+  get vmProvider => gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
 
   AsyncValue<GameRoundViewModel> get vmAsync => ref.watch(vmProvider);
 
@@ -33,7 +33,7 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
       startingRound = true;
     });
 
-    ref.read(gameNotifierProvider(roomId).notifier).startRound(userId);
+    ref.read(gameNotifierProvider(roomId).notifier).startRound(userId!);
   }
 
   @override

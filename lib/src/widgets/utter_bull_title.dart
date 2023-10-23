@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:zwidget/zwidget.dart';
+import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:logger/logger.dart';
 
 class UtterBullTitle extends StatefulWidget {
@@ -74,6 +74,9 @@ class _UtterBullTitleState extends State<UtterBullTitle>
     super.dispose();
   }
 
+  final String utter = 'UTTER';
+  final String bull = 'BULL';
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -90,38 +93,19 @@ class _UtterBullTitleState extends State<UtterBullTitle>
                   rotationY: utterAnim.value * utterRotateExtent,
                   builder: (_) => UglyOutlinedText(
                     textSpan: TextSpan(children: [
-                      TextSpan(
-                          text: 'U',
-                          style: TextStyle(
-                            color: Color.lerp(UtterBullGlobal.truthColor,
-                                Colors.white, 0.3 + (1 + utterAnim.value) * 0.1),
-                          )),
-                      TextSpan(
-                          text: 'T',
-                          style: TextStyle(
-                            color: Color.lerp(
-                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.15),
-                          )),
-                      TextSpan(
-                          text: 'T',
-                          style: TextStyle(
-                            color: Color.lerp(
-                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.2),
-                          )),
-                      TextSpan(
-                          text: 'E',
-                          style: TextStyle(
-                            color: Color.lerp(
-                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.25),
-                          )),
-                      TextSpan(
-                          text: 'R',
-                          style: TextStyle(
-                            color: Color.lerp(
-                                UtterBullGlobal.truthColor, Colors.white, 0.3 + (1 + utterAnim.value) * 0.3),
-                          )),
+                      ...List<TextSpan>.generate(utter.length, (i) {
+                        return TextSpan(
+                            text: utter[i],
+                            style: TextStyle(
+                              color: Color.lerp(
+                                  UtterBullGlobal.truthColor,
+                                  Colors.white,
+                                  0.3 +
+                                      (1 + utterAnim.value) * (0.1 + i * 0.05)),
+                            ));
+                      })
                     ]),
-
+    
                     maxLines: 1,
                     fillColor: Color.lerp(
                         UtterBullGlobal.truthColor, Colors.white, 0.7),
@@ -168,32 +152,20 @@ class _UtterBullTitleState extends State<UtterBullTitle>
                       rotationY: bullAnim.value * bullRotateExtent,
                       builder: (_) => UglyOutlinedText(
                         textSpan: TextSpan(children: [
-                          TextSpan(
-                              text: 'B',
-                              style: TextStyle(
-                                color: Color.lerp(UtterBullGlobal.lieColor,
-                                    Colors.white, (1 + bullAnim.value) * 0.1),
-                              )),
-                          TextSpan(
-                              text: 'U',
-                              style: TextStyle(
-                                color: Color.lerp(UtterBullGlobal.lieColor,
-                                    Colors.white, (1 + bullAnim.value) * 0.15),
-                              )),
-                          TextSpan(
-                              text: 'L',
-                              style: TextStyle(
-                                color: Color.lerp(UtterBullGlobal.lieColor,
-                                    Colors.white, (1 + bullAnim.value) * 0.2),
-                              )),
-                          TextSpan(
-                              text: 'L',
-                              style: TextStyle(
-                                color: Color.lerp(UtterBullGlobal.lieColor,
-                                    Colors.white, (1 + bullAnim.value) * 0.25),
-                              )),
+                          ...List<TextSpan>.generate(bull.length, (i) {
+                            return TextSpan(
+                                text: bull[i],
+                                style: TextStyle(
+                                  color: Color.lerp(
+                                      UtterBullGlobal.lieColor,
+                                      Colors.white,
+                                      0.1 +
+                                          (1 + bullAnim.value) *
+                                              (0.1 + i * 0.05)),
+                                ));
+                          })
                         ]),
-
+    
                         fillColor: Color.lerp(
                             UtterBullGlobal.lieColor, Colors.white, 0.2),
                         maxLines: 1,

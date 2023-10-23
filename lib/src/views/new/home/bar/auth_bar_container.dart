@@ -7,12 +7,14 @@ import 'package:flutter_bull/src/views/new/home/bar/auth_bar.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/camera_notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class AuthBarContainer extends ConsumerStatefulWidget {
   const AuthBarContainer({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AuthBarContainerState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _AuthBarContainerState();
 }
 
 class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
@@ -20,46 +22,36 @@ class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
 
   @override
   Widget build(BuildContext context) {
-
     ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.authBarState),
+        authNotifierProvider.select((value) => value.valueOrNull?.signUpPage),
         (prev, next) {
-      if (next != null) {
-          _navKey.currentState?.pushReplacementNamed(next.name);
+          if (next == true) {
+        _navKey.currentState?.pushReplacementNamed('hide');
+      } else if (next == false) {
+        _navKey.currentState?.pushReplacementNamed('show');
       }
     });
 
     ref.listen(
-        cameraNotifierProvider.select((value) => value.valueOrNull?.cameraState),
-        (prev, next) {
+        cameraNotifierProvider
+            .select((value) => value.valueOrNull?.cameraState), (prev, next) {
       if (next == CameraState.ready) {
-          _navKey.currentState?.pushReplacementNamed('hide');
-      }
-      else if (next == CameraState.closed) {
-          _navKey.currentState?.pushReplacementNamed('show');
-      }
-    });
-
-    ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
-        (prev, next) {
-      if (next != null) {
-        if (next == true) {
-          setInfoText('Signing up');
-        } else {
-          setInfoText('Signing up');
-        }
+        _navKey.currentState?.pushReplacementNamed('hide');
+      } else if (next == CameraState.closed) {
+        _navKey.currentState?.pushReplacementNamed('show');
       }
     });
 
     ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.userId),
-        (prev, next) {
+        authNotifierProvider
+            .select((value) => value.valueOrNull?.occupiedRoomId), (prev, next) {
       if (next != null) {
-        setInfoText('Hi $next');
-      } else
-        setInfoText('Not signed in');
+        _navKey.currentState?.pushReplacementNamed('hide');
+      } else if (prev != null && next == null) {
+        _navKey.currentState?.pushReplacementNamed('show');
+      }
     });
+
 
     return Navigator(
       clipBehavior: Clip.none,
@@ -71,9 +63,8 @@ class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
           case 'hide':
             return UpwardPushRoute((context) => SizedBox.shrink());
           case 'show':
-        return DownwardPushRoute((context) => AuthBar());
+            return DownwardPushRoute((context) => AuthBar());
         }
-
       },
     );
   }

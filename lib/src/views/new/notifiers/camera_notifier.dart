@@ -44,6 +44,7 @@ class CameraNotifier extends _$CameraNotifier {
   }
 
   Future<void> dispose() async {
+    Logger().d('camera dispose');
     setData(copy(controller: null));
 
     await cameraService.controller?.dispose();
@@ -51,8 +52,10 @@ class CameraNotifier extends _$CameraNotifier {
     setData(copy(cameraState: CameraState.disposed));
   }
 
-  void close() {
+  Future<void> close() async {
+    Logger().d('camera close');
     setData(copy(cameraState: CameraState.closed));
+    await dispose();
   }
 
   $CameraNotifierStateCopyWith<CameraNotifierState> get copy =>
@@ -81,7 +84,7 @@ class CameraNotifier extends _$CameraNotifier {
 
     await _upload(cameraService.imageData!);
 
-    setData(copy(cameraState: CameraState.closed));
+    close();
   }
 
   Future<void> pickImage() async {
@@ -89,7 +92,7 @@ class CameraNotifier extends _$CameraNotifier {
     final xfile = await ip.pickImage(source: ImageSource.gallery);
 
     assert(xfile != null, 'Picked image null: $xfile');
-    
+
     final data = await xfile!.readAsBytes();
     _upload(data);
   }

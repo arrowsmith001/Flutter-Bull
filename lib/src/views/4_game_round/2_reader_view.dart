@@ -21,7 +21,7 @@ class ReaderView extends ConsumerStatefulWidget {
 
 class _ReaderViewState extends ConsumerState<ReaderView>
     with RoomID, WhoseTurnID, UserID {
-  get vmProvider => gameRoundViewNotifierProvider(userId, roomId, whoseTurnId);
+  get vmProvider => gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
 
   Decoration? decoration;
   @override

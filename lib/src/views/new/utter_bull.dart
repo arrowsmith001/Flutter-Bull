@@ -4,6 +4,10 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/views/2_main/game_view.dart';
+import 'package:flutter_bull/src/views/2_main/join_game_view.dart';
+import 'package:flutter_bull/src/views/3_game/2_game_round_view.dart';
+import 'package:flutter_bull/src/views/new/home/bar/auth_bar_container.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
@@ -35,24 +39,49 @@ class UtterBull extends ConsumerStatefulWidget {
   ConsumerState<UtterBull> createState() => _UtterBullState();
 }
 
-class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
+class _UtterBullState extends ConsumerState<UtterBull>
+    with MediaDimensions, UserID {
   // SignedInPlayerStatusNotifier get signedInPlayerNotifier =>
   //     ref.read(signedInPlayerStatusNotifierProvider(userId).notifier);
 
+  // late final _animController =
+  //     AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+
   void onCreateRoom() async {
     //signedInPlayerNotifier.createRoom();
+    final String? userId = ref.read(authNotifierProvider).valueOrNull?.userId;
+    if (userId == null) {
+      Logger().e('Error: userId null when creating room');
+    } else {
+      setState(() {
+        creatingRoom = true;
+      });
+
+      try {
+        await ref.read(authNotifierProvider.notifier).createRoom(userId);
+      } catch (e) {
+        ref
+            .read(authNotifierProvider.notifier)
+            .pushError('Something went wrong: $e');
+      } finally {
+        setState(() {
+          creatingRoom = false;
+        });
+      }
+    }
   }
 
-  void onJoinRoomPressed() async {
-    Navigator.of(context).pushNamed('join');
-  }
+  bool creatingRoom = false;
+
+  void onJoinRoomPressed() async {}
 
   void onJoinRoom() {
     // signedInPlayerNotifier
     //     .joinRoom(_roomCodeTextEditController.text.trim().toUpperCase());
   }
 
-  final _navKey = GlobalKey<NavigatorState>();
+  final _outerNavKey = GlobalKey<NavigatorState>();
+  final _innerNavKey = GlobalKey<NavigatorState>();
 
   //OverlayEntry? overlayEntry;
 
@@ -62,15 +91,6 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
 
   @override
   Widget build(BuildContext context) {
-    // final userId = ref.watch(getSignedInPlayerIdProvider);
-    // final playerNotifier = signedInPlayerStatusNotifierProvider(userId);
-
-    // final avatarAsync = ref.watch(playerNotifierProvider(userId));
-    // final playerAsync = ref.watch(playerNotifier);
-/* 
-    final userId = ref.watch(getSignedInPlayerIdProvider);
-    final player = ref.watch(playerNotifierProvider(userId)).requireValue; */
-
     ref.listen(
         authNotifierProvider.select((data) => data.valueOrNull?.signUpPage),
         (_, signUpPage) {
@@ -86,50 +106,40 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
         //     () {
         //     });
 
-        _navKey.currentState?.pushNamed(
+        _outerNavKey.currentState?.pushNamed(
           'signUp',
         );
       } else {
-        _navKey.currentState?.pop();
+        _outerNavKey.currentState?.pop();
       }
-    });
-
-    ref.listen(
-        authNotifierProvider
-            .select((data) => data.valueOrNull?.profilePhotoExists), (_, next) {
-      // if (next == false) {
-      //   overlayEntry = OverlayEntry(
-      //     builder: (context) {
-      //       return Stack(
-      //         children: [
-      //           Positioned.fromRect(
-      //               rect: Rect.fromLTWH(
-      //                   width / 2, height * 0.1, width / 2, height * 0.2),
-      //               child: Container(
-      //                 color: Colors.green,
-      //               ))
-      //         ],
-      //       );
-      //     },
-      //   );
-      //   _navKey.currentState?.overlay?.insert(overlayEntry!);
-      // } else {
-      //   if (next == true) {
-      //     overlayEntry?.remove();
-      //   }
-      // }
     });
 
     ref.listen(
         cameraNotifierProvider
             .select((value) => value.valueOrNull?.cameraState), (prev, next) {
-
       if (next == CameraState.open) {
-        _navKey.currentState?.pushNamed('camera');
+        _outerNavKey.currentState?.pushNamed('camera');
       } else if (next == CameraState.closed) {
-        _navKey.currentState?.pop();
+        _outerNavKey.currentState?.pop();
       }
     });
+
+    ref.listen(
+        authNotifierProvider
+            .select((data) => data.valueOrNull?.profilePhotoExists),
+        (_, next) {});
+
+    ref.listen(
+        authNotifierProvider.select((data) => data.valueOrNull?.occupiedRoomId),
+        (prev, next) {
+      if (next != null) {
+        _innerNavKey.currentState?.pushReplacementNamed('game/$next');
+      } else if (prev != null && next == null) {
+        _innerNavKey.currentState?.pushReplacementNamed('/');
+      }
+    });
+
+
 
     // ref.listen(
     //     authNotifierProvider.select((data) => data.requireValue.authState),
@@ -140,40 +150,106 @@ class _UtterBullState extends ConsumerState<UtterBull> with MediaDimensions {
     // });
 
     return Scaffold(
-      body: Center(
-        child: Navigator(
-            key: _navKey,
-            observers: [CoordinatedRouteObserver(), HeroController()],
-            onGenerateRoute: (settings) {
-              switch (settings.name) {
-                case 'signUp':
-                  return PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 750),
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return SlideTransition(
-                            position: CurvedAnimation(
-                                    parent: animation, curve: Curves.easeInOut)
-                                .drive(Tween(
-                                    begin: Offset(0, 1), end: Offset.zero)),
-                            child: SignUpEmailView());
-                      });
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox.fromSize(
+                    size: Size(width, height * 0.1),
+                    child: const AuthBarContainer()),
+                Expanded(
+                  child: Navigator(
+                    observers: [CoordinatedRouteObserver()],
+                    key: _outerNavKey,
+                    initialRoute: '/',
+                    onGenerateRoute: (settings) {
+                       switch (settings.name) {
+                                    case '/':
+                                      return PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              WillPopScope(
+                                                  onWillPop: () async => false,
+                                                  child: HomeView()));
+                                    case 'signUp':
+                                      return PageRouteBuilder(
+                                          transitionDuration:
+                                              Duration(milliseconds: 750),
+                                          pageBuilder: (context, animation,
+                                              secondaryAnimation) {
+                                            return SlideTransition(
+                                                position: CurvedAnimation(
+                                                        parent: animation,
+                                                        curve: Curves.easeInOut)
+                                                    .drive(Tween(
+                                                        begin: Offset(0, 1),
+                                                        end: Offset.zero)),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                                  child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(
+                                                                      24.0),
+                                                              topRight: Radius
+                                                                  .circular(
+                                                                      24.0)),
+                                                      child: SignUpEmailView()),
+                                                ));
+                                          });
 
-                case 'camera':
-                  return PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 750),
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return SlideTransition(
-                            position: CurvedAnimation(
-                                    parent: animation, curve: Curves.easeInOut)
-                                .drive(Tween(
-                                    begin: Offset(0, 1), end: Offset.zero)),
-                            child: CameraView());
-                      });
-              }
-              return PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      HomeView());
-            }),
+                                    case 'camera':
+                                      return PageRouteBuilder(
+                                          transitionDuration:
+                                              Duration(milliseconds: 750),
+                                          pageBuilder: (context, animation,
+                                              secondaryAnimation) {
+                                            return SlideTransition(
+                                                position: CurvedAnimation(
+                                                        parent: animation,
+                                                        curve: Curves.easeInOut)
+                                                    .drive(Tween(
+                                                        begin: Offset(0, 1),
+                                                        end: Offset.zero)),
+                                                child: CameraView());
+                                          });
+                                  }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned.fill(
+            child: 
+          IgnorePointer(
+            ignoring: ref.watch(authNotifierProvider).valueOrNull?.occupiedRoomId == null,
+            child: Navigator(
+              key: _innerNavKey,
+              initialRoute: '/',
+              onGenerateRoute: (settings) {
+          
+                if((settings.name?.length ?? 0) > 1)
+                {
+          
+                    final gameId = settings.name!.split('/').last;
+          
+                    return ForwardPopRoute((_) => ProviderScope(overrides: [
+                          getCurrentGameRoomIdProvider
+                              .overrideWithValue(gameId),
+                        ], child: GameView()));
+                }
+          
+                return PageRouteBuilder(pageBuilder:(context, animation, secondaryAnimation) => SizedBox.shrink());
+          
+              },
+            ),
+          ))
+        ],
       ),
     );
   }

@@ -15,6 +15,7 @@ class CameraControls extends ConsumerStatefulWidget {
 
 class _CameraControlsState extends ConsumerState<CameraControls>
     with MediaDimensions {
+
   void _onClose() {
     ref.read(cameraNotifierProvider.notifier).close();
   }
@@ -47,20 +48,24 @@ class _CameraControlsState extends ConsumerState<CameraControls>
     );
   }
 
-  _buildPictureControls(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-      IconButton(
-        iconSize: 50,
-        onPressed: () => _onDiscardPhoto(), icon: Icon(Icons.delete)),
+  Widget _buildPictureControls(BuildContext context) {
+    return Container(
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: 
+        [
         IconButton(
-        iconSize: 50,
-        onPressed: () => _onUploadPhoto(), icon: Icon(Icons.upload))
-    ],);
+          iconSize: 50,
+          onPressed: () => _onDiscardPhoto(), icon: Icon(Icons.delete)),
+          IconButton(
+          iconSize: 50,
+          onPressed: () => _onUploadPhoto(), icon: Icon(Icons.upload))
+      ],),
+    );
   }
 
-  _buildCameraControls(BuildContext context) {
+  Widget _buildCameraControls(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

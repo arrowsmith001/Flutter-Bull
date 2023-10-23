@@ -23,7 +23,8 @@ class AuthNotifier extends _$AuthNotifier {
     yield* _authService.streamUserId().switchMap((userId) async* {
       if (userId == null) {
         Logger().d('yielding Null');
-        yield value.copyWith(userId: null, authState: AuthState.signedOut);
+        yield value.copyWith(
+            userId: null, occupiedRoomId: null, authState: AuthState.signedOut);
       } else {
         Logger().d('yielding Not Null');
         yield* _streamService
@@ -35,6 +36,7 @@ class AuthNotifier extends _$AuthNotifier {
                     : player.profilePhotoPath == null
                         ? AuthState.signedInNoPic
                         : AuthState.signedIn,
+                occupiedRoomId: player.occupiedRoomId,
                 profilePhotoExists: player.profilePhotoPath != null))
             .startWith(value.copyWith(
                 userId: userId, authState: AuthState.signedInNoPlayerProfile));
@@ -93,17 +95,13 @@ class AuthNotifier extends _$AuthNotifier {
     setData(value.copyWith(validateSignUpForm: validate));
   }
 
- void onSignUpPage()
- {
-  
+  void onSignUpPage() {
     setData(value.copyWith(signUpPage: true));
- }
- 
- void onExitSignUpPage()
- {
-  
+  }
+
+  void onExitSignUpPage() {
     setData(value.copyWith(signUpPage: false));
- }
+  }
 
   Future<void> submitName(String name) async {
     try {
@@ -123,12 +121,49 @@ class AuthNotifier extends _$AuthNotifier {
 
   AuthNotifierState get value => state.value ?? AuthNotifierState();
 
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    setData(value.copyWith(login: true));
 
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      await _authService.signInWithEmailAndPassword(email, password);
+
+      setData(value.copyWith(login: false));
+    } catch (e) {
+      setData(
+          value.copyWith(errorMessage: "Error logging in: $e", signUp: false));
+    }
+  }
+
+  void pushError(String s) {
+    setData(value.copyWith(errorMessage: s));
+  }
+
+  Future<void> createRoom(String userId) async {
+    setData(value.copyWith(homePageState: HomePageState.joiningRoom));
+    try {
+      await ref.read(utterBullServerProvider).createRoom(userId);
+    } catch (e) {
+      pushError('$e');
+    } finally {
+      setData(value.copyWith(homePageState: HomePageState.home));
+    }
+  }
+
+  Future<void> joinRoom(String userId, String roomId) async {
+    setData(value.copyWith(homePageState: HomePageState.joiningRoom));
+    try {
+      await ref.read(utterBullServerProvider).joinRoom(userId, roomId);
+    } catch (e) {
+      pushError('$e');
+    } finally {
+      setData(value.copyWith(homePageState: HomePageState.home));
+    }
+  }
+
+  void setAuthBarState(AuthBarState state) {
+    //setData(value.copyWith(authBarState: state));
+  }
 }
 
-class SignUpPageState {
-  final bool modalActive;
-  final bool onSignUpPage;
-
-  SignUpPageState({required this.modalActive, required this.onSignUpPage});
-}
+enum HomePageState { home, creatingRoom, joiningRoom }

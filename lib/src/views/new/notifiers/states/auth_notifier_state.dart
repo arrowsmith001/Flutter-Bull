@@ -8,10 +8,13 @@ class AuthNotifierState with _$AuthNotifierState {
   factory AuthNotifierState({
     AuthState? authState,
     AuthBarState? authBarState,
+    HomePageState? homePageState,
     String? userId,
     String? route,
+    String? occupiedRoomId,
     bool? validateSignUpForm,
     bool? signUp,
+    bool? login,
     bool? signUpPage,
     bool? profilePhotoExists,
     String? errorMessage,

@@ -48,7 +48,7 @@ class _ChangeAvatarViewState extends ConsumerState<ChangeAvatarView>
   @override
   Widget build(BuildContext context) 
   {
-    final avatarAsync = ref.watch(playerNotifierProvider(userId));
+    final avatarAsync = ref.watch(playerNotifierProvider(userId!));
 
     final captureButton = Flexible(
         child: PlaceholderButton(

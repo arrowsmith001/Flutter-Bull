@@ -40,7 +40,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
       isSubmissionPending = true;
     });
 
-    await _getServer.submitText(roomId, userId, _submissionController.text);
+    await _getServer.submitText(roomId, userId!, _submissionController.text);
 
     setState(() {
       isSubmissionPending = false;
@@ -53,7 +53,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
       isSubmissionPending = true;
     });
 
-    await _getServer.submitText(roomId, userId, null);
+    await _getServer.submitText(roomId, userId!, null);
 
     setState(() {
       isSubmissionPending = false;
@@ -63,7 +63,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider = writingPhaseViewNotifierProvider(roomId, userId);
+    final vmProvider = writingPhaseViewNotifierProvider(roomId, userId!);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(

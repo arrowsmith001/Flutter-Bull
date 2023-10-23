@@ -58,7 +58,7 @@ class _ResultViewViewState extends ConsumerState<ResultView>
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider = resultViewNotifierProvider(roomId, userId);
+    final vmProvider = resultViewNotifierProvider(roomId, userId!);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(
@@ -109,7 +109,7 @@ class _ResultViewViewState extends ConsumerState<ResultView>
   }
 
   void onReturnToLobby() {
-    server.setPlayerState(roomId, userId, PlayerState.unready);
+    server.setPlayerState(roomId, userId!, PlayerState.unready);
   }
 }
 

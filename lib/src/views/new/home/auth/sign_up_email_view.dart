@@ -38,25 +38,27 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   bool isSigningUp = false;
 
   void onSignUpFormValidation() async {
+
     final bool isValid = _formKey.currentState!.validate();
-    if (isValid) {
-      if (mounted) {
-        setState(() {
-          isSigningUp = true;
-        });
-      }
 
-      await auth.signUpWithEmailAndPassword(
-          _emailInputController.text.trim(), _passwordInputController.text);
+    if (!isValid) return;
 
-      if (mounted) {
-        setState(() {
-          isSigningUp = false;
-        });
-      }
-    } else {
-      auth.setValidateSignUpForm(false);
+    auth.setValidateSignUpForm(false);
+    if (mounted) {
+      setState(() {
+        isSigningUp = true;
+      });
     }
+
+    await auth.signUpWithEmailAndPassword(
+        _emailInputController.text.trim(), _passwordInputController.text);
+
+    if (mounted) {
+      setState(() {
+        isSigningUp = false;
+      });
+    }
+
   }
 
   void onSignUpChanged(bool isSigningUp) async {
@@ -71,6 +73,9 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     _emailInputController.dispose();
     _passwordInputController.dispose();
     _confirmPasswordInputController.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _confirmPasswordFocus.dispose();
     super.dispose();
   }
 
