@@ -1,6 +1,6 @@
 # Flutter-Bull
 
-"Utter Bull" was a party game made in Unity that I developed and published on Android and iOS around 2020.
+[Utter Bull](https://github.com/arrowsmith001/Utter-Bull) was a party game made in Unity that I developed and published on Android and iOS around 2020.
 
 In the game, players write truths about themselves and lies about each other, and the task for other players is to vote which statements are true and which are lies, and for the person speaking to mislead the voting players during their interrogation.
 
