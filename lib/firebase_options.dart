@@ -47,7 +47,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB7uVj_aNpqGgWV5hJVNP1EzNwrsr2Q6mA',
+    apiKey: 'AIzaSyC2oGV9aEI3waxbQRx6ppYRNegtD-PSe-A',
     appId: '1:1088885305820:web:a274c5d79a055bb6841f19',
     messagingSenderId: '1088885305820',
     projectId: 'flutter-bull',

@@ -19,30 +19,32 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        SizedBox.fromSize(
-            size: Size(width, height * 0.1)),
-        
-        Expanded(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: UtterBullTitle(),
-        ),
-        ),
-
-        Expanded(
-        child: SizedBox.fromSize(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Flexible(child: HomeMainButtons()),
-            ],
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          SizedBox.fromSize(
+              size: Size(width, height * 0.1)),
+          
+          Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: UtterBullTitle(),
           ),
-        ),
-        )
-      ],
+          ),
+    
+          Expanded(
+          child: SizedBox.fromSize(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(child: HomeMainButtons()),
+              ],
+            ),
+          ),
+          )
+        ],
+      ),
     );
   }
 }

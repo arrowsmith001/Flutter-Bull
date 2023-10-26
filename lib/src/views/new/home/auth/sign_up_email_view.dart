@@ -23,11 +23,9 @@ class SignUpEmailView extends ConsumerStatefulWidget {
 
 class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     with Auth, MediaDimensions {
-  final _emailInputController =
-      TextEditingController(text: "example@gmail.com");
-  final _passwordInputController = TextEditingController(text: "aaaaaaaa");
-  final _confirmPasswordInputController =
-      TextEditingController(text: "aaaaaaaa");
+  final _emailInputController = TextEditingController();
+  final _passwordInputController = TextEditingController();
+  final _confirmPasswordInputController = TextEditingController();
 
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
@@ -37,8 +35,9 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
 
   bool isSigningUp = false;
 
-  void onSignUpFormValidation() async {
+  String? errorMessage;
 
+  void onSignUpFormValidation() async {
     final bool isValid = _formKey.currentState!.validate();
 
     if (!isValid) return;
@@ -58,15 +57,14 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
         isSigningUp = false;
       });
     }
-
   }
 
   void onSignUpChanged(bool isSigningUp) async {
     setState(() {
+      errorMessage = null;
       this.isSigningUp = isSigningUp;
     });
   }
-
 
   @override
   void dispose() {
@@ -86,8 +84,6 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     });
   }
 
-  String? errorMessage;
-
   @override
   Widget build(BuildContext context) {
     ref.listen(
@@ -105,8 +101,6 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
         onSignUpChanged(next);
       }
     });
-
-
 
     // ref.listen(
     //     authNotifierProvider.select((value) => value.valueOrNull?.signUpPage),
@@ -287,7 +281,11 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
                               ),
                             ],
                           ),
-                        ))
+                        )),
+                  errorMessage == null ? SizedBox.shrink() : 
+                  Flexible(
+                      child: Text(errorMessage!, style: TextStyle(color: Colors.red),),
+                    )
                   ],
                 )),
             Flexible(

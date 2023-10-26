@@ -21,9 +21,8 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
     with MediaDimensions {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailInputController =
-      TextEditingController(text: 'example@gmail.com');
-  final _passwordController = TextEditingController(text: 'a' * 8);
+  final _emailInputController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 

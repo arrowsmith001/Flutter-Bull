@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +53,8 @@ class _AuthBarState extends ConsumerState<AuthBar>
       child: ref.watch(authNotifierProvider).when(
             data: (AuthNotifierState state) {
               final String? userId = state.userId;
+              final bool isSignedIn = state.authState != null &&
+                  state.authState != AuthState.signedOut;
 
               final avatar = Padding(
                 padding:
@@ -70,35 +74,35 @@ class _AuthBarState extends ConsumerState<AuthBar>
                               );
                             },
                             child: MouseRegion(
-                                  cursor: SystemMouseCursors.click,
-                                  onEnter: (event) {
-                                      _animController.forward(from: 0);
-                                      //_avatarScale = 2.5;
-                                  },
-                                  onExit: (event) {
-                                      _animController.reverse();
-                                      // _avatarScale = 1.0;
-                                  },
-                                  child: GestureDetector(
-                                    onTap: () => _onAvatarPressed(),
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        Positioned(
-                                          child: UtterBullPlayerAvatar(
-                                              null, data.avatarData),
-                                        ),
-                                        // Positioned(
-                                        //     bottom: -height*0.1,
-                                        //   child: Container(
-                                        //     color: Colors.amber,
-                                        //     height: 100, width: width*0.8,
-                                        //   ),
-                                        // ),
-                                      ],
+                              cursor: SystemMouseCursors.click,
+                              onEnter: (event) {
+                                _animController.forward(from: 0);
+                                //_avatarScale = 2.5;
+                              },
+                              onExit: (event) {
+                                _animController.reverse();
+                                // _avatarScale = 1.0;
+                              },
+                              child: GestureDetector(
+                                onTap: () => _onAvatarPressed(),
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Positioned(
+                                      child: UtterBullPlayerAvatar(
+                                          null, data.avatarData),
                                     ),
-                                  ),
+                                    // Positioned(
+                                    //     bottom: -height*0.1,
+                                    //   child: Container(
+                                    //     color: Colors.amber,
+                                    //     height: 100, width: width*0.8,
+                                    //   ),
+                                    // ),
+                                  ],
                                 ),
+                              ),
+                            ),
                           );
                         },
                         error: (e, st) => ErrorWidget(e),
@@ -220,13 +224,20 @@ class _AuthBarState extends ConsumerState<AuthBar>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
-                              child: IconButton.filled(
-                                  onPressed: () {},
-                                  icon:  Icon(
-                                    Icons.settings,
-                                    color: Theme.of(context).primaryColorLight,
-                                    size: 60,
-                                  )))
+                              child: Transform.flip(
+                            flipX: false,
+                            child: !isSignedIn ? SizedBox.shrink() : IconButton(
+                                onPressed: () {
+                                  ref
+                                      .read(authNotifierProvider.notifier)
+                                      .signOut();
+                                },
+                                icon: Icon(
+                                  Icons.logout,
+                                  color: Theme.of(context).primaryColorLight,
+                                  size: 60,
+                                )),
+                          ))
                         ],
                       ),
                     ),

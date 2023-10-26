@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,12 +31,11 @@ class _JoinGameViewState extends ConsumerState<JoinGameView> with UserID {
     _focusNode.requestFocus();
   }
 
-  SignedInPlayerStatusNotifier get signedInPlayerNotifier =>
-      ref.read(signedInPlayerStatusNotifierProvider(userId).notifier);
 
   void _onJoinGame() {
-    signedInPlayerNotifier
-        .joinRoom(_textEditController.text.trim().toUpperCase());
+    
+      ref.read(authNotifierProvider.notifier)
+        .joinRoom(userId!, _textEditController.text.trim().toUpperCase());
   }
   @override
   Widget build(BuildContext context) {

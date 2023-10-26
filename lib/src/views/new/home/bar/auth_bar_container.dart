@@ -22,10 +22,11 @@ class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
 
   @override
   Widget build(BuildContext context) {
+    return AuthBar();
     ref.listen(
         authNotifierProvider.select((value) => value.valueOrNull?.signUpPage),
         (prev, next) {
-          if (next == true) {
+      if (next == true) {
         _navKey.currentState?.pushReplacementNamed('hide');
       } else if (next == false) {
         _navKey.currentState?.pushReplacementNamed('show');
@@ -43,15 +44,14 @@ class _AuthBarContainerState extends ConsumerState<AuthBarContainer> with Auth {
     });
 
     ref.listen(
-        authNotifierProvider
-            .select((value) => value.valueOrNull?.occupiedRoomId), (prev, next) {
+        authNotifierProvider.select(
+            (value) => value.valueOrNull?.occupiedRoomId), (prev, next) {
       if (next != null) {
         _navKey.currentState?.pushReplacementNamed('hide');
       } else if (prev != null && next == null) {
         _navKey.currentState?.pushReplacementNamed('show');
       }
     });
-
 
     return Navigator(
       clipBehavior: Clip.none,

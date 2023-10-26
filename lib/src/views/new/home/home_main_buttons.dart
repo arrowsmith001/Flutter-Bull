@@ -11,7 +11,7 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_ind
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'buttons/home_auth_buttons.dart';
-import 'buttons/home_signed_in_buttons.dart';
+import 'buttons/home_game_buttons.dart';
 import '../loading.dart';
 
 class HomeMainButtons extends ConsumerStatefulWidget {
@@ -51,7 +51,7 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
 
     return Center(
         child: Navigator(
-      observers: [CoordinatedRouteObserver()],
+      observers: [CoordinatedRouteObserver(), HeroController()],
       key: _navKey,
       initialRoute: initialRoute,
       onGenerateRoute: (settings) {
@@ -64,8 +64,14 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
                   child: HomeAuthButtons(),
                 ));
           case 'signedInNoPlayerProfile':
-            child = Loading(
+            child = Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Loading(
               dim: width * 0.4,
+            ),
+            Text("Creating Player Profile", style: Theme.of(context).textTheme.bodyLarge,)
+              ],
             );
           case 'signedInNoName':
             child = NameFormView();
@@ -74,7 +80,7 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
           case 'signedIn':
             return ForwardPopRoute((_) => Padding(
                   padding: padding,
-                  child: HomeSignedInButtons(),
+                  child: HomeGameButtons(),
                 ));
         }
         child ??= ErrorWidget('No route found');

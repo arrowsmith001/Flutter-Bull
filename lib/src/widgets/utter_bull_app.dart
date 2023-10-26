@@ -15,9 +15,6 @@ class UtterBullApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-            scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch, PointerDeviceKind.stylus, PointerDeviceKind.unknown},
-      ),
               debugShowCheckedModeBanner: false,
               theme: UtterBullGlobal.theme,
               home: const UtterBullMasterBackground(

@@ -150,10 +150,10 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  Future<void> joinRoom(String userId, String roomId) async {
+  Future<void> joinRoom(String userId, String roomCode) async {
     setData(value.copyWith(homePageState: HomePageState.joiningRoom));
     try {
-      await ref.read(utterBullServerProvider).joinRoom(userId, roomId);
+      await ref.read(utterBullServerProvider).joinRoom(userId, roomCode);
     } catch (e) {
       pushError('$e');
     } finally {
@@ -164,6 +164,7 @@ class AuthNotifier extends _$AuthNotifier {
   void setAuthBarState(AuthBarState state) {
     //setData(value.copyWith(authBarState: state));
   }
+
 }
 
 enum HomePageState { home, creatingRoom, joiningRoom }
