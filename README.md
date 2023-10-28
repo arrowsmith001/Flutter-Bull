@@ -8,7 +8,7 @@ Now Utter Bull 2.0 is here! The project title is "Flutter Bull", as it is made u
 
 The game is in closed beta, but will hopefully release soon for Android and iOS.
 
-https://flutter-bull.web.app/
+[utterbull.app](https://utterbull.app)
 
 ![ezgif-3-249d0dc3e0](https://github.com/arrowsmith001/Flutter-Bull/assets/68137859/346d0b9f-12a0-4af0-ad0f-d735504cc426)
 
