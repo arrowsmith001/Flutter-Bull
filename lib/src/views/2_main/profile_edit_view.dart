@@ -1,4 +1,4 @@
-import 'dart:html';
+
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -8,7 +8,6 @@ import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'dart:html' as html;
 
 // TODO: Profile edit: Both-in-one
 

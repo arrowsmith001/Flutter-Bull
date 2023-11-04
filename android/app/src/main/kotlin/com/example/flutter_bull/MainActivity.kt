@@ -1,4 +1,4 @@
-package com.example.flutter_bull
+package com.arrowsmith.utter_bull
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -77,7 +77,7 @@ class AuthNotifier extends _$AuthNotifier {
     setData(value.copyWith(signUp: true, validateSignUpForm: false));
 
     try {
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 1));
       await _authService.createUserWithEmailAndPassword(email, password);
 
       setData(value.copyWith(signUp: false, signUpPage: false));

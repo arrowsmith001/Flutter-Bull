@@ -26,7 +26,7 @@ class _UtterBullMasterBackgroundState extends State<UtterBullMasterBackground>
     super.initState();
 
     animController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 5));
+        AnimationController(vsync: this, duration: const Duration(seconds: 15));
 
     doubleAnim = CurvedAnimation(parent: animController, curve: Curves.linear);
 

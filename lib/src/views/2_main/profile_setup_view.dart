@@ -1,4 +1,4 @@
-import 'dart:html';
+
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -14,7 +14,6 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'dart:html' as html;
 
 // TODO: Profile setup: name, photo (sequential)
 // TODO: Forbid entering newline in name

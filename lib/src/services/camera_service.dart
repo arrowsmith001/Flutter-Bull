@@ -1,12 +1,12 @@
-import 'dart:html' as html;
-import 'dart:js_interop';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'dart:io' show Platform;
+import 'package:universal_html/html.dart' as html;
 
 // TODO: Debug this shit (breakpointn at camcontroller initialize), fails particularly on first invoke
 class CameraService {
-
   List<CameraDescription>? cameras;
 
   Future<void> initialize() async {
@@ -21,11 +21,15 @@ class CameraService {
 
   Future<bool> get isPermissionGranted async {
     Logger().d('isPermissionGranted');
-    final status =
-        await html.window.navigator.permissions?.query({"name": "camera"});
-    final granted = status?.state != 'denied';
-    Logger().d('state: ${status?.state}');
-    return granted;
+    if (kIsWeb) {
+      final status =
+          await html.window.navigator.permissions?.query({"name": "camera"});
+      final granted = status?.state != 'denied';
+      Logger().d('state: ${status?.state}');
+      return granted;
+    } else {
+      return false;
+    }
   }
 
   Future<bool> createController() async {
@@ -72,12 +76,9 @@ class CameraService {
     await _controller?.pausePreview();
     final currentImageFile = await controller?.takePicture();
     if (currentImageFile != null) {
-      
       imageData = await currentImageFile.readAsBytes();
       imageDataAvailable = true;
     }
-
-
   }
 
   Future<void> dispose() async {

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:js_util';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -8,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/firebase_options.dart';
@@ -64,14 +64,12 @@ class Config {
 
 final Config config = Config();
 
-
 bool get isFakingAuth => fakeId != '';
 
 const int instances = 1;
 const bool overrideMediaQuery = true;
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   FlutterError.demangleStackTrace = (StackTrace stack) {
@@ -82,7 +80,7 @@ void main() async {
 
   final configStr = await rootBundle.loadString('assets/config.json');
   final configJson = jsonDecode(configStr);
-  
+
   config.testModeOn = configJson['testMode'];
   config.isEmulatingFirebase = configJson['emulating'];
   config.devToolsOn = configJson['devMode'];
@@ -101,9 +99,6 @@ void main() async {
 
   FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
-
-
-
   runApp(MyApp());
 }
 
@@ -116,65 +111,54 @@ class MyApp extends StatelessWidget {
     return _buildInstance();
   }
 
- 
-
   Widget _buildInstance() {
-
     final auth = FirebaseAuthService();
     final data = _getFirebaseDataLayer();
     final server = UtterBullClientSideServer(data);
     final streams = FirebaseDataStreamService();
     final images = FirebaseImageStorageService();
 
-  final provisions = [
-          authServiceProvider.overrideWithValue(auth),
-          utterBullServerProvider.overrideWithValue(server),
-          dataStreamServiceProvider.overrideWithValue(streams),
-          dataServiceProvider.overrideWithValue(data),
-          imageStorageServiceProvider.overrideWithValue(images)
-        ];
+    final provisions = [
+      authServiceProvider.overrideWithValue(auth),
+      utterBullServerProvider.overrideWithValue(server),
+      dataStreamServiceProvider.overrideWithValue(streams),
+      dataServiceProvider.overrideWithValue(data),
+      imageStorageServiceProvider.overrideWithValue(images)
+    ];
 
-      final app = 
-      MobileAppLayoutContainer(
-        child: ProviderScope(
-                  overrides: provisions,
-                 child: UtterBullApp()),
-      );
+    final provisionedApp = ProviderScope(overrides: provisions, child: UtterBullApp());
 
+    if(!kIsWeb) return provisionedApp;
 
-   
-      if(config.devToolsOn)
-      {
-        final devTools = ProviderScope(
-          overrides: provisions,
-          child: UtterBullDeveloperPanel());
+    final mobileApp = MobileAppLayoutContainer(
+      child: provisionedApp,
+    );
 
+    if (config.devToolsOn) {
+      final devTools = ProviderScope(
+          overrides: provisions, child: UtterBullDeveloperPanel());
 
-        return WidgetsApp(
-          
+      return WidgetsApp(
         builder: (context, _) => Container(
           color: const Color.fromARGB(255, 130, 205, 255),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Flexible(child: app,
+              Flexible(
+                child: mobileApp,
               ),
-              
-               Expanded(child: devTools)
+              Expanded(child: devTools)
             ],
           ),
         ),
         color: Colors.black,
       );
-      }
-      else
-      {
-         return UtterBullWebContainer(
-           drag: false,
-           child: app);
-      }
-
+    } else {
+    
+        return UtterBullWebContainer(drag: false, child: mobileApp);
+  
+    }
   }
 
   DatabaseDrivenDataLayer _getFirebaseDataLayer() {
@@ -191,7 +175,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 class WidgetTest extends StatefulWidget {
   WidgetTest({super.key});
@@ -291,7 +274,7 @@ class _WidgetTestState extends State<WidgetTest> {
   Widget build(BuildContext context) {
     return ProviderScope(
       // overrides: [
-        
+
       //     authServiceProvider.overrideWithValue(fakeAuth),
       //     utterBullServerProvider.overrideWithValue(server),
       //     dataStreamServiceProvider.overrideWithValue(streams),

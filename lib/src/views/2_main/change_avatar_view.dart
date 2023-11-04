@@ -1,4 +1,4 @@
-import 'dart:html';
+
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +12,6 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'dart:html' as html;
-
 
 enum PermissionState { unknown, denied, prompt, granted }
 
