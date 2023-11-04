@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:js_util';
 import 'dart:math';
 import 'dart:typed_data';
@@ -43,6 +44,7 @@ import 'package:flutter_bull/src/widgets/utter_bull_app.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'src/custom/data/implemented/firebase.dart';
 import 'src/widgets/main/mobile_app_layout_container.dart';
@@ -50,11 +52,18 @@ import 'src/widgets/main/mobile_app_layout_container.dart';
 ////////////////////////////////////////////////////////////////
 
 String fakeId = '';
-const bool testModeOn = false;
-const bool isEmulatingFirebase = false;
-const bool devToolsOn = false;
 
 ////////////////////////////////////////////////////////////////
+
+class Config {
+  late final bool testModeOn;
+  late final bool isEmulatingFirebase;
+  late final bool devToolsOn;
+  late final bool playable;
+}
+
+final Config config = Config();
+
 
 bool get isFakingAuth => fakeId != '';
 
@@ -62,15 +71,26 @@ const int instances = 1;
 const bool overrideMediaQuery = true;
 
 void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
   FlutterError.demangleStackTrace = (StackTrace stack) {
     if (stack is Trace) return stack.vmTrace;
     if (stack is Chain) return stack.toTrace().vmTrace;
     return stack;
   };
 
+  final configStr = await rootBundle.loadString('assets/config.json');
+  final configJson = jsonDecode(configStr);
+  
+  config.testModeOn = configJson['testMode'];
+  config.isEmulatingFirebase = configJson['emulating'];
+  config.devToolsOn = configJson['devMode'];
+  config.playable = configJson['playable'];
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  if (isEmulatingFirebase) {
+  if (config.isEmulatingFirebase) {
     const host = '127.0.0.1';
 
     FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
@@ -81,7 +101,8 @@ void main() async {
 
   FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
-  WidgetsFlutterBinding.ensureInitialized();
+
+
 
   runApp(MyApp());
 }
@@ -91,122 +112,69 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (testModeOn) return (false ? Test() : WidgetTest());
-    return instances > 1
-        ? _buildMultipleInstances(instances)
-        : _buildInstance();
+    if (config.testModeOn) return (false ? Test() : WidgetTest());
+    return _buildInstance();
   }
 
-  // Fake auth, Fake server, Real database, Real streams
-  Widget _buildMultipleInstances(int numberOfInstances) {
-    final userIds = List.generate(numberOfInstances, (i) => 'u${i + 1}');
-
-    final DataService dataService = _getFirebaseDataLayer();
-    final DataStreamService streamService = FirebaseDataStreamService();
-    final ImageStorageService imgService = FirebaseImageStorageService();
-
-    final authMap =
-        Map.fromEntries(userIds.map((e) => MapEntry(e, FakeAuthService(e))));
-    final dataMap =
-        Map.fromEntries(userIds.map((e) => MapEntry(e, dataService)));
-    final streamMap =
-        Map.fromEntries(userIds.map((e) => MapEntry(e, streamService)));
-    final imgMap = Map.fromEntries(userIds.map((e) => MapEntry(e, imgService)));
-    final serverMap = Map.fromEntries(userIds.map((e) =>
-        MapEntry(e, UtterBullClientSideServer(dataMap[e]!, [authMap[e]!]))));
-
-    return MaterialApp(
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.touch,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.unknown
-          },
-        ),
-        debugShowCheckedModeBanner: false,
-        color: Colors.transparent,
-        builder: (_, __) {
-          return RowOfN<String>(
-            length: numberOfInstances,
-            data: userIds,
-            transform: (_, userId) => ProvisionedUtterBullFunctionUser(
-              child: const UtterBullApp(),
-              authService:
-                  //FirebaseAuthService(),
-                  authMap[userId]!,
-              server: serverMap[userId]!,
-              streamService: streamMap[userId]!,
-              dataService: dataMap[userId]!,
-              imageService: imgMap[userId]!,
-            ),
-          );
-        });
-  }
+ 
 
   Widget _buildInstance() {
-    //auth.signOut();
 
-    final auth = isFakingAuth ? FakeAuthService(fakeId) : FirebaseAuthService();
+    final auth = FirebaseAuthService();
     final data = _getFirebaseDataLayer();
-    final server = UtterBullClientSideServer(data, []);
+    final server = UtterBullClientSideServer(data);
     final streams = FirebaseDataStreamService();
     final images = FirebaseImageStorageService();
 
-    return WidgetsApp(
-      color: UtterBullGlobal.backgroundDark,
-      // scrollBehavior: const MaterialScrollBehavior().copyWith(
-      //   dragDevices: {
-      //     PointerDeviceKind.mouse,
-      //     PointerDeviceKind.touch,
-      //     PointerDeviceKind.stylus,
-      //     PointerDeviceKind.unknown
-      //   },
-      // ),
-      builder: (_, __) => ProviderScope(
-        overrides: [
+  final provisions = [
           authServiceProvider.overrideWithValue(auth),
           utterBullServerProvider.overrideWithValue(server),
           dataStreamServiceProvider.overrideWithValue(streams),
           dataServiceProvider.overrideWithValue(data),
           imageStorageServiceProvider.overrideWithValue(images)
-        ],
-        child: UtterBullWebContainer(
-            drag: false,
-            child: MobileAppLayoutContainer(child: UtterBullApp())),
-      ),
-    );
+        ];
 
-    // if (devToolsOn) {
-    //   return WidgetsApp(
-    //     builder: (context, _) => Container(
-    //       color: Color.fromARGB(255, 130, 205, 255),
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         mainAxisSize: MainAxisSize.max,
-    //         children: [
-    //           Flexible(
-    //             child: instance,
-    //           ),
-    //           devToolsOn
-    //               ? SizedBox(
-    //                   width: 1300,
-    //                   child: ProvisionedUtterBullFunctionUser(
-    //                     child: UtterBullDeveloperPanel(),
-    //                     authService: auth,
-    //                     server: server,
-    //                     streamService: streams,
-    //                     dataService: data,
-    //                     imageService: images,
-    //                   ),
-    //                 )
-    //               : const SizedBox.shrink()
-    //         ],
-    //       ),
-    //     ),
-    //     color: Colors.black,
-    //   );
-    // }
+      final app = 
+      MobileAppLayoutContainer(
+        child: ProviderScope(
+                  overrides: provisions,
+                 child: UtterBullApp()),
+      );
+
+
+   
+      if(config.devToolsOn)
+      {
+        final devTools = ProviderScope(
+          overrides: provisions,
+          child: UtterBullDeveloperPanel());
+
+
+        return WidgetsApp(
+          
+        builder: (context, _) => Container(
+          color: const Color.fromARGB(255, 130, 205, 255),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Flexible(child: app,
+              ),
+              
+               Expanded(child: devTools)
+            ],
+          ),
+        ),
+        color: Colors.black,
+      );
+      }
+      else
+      {
+         return UtterBullWebContainer(
+           drag: false,
+           child: app);
+      }
+
   }
 
   DatabaseDrivenDataLayer _getFirebaseDataLayer() {
@@ -224,34 +192,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ProvisionedUtterBullFunctionUser extends StatelessWidget {
-  final AuthService authService;
-  final UtterBullServer server;
-  final DataStreamService streamService;
-  final DataService dataService;
-  final ImageStorageService imageService;
-  final Widget child;
-
-  const ProvisionedUtterBullFunctionUser({
-    required this.child,
-    required this.authService,
-    required this.server,
-    required this.streamService,
-    required this.dataService,
-    required this.imageService,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ProviderScope(overrides: [
-      authServiceProvider.overrideWithValue(authService),
-      utterBullServerProvider.overrideWithValue(server),
-      dataStreamServiceProvider.overrideWithValue(streamService),
-      dataServiceProvider.overrideWithValue(dataService),
-      imageStorageServiceProvider.overrideWithValue(imageService)
-    ], child: child);
-  }
-}
 
 class WidgetTest extends StatefulWidget {
   WidgetTest({super.key});
@@ -349,12 +289,20 @@ class _WidgetTestState extends State<WidgetTest> {
 
   @override
   Widget build(BuildContext context) {
-    return ProvisionedUtterBullFunctionUser(
-      authService: fakeAuth,
-      server: UtterBullClientSideServer(data, [fakeAuth]),
-      streamService: data,
-      dataService: data,
-      imageService: FirebaseImageStorageService(),
+    return ProviderScope(
+      // overrides: [
+        
+      //     authServiceProvider.overrideWithValue(fakeAuth),
+      //     utterBullServerProvider.overrideWithValue(server),
+      //     dataStreamServiceProvider.overrideWithValue(streams),
+      //     dataServiceProvider.overrideWithValue(data),
+      //     imageStorageServiceProvider.overrideWithValue(images)
+      // ],
+      // authService: fakeAuth,
+      // server: UtterBullClientSideServer(data, [fakeAuth]),
+      // streamService: data,
+      // dataService: data,
+      // imageService: FirebaseImageStorageService(),
       child: MaterialApp(
         theme: UtterBullGlobal.theme,
         builder: (context, child) => MobileAppLayoutContainer(

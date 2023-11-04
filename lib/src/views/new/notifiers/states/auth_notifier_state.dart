@@ -17,16 +17,24 @@ class AuthNotifierState with _$AuthNotifierState {
     bool? login,
     bool? signUpPage,
     bool? profilePhotoExists,
-    String? errorMessage,
+    AuthError? error,
     @Default('') String message,
   }) = _AuthNotifierState;
 }
 
+class AuthError {
+  final String message;
+  final DateTime time = DateTime.now();
+
+  AuthError(this.message);
+}
+
 enum AuthState {
-  signedOut, signedInNoPlayerProfile, signedInNoName, signedInNoPic, signedIn
+  signedOut,
+  signedInNoPlayerProfile,
+  signedInNoName,
+  signedInNoPic,
+  signedIn
 }
 
-
-enum AuthBarState {
-  hide, show
-}
+enum AuthBarState { hide, show }

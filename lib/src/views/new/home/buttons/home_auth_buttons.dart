@@ -11,8 +11,10 @@ class HomeAuthButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    void onLoginPressed() {
-      showDialog(
+    void onLoginPressed() async {
+      ref.read(authNotifierProvider.notifier).setRoute('login');
+      await showDialog(
+        
           useRootNavigator: true,
           context: context,
           builder: (context) {
@@ -20,11 +22,13 @@ class HomeAuthButtons extends ConsumerWidget {
                 onWillPop: () async {
                   return true;
                 },
-                child: Dialog(
-                  backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+                child: const Dialog(
+                  backgroundColor: Color.fromARGB(0, 255, 255, 255),
+                  shadowColor: Color.fromARGB(0, 255, 255, 255),
                   child: LoginDialog(),
                 ));
           });
+      ref.read(authNotifierProvider.notifier).setRoute('/');
     }
 
     void onSignUpPressed(WidgetRef ref) {
@@ -37,8 +41,13 @@ class HomeAuthButtons extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("Utter Bull is down for maintenance", textAlign: TextAlign.center, style: TextStyle(fontSize: 32),),
-          )],
+            child: Text(
+              "Utter Bull is down for maintenance",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 32),
+            ),
+          )
+        ],
       );
 
     return Column(

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/photo_prompt_view.dart';
@@ -141,7 +142,23 @@ class _AuthBarState extends ConsumerState<AuthBar>
               );
 
               final name = userId == null
-                  ? const SizedBox.shrink()
+                  ? ref.watch(authNotifierProvider).whenDefault((data) {
+                      String? message;
+                      if (data.login ?? false) {
+                        message = 'Logging in...';
+                      }
+                      else if (data.signUp ?? false) {
+                        message = 'Signing up...';
+                      }
+                      return  
+                      AnimatedSwitcher(duration: Duration(milliseconds: 300), child:
+                      message == null ? SizedBox.shrink() : 
+                      AutoSizeText(
+                        key: ValueKey(message),
+                        message,
+                            textAlign: TextAlign.end,
+                            style: Theme.of(context).textTheme.headlineLarge),);
+                    })
                   : ref.watch(playerNotifierProvider(userId)).when(
                       data: (data) {
                         if (isEditingName) {
@@ -226,17 +243,20 @@ class _AuthBarState extends ConsumerState<AuthBar>
                           Expanded(
                               child: Transform.flip(
                             flipX: false,
-                            child: !isSignedIn ? SizedBox.shrink() : IconButton(
-                                onPressed: () {
-                                  ref
-                                      .read(authNotifierProvider.notifier)
-                                      .signOut();
-                                },
-                                icon: Icon(
-                                  Icons.logout,
-                                  color: Theme.of(context).primaryColorLight,
-                                  size: 60,
-                                )),
+                            child: !isSignedIn
+                                ? SizedBox.shrink()
+                                : IconButton(
+                                    onPressed: () {
+                                      ref
+                                          .read(authNotifierProvider.notifier)
+                                          .signOut();
+                                    },
+                                    icon: Icon(
+                                      Icons.logout,
+                                      color:
+                                          Theme.of(context).primaryColorLight,
+                                      size: 60,
+                                    )),
                           ))
                         ],
                       ),

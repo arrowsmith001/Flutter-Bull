@@ -6,11 +6,12 @@ class UtterBullTextBox extends StatelessWidget {
   final String text;
   final EdgeInsets padding;
   final double opacity;
+  final double? textSize;
 
   const UtterBullTextBox(this.text,
       {this.padding = const EdgeInsets.all(8.0),
       super.key,
-      this.opacity = 1.0});
+      this.opacity = 1.0, this.textSize});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class UtterBullTextBox extends StatelessWidget {
             child: AutoSizeText(
                     text,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.displayLarge,
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(fontSize: textSize),
                   )),
       ),
     );

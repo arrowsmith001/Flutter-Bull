@@ -77,13 +77,13 @@ class AuthNotifier extends _$AuthNotifier {
     setData(value.copyWith(signUp: true, validateSignUpForm: false));
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 5));
       await _authService.createUserWithEmailAndPassword(email, password);
 
       setData(value.copyWith(signUp: false, signUpPage: false));
     } catch (e) {
       setData(
-          value.copyWith(errorMessage: "Error signing up: $e", signUp: false));
+          value.copyWith(error: AuthError("Error signing up: $e"), signUp: false));
     }
   }
 
@@ -96,11 +96,11 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   void onSignUpPage() {
-    setData(value.copyWith(signUpPage: true));
+    setData(value.copyWith(signUpPage: true, route: 'signUpEmail'));
   }
 
   void onExitSignUpPage() {
-    setData(value.copyWith(signUpPage: false));
+    setData(value.copyWith(signUpPage: false, route: '/'));
   }
 
   Future<void> submitName(String name) async {
@@ -110,7 +110,7 @@ class AuthNotifier extends _$AuthNotifier {
 
       setData(value.copyWith(message: "Name successfully set to $name"));
     } catch (e) {
-      setData(value.copyWith(errorMessage: "Error setting name: $e"));
+      setData(value.copyWith(error: AuthError("Error setting name: $e")));
     }
   }
 
@@ -131,12 +131,12 @@ class AuthNotifier extends _$AuthNotifier {
       setData(value.copyWith(login: false));
     } catch (e) {
       setData(
-          value.copyWith(errorMessage: "Error logging in: $e", signUp: false));
+          value.copyWith(error: AuthError("Error logging in: $e"), login: false));
     }
   }
 
   void pushError(String s) {
-    setData(value.copyWith(errorMessage: s));
+    setData(value.copyWith(error: AuthError(s)));
   }
 
   Future<void> createRoom(String userId) async {
@@ -165,6 +165,9 @@ class AuthNotifier extends _$AuthNotifier {
     //setData(value.copyWith(authBarState: state));
   }
 
+  void closeSignUpPage() {
+    setData(value.copyWith(signUpPage: false, route: '/'));
+  }
 }
 
 enum HomePageState { home, creatingRoom, joiningRoom }

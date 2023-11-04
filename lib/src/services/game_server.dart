@@ -43,8 +43,8 @@ abstract class UtterBullServer {
 }
 
 class UtterBullClientSideServer implements UtterBullServer {
-  UtterBullClientSideServer(this.data, this.auth) {
-    for (var a in auth) {
+  UtterBullClientSideServer(this.data, [this.auth]) {
+    for (var a in auth ?? []) {
       if (a is FakeAuthService) {
         a.streamUserId().listen((userId) async {
           if (userId != null) {
@@ -57,7 +57,7 @@ class UtterBullClientSideServer implements UtterBullServer {
     }
   }
 
-  final List<AuthService> auth;
+  final List<AuthService>? auth;
   final DataService data;
 
   void _onUserCreated(String id) async {

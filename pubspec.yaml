@@ -63,6 +63,7 @@ dev_dependencies:
 
 flutter:
   assets:
+    - assets/config.json
     - assets/images/bull-head.png
     - assets/images/bull-head-mouth-open.png
     - assets/images/bull-outline.png

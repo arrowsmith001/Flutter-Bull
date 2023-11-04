@@ -96,11 +96,12 @@ class __$$_NotificationNotifierStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_NotificationNotifierState implements _NotificationNotifierState {
-  _$_NotificationNotifierState({required final List<Notification> notifs})
+  _$_NotificationNotifierState({final List<Notification> notifs = const []})
       : _notifs = notifs;
 
   final List<Notification> _notifs;
   @override
+  @JsonKey()
   List<Notification> get notifs {
     if (_notifs is EqualUnmodifiableListView) return _notifs;
     // ignore: implicit_dynamic_type
@@ -133,8 +134,7 @@ class _$_NotificationNotifierState implements _NotificationNotifierState {
 }
 
 abstract class _NotificationNotifierState implements NotificationNotifierState {
-  factory _NotificationNotifierState(
-          {required final List<Notification> notifs}) =
+  factory _NotificationNotifierState({final List<Notification> notifs}) =
       _$_NotificationNotifierState;
 
   @override

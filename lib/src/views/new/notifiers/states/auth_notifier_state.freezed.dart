@@ -27,7 +27,7 @@ mixin _$AuthNotifierState {
   bool? get login => throw _privateConstructorUsedError;
   bool? get signUpPage => throw _privateConstructorUsedError;
   bool? get profilePhotoExists => throw _privateConstructorUsedError;
-  String? get errorMessage => throw _privateConstructorUsedError;
+  AuthError? get error => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -53,7 +53,7 @@ abstract class $AuthNotifierStateCopyWith<$Res> {
       bool? login,
       bool? signUpPage,
       bool? profilePhotoExists,
-      String? errorMessage,
+      AuthError? error,
       String message});
 }
 
@@ -81,7 +81,7 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
     Object? login = freezed,
     Object? signUpPage = freezed,
     Object? profilePhotoExists = freezed,
-    Object? errorMessage = freezed,
+    Object? error = freezed,
     Object? message = null,
   }) {
     return _then(_value.copyWith(
@@ -129,10 +129,10 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
           ? _value.profilePhotoExists
           : profilePhotoExists // ignore: cast_nullable_to_non_nullable
               as bool?,
-      errorMessage: freezed == errorMessage
-          ? _value.errorMessage
-          : errorMessage // ignore: cast_nullable_to_non_nullable
-              as String?,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as AuthError?,
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -161,7 +161,7 @@ abstract class _$$_AuthNotifierStateCopyWith<$Res>
       bool? login,
       bool? signUpPage,
       bool? profilePhotoExists,
-      String? errorMessage,
+      AuthError? error,
       String message});
 }
 
@@ -187,7 +187,7 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
     Object? login = freezed,
     Object? signUpPage = freezed,
     Object? profilePhotoExists = freezed,
-    Object? errorMessage = freezed,
+    Object? error = freezed,
     Object? message = null,
   }) {
     return _then(_$_AuthNotifierState(
@@ -235,10 +235,10 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
           ? _value.profilePhotoExists
           : profilePhotoExists // ignore: cast_nullable_to_non_nullable
               as bool?,
-      errorMessage: freezed == errorMessage
-          ? _value.errorMessage
-          : errorMessage // ignore: cast_nullable_to_non_nullable
-              as String?,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as AuthError?,
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -262,7 +262,7 @@ class _$_AuthNotifierState implements _AuthNotifierState {
       this.login,
       this.signUpPage,
       this.profilePhotoExists,
-      this.errorMessage,
+      this.error,
       this.message = ''});
 
   @override
@@ -288,14 +288,14 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   @override
   final bool? profilePhotoExists;
   @override
-  final String? errorMessage;
+  final AuthError? error;
   @override
   @JsonKey()
   final String message;
 
   @override
   String toString() {
-    return 'AuthNotifierState(authState: $authState, authBarState: $authBarState, homePageState: $homePageState, userId: $userId, route: $route, occupiedRoomId: $occupiedRoomId, validateSignUpForm: $validateSignUpForm, signUp: $signUp, login: $login, signUpPage: $signUpPage, profilePhotoExists: $profilePhotoExists, errorMessage: $errorMessage, message: $message)';
+    return 'AuthNotifierState(authState: $authState, authBarState: $authBarState, homePageState: $homePageState, userId: $userId, route: $route, occupiedRoomId: $occupiedRoomId, validateSignUpForm: $validateSignUpForm, signUp: $signUp, login: $login, signUpPage: $signUpPage, profilePhotoExists: $profilePhotoExists, error: $error, message: $message)';
   }
 
   @override
@@ -321,8 +321,7 @@ class _$_AuthNotifierState implements _AuthNotifierState {
                 other.signUpPage == signUpPage) &&
             (identical(other.profilePhotoExists, profilePhotoExists) ||
                 other.profilePhotoExists == profilePhotoExists) &&
-            (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage) &&
+            (identical(other.error, error) || other.error == error) &&
             (identical(other.message, message) || other.message == message));
   }
 
@@ -340,7 +339,7 @@ class _$_AuthNotifierState implements _AuthNotifierState {
       login,
       signUpPage,
       profilePhotoExists,
-      errorMessage,
+      error,
       message);
 
   @JsonKey(ignore: true)
@@ -364,7 +363,7 @@ abstract class _AuthNotifierState implements AuthNotifierState {
       final bool? login,
       final bool? signUpPage,
       final bool? profilePhotoExists,
-      final String? errorMessage,
+      final AuthError? error,
       final String message}) = _$_AuthNotifierState;
 
   @override
@@ -390,7 +389,7 @@ abstract class _AuthNotifierState implements AuthNotifierState {
   @override
   bool? get profilePhotoExists;
   @override
-  String? get errorMessage;
+  AuthError? get error;
   @override
   String get message;
   @override
