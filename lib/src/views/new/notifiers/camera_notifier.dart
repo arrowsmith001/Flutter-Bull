@@ -65,16 +65,23 @@ class CameraNotifier extends _$CameraNotifier {
   }
 
   void takePicture() async {
+    Logger().d('takePicture 1');
     setData(copy(cameraState: CameraState.isTakingPicture));
+    Logger().d('takePicture 2');
     await cameraService.takePicture();
+    Logger().d('takePicture 3');
     setData(copy(
         cameraState: CameraState.hasTakenPicture,
         lastPicture: cameraService.imageData));
+    Logger().d('takePicture 4');
   }
 
   void discardPicture() async {
+    Logger().d('discardPicture 1');
     await cameraService.discardPhoto();
+    Logger().d('discardPicture 2');
     setData(copy(cameraState: CameraState.ready));
+    Logger().d('discardPicture 3');
   }
 
   void uploadPhoto() async {

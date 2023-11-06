@@ -25,13 +25,15 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
        // ref.read(authNotifierProvider.notifier).setRoute('/');
 
   }
-
+  
+  bool get _keyboardVisible =>  MediaQuery.of(context).viewInsets.bottom != 0;
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Column(
+    return Stack(
+      children: [
+
+         Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               SizedBox.fromSize(
@@ -40,25 +42,35 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
               Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.0),
-                child: UtterBullTitle(),
+                child: AnimatedOpacity(
+                  duration: Duration(milliseconds: 150),
+                  opacity: _keyboardVisible ? 0.2 : 1.0,
+                  child: UtterBullTitle()),
               ),
               ),
     
-              Expanded(
-              child: SizedBox.fromSize(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Flexible(child: HomeMainButtons()),
-                  ],
-                ),
-              ),
-              )
+              Spacer()
+              
             ],
           ),
 
-        ],
-      ),
+        Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Spacer(),
+              Flexible(
+                child: SizedBox(
+                  width: width,
+                  child: HomeMainButtons()),
+              ),
+            
+
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

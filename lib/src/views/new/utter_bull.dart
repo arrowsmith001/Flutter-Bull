@@ -33,6 +33,7 @@ import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/notification_notifier_state.dart'
     as notifs;
+import 'package:http/http.dart';
 import 'package:zwidget/zwidget.dart';
 import 'package:logger/logger.dart';
 
@@ -184,67 +185,89 @@ class _UtterBullState extends ConsumerState<UtterBull>
     //     _navKey.currentState?.pushNamed(authState!.name);
     //   }
     // });
+    
+    final authBarTopPadding = MediaQuery.of(context).viewPadding.top;
+    final authBarHeight = (height * 0.1) + authBarTopPadding;
 
-    return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned.fill(
-              child: Navigator(
-            observers: [CoordinatedRouteObserver()],
-            key: _outerNavKey,
-            initialRoute: '/',
-            onGenerateRoute: (settings) {
-              if (settings.name == '/') {
-                return BackwardPushFadeInRoute((_) => WillPopScope(
-                    onWillPop: () async {
-                      Logger().d('HomeNavigator pop stopped');
-                      return false;
-                    },
-                    child: HomeNavigator(navKey: _innerNavKey)));
-              } else if (settings.name!.contains('game')) {
-                final roomId = settings.name!.split('/').last;
-                return ForwardPushFadeInRoute((_) => ProviderScope(overrides: [
-                      getCurrentGameRoomIdProvider.overrideWithValue(roomId)
-                    ], child: GameView()));
-              }
-            },
-          )),
-          Positioned(
-            top: 0,
-            child: AnimatedSwitcher(
-              transitionBuilder: (child, animation) {
-                return AnimatedBuilder(
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(0, -0.1 * height * (1 - animation.value)),
-                      child: child,
-                    );
-                  },
-                  child: child,
-                  animation: animation,
-                );
+    return WillPopScope(
+      onWillPop: () async {
+        if (_innerNavKey.currentState?.canPop() ?? false) {
+          Logger().d('inner CAN pop');
+          ref
+              .read(authNotifierProvider.notifier)
+              .onExitSignUpPage(); // TODO: Needs to be way more general
+          return false;
+        } else {
+          Logger().d('inner CANNOT pop');
+          return true;
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned.fill(
+                child: Navigator(
+              observers: [CoordinatedRouteObserver()],
+              key: _outerNavKey,
+              initialRoute: '/',
+              onGenerateRoute: (settings) {
+                if (settings.name == '/') {
+                  return BackwardPushFadeInRoute((_) => WillPopScope(
+                      onWillPop: () async {
+                        Logger().d('HomeNavigator will pop');
+                        return true;
+                      },
+                      child: HomeNavigator(navKey: _innerNavKey)));
+                } else if (settings.name!.contains('game')) {
+                  final roomId = settings.name!.split('/').last;
+                  return ForwardPushFadeInRoute((_) =>
+                      ProviderScope(overrides: [
+                        getCurrentGameRoomIdProvider.overrideWithValue(roomId)
+                      ], child: GameView()));
+                }
               },
-              duration: const Duration(milliseconds: 300),
-              child: isAuthBarShowing
-                  ? SizedBox.fromSize(
-                      key: ValueKey(userId),
-                      size: Size(width, height * 0.1),
-                      child: const AuthBarContainer())
-                  : SizedBox.shrink(key: ValueKey(0)),
+            )),
+            Positioned(
+              top: 0,
+              child: AnimatedSwitcher(
+                transitionBuilder: (child, animation) {
+                  return AnimatedBuilder(
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset:
+                            Offset(0, -authBarHeight * (1 - animation.value)),
+                        child: child,
+                      );
+                    },
+                    child: child,
+                    animation: animation,
+                  );
+                },
+                duration: const Duration(milliseconds: 300),
+                child: isAuthBarShowing
+                    ? SizedBox.fromSize(
+                        key: ValueKey(userId),
+                        size: Size(
+                          width, authBarHeight
+                        ),
+                        child: AuthBar(innerPadding: EdgeInsets.only(top: authBarTopPadding)))
+                    : SizedBox.shrink(key: ValueKey(0)),
+              ),
             ),
-          ),
-          AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              top: height * 0.1 * (isAuthBarShowing ? 1 : 0.5),
-              right: 0,
-              height: height * 0.5,
-              width: width * 0.7,
-              child: FadingListNotificationCenter(
-                  blockIf: () =>
-                      ref.read(authNotifierProvider).valueOrNull?.route !=
-                      '/')),
-        ],
+            AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                top: height * 0.1 * (isAuthBarShowing ? 1 : 0.5),
+                right: 0,
+                height: height * 0.5,
+                width: width * 0.7,
+                child: FadingListNotificationCenter(
+                    blockIf: () =>
+                        ref.read(authNotifierProvider).valueOrNull?.route !=
+                        '/')),
+          ],
+        ),
       ),
     );
   }
@@ -303,13 +326,11 @@ class HomeNavigator extends ConsumerWidget {
       key: navKey,
       initialRoute: '/',
       onGenerateRoute: (settings) {
-
         switch (settings.name) {
           case '/':
             return PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    WillPopScope(
-                        onWillPop: () async => false, child: HomeView()));
+                    HomeView());
           case 'signUp':
             return PageRouteBuilder(
                 transitionDuration: Duration(milliseconds: 750),
@@ -326,7 +347,7 @@ class HomeNavigator extends ConsumerWidget {
                         ),
                         Padding(
                           padding: EdgeInsets.only(
-                              left: 24.0, right: 24.0, top: 32.0),
+                              left: 24.0, right: 24.0, top: 100.0),
                           child: ClipRRect(
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(24.0),

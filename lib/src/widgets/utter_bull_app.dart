@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/views/0_app/auth_container.dart';
 import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_master_background.dart';
+import 'package:logger/logger.dart';
 
 class UtterBullApp extends StatelessWidget {
   const UtterBullApp({
@@ -15,10 +15,15 @@ class UtterBullApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: UtterBullGlobal.theme,
-              home: const UtterBullMasterBackground(
-                child: UtterBull()
-              ));
+        debugShowCheckedModeBanner: false,
+        theme: UtterBullGlobal.theme,
+        home: WillPopScope(
+          onWillPop: () async {
+            Logger().d('Root will pop');
+            return true;
+          },
+          child: const UtterBullMasterBackground(
+            child: UtterBull()),
+        ));
   }
 }

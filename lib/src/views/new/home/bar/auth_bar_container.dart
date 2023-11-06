@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 class AuthBarContainer extends ConsumerStatefulWidget {
-  const AuthBarContainer({super.key});
+  const AuthBarContainer({super.key, required EdgeInsets innerPadding});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

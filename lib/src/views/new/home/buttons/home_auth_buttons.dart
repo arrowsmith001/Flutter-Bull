@@ -23,6 +23,7 @@ class HomeAuthButtons extends ConsumerWidget {
                   return true;
                 },
                 child: const Dialog(
+                  
                   backgroundColor: Color.fromARGB(0, 255, 255, 255),
                   shadowColor: Color.fromARGB(0, 255, 255, 255),
                   child: LoginDialog(),

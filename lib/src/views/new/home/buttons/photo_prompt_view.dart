@@ -1,9 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PhotoPromptView extends ConsumerStatefulWidget {
   const PhotoPromptView({super.key});
@@ -83,6 +85,16 @@ class _PhotoPromptButtonsState extends ConsumerState<PhotoPromptButtons>
 
   void onUploadPressed() async {
     _invokeOptionalCallback();
+
+    if (!kIsWeb) {
+      PermissionStatus status = await Permission.photos.status;
+      if (status.isPermanentlyDenied) return; // TODO: Actually push error
+      if (!status.isGranted) {
+        status = await Permission.camera.request();
+        if(!status.isGranted)  return;
+      }
+    }
+
     await ref.read(cameraNotifierProvider.notifier).pickImage();
   }
 

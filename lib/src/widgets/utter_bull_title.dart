@@ -68,120 +68,156 @@ class _UtterBullTitleState extends State<UtterBullTitle>
         weight: 1)
   ]).animate(animController);
 
+  late Animation<double> mouthAnim =
+      TweenSequence<double>(List.generate(16, (index) {
+    switch (index % 2) {
+
+      case 0:
+        return TweenSequenceItem(
+            tween: Tween<double>(begin: 0, end: 0.25)
+                .chain(CurveTween(curve: Curves.easeInOutSine)),
+            weight: 1);
+      case 1:
+        return TweenSequenceItem(
+            tween: Tween<double>(begin: 0.25, end: 0)
+                .chain(CurveTween(curve: Curves.easeInOutSine)),
+            weight: 1);
+    }
+
+    throw Exception();
+
+  })).animate(animController);
+
   @override
   void dispose() {
     animController.dispose();
     super.dispose();
   }
 
-  final String utter = 'UTTER';
-  final String bull = 'BULL';
+  final String utterString = 'UTTER';
+  final String bullString = 'BULL';
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            bottom: constraints.biggest.height * 0.45,
-            left: constraints.biggest.width * 0.1,
-            child: AnimatedBuilder(
-              animation: utterAnim,
-              builder: (context, child) {
-                return ZWidget.builder(
-                  rotationY: utterAnim.value * utterRotateExtent,
-                  builder: (_) => UglyOutlinedText(
-                    textSpan: TextSpan(children: [
-                      ...List<TextSpan>.generate(utter.length, (i) {
-                        return TextSpan(
-                            text: utter[i],
-                            style: TextStyle(
-                              color: Color.lerp(
-                                  UtterBullGlobal.truthColor,
-                                  Colors.white,
-                                  0.3 +
-                                      (1 + utterAnim.value) * (0.1 + i * 0.05)),
-                            ));
-                      })
-                    ]),
-    
-                    maxLines: 1,
-                    fillColor: Color.lerp(
-                        UtterBullGlobal.truthColor, Colors.white, 0.7),
-                    outlineColor: Color.lerp(
-                        UtterBullGlobal.truthColor,
-                        Colors.black,
-                        0.85), //const Color.fromARGB( 255, 112, 112, 112)
-                  ),
-                );
-              },
-            ),
+    final utter = AnimatedBuilder(
+      animation: utterAnim,
+      builder: (context, child) {
+        return ZWidget.builder(
+          rotationY: utterAnim.value * utterRotateExtent,
+          builder: (_) => UglyOutlinedText(
+            textSpan: TextSpan(children: [
+              ...List<TextSpan>.generate(utterString.length, (i) {
+                return TextSpan(
+                    text: utterString[i],
+                    style: TextStyle(
+                      color: Color.lerp(
+                          UtterBullGlobal.truthColor,
+                          Colors.white,
+                          0.3 + (1 + utterAnim.value) * (0.1 + i * 0.05)),
+                    ));
+              })
+            ]),
+
+            maxLines: 1,
+            fillColor:
+                Color.lerp(UtterBullGlobal.truthColor, Colors.white, 0.7),
+            outlineColor: Color.lerp(UtterBullGlobal.truthColor, Colors.black,
+                0.85), //const Color.fromARGB( 255, 112, 112, 112)
           ),
-          Positioned(
-            left: 0,
-            bottom: constraints.biggest.height * 0.1,
-            child: AnimatedBuilder(
-                animation: animController,
-                builder: (context, _) {
-                  return Transform.rotate(
-                    angle: bullImgRotateAnim.value,
-                    child: Transform.translate(
-                      offset: Offset(10 * cos(animController.value * 2 * pi),
-                          5 * sin(animController.value * 2 * pi)),
-                      child: Assets.images.bullHeadMouthOpen
-                          .image(width: constraints.biggest.width * 0.5),
-                    ),
-                  );
-                }),
-          ),
-          Positioned(
-            top: constraints.biggest.height * 0.45,
-            right: constraints.biggest.width * 0.05,
-            child: Transform.scale(
-              scale: 1.1,
-              child: Transform.rotate(
-                angle: -0.076 * pi,
-                child: AnimatedBuilder(
-                  animation: bullAnim,
-                  builder: (context, child) {
-                    // Logger().d(bullRotateFactor.toString() +
-                    //     " " +
-                    //     bullAnim.value.toString());
-                    return ZWidget.builder(
-                      rotationY: bullAnim.value * bullRotateExtent,
-                      builder: (_) => UglyOutlinedText(
-                        textSpan: TextSpan(children: [
-                          ...List<TextSpan>.generate(bull.length, (i) {
-                            return TextSpan(
-                                text: bull[i],
-                                style: TextStyle(
-                                  color: Color.lerp(
-                                      UtterBullGlobal.lieColor,
-                                      Colors.white,
-                                      0.1 +
-                                          (1 + bullAnim.value) *
-                                              (0.1 + i * 0.05)),
-                                ));
-                          })
-                        ]),
-    
-                        fillColor: Color.lerp(
-                            UtterBullGlobal.lieColor, Colors.white, 0.2),
-                        maxLines: 1,
-                        outlineColor: Color.lerp(
-                            UtterBullGlobal.lieColor,
-                            Colors.black,
-                            0.85), //const Color.fromARGB( 255, 112, 112, 112)
-                      ),
-                    );
-                  },
-                ),
+        );
+      },
+    );
+
+    final bull = Transform.scale(
+      scale: 1.1,
+      child: Transform.rotate(
+        angle: -0.076 * pi,
+        child: AnimatedBuilder(
+          animation: bullAnim,
+          builder: (context, child) {
+            // Logger().d(bullRotateFactor.toString() +
+            //     " " +
+            //     bullAnim.value.toString());
+            return ZWidget.builder(
+              rotationY: bullAnim.value * bullRotateExtent,
+              builder: (_) => UglyOutlinedText(
+                textSpan: TextSpan(children: [
+                  ...List<TextSpan>.generate(bullString.length, (i) {
+                    return TextSpan(
+                        text: bullString[i],
+                        style: TextStyle(
+                          color: Color.lerp(
+                              UtterBullGlobal.lieColor,
+                              Colors.white,
+                              0.1 + (1 + bullAnim.value) * (0.1 + i * 0.05)),
+                        ));
+                  })
+                ]),
+
+                fillColor:
+                    Color.lerp(UtterBullGlobal.lieColor, Colors.white, 0.2),
+                maxLines: 1,
+                outlineColor: Color.lerp(UtterBullGlobal.lieColor, Colors.black,
+                    0.85), //const Color.fromARGB( 255, 112, 112, 112)
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
+    );
+
+    final bullHead = AnimatedBuilder(
+        animation: animController,
+        builder: (context, _) {
+          return LayoutBuilder(builder: (context, constraints) {
+            return Transform.rotate(
+              angle: bullImgRotateAnim.value,
+              child: Transform.translate(
+                offset: Offset(10 * cos(animController.value * 2 * pi),
+                    5 * sin(animController.value * 2 * pi)),
+                child: Stack(children: [
+                  Transform.translate(
+                      offset: Offset(0,
+                          -mouthAnim.value * constraints.biggest.height * 0.09),
+                      child: Assets.images.bullHeadMouth.image()),
+                  Assets.images.bullHeadMinusMouth.image(),
+                ]),
+              ),
+            );
+          });
+        });
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final height = constraints.biggest.height;
+        final width = constraints.biggest.width;
+
+        return Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              bottom: height * 0.45,
+              left: width * 0.1,
+              width: width * 0.8,
+              child: utter,
+            ),
+            Positioned(
+              top: height * 0.35,
+              right: width * 0.55,
+              width: width * 0.5,
+              height: width * 0.5,
+              child: bullHead,
+            ),
+            Positioned(
+              top: height * 0.45,
+              left: width * 0.35,
+              width: width * 0.65,
+              child: bull,
+            ),
+          ],
+        );
+      },
     );
   }
 }

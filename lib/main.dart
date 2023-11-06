@@ -139,17 +139,22 @@ class MyApp extends StatelessWidget {
           overrides: provisions, child: UtterBullDeveloperPanel());
 
       return WidgetsApp(
-        builder: (context, _) => Container(
-          color: const Color.fromARGB(255, 130, 205, 255),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Flexible(
-                child: mobileApp,
-              ),
-              Expanded(child: devTools)
-            ],
+        builder: (context, _) => WillPopScope(
+               onWillPop: () async {
+          return false;
+        },
+          child: Container(
+            color: const Color.fromARGB(255, 130, 205, 255),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Flexible(
+                  child: mobileApp,
+                ),
+                Expanded(child: devTools)
+              ],
+            ),
           ),
         ),
         color: Colors.black,

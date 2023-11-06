@@ -49,47 +49,48 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
       }
     });
 
-    return Center(
-        child: Navigator(
+    return Navigator(
       observers: [CoordinatedRouteObserver(), HeroController()],
       key: _navKey,
       initialRoute: initialRoute,
-      onGenerateRoute: (settings) {
-        Widget? child;
-        final padding = EdgeInsets.symmetric(horizontal: width * 0.1);
-        switch (settings.name) {
-          case 'signedOut':
-            return BackwardPushFadeInRoute((_) => Padding(
-                  padding: padding,
-                  child: HomeAuthButtons(),
-                ));
-          case 'signedInNoPlayerProfile':
-            child = Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Loading(
-              dim: width * 0.4,
-            ),
-            Text("Creating Player Profile", style: Theme.of(context).textTheme.bodyLarge,)
-              ],
-            );
-          case 'signedInNoName':
-            child = NameFormView();
-          case 'signedInNoPic':
-            child = PhotoPromptView();
-          case 'signedIn':
-            return ForwardPopRoute((_) => Padding(
-                  padding: padding,
-                  child: HomeGameButtons(),
-                ));
-        }
-        child ??= ErrorWidget('No route found');
+      onGenerateRoute: (settings) 
+      {
 
-        return ForwardPushFadeInRoute((_) => Padding(
+    Widget? child;
+    final padding = EdgeInsets.symmetric(horizontal: width * 0.1);
+    switch (settings.name) {
+      case 'signedOut':
+        return BackwardPushFadeInRoute((_) => Padding(
               padding: padding,
-              child: child!,
+              child: HomeAuthButtons(),
             ));
+      case 'signedInNoPlayerProfile':
+        child = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Loading(
+          dim: width * 0.4,
+        ),
+        Text("Creating Player Profile", style: Theme.of(context).textTheme.bodyLarge,)
+          ],
+        );
+      case 'signedInNoName':
+        child = NameFormView();
+      case 'signedInNoPic':
+        child = PhotoPromptView();
+      case 'signedIn':
+        return ForwardPopRoute((_) => Padding(
+              padding: padding,
+              child: HomeGameButtons(),
+            ));
+    }
+    child ??= ErrorWidget('No route found');
+
+    return ForwardPushFadeInRoute((_) => Padding(
+          padding: padding,
+          child: child!,
+        ));
       },
-    ));
+    );
   }
 }

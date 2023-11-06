@@ -48,6 +48,8 @@ dependencies:
   image_picker: ^1.0.4
   transparent_pointer: ^1.0.0
   universal_html: ^2.2.4
+  device_info_plus: ^9.1.0
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +69,8 @@ flutter:
     - assets/config.json
     - assets/images/bull-head.png
     - assets/images/bull-head-mouth-open.png
+    - assets/images/bull-head-mouth.png
+    - assets/images/bull-head-minus-mouth.png
     - assets/images/bull-outline.png
     - assets/images/bull-outline-padded.png
     - assets/images/google.png

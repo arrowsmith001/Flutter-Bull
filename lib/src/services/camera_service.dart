@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:io' show Platform;
 import 'package:universal_html/html.dart' as html;
 
@@ -28,7 +30,12 @@ class CameraService {
       Logger().d('state: ${status?.state}');
       return granted;
     } else {
-      return false;
+      PermissionStatus status = await Permission.camera.status;
+      if (status.isGranted) return true;
+      if (status.isPermanentlyDenied) return false;
+
+      status = await Permission.camera.request();
+      return status.isGranted;
     }
   }
 
@@ -73,7 +80,7 @@ class CameraService {
   bool imageDataAvailable = false;
 
   Future<void> takePicture() async {
-    await _controller?.pausePreview();
+    //await _controller?.pausePreview();
     final currentImageFile = await controller?.takePicture();
     if (currentImageFile != null) {
       imageData = await currentImageFile.readAsBytes();
@@ -87,7 +94,7 @@ class CameraService {
 
   Future<void> discardPhoto() async {
     imageDataAvailable = false;
-    await _controller?.resumePreview();
+    //await _controller?.resumePreview();
   }
 
   Future<void> _setController(CameraDescription cam) async {

@@ -37,7 +37,7 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   }
 
   final _emailInputController = TextEditingController()
-    ..text = Random().nextInt(100000).toString() + "@a.a";
+    ..text = Random().nextInt(100000).toString() + "@a.com";
 
   final _passwordInputController = TextEditingController()..text = "a" * 8;
   final _confirmPasswordInputController = TextEditingController()
@@ -142,204 +142,205 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
-          child: Form(
-        key: _formKey,
-        child: Stack(
+      body: Stack(
+      children: [
+      Form(
+      key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                    child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColorDark),
-                        child: Hero(
-                            tag: 'signUpTitle',
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.1,
-                                  vertical: height * 0.025),
-                              child: UglyOutlinedText(text: "Sign up"),
-                            )),
-                      ),
-                    ),
-                  ],
-                )),
-                Expanded(
-                    flex: 4,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.1, vertical: 8.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => _emailFocus.requestFocus(),
-                                    child: AutoSizeText(
-                                      'Enter your email address:',
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: FormField(
-                                        validator: (_) =>
-                                            InputValidators.emailValidator(
-                                                _emailInputController.text
-                                                    .trim()),
-                                        builder: (state) {
-                                          return UtterBullTextField(
-                                              readOnly: isSigningUp,
-                                              focusNode: _emailFocus,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineMedium,
-                                              maxLines: 1,
-                                              errorText: state.errorText,
-                                              controller:
-                                                  _emailInputController);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                        Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.1, vertical: 16.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => _passwordFocus.requestFocus(),
-                                    child: AutoSizeText(
-                                      'Choose a password:',
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: FormField(
-                                        validator: (_) =>
-                                            InputValidators.passwordValidator(
-                                                _passwordInputController.text),
-                                        builder: (state) {
-                                          return UtterBullTextField(
-                                              readOnly: isSigningUp,
-                                              focusNode: _passwordFocus,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineMedium,
-                                              obscureText: true,
-                                              maxLines: 1,
-                                              errorText: state.errorText,
-                                              controller:
-                                                  _passwordInputController);
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )),
-                        Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: width * 0.1, vertical: 16.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _confirmPasswordFocus.requestFocus(),
-                                    child: AutoSizeText(
-                                      'Confirm password:',
-                                      maxLines: 1,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: FormField(
-                                        validator: (_) => InputValidators
-                                            .stringMatchValidator(
-                                                _passwordInputController.text,
-                                                _confirmPasswordInputController
-                                                    .text),
-                                        builder: (state) {
-                                          return UtterBullTextField(
-                                              readOnly: isSigningUp,
-                                              focusNode: _confirmPasswordFocus,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineMedium,
-                                              obscureText: true,
-                                              maxLines: 1,
-                                              errorText: state.errorText,
-                                              controller:
-                                                  _confirmPasswordInputController);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-
-                        // Flexible(
-                        //     child: Text(errorMessage!, style: TextStyle(color: Colors.red),),
-                        //   )
-                      ],
+            Container(
+                  height: height*0.125,
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColorDark),
+              child: Row(
+                children: [
+              Expanded(
+                child: Hero(
+                    tag: 'signUpTitle',
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.1,
+                          vertical: height * 0.025),
+                      child: UglyOutlinedText(text: "Sign up"),
                     )),
-                // Flexible(
-                //     child: Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                //   child: StaticRecentNotificationCenter(key: _notifKey),
-                // )),
-                Flexible(
-                  child: SizedBox.fromSize(
-                      size: Size(width, height * 0.1),
-                      child: SignUpControlBar()),
-                )
-              ],
+              ),
+                ],
+              ),
             ),
-            Positioned(
-                bottom: height * 0.1,
-                width: width * 0.9,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.05, vertical: height * 0.025),
-                  child: StaticRecentNotificationCenter(key: _notifKey),
-                ))
+            Expanded(
+                flex: 4,
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                          flex: 1,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.1, vertical: 8.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => _emailFocus.requestFocus(),
+                                  child: AutoSizeText(
+                                    'Enter your email address:',
+                                    maxLines: 1,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: FormField(
+                                      validator: (_) =>
+                                          InputValidators.emailValidator(
+                                              _emailInputController.text
+                                                  .trim()),
+                                      builder: (state) {
+                                        return UtterBullTextField(
+                                            readOnly: isSigningUp,
+                                            focusNode: _emailFocus,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium,
+                                            maxLines: 1,
+                                            errorText: state.errorText,
+                                            controller:
+                                                _emailInputController);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                      Flexible(
+                          flex: 1,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.1, vertical: 16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => _passwordFocus.requestFocus(),
+                                  child: AutoSizeText(
+                                    'Choose a password:',
+                                    maxLines: 1,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: FormField(
+                                      validator: (_) =>
+                                          InputValidators.passwordValidator(
+                                              _passwordInputController.text),
+                                      builder: (state) {
+                                        return UtterBullTextField(
+                                            readOnly: isSigningUp,
+                                            focusNode: _passwordFocus,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium,
+                                            obscureText: true,
+                                            maxLines: 1,
+                                            errorText: state.errorText,
+                                            controller:
+                                                _passwordInputController);
+                                      },
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )),
+                      Flexible(
+                          flex: 1,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.1, vertical: 16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () =>
+                                      _confirmPasswordFocus.requestFocus(),
+                                  child: AutoSizeText(
+                                    'Confirm password:',
+                                    maxLines: 1,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: FormField(
+                                      validator: (_) => InputValidators
+                                          .stringMatchValidator(
+                                              _passwordInputController.text,
+                                              _confirmPasswordInputController
+                                                  .text),
+                                      builder: (state) {
+                                        return UtterBullTextField(
+                                            readOnly: isSigningUp,
+                                            focusNode: _confirmPasswordFocus,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium,
+                                            obscureText: true,
+                                            maxLines: 1,
+                                            errorText: state.errorText,
+                                            controller:
+                                                _confirmPasswordInputController);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                      
+                      // Flexible(
+                      //     child: Text(errorMessage!, style: TextStyle(color: Colors.red),),
+                      //   )
+                    ],
+                  )),
+                )),
+            // Flexible(
+            //     child: Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+            //   child: StaticRecentNotificationCenter(key: _notifKey),
+            // )),
+            SizedBox.fromSize(
+                size: Size(width, height * 0.1),
+                child: SignUpControlBar())
           ],
         ),
-      )),
+      ),
+      Positioned(
+          bottom: height * 0.1,
+          width: width * 0.9,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: width * 0.05, vertical: height * 0.025),
+            child: StaticRecentNotificationCenter(key: _notifKey),
+          ))
+      ],
+      ),
     );
   }
 

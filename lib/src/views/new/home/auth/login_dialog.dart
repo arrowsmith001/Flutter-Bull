@@ -83,6 +83,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
     });
 
     final title = Container(
+      height: height * 0.125,
       decoration: BoxDecoration(color: Theme.of(context).primaryColorDark),
       child: Hero(
           tag: 'loginTitle',
@@ -193,19 +194,20 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: title,
+                  ),
+                ],
+              ),
               Flexible(
-                  flex: 1,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: title,
-                      ),
-                    ],
-                  )),
-              Flexible(
+                flex: 2,
                   child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.1),
-                child: Column(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.1, vertical: 12.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Flexible(
@@ -220,16 +222,14 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: password,
                           )),
-                    ]),
+                    ])),
               )),
               Padding(
                 padding:
                     const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 8.0),
                 child: StaticRecentNotificationCenter(key: _notifKey),
               ),
-              Flexible(
-                child: bottomControls,
-              ),
+              bottomControls,
             ],
           ),
         ),

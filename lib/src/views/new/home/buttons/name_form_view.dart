@@ -19,7 +19,7 @@ class _ProfileSetupViewNewState extends ConsumerState<NameFormView> {
 
   final TextEditingController _nameInputController =
       TextEditingController(text: 'Alex');
-  final FocusNode _nameFocus = FocusNode()..requestFocus();
+  final FocusNode _nameFocus = FocusNode();//..requestFocus();
 
   bool isSaving = false;
   bool get canSubmit => _nameInputController.text.trim().isNotEmpty;
@@ -37,6 +37,7 @@ class _ProfileSetupViewNewState extends ConsumerState<NameFormView> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
