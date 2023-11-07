@@ -6,8 +6,8 @@ part of 'game_result.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_GameResult _$$_GameResultFromJson(Map<String, dynamic> json) =>
-    _$_GameResult(
+_$GameResultImpl _$$GameResultImplFromJson(Map<String, dynamic> json) =>
+    _$GameResultImpl(
       id: json['id'] as String?,
       timeCreatedUTC: json['timeCreatedUTC'] as int,
       result: (json['result'] as List<dynamic>)
@@ -15,15 +15,15 @@ _$_GameResult _$$_GameResultFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$$_GameResultToJson(_$_GameResult instance) =>
+Map<String, dynamic> _$$GameResultImplToJson(_$GameResultImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'timeCreatedUTC': instance.timeCreatedUTC,
       'result': instance.result,
     };
 
-_$_RoundResult _$$_RoundResultFromJson(Map<String, dynamic> json) =>
-    _$_RoundResult(
+_$RoundResultImpl _$$RoundResultImplFromJson(Map<String, dynamic> json) =>
+    _$RoundResultImpl(
       playersToAchievements:
           (json['playersToAchievements'] as Map<String, dynamic>).map(
         (k, e) =>
@@ -31,7 +31,7 @@ _$_RoundResult _$$_RoundResultFromJson(Map<String, dynamic> json) =>
       ),
     );
 
-Map<String, dynamic> _$$_RoundResultToJson(_$_RoundResult instance) =>
+Map<String, dynamic> _$$RoundResultImplToJson(_$RoundResultImpl instance) =>
     <String, dynamic>{
       'playersToAchievements': instance.playersToAchievements,
     };

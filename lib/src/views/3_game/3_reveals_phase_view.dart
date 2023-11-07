@@ -30,7 +30,8 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
 
   late Timer _timer;
 
-  late Duration timerDuration = UtterBullGlobal.revealsPreambleTimeMilliseconds; // 1500;
+  late Duration timerDuration =
+      UtterBullGlobal.revealsPreambleTimeMilliseconds; // 1500;
   int seconds = 0;
 
   @override
@@ -84,7 +85,7 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
           });
         }
 
-        return ForwardPushFadeInRoute((context) {
+        return ForwardFadePushRoute((context) {
           return Center(
             child: vmAsync.whenDefault((vm) {
               return ControlledNavigator(

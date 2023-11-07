@@ -81,11 +81,11 @@ class _$PlayerStatusCopyWithImpl<$Res, $Val extends PlayerStatus>
 }
 
 /// @nodoc
-abstract class _$$_PlayerStatusCopyWith<$Res>
+abstract class _$$PlayerStatusImplCopyWith<$Res>
     implements $PlayerStatusCopyWith<$Res> {
-  factory _$$_PlayerStatusCopyWith(
-          _$_PlayerStatus value, $Res Function(_$_PlayerStatus) then) =
-      __$$_PlayerStatusCopyWithImpl<$Res>;
+  factory _$$PlayerStatusImplCopyWith(
+          _$PlayerStatusImpl value, $Res Function(_$PlayerStatusImpl) then) =
+      __$$PlayerStatusImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -93,11 +93,11 @@ abstract class _$$_PlayerStatusCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PlayerStatusCopyWithImpl<$Res>
-    extends _$PlayerStatusCopyWithImpl<$Res, _$_PlayerStatus>
-    implements _$$_PlayerStatusCopyWith<$Res> {
-  __$$_PlayerStatusCopyWithImpl(
-      _$_PlayerStatus _value, $Res Function(_$_PlayerStatus) _then)
+class __$$PlayerStatusImplCopyWithImpl<$Res>
+    extends _$PlayerStatusCopyWithImpl<$Res, _$PlayerStatusImpl>
+    implements _$$PlayerStatusImplCopyWith<$Res> {
+  __$$PlayerStatusImplCopyWithImpl(
+      _$PlayerStatusImpl _value, $Res Function(_$PlayerStatusImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -108,7 +108,7 @@ class __$$_PlayerStatusCopyWithImpl<$Res>
     Object? busy = null,
     Object? messageWhileBusy = null,
   }) {
-    return _then(_$_PlayerStatus(
+    return _then(_$PlayerStatusImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -131,15 +131,15 @@ class __$$_PlayerStatusCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PlayerStatus implements _PlayerStatus {
-  const _$_PlayerStatus(
+class _$PlayerStatusImpl implements _PlayerStatus {
+  const _$PlayerStatusImpl(
       {this.id,
       this.errorMessage,
       this.busy = false,
       this.messageWhileBusy = ''});
 
-  factory _$_PlayerStatus.fromJson(Map<String, dynamic> json) =>
-      _$$_PlayerStatusFromJson(json);
+  factory _$PlayerStatusImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PlayerStatusImplFromJson(json);
 
   @override
   final String? id;
@@ -161,7 +161,7 @@ class _$_PlayerStatus implements _PlayerStatus {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PlayerStatus &&
+            other is _$PlayerStatusImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
@@ -178,12 +178,12 @@ class _$_PlayerStatus implements _PlayerStatus {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PlayerStatusCopyWith<_$_PlayerStatus> get copyWith =>
-      __$$_PlayerStatusCopyWithImpl<_$_PlayerStatus>(this, _$identity);
+  _$$PlayerStatusImplCopyWith<_$PlayerStatusImpl> get copyWith =>
+      __$$PlayerStatusImplCopyWithImpl<_$PlayerStatusImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PlayerStatusToJson(
+    return _$$PlayerStatusImplToJson(
       this,
     );
   }
@@ -194,10 +194,10 @@ abstract class _PlayerStatus implements PlayerStatus {
       {final String? id,
       final String? errorMessage,
       final bool busy,
-      final String messageWhileBusy}) = _$_PlayerStatus;
+      final String messageWhileBusy}) = _$PlayerStatusImpl;
 
   factory _PlayerStatus.fromJson(Map<String, dynamic> json) =
-      _$_PlayerStatus.fromJson;
+      _$PlayerStatusImpl.fromJson;
 
   @override
   String? get id;
@@ -209,6 +209,6 @@ abstract class _PlayerStatus implements PlayerStatus {
   String get messageWhileBusy;
   @override
   @JsonKey(ignore: true)
-  _$$_PlayerStatusCopyWith<_$_PlayerStatus> get copyWith =>
+  _$$PlayerStatusImplCopyWith<_$PlayerStatusImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

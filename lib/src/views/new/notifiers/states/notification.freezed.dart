@@ -86,11 +86,11 @@ class _$NotificationCopyWithImpl<$Res, $Val extends Notification>
 }
 
 /// @nodoc
-abstract class _$$_NotificationCopyWith<$Res>
+abstract class _$$NotificationImplCopyWith<$Res>
     implements $NotificationCopyWith<$Res> {
-  factory _$$_NotificationCopyWith(
-          _$_Notification value, $Res Function(_$_Notification) then) =
-      __$$_NotificationCopyWithImpl<$Res>;
+  factory _$$NotificationImplCopyWith(
+          _$NotificationImpl value, $Res Function(_$NotificationImpl) then) =
+      __$$NotificationImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -102,11 +102,11 @@ abstract class _$$_NotificationCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_NotificationCopyWithImpl<$Res>
-    extends _$NotificationCopyWithImpl<$Res, _$_Notification>
-    implements _$$_NotificationCopyWith<$Res> {
-  __$$_NotificationCopyWithImpl(
-      _$_Notification _value, $Res Function(_$_Notification) _then)
+class __$$NotificationImplCopyWithImpl<$Res>
+    extends _$NotificationCopyWithImpl<$Res, _$NotificationImpl>
+    implements _$$NotificationImplCopyWith<$Res> {
+  __$$NotificationImplCopyWithImpl(
+      _$NotificationImpl _value, $Res Function(_$NotificationImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -118,7 +118,7 @@ class __$$_NotificationCopyWithImpl<$Res>
     Object? time = null,
     Object? isRead = null,
   }) {
-    return _then(_$_Notification(
+    return _then(_$NotificationImpl(
       message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -145,8 +145,8 @@ class __$$_NotificationCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_Notification implements _Notification {
-  _$_Notification(
+class _$NotificationImpl implements _Notification {
+  _$NotificationImpl(
       {required this.message,
       required this.type,
       this.subType,
@@ -174,7 +174,7 @@ class _$_Notification implements _Notification {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Notification &&
+            other is _$NotificationImpl &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.subType, subType) || other.subType == subType) &&
@@ -189,8 +189,8 @@ class _$_Notification implements _Notification {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_NotificationCopyWith<_$_Notification> get copyWith =>
-      __$$_NotificationCopyWithImpl<_$_Notification>(this, _$identity);
+  _$$NotificationImplCopyWith<_$NotificationImpl> get copyWith =>
+      __$$NotificationImplCopyWithImpl<_$NotificationImpl>(this, _$identity);
 }
 
 abstract class _Notification implements Notification {
@@ -199,7 +199,7 @@ abstract class _Notification implements Notification {
       required final NotificationType type,
       final String? subType,
       required final DateTime time,
-      final bool isRead}) = _$_Notification;
+      final bool isRead}) = _$NotificationImpl;
 
   @override
   String get message;
@@ -213,6 +213,6 @@ abstract class _Notification implements Notification {
   bool get isRead;
   @override
   @JsonKey(ignore: true)
-  _$$_NotificationCopyWith<_$_Notification> get copyWith =>
+  _$$NotificationImplCopyWith<_$NotificationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

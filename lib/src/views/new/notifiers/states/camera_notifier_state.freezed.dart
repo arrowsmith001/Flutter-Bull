@@ -72,11 +72,11 @@ class _$CameraNotifierStateCopyWithImpl<$Res, $Val extends CameraNotifierState>
 }
 
 /// @nodoc
-abstract class _$$_CameraNotifierStateCopyWith<$Res>
+abstract class _$$CameraNotifierStateImplCopyWith<$Res>
     implements $CameraNotifierStateCopyWith<$Res> {
-  factory _$$_CameraNotifierStateCopyWith(_$_CameraNotifierState value,
-          $Res Function(_$_CameraNotifierState) then) =
-      __$$_CameraNotifierStateCopyWithImpl<$Res>;
+  factory _$$CameraNotifierStateImplCopyWith(_$CameraNotifierStateImpl value,
+          $Res Function(_$CameraNotifierStateImpl) then) =
+      __$$CameraNotifierStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -86,11 +86,11 @@ abstract class _$$_CameraNotifierStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CameraNotifierStateCopyWithImpl<$Res>
-    extends _$CameraNotifierStateCopyWithImpl<$Res, _$_CameraNotifierState>
-    implements _$$_CameraNotifierStateCopyWith<$Res> {
-  __$$_CameraNotifierStateCopyWithImpl(_$_CameraNotifierState _value,
-      $Res Function(_$_CameraNotifierState) _then)
+class __$$CameraNotifierStateImplCopyWithImpl<$Res>
+    extends _$CameraNotifierStateCopyWithImpl<$Res, _$CameraNotifierStateImpl>
+    implements _$$CameraNotifierStateImplCopyWith<$Res> {
+  __$$CameraNotifierStateImplCopyWithImpl(_$CameraNotifierStateImpl _value,
+      $Res Function(_$CameraNotifierStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -100,7 +100,7 @@ class __$$_CameraNotifierStateCopyWithImpl<$Res>
     Object? controller = freezed,
     Object? lastPicture = freezed,
   }) {
-    return _then(_$_CameraNotifierState(
+    return _then(_$CameraNotifierStateImpl(
       cameraState: freezed == cameraState
           ? _value.cameraState
           : cameraState // ignore: cast_nullable_to_non_nullable
@@ -119,8 +119,9 @@ class __$$_CameraNotifierStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_CameraNotifierState implements _CameraNotifierState {
-  _$_CameraNotifierState({this.cameraState, this.controller, this.lastPicture});
+class _$CameraNotifierStateImpl implements _CameraNotifierState {
+  _$CameraNotifierStateImpl(
+      {this.cameraState, this.controller, this.lastPicture});
 
   @override
   final CameraState? cameraState;
@@ -138,7 +139,7 @@ class _$_CameraNotifierState implements _CameraNotifierState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CameraNotifierState &&
+            other is _$CameraNotifierStateImpl &&
             (identical(other.cameraState, cameraState) ||
                 other.cameraState == cameraState) &&
             (identical(other.controller, controller) ||
@@ -154,8 +155,8 @@ class _$_CameraNotifierState implements _CameraNotifierState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CameraNotifierStateCopyWith<_$_CameraNotifierState> get copyWith =>
-      __$$_CameraNotifierStateCopyWithImpl<_$_CameraNotifierState>(
+  _$$CameraNotifierStateImplCopyWith<_$CameraNotifierStateImpl> get copyWith =>
+      __$$CameraNotifierStateImplCopyWithImpl<_$CameraNotifierStateImpl>(
           this, _$identity);
 }
 
@@ -163,7 +164,7 @@ abstract class _CameraNotifierState implements CameraNotifierState {
   factory _CameraNotifierState(
       {final CameraState? cameraState,
       final CameraController? controller,
-      final Uint8List? lastPicture}) = _$_CameraNotifierState;
+      final Uint8List? lastPicture}) = _$CameraNotifierStateImpl;
 
   @override
   CameraState? get cameraState;
@@ -173,6 +174,6 @@ abstract class _CameraNotifierState implements CameraNotifierState {
   Uint8List? get lastPicture;
   @override
   @JsonKey(ignore: true)
-  _$$_CameraNotifierStateCopyWith<_$_CameraNotifierState> get copyWith =>
+  _$$CameraNotifierStateImplCopyWith<_$CameraNotifierStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

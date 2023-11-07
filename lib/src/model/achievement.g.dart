@@ -6,8 +6,8 @@ part of 'achievement.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Achievement _$$_AchievementFromJson(Map<String, dynamic> json) =>
-    _$_Achievement(
+_$AchievementImpl _$$AchievementImplFromJson(Map<String, dynamic> json) =>
+    _$AchievementImpl(
       id: json['id'] as String?,
       title: json['title'] as String,
       description: json['description'] as String,
@@ -15,7 +15,7 @@ _$_Achievement _$$_AchievementFromJson(Map<String, dynamic> json) =>
       iconPath: json['iconPath'] as String,
     );
 
-Map<String, dynamic> _$$_AchievementToJson(_$_Achievement instance) =>
+Map<String, dynamic> _$$AchievementImplToJson(_$AchievementImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

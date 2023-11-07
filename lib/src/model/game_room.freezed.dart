@@ -185,10 +185,11 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
 }
 
 /// @nodoc
-abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
-  factory _$$_GameRoomCopyWith(
-          _$_GameRoom value, $Res Function(_$_GameRoom) then) =
-      __$$_GameRoomCopyWithImpl<$Res>;
+abstract class _$$GameRoomImplCopyWith<$Res>
+    implements $GameRoomCopyWith<$Res> {
+  factory _$$GameRoomImplCopyWith(
+          _$GameRoomImpl value, $Res Function(_$GameRoomImpl) then) =
+      __$$GameRoomImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -215,11 +216,11 @@ abstract class _$$_GameRoomCopyWith<$Res> implements $GameRoomCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_GameRoomCopyWithImpl<$Res>
-    extends _$GameRoomCopyWithImpl<$Res, _$_GameRoom>
-    implements _$$_GameRoomCopyWith<$Res> {
-  __$$_GameRoomCopyWithImpl(
-      _$_GameRoom _value, $Res Function(_$_GameRoom) _then)
+class __$$GameRoomImplCopyWithImpl<$Res>
+    extends _$GameRoomCopyWithImpl<$Res, _$GameRoomImpl>
+    implements _$$GameRoomImplCopyWith<$Res> {
+  __$$GameRoomImplCopyWithImpl(
+      _$GameRoomImpl _value, $Res Function(_$GameRoomImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -243,7 +244,7 @@ class __$$_GameRoomCopyWithImpl<$Res>
     Object? roundEndUTC = freezed,
     Object? settings = null,
   }) {
-    return _then(_$_GameRoom(
+    return _then(_$GameRoomImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -318,8 +319,8 @@ class __$$_GameRoomCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_GameRoom implements _GameRoom {
-  _$_GameRoom(
+class _$GameRoomImpl implements _GameRoom {
+  _$GameRoomImpl(
       {this.id,
       required this.roomCode,
       this.leaderId,
@@ -346,8 +347,8 @@ class _$_GameRoom implements _GameRoom {
         _votes = votes,
         _voteTimes = voteTimes;
 
-  factory _$_GameRoom.fromJson(Map<String, dynamic> json) =>
-      _$$_GameRoomFromJson(json);
+  factory _$GameRoomImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameRoomImplFromJson(json);
 
   @override
   final String? id;
@@ -454,7 +455,7 @@ class _$_GameRoom implements _GameRoom {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GameRoom &&
+            other is _$GameRoomImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
@@ -509,12 +510,12 @@ class _$_GameRoom implements _GameRoom {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GameRoomCopyWith<_$_GameRoom> get copyWith =>
-      __$$_GameRoomCopyWithImpl<_$_GameRoom>(this, _$identity);
+  _$$GameRoomImplCopyWith<_$GameRoomImpl> get copyWith =>
+      __$$GameRoomImplCopyWithImpl<_$GameRoomImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_GameRoomToJson(
+    return _$$GameRoomImplToJson(
       this,
     );
   }
@@ -538,9 +539,10 @@ abstract class _GameRoom implements GameRoom {
       final Map<String, List<int>> voteTimes,
       final int progress,
       final int? roundEndUTC,
-      final GameRoomSettings settings}) = _$_GameRoom;
+      final GameRoomSettings settings}) = _$GameRoomImpl;
 
-  factory _GameRoom.fromJson(Map<String, dynamic> json) = _$_GameRoom.fromJson;
+  factory _GameRoom.fromJson(Map<String, dynamic> json) =
+      _$GameRoomImpl.fromJson;
 
   @override
   String? get id;
@@ -578,7 +580,7 @@ abstract class _GameRoom implements GameRoom {
   GameRoomSettings get settings;
   @override
   @JsonKey(ignore: true)
-  _$$_GameRoomCopyWith<_$_GameRoom> get copyWith =>
+  _$$GameRoomImplCopyWith<_$GameRoomImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -630,22 +632,22 @@ class _$GameRoomSettingsCopyWithImpl<$Res, $Val extends GameRoomSettings>
 }
 
 /// @nodoc
-abstract class _$$_GameRoomSettingsCopyWith<$Res>
+abstract class _$$GameRoomSettingsImplCopyWith<$Res>
     implements $GameRoomSettingsCopyWith<$Res> {
-  factory _$$_GameRoomSettingsCopyWith(
-          _$_GameRoomSettings value, $Res Function(_$_GameRoomSettings) then) =
-      __$$_GameRoomSettingsCopyWithImpl<$Res>;
+  factory _$$GameRoomSettingsImplCopyWith(_$GameRoomSettingsImpl value,
+          $Res Function(_$GameRoomSettingsImpl) then) =
+      __$$GameRoomSettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int roundTimeSeconds});
 }
 
 /// @nodoc
-class __$$_GameRoomSettingsCopyWithImpl<$Res>
-    extends _$GameRoomSettingsCopyWithImpl<$Res, _$_GameRoomSettings>
-    implements _$$_GameRoomSettingsCopyWith<$Res> {
-  __$$_GameRoomSettingsCopyWithImpl(
-      _$_GameRoomSettings _value, $Res Function(_$_GameRoomSettings) _then)
+class __$$GameRoomSettingsImplCopyWithImpl<$Res>
+    extends _$GameRoomSettingsCopyWithImpl<$Res, _$GameRoomSettingsImpl>
+    implements _$$GameRoomSettingsImplCopyWith<$Res> {
+  __$$GameRoomSettingsImplCopyWithImpl(_$GameRoomSettingsImpl _value,
+      $Res Function(_$GameRoomSettingsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -653,7 +655,7 @@ class __$$_GameRoomSettingsCopyWithImpl<$Res>
   $Res call({
     Object? roundTimeSeconds = null,
   }) {
-    return _then(_$_GameRoomSettings(
+    return _then(_$GameRoomSettingsImpl(
       roundTimeSeconds: null == roundTimeSeconds
           ? _value.roundTimeSeconds
           : roundTimeSeconds // ignore: cast_nullable_to_non_nullable
@@ -664,11 +666,11 @@ class __$$_GameRoomSettingsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_GameRoomSettings implements _GameRoomSettings {
-  const _$_GameRoomSettings({required this.roundTimeSeconds});
+class _$GameRoomSettingsImpl implements _GameRoomSettings {
+  const _$GameRoomSettingsImpl({required this.roundTimeSeconds});
 
-  factory _$_GameRoomSettings.fromJson(Map<String, dynamic> json) =>
-      _$$_GameRoomSettingsFromJson(json);
+  factory _$GameRoomSettingsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameRoomSettingsImplFromJson(json);
 
   @override
   final int roundTimeSeconds;
@@ -682,7 +684,7 @@ class _$_GameRoomSettings implements _GameRoomSettings {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GameRoomSettings &&
+            other is _$GameRoomSettingsImpl &&
             (identical(other.roundTimeSeconds, roundTimeSeconds) ||
                 other.roundTimeSeconds == roundTimeSeconds));
   }
@@ -694,12 +696,13 @@ class _$_GameRoomSettings implements _GameRoomSettings {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GameRoomSettingsCopyWith<_$_GameRoomSettings> get copyWith =>
-      __$$_GameRoomSettingsCopyWithImpl<_$_GameRoomSettings>(this, _$identity);
+  _$$GameRoomSettingsImplCopyWith<_$GameRoomSettingsImpl> get copyWith =>
+      __$$GameRoomSettingsImplCopyWithImpl<_$GameRoomSettingsImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_GameRoomSettingsToJson(
+    return _$$GameRoomSettingsImplToJson(
       this,
     );
   }
@@ -707,15 +710,15 @@ class _$_GameRoomSettings implements _GameRoomSettings {
 
 abstract class _GameRoomSettings implements GameRoomSettings {
   const factory _GameRoomSettings({required final int roundTimeSeconds}) =
-      _$_GameRoomSettings;
+      _$GameRoomSettingsImpl;
 
   factory _GameRoomSettings.fromJson(Map<String, dynamic> json) =
-      _$_GameRoomSettings.fromJson;
+      _$GameRoomSettingsImpl.fromJson;
 
   @override
   int get roundTimeSeconds;
   @override
   @JsonKey(ignore: true)
-  _$$_GameRoomSettingsCopyWith<_$_GameRoomSettings> get copyWith =>
+  _$$GameRoomSettingsImplCopyWith<_$GameRoomSettingsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

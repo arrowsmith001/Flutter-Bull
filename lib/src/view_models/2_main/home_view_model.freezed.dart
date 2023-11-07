@@ -36,25 +36,25 @@ class _$HomeViewModelCopyWithImpl<$Res, $Val extends HomeViewModel>
 }
 
 /// @nodoc
-abstract class _$$_HomeViewModelCopyWith<$Res> {
-  factory _$$_HomeViewModelCopyWith(
-          _$_HomeViewModel value, $Res Function(_$_HomeViewModel) then) =
-      __$$_HomeViewModelCopyWithImpl<$Res>;
+abstract class _$$HomeViewModelImplCopyWith<$Res> {
+  factory _$$HomeViewModelImplCopyWith(
+          _$HomeViewModelImpl value, $Res Function(_$HomeViewModelImpl) then) =
+      __$$HomeViewModelImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_HomeViewModelCopyWithImpl<$Res>
-    extends _$HomeViewModelCopyWithImpl<$Res, _$_HomeViewModel>
-    implements _$$_HomeViewModelCopyWith<$Res> {
-  __$$_HomeViewModelCopyWithImpl(
-      _$_HomeViewModel _value, $Res Function(_$_HomeViewModel) _then)
+class __$$HomeViewModelImplCopyWithImpl<$Res>
+    extends _$HomeViewModelCopyWithImpl<$Res, _$HomeViewModelImpl>
+    implements _$$HomeViewModelImplCopyWith<$Res> {
+  __$$HomeViewModelImplCopyWithImpl(
+      _$HomeViewModelImpl _value, $Res Function(_$HomeViewModelImpl) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$_HomeViewModel implements _HomeViewModel {
-  _$_HomeViewModel();
+class _$HomeViewModelImpl implements _HomeViewModel {
+  _$HomeViewModelImpl();
 
   @override
   String toString() {
@@ -64,7 +64,7 @@ class _$_HomeViewModel implements _HomeViewModel {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_HomeViewModel);
+        (other.runtimeType == runtimeType && other is _$HomeViewModelImpl);
   }
 
   @override
@@ -72,5 +72,5 @@ class _$_HomeViewModel implements _HomeViewModel {
 }
 
 abstract class _HomeViewModel implements HomeViewModel {
-  factory _HomeViewModel() = _$_HomeViewModel;
+  factory _HomeViewModel() = _$HomeViewModelImpl;
 }

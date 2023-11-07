@@ -68,11 +68,12 @@ class _$MainViewNotifierStateCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_MainViewNotifierStateCopyWith<$Res>
+abstract class _$$MainViewNotifierStateImplCopyWith<$Res>
     implements $MainViewNotifierStateCopyWith<$Res> {
-  factory _$$_MainViewNotifierStateCopyWith(_$_MainViewNotifierState value,
-          $Res Function(_$_MainViewNotifierState) then) =
-      __$$_MainViewNotifierStateCopyWithImpl<$Res>;
+  factory _$$MainViewNotifierStateImplCopyWith(
+          _$MainViewNotifierStateImpl value,
+          $Res Function(_$MainViewNotifierStateImpl) then) =
+      __$$MainViewNotifierStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Player signedInPlayer});
@@ -82,11 +83,12 @@ abstract class _$$_MainViewNotifierStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_MainViewNotifierStateCopyWithImpl<$Res>
-    extends _$MainViewNotifierStateCopyWithImpl<$Res, _$_MainViewNotifierState>
-    implements _$$_MainViewNotifierStateCopyWith<$Res> {
-  __$$_MainViewNotifierStateCopyWithImpl(_$_MainViewNotifierState _value,
-      $Res Function(_$_MainViewNotifierState) _then)
+class __$$MainViewNotifierStateImplCopyWithImpl<$Res>
+    extends _$MainViewNotifierStateCopyWithImpl<$Res,
+        _$MainViewNotifierStateImpl>
+    implements _$$MainViewNotifierStateImplCopyWith<$Res> {
+  __$$MainViewNotifierStateImplCopyWithImpl(_$MainViewNotifierStateImpl _value,
+      $Res Function(_$MainViewNotifierStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -94,7 +96,7 @@ class __$$_MainViewNotifierStateCopyWithImpl<$Res>
   $Res call({
     Object? signedInPlayer = null,
   }) {
-    return _then(_$_MainViewNotifierState(
+    return _then(_$MainViewNotifierStateImpl(
       signedInPlayer: null == signedInPlayer
           ? _value.signedInPlayer
           : signedInPlayer // ignore: cast_nullable_to_non_nullable
@@ -105,8 +107,8 @@ class __$$_MainViewNotifierStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_MainViewNotifierState implements _MainViewNotifierState {
-  _$_MainViewNotifierState({required this.signedInPlayer});
+class _$MainViewNotifierStateImpl implements _MainViewNotifierState {
+  _$MainViewNotifierStateImpl({required this.signedInPlayer});
 
   @override
   final Player signedInPlayer;
@@ -120,7 +122,7 @@ class _$_MainViewNotifierState implements _MainViewNotifierState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_MainViewNotifierState &&
+            other is _$MainViewNotifierStateImpl &&
             (identical(other.signedInPlayer, signedInPlayer) ||
                 other.signedInPlayer == signedInPlayer));
   }
@@ -131,19 +133,19 @@ class _$_MainViewNotifierState implements _MainViewNotifierState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_MainViewNotifierStateCopyWith<_$_MainViewNotifierState> get copyWith =>
-      __$$_MainViewNotifierStateCopyWithImpl<_$_MainViewNotifierState>(
-          this, _$identity);
+  _$$MainViewNotifierStateImplCopyWith<_$MainViewNotifierStateImpl>
+      get copyWith => __$$MainViewNotifierStateImplCopyWithImpl<
+          _$MainViewNotifierStateImpl>(this, _$identity);
 }
 
 abstract class _MainViewNotifierState implements MainViewNotifierState {
   factory _MainViewNotifierState({required final Player signedInPlayer}) =
-      _$_MainViewNotifierState;
+      _$MainViewNotifierStateImpl;
 
   @override
   Player get signedInPlayer;
   @override
   @JsonKey(ignore: true)
-  _$$_MainViewNotifierStateCopyWith<_$_MainViewNotifierState> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$MainViewNotifierStateImplCopyWith<_$MainViewNotifierStateImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }

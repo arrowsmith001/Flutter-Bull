@@ -74,22 +74,22 @@ class _$GameResultCopyWithImpl<$Res, $Val extends GameResult>
 }
 
 /// @nodoc
-abstract class _$$_GameResultCopyWith<$Res>
+abstract class _$$GameResultImplCopyWith<$Res>
     implements $GameResultCopyWith<$Res> {
-  factory _$$_GameResultCopyWith(
-          _$_GameResult value, $Res Function(_$_GameResult) then) =
-      __$$_GameResultCopyWithImpl<$Res>;
+  factory _$$GameResultImplCopyWith(
+          _$GameResultImpl value, $Res Function(_$GameResultImpl) then) =
+      __$$GameResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String? id, int timeCreatedUTC, List<RoundResult> result});
 }
 
 /// @nodoc
-class __$$_GameResultCopyWithImpl<$Res>
-    extends _$GameResultCopyWithImpl<$Res, _$_GameResult>
-    implements _$$_GameResultCopyWith<$Res> {
-  __$$_GameResultCopyWithImpl(
-      _$_GameResult _value, $Res Function(_$_GameResult) _then)
+class __$$GameResultImplCopyWithImpl<$Res>
+    extends _$GameResultCopyWithImpl<$Res, _$GameResultImpl>
+    implements _$$GameResultImplCopyWith<$Res> {
+  __$$GameResultImplCopyWithImpl(
+      _$GameResultImpl _value, $Res Function(_$GameResultImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -99,7 +99,7 @@ class __$$_GameResultCopyWithImpl<$Res>
     Object? timeCreatedUTC = null,
     Object? result = null,
   }) {
-    return _then(_$_GameResult(
+    return _then(_$GameResultImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -118,15 +118,15 @@ class __$$_GameResultCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_GameResult implements _GameResult {
-  _$_GameResult(
+class _$GameResultImpl implements _GameResult {
+  _$GameResultImpl(
       {this.id,
       required this.timeCreatedUTC,
       required final List<RoundResult> result})
       : _result = result;
 
-  factory _$_GameResult.fromJson(Map<String, dynamic> json) =>
-      _$$_GameResultFromJson(json);
+  factory _$GameResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameResultImplFromJson(json);
 
   @override
   final String? id;
@@ -149,7 +149,7 @@ class _$_GameResult implements _GameResult {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GameResult &&
+            other is _$GameResultImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.timeCreatedUTC, timeCreatedUTC) ||
                 other.timeCreatedUTC == timeCreatedUTC) &&
@@ -164,12 +164,12 @@ class _$_GameResult implements _GameResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GameResultCopyWith<_$_GameResult> get copyWith =>
-      __$$_GameResultCopyWithImpl<_$_GameResult>(this, _$identity);
+  _$$GameResultImplCopyWith<_$GameResultImpl> get copyWith =>
+      __$$GameResultImplCopyWithImpl<_$GameResultImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_GameResultToJson(
+    return _$$GameResultImplToJson(
       this,
     );
   }
@@ -179,10 +179,10 @@ abstract class _GameResult implements GameResult {
   factory _GameResult(
       {final String? id,
       required final int timeCreatedUTC,
-      required final List<RoundResult> result}) = _$_GameResult;
+      required final List<RoundResult> result}) = _$GameResultImpl;
 
   factory _GameResult.fromJson(Map<String, dynamic> json) =
-      _$_GameResult.fromJson;
+      _$GameResultImpl.fromJson;
 
   @override
   String? get id;
@@ -192,7 +192,7 @@ abstract class _GameResult implements GameResult {
   List<RoundResult> get result;
   @override
   @JsonKey(ignore: true)
-  _$$_GameResultCopyWith<_$_GameResult> get copyWith =>
+  _$$GameResultImplCopyWith<_$GameResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -245,22 +245,22 @@ class _$RoundResultCopyWithImpl<$Res, $Val extends RoundResult>
 }
 
 /// @nodoc
-abstract class _$$_RoundResultCopyWith<$Res>
+abstract class _$$RoundResultImplCopyWith<$Res>
     implements $RoundResultCopyWith<$Res> {
-  factory _$$_RoundResultCopyWith(
-          _$_RoundResult value, $Res Function(_$_RoundResult) then) =
-      __$$_RoundResultCopyWithImpl<$Res>;
+  factory _$$RoundResultImplCopyWith(
+          _$RoundResultImpl value, $Res Function(_$RoundResultImpl) then) =
+      __$$RoundResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, List<String>> playersToAchievements});
 }
 
 /// @nodoc
-class __$$_RoundResultCopyWithImpl<$Res>
-    extends _$RoundResultCopyWithImpl<$Res, _$_RoundResult>
-    implements _$$_RoundResultCopyWith<$Res> {
-  __$$_RoundResultCopyWithImpl(
-      _$_RoundResult _value, $Res Function(_$_RoundResult) _then)
+class __$$RoundResultImplCopyWithImpl<$Res>
+    extends _$RoundResultCopyWithImpl<$Res, _$RoundResultImpl>
+    implements _$$RoundResultImplCopyWith<$Res> {
+  __$$RoundResultImplCopyWithImpl(
+      _$RoundResultImpl _value, $Res Function(_$RoundResultImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -268,7 +268,7 @@ class __$$_RoundResultCopyWithImpl<$Res>
   $Res call({
     Object? playersToAchievements = null,
   }) {
-    return _then(_$_RoundResult(
+    return _then(_$RoundResultImpl(
       playersToAchievements: null == playersToAchievements
           ? _value._playersToAchievements
           : playersToAchievements // ignore: cast_nullable_to_non_nullable
@@ -279,13 +279,13 @@ class __$$_RoundResultCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_RoundResult implements _RoundResult {
-  _$_RoundResult(
+class _$RoundResultImpl implements _RoundResult {
+  _$RoundResultImpl(
       {required final Map<String, List<String>> playersToAchievements})
       : _playersToAchievements = playersToAchievements;
 
-  factory _$_RoundResult.fromJson(Map<String, dynamic> json) =>
-      _$$_RoundResultFromJson(json);
+  factory _$RoundResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RoundResultImplFromJson(json);
 
   final Map<String, List<String>> _playersToAchievements;
   @override
@@ -305,7 +305,7 @@ class _$_RoundResult implements _RoundResult {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RoundResult &&
+            other is _$RoundResultImpl &&
             const DeepCollectionEquality()
                 .equals(other._playersToAchievements, _playersToAchievements));
   }
@@ -318,12 +318,12 @@ class _$_RoundResult implements _RoundResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RoundResultCopyWith<_$_RoundResult> get copyWith =>
-      __$$_RoundResultCopyWithImpl<_$_RoundResult>(this, _$identity);
+  _$$RoundResultImplCopyWith<_$RoundResultImpl> get copyWith =>
+      __$$RoundResultImplCopyWithImpl<_$RoundResultImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RoundResultToJson(
+    return _$$RoundResultImplToJson(
       this,
     );
   }
@@ -332,15 +332,15 @@ class _$_RoundResult implements _RoundResult {
 abstract class _RoundResult implements RoundResult {
   factory _RoundResult(
           {required final Map<String, List<String>> playersToAchievements}) =
-      _$_RoundResult;
+      _$RoundResultImpl;
 
   factory _RoundResult.fromJson(Map<String, dynamic> json) =
-      _$_RoundResult.fromJson;
+      _$RoundResultImpl.fromJson;
 
   @override
   Map<String, List<String>> get playersToAchievements;
   @override
   @JsonKey(ignore: true)
-  _$$_RoundResultCopyWith<_$_RoundResult> get copyWith =>
+  _$$RoundResultImplCopyWith<_$RoundResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -64,22 +64,24 @@ class _$RevealsPhaseViewModelCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_RevealsPhaseViewModelCopyWith<$Res>
+abstract class _$$RevealsPhaseViewModelImplCopyWith<$Res>
     implements $RevealsPhaseViewModelCopyWith<$Res> {
-  factory _$$_RevealsPhaseViewModelCopyWith(_$_RevealsPhaseViewModel value,
-          $Res Function(_$_RevealsPhaseViewModel) then) =
-      __$$_RevealsPhaseViewModelCopyWithImpl<$Res>;
+  factory _$$RevealsPhaseViewModelImplCopyWith(
+          _$RevealsPhaseViewModelImpl value,
+          $Res Function(_$RevealsPhaseViewModelImpl) then) =
+      __$$RevealsPhaseViewModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String path, int? progress});
 }
 
 /// @nodoc
-class __$$_RevealsPhaseViewModelCopyWithImpl<$Res>
-    extends _$RevealsPhaseViewModelCopyWithImpl<$Res, _$_RevealsPhaseViewModel>
-    implements _$$_RevealsPhaseViewModelCopyWith<$Res> {
-  __$$_RevealsPhaseViewModelCopyWithImpl(_$_RevealsPhaseViewModel _value,
-      $Res Function(_$_RevealsPhaseViewModel) _then)
+class __$$RevealsPhaseViewModelImplCopyWithImpl<$Res>
+    extends _$RevealsPhaseViewModelCopyWithImpl<$Res,
+        _$RevealsPhaseViewModelImpl>
+    implements _$$RevealsPhaseViewModelImplCopyWith<$Res> {
+  __$$RevealsPhaseViewModelImplCopyWithImpl(_$RevealsPhaseViewModelImpl _value,
+      $Res Function(_$RevealsPhaseViewModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -88,7 +90,7 @@ class __$$_RevealsPhaseViewModelCopyWithImpl<$Res>
     Object? path = null,
     Object? progress = freezed,
   }) {
-    return _then(_$_RevealsPhaseViewModel(
+    return _then(_$RevealsPhaseViewModelImpl(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
@@ -103,8 +105,8 @@ class __$$_RevealsPhaseViewModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_RevealsPhaseViewModel implements _RevealsPhaseViewModel {
-  _$_RevealsPhaseViewModel({required this.path, required this.progress});
+class _$RevealsPhaseViewModelImpl implements _RevealsPhaseViewModel {
+  _$RevealsPhaseViewModelImpl({required this.path, required this.progress});
 
   @override
   final String path;
@@ -120,7 +122,7 @@ class _$_RevealsPhaseViewModel implements _RevealsPhaseViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RevealsPhaseViewModel &&
+            other is _$RevealsPhaseViewModelImpl &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.progress, progress) ||
                 other.progress == progress));
@@ -132,15 +134,15 @@ class _$_RevealsPhaseViewModel implements _RevealsPhaseViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RevealsPhaseViewModelCopyWith<_$_RevealsPhaseViewModel> get copyWith =>
-      __$$_RevealsPhaseViewModelCopyWithImpl<_$_RevealsPhaseViewModel>(
-          this, _$identity);
+  _$$RevealsPhaseViewModelImplCopyWith<_$RevealsPhaseViewModelImpl>
+      get copyWith => __$$RevealsPhaseViewModelImplCopyWithImpl<
+          _$RevealsPhaseViewModelImpl>(this, _$identity);
 }
 
 abstract class _RevealsPhaseViewModel implements RevealsPhaseViewModel {
   factory _RevealsPhaseViewModel(
       {required final String path,
-      required final int? progress}) = _$_RevealsPhaseViewModel;
+      required final int? progress}) = _$RevealsPhaseViewModelImpl;
 
   @override
   String get path;
@@ -148,6 +150,6 @@ abstract class _RevealsPhaseViewModel implements RevealsPhaseViewModel {
   int? get progress;
   @override
   @JsonKey(ignore: true)
-  _$$_RevealsPhaseViewModelCopyWith<_$_RevealsPhaseViewModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$RevealsPhaseViewModelImplCopyWith<_$RevealsPhaseViewModelImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }

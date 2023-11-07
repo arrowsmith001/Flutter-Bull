@@ -6,7 +6,7 @@ part of 'player.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Player _$$_PlayerFromJson(Map<String, dynamic> json) => _$_Player(
+_$PlayerImpl _$$PlayerImplFromJson(Map<String, dynamic> json) => _$PlayerImpl(
       id: json['id'] as String?,
       name: json['name'] as String?,
       profilePhotoPath: json['profilePhotoPath'] as String?,
@@ -14,7 +14,8 @@ _$_Player _$$_PlayerFromJson(Map<String, dynamic> json) => _$_Player(
       statusId: json['statusId'] as String?,
     );
 
-Map<String, dynamic> _$$_PlayerToJson(_$_Player instance) => <String, dynamic>{
+Map<String, dynamic> _$$PlayerImplToJson(_$PlayerImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'profilePhotoPath': instance.profilePhotoPath,

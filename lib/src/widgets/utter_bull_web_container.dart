@@ -86,7 +86,10 @@ class UtterBullWebContainerState extends State<UtterBullWebContainer>
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("Ok", style: TextStyle(fontSize: 32),),
+                            child: Text(
+                              "Ok",
+                              style: TextStyle(fontSize: 32),
+                            ),
                           )),
                     ),
                   )
@@ -105,49 +108,52 @@ class UtterBullWebContainerState extends State<UtterBullWebContainer>
       ],
     );
 
-    return Container(
-      decoration: UtterBullGlobal.gameViewDecoration,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(child: left),
-          Flexible(
-            child: !widget.drag
-                ? child
-                : AnimatedBuilder(
-                    animation: animController,
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: isDragging ? offset : animation.value,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Container(
+        decoration: UtterBullGlobal.gameViewDecoration,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(child: left),
+            Flexible(
+              child: !widget.drag
+                  ? child
+                  : AnimatedBuilder(
+                      animation: animController,
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: isDragging ? offset : animation.value,
+                          child: child,
+                        );
+                      },
+                      child: Draggable(
+                        onDragEnd: (details) {
+                          isDragging = false;
+                          animation = CurvedAnimation(
+                                  parent: animController,
+                                  curve: Curves.elasticOut)
+                              .drive(Tween(
+                                  begin: details.offset, end: Offset.zero));
+                          animController.forward(from: 0);
+                        },
+                        onDragUpdate: (event) {
+                          setState(() {
+                            this.offset = event.globalPosition - center;
+                          });
+                        },
+                        onDragStarted: () {
+                          isDragging = true;
+                        },
+                        feedback: SizedBox.shrink(),
                         child: child,
-                      );
-                    },
-                    child: Draggable(
-                      onDragEnd: (details) {
-                        isDragging = false;
-                        animation = CurvedAnimation(
-                                parent: animController,
-                                curve: Curves.elasticOut)
-                            .drive(
-                                Tween(begin: details.offset, end: Offset.zero));
-                        animController.forward(from: 0);
-                      },
-                      onDragUpdate: (event) {
-                        setState(() {
-                          this.offset = event.globalPosition - center;
-                        });
-                      },
-                      onDragStarted: () {
-                        isDragging = true;
-                      },
-                      feedback: SizedBox.shrink(),
-                      child: child,
+                      ),
                     ),
-                  ),
-          ),
-          Expanded(child: right),
-        ],
+            ),
+            Expanded(child: right),
+          ],
+        ),
       ),
     );
 

@@ -57,22 +57,22 @@ class _$TimerStateCopyWithImpl<$Res, $Val extends TimerState>
 }
 
 /// @nodoc
-abstract class _$$_TimerStateCopyWith<$Res>
+abstract class _$$TimerStateImplCopyWith<$Res>
     implements $TimerStateCopyWith<$Res> {
-  factory _$$_TimerStateCopyWith(
-          _$_TimerState value, $Res Function(_$_TimerState) then) =
-      __$$_TimerStateCopyWithImpl<$Res>;
+  factory _$$TimerStateImplCopyWith(
+          _$TimerStateImpl value, $Res Function(_$TimerStateImpl) then) =
+      __$$TimerStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Duration timeRemaining});
 }
 
 /// @nodoc
-class __$$_TimerStateCopyWithImpl<$Res>
-    extends _$TimerStateCopyWithImpl<$Res, _$_TimerState>
-    implements _$$_TimerStateCopyWith<$Res> {
-  __$$_TimerStateCopyWithImpl(
-      _$_TimerState _value, $Res Function(_$_TimerState) _then)
+class __$$TimerStateImplCopyWithImpl<$Res>
+    extends _$TimerStateCopyWithImpl<$Res, _$TimerStateImpl>
+    implements _$$TimerStateImplCopyWith<$Res> {
+  __$$TimerStateImplCopyWithImpl(
+      _$TimerStateImpl _value, $Res Function(_$TimerStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -80,7 +80,7 @@ class __$$_TimerStateCopyWithImpl<$Res>
   $Res call({
     Object? timeRemaining = null,
   }) {
-    return _then(_$_TimerState(
+    return _then(_$TimerStateImpl(
       timeRemaining: null == timeRemaining
           ? _value.timeRemaining
           : timeRemaining // ignore: cast_nullable_to_non_nullable
@@ -91,8 +91,8 @@ class __$$_TimerStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_TimerState extends _TimerState {
-  _$_TimerState({this.timeRemaining = Duration.zero}) : super._();
+class _$TimerStateImpl extends _TimerState {
+  _$TimerStateImpl({this.timeRemaining = Duration.zero}) : super._();
 
   @override
   @JsonKey()
@@ -107,7 +107,7 @@ class _$_TimerState extends _TimerState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_TimerState &&
+            other is _$TimerStateImpl &&
             (identical(other.timeRemaining, timeRemaining) ||
                 other.timeRemaining == timeRemaining));
   }
@@ -118,18 +118,18 @@ class _$_TimerState extends _TimerState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TimerStateCopyWith<_$_TimerState> get copyWith =>
-      __$$_TimerStateCopyWithImpl<_$_TimerState>(this, _$identity);
+  _$$TimerStateImplCopyWith<_$TimerStateImpl> get copyWith =>
+      __$$TimerStateImplCopyWithImpl<_$TimerStateImpl>(this, _$identity);
 }
 
 abstract class _TimerState extends TimerState {
-  factory _TimerState({final Duration timeRemaining}) = _$_TimerState;
+  factory _TimerState({final Duration timeRemaining}) = _$TimerStateImpl;
   _TimerState._() : super._();
 
   @override
   Duration get timeRemaining;
   @override
   @JsonKey(ignore: true)
-  _$$_TimerStateCopyWith<_$_TimerState> get copyWith =>
+  _$$TimerStateImplCopyWith<_$TimerStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

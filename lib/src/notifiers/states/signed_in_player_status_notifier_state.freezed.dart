@@ -99,12 +99,12 @@ class _$SignedInPlayerStatusNotifierStateCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_SignedInPlayerStatusNotifierStateCopyWith<$Res>
+abstract class _$$SignedInPlayerStatusNotifierStateImplCopyWith<$Res>
     implements $SignedInPlayerStatusNotifierStateCopyWith<$Res> {
-  factory _$$_SignedInPlayerStatusNotifierStateCopyWith(
-          _$_SignedInPlayerStatusNotifierState value,
-          $Res Function(_$_SignedInPlayerStatusNotifierState) then) =
-      __$$_SignedInPlayerStatusNotifierStateCopyWithImpl<$Res>;
+  factory _$$SignedInPlayerStatusNotifierStateImplCopyWith(
+          _$SignedInPlayerStatusNotifierStateImpl value,
+          $Res Function(_$SignedInPlayerStatusNotifierStateImpl) then) =
+      __$$SignedInPlayerStatusNotifierStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Player? player, PlayerStatus? status, bool exists});
@@ -116,13 +116,13 @@ abstract class _$$_SignedInPlayerStatusNotifierStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SignedInPlayerStatusNotifierStateCopyWithImpl<$Res>
+class __$$SignedInPlayerStatusNotifierStateImplCopyWithImpl<$Res>
     extends _$SignedInPlayerStatusNotifierStateCopyWithImpl<$Res,
-        _$_SignedInPlayerStatusNotifierState>
-    implements _$$_SignedInPlayerStatusNotifierStateCopyWith<$Res> {
-  __$$_SignedInPlayerStatusNotifierStateCopyWithImpl(
-      _$_SignedInPlayerStatusNotifierState _value,
-      $Res Function(_$_SignedInPlayerStatusNotifierState) _then)
+        _$SignedInPlayerStatusNotifierStateImpl>
+    implements _$$SignedInPlayerStatusNotifierStateImplCopyWith<$Res> {
+  __$$SignedInPlayerStatusNotifierStateImplCopyWithImpl(
+      _$SignedInPlayerStatusNotifierStateImpl _value,
+      $Res Function(_$SignedInPlayerStatusNotifierStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -132,7 +132,7 @@ class __$$_SignedInPlayerStatusNotifierStateCopyWithImpl<$Res>
     Object? status = freezed,
     Object? exists = null,
   }) {
-    return _then(_$_SignedInPlayerStatusNotifierState(
+    return _then(_$SignedInPlayerStatusNotifierStateImpl(
       player: freezed == player
           ? _value.player
           : player // ignore: cast_nullable_to_non_nullable
@@ -151,9 +151,9 @@ class __$$_SignedInPlayerStatusNotifierStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_SignedInPlayerStatusNotifierState
+class _$SignedInPlayerStatusNotifierStateImpl
     implements _SignedInPlayerStatusNotifierState {
-  _$_SignedInPlayerStatusNotifierState(
+  _$SignedInPlayerStatusNotifierStateImpl(
       {this.player, this.status, required this.exists});
 
   @override
@@ -172,7 +172,7 @@ class _$_SignedInPlayerStatusNotifierState
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SignedInPlayerStatusNotifierState &&
+            other is _$SignedInPlayerStatusNotifierStateImpl &&
             (identical(other.player, player) || other.player == player) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.exists, exists) || other.exists == exists));
@@ -184,10 +184,10 @@ class _$_SignedInPlayerStatusNotifierState
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SignedInPlayerStatusNotifierStateCopyWith<
-          _$_SignedInPlayerStatusNotifierState>
-      get copyWith => __$$_SignedInPlayerStatusNotifierStateCopyWithImpl<
-          _$_SignedInPlayerStatusNotifierState>(this, _$identity);
+  _$$SignedInPlayerStatusNotifierStateImplCopyWith<
+          _$SignedInPlayerStatusNotifierStateImpl>
+      get copyWith => __$$SignedInPlayerStatusNotifierStateImplCopyWithImpl<
+          _$SignedInPlayerStatusNotifierStateImpl>(this, _$identity);
 }
 
 abstract class _SignedInPlayerStatusNotifierState
@@ -195,7 +195,7 @@ abstract class _SignedInPlayerStatusNotifierState
   factory _SignedInPlayerStatusNotifierState(
       {final Player? player,
       final PlayerStatus? status,
-      required final bool exists}) = _$_SignedInPlayerStatusNotifierState;
+      required final bool exists}) = _$SignedInPlayerStatusNotifierStateImpl;
 
   @override
   Player? get player;
@@ -205,7 +205,7 @@ abstract class _SignedInPlayerStatusNotifierState
   bool get exists;
   @override
   @JsonKey(ignore: true)
-  _$$_SignedInPlayerStatusNotifierStateCopyWith<
-          _$_SignedInPlayerStatusNotifierState>
+  _$$SignedInPlayerStatusNotifierStateImplCopyWith<
+          _$SignedInPlayerStatusNotifierStateImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

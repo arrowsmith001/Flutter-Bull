@@ -6,15 +6,15 @@ part of 'player_status.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_PlayerStatus _$$_PlayerStatusFromJson(Map<String, dynamic> json) =>
-    _$_PlayerStatus(
+_$PlayerStatusImpl _$$PlayerStatusImplFromJson(Map<String, dynamic> json) =>
+    _$PlayerStatusImpl(
       id: json['id'] as String?,
       errorMessage: json['errorMessage'] as String?,
       busy: json['busy'] as bool? ?? false,
       messageWhileBusy: json['messageWhileBusy'] as String? ?? '',
     );
 
-Map<String, dynamic> _$$_PlayerStatusToJson(_$_PlayerStatus instance) =>
+Map<String, dynamic> _$$PlayerStatusImplToJson(_$PlayerStatusImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'errorMessage': instance.errorMessage,

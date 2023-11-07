@@ -6,7 +6,8 @@ part of 'game_room.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
+_$GameRoomImpl _$$GameRoomImplFromJson(Map<String, dynamic> json) =>
+    _$GameRoomImpl(
       id: json['id'] as String?,
       roomCode: json['roomCode'] as String,
       leaderId: json['leaderId'] as String?,
@@ -55,7 +56,7 @@ _$_GameRoom _$$_GameRoomFromJson(Map<String, dynamic> json) => _$_GameRoom(
           : GameRoomSettings.fromJson(json['settings'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_GameRoomToJson(_$_GameRoom instance) =>
+Map<String, dynamic> _$$GameRoomImplToJson(_$GameRoomImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'roomCode': instance.roomCode,
@@ -91,12 +92,14 @@ const _$PlayerStateEnumMap = {
   PlayerState.inGame: 2,
 };
 
-_$_GameRoomSettings _$$_GameRoomSettingsFromJson(Map<String, dynamic> json) =>
-    _$_GameRoomSettings(
+_$GameRoomSettingsImpl _$$GameRoomSettingsImplFromJson(
+        Map<String, dynamic> json) =>
+    _$GameRoomSettingsImpl(
       roundTimeSeconds: json['roundTimeSeconds'] as int,
     );
 
-Map<String, dynamic> _$$_GameRoomSettingsToJson(_$_GameRoomSettings instance) =>
+Map<String, dynamic> _$$GameRoomSettingsImplToJson(
+        _$GameRoomSettingsImpl instance) =>
     <String, dynamic>{
       'roundTimeSeconds': instance.roundTimeSeconds,
     };

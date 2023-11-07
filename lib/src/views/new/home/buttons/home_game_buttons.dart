@@ -16,8 +16,7 @@ class HomeGameButtons extends ConsumerStatefulWidget {
 
 class _HomeGameButtonsState extends ConsumerState<HomeGameButtons> with UserID {
   void onJoinRoomPressed() {
-    Navigator.of(context)
-        .push(ForwardPushFadeInRoute((_) => const Padding(
+    Navigator.of(context).push(ForwardFadePushRoute((_) => const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: JoinGameView(),
         )));

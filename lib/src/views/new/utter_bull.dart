@@ -185,7 +185,7 @@ class _UtterBullState extends ConsumerState<UtterBull>
     //     _navKey.currentState?.pushNamed(authState!.name);
     //   }
     // });
-    
+
     final authBarTopPadding = MediaQuery.of(context).viewPadding.top;
     final authBarHeight = (height * 0.1) + authBarTopPadding;
 
@@ -214,7 +214,7 @@ class _UtterBullState extends ConsumerState<UtterBull>
               initialRoute: '/',
               onGenerateRoute: (settings) {
                 if (settings.name == '/') {
-                  return BackwardPushFadeInRoute((_) => WillPopScope(
+                  return BackwardFadePushRoute((_) => WillPopScope(
                       onWillPop: () async {
                         Logger().d('HomeNavigator will pop');
                         return true;
@@ -222,8 +222,7 @@ class _UtterBullState extends ConsumerState<UtterBull>
                       child: HomeNavigator(navKey: _innerNavKey)));
                 } else if (settings.name!.contains('game')) {
                   final roomId = settings.name!.split('/').last;
-                  return ForwardPushFadeInRoute((_) =>
-                      ProviderScope(overrides: [
+                  return ForwardFadePushRoute((_) => ProviderScope(overrides: [
                         getCurrentGameRoomIdProvider.overrideWithValue(roomId)
                       ], child: GameView()));
                 }
@@ -249,10 +248,10 @@ class _UtterBullState extends ConsumerState<UtterBull>
                 child: isAuthBarShowing
                     ? SizedBox.fromSize(
                         key: ValueKey(userId),
-                        size: Size(
-                          width, authBarHeight
-                        ),
-                        child: AuthBar(innerPadding: EdgeInsets.only(top: authBarTopPadding)))
+                        size: Size(width, authBarHeight),
+                        child: AuthBar(
+                            innerPadding:
+                                EdgeInsets.only(top: authBarTopPadding)))
                     : SizedBox.shrink(key: ValueKey(0)),
               ),
             ),

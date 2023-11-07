@@ -70,11 +70,11 @@ class _$PlayerResultSummaryCopyWithImpl<$Res, $Val extends PlayerResultSummary>
 }
 
 /// @nodoc
-abstract class _$$_PlayerResultSummaryCopyWith<$Res>
+abstract class _$$PlayerResultSummaryImplCopyWith<$Res>
     implements $PlayerResultSummaryCopyWith<$Res> {
-  factory _$$_PlayerResultSummaryCopyWith(_$_PlayerResultSummary value,
-          $Res Function(_$_PlayerResultSummary) then) =
-      __$$_PlayerResultSummaryCopyWithImpl<$Res>;
+  factory _$$PlayerResultSummaryImplCopyWith(_$PlayerResultSummaryImpl value,
+          $Res Function(_$PlayerResultSummaryImpl) then) =
+      __$$PlayerResultSummaryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -82,11 +82,11 @@ abstract class _$$_PlayerResultSummaryCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PlayerResultSummaryCopyWithImpl<$Res>
-    extends _$PlayerResultSummaryCopyWithImpl<$Res, _$_PlayerResultSummary>
-    implements _$$_PlayerResultSummaryCopyWith<$Res> {
-  __$$_PlayerResultSummaryCopyWithImpl(_$_PlayerResultSummary _value,
-      $Res Function(_$_PlayerResultSummary) _then)
+class __$$PlayerResultSummaryImplCopyWithImpl<$Res>
+    extends _$PlayerResultSummaryCopyWithImpl<$Res, _$PlayerResultSummaryImpl>
+    implements _$$PlayerResultSummaryImplCopyWith<$Res> {
+  __$$PlayerResultSummaryImplCopyWithImpl(_$PlayerResultSummaryImpl _value,
+      $Res Function(_$PlayerResultSummaryImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -96,7 +96,7 @@ class __$$_PlayerResultSummaryCopyWithImpl<$Res>
     Object? items = null,
     Object? roundScore = null,
   }) {
-    return _then(_$_PlayerResultSummary(
+    return _then(_$PlayerResultSummaryImpl(
       playerId: null == playerId
           ? _value.playerId
           : playerId // ignore: cast_nullable_to_non_nullable
@@ -115,8 +115,8 @@ class __$$_PlayerResultSummaryCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_PlayerResultSummary implements _PlayerResultSummary {
-  _$_PlayerResultSummary(
+class _$PlayerResultSummaryImpl implements _PlayerResultSummary {
+  _$PlayerResultSummaryImpl(
       {required this.playerId,
       required final List<PlayerResultSummaryItem> items,
       required this.roundScore})
@@ -144,7 +144,7 @@ class _$_PlayerResultSummary implements _PlayerResultSummary {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PlayerResultSummary &&
+            other is _$PlayerResultSummaryImpl &&
             (identical(other.playerId, playerId) ||
                 other.playerId == playerId) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
@@ -159,8 +159,8 @@ class _$_PlayerResultSummary implements _PlayerResultSummary {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PlayerResultSummaryCopyWith<_$_PlayerResultSummary> get copyWith =>
-      __$$_PlayerResultSummaryCopyWithImpl<_$_PlayerResultSummary>(
+  _$$PlayerResultSummaryImplCopyWith<_$PlayerResultSummaryImpl> get copyWith =>
+      __$$PlayerResultSummaryImplCopyWithImpl<_$PlayerResultSummaryImpl>(
           this, _$identity);
 }
 
@@ -168,7 +168,7 @@ abstract class _PlayerResultSummary implements PlayerResultSummary {
   factory _PlayerResultSummary(
       {required final String playerId,
       required final List<PlayerResultSummaryItem> items,
-      required final int roundScore}) = _$_PlayerResultSummary;
+      required final int roundScore}) = _$PlayerResultSummaryImpl;
 
   @override
   String get playerId;
@@ -178,6 +178,6 @@ abstract class _PlayerResultSummary implements PlayerResultSummary {
   int get roundScore;
   @override
   @JsonKey(ignore: true)
-  _$$_PlayerResultSummaryCopyWith<_$_PlayerResultSummary> get copyWith =>
+  _$$PlayerResultSummaryImplCopyWith<_$PlayerResultSummaryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

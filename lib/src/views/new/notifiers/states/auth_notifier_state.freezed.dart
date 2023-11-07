@@ -142,11 +142,11 @@ class _$AuthNotifierStateCopyWithImpl<$Res, $Val extends AuthNotifierState>
 }
 
 /// @nodoc
-abstract class _$$_AuthNotifierStateCopyWith<$Res>
+abstract class _$$AuthNotifierStateImplCopyWith<$Res>
     implements $AuthNotifierStateCopyWith<$Res> {
-  factory _$$_AuthNotifierStateCopyWith(_$_AuthNotifierState value,
-          $Res Function(_$_AuthNotifierState) then) =
-      __$$_AuthNotifierStateCopyWithImpl<$Res>;
+  factory _$$AuthNotifierStateImplCopyWith(_$AuthNotifierStateImpl value,
+          $Res Function(_$AuthNotifierStateImpl) then) =
+      __$$AuthNotifierStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -166,11 +166,11 @@ abstract class _$$_AuthNotifierStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_AuthNotifierStateCopyWithImpl<$Res>
-    extends _$AuthNotifierStateCopyWithImpl<$Res, _$_AuthNotifierState>
-    implements _$$_AuthNotifierStateCopyWith<$Res> {
-  __$$_AuthNotifierStateCopyWithImpl(
-      _$_AuthNotifierState _value, $Res Function(_$_AuthNotifierState) _then)
+class __$$AuthNotifierStateImplCopyWithImpl<$Res>
+    extends _$AuthNotifierStateCopyWithImpl<$Res, _$AuthNotifierStateImpl>
+    implements _$$AuthNotifierStateImplCopyWith<$Res> {
+  __$$AuthNotifierStateImplCopyWithImpl(_$AuthNotifierStateImpl _value,
+      $Res Function(_$AuthNotifierStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -190,7 +190,7 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
     Object? error = freezed,
     Object? message = null,
   }) {
-    return _then(_$_AuthNotifierState(
+    return _then(_$AuthNotifierStateImpl(
       authState: freezed == authState
           ? _value.authState
           : authState // ignore: cast_nullable_to_non_nullable
@@ -249,8 +249,8 @@ class __$$_AuthNotifierStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_AuthNotifierState implements _AuthNotifierState {
-  _$_AuthNotifierState(
+class _$AuthNotifierStateImpl implements _AuthNotifierState {
+  _$AuthNotifierStateImpl(
       {this.authState,
       this.authBarState,
       this.homePageState,
@@ -302,7 +302,7 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AuthNotifierState &&
+            other is _$AuthNotifierStateImpl &&
             (identical(other.authState, authState) ||
                 other.authState == authState) &&
             (identical(other.authBarState, authBarState) ||
@@ -345,8 +345,8 @@ class _$_AuthNotifierState implements _AuthNotifierState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AuthNotifierStateCopyWith<_$_AuthNotifierState> get copyWith =>
-      __$$_AuthNotifierStateCopyWithImpl<_$_AuthNotifierState>(
+  _$$AuthNotifierStateImplCopyWith<_$AuthNotifierStateImpl> get copyWith =>
+      __$$AuthNotifierStateImplCopyWithImpl<_$AuthNotifierStateImpl>(
           this, _$identity);
 }
 
@@ -364,7 +364,7 @@ abstract class _AuthNotifierState implements AuthNotifierState {
       final bool? signUpPage,
       final bool? profilePhotoExists,
       final AuthError? error,
-      final String message}) = _$_AuthNotifierState;
+      final String message}) = _$AuthNotifierStateImpl;
 
   @override
   AuthState? get authState;
@@ -394,6 +394,6 @@ abstract class _AuthNotifierState implements AuthNotifierState {
   String get message;
   @override
   @JsonKey(ignore: true)
-  _$$_AuthNotifierStateCopyWith<_$_AuthNotifierState> get copyWith =>
+  _$$AuthNotifierStateImplCopyWith<_$AuthNotifierStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

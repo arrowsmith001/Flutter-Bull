@@ -63,22 +63,22 @@ class _$GameViewModelCopyWithImpl<$Res, $Val extends GameViewModel>
 }
 
 /// @nodoc
-abstract class _$$_GameViewModelCopyWith<$Res>
+abstract class _$$GameViewModelImplCopyWith<$Res>
     implements $GameViewModelCopyWith<$Res> {
-  factory _$$_GameViewModelCopyWith(
-          _$_GameViewModel value, $Res Function(_$_GameViewModel) then) =
-      __$$_GameViewModelCopyWithImpl<$Res>;
+  factory _$$GameViewModelImplCopyWith(
+          _$GameViewModelImpl value, $Res Function(_$GameViewModelImpl) then) =
+      __$$GameViewModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({GamePath path, PlayerState? playerState});
 }
 
 /// @nodoc
-class __$$_GameViewModelCopyWithImpl<$Res>
-    extends _$GameViewModelCopyWithImpl<$Res, _$_GameViewModel>
-    implements _$$_GameViewModelCopyWith<$Res> {
-  __$$_GameViewModelCopyWithImpl(
-      _$_GameViewModel _value, $Res Function(_$_GameViewModel) _then)
+class __$$GameViewModelImplCopyWithImpl<$Res>
+    extends _$GameViewModelCopyWithImpl<$Res, _$GameViewModelImpl>
+    implements _$$GameViewModelImplCopyWith<$Res> {
+  __$$GameViewModelImplCopyWithImpl(
+      _$GameViewModelImpl _value, $Res Function(_$GameViewModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -87,7 +87,7 @@ class __$$_GameViewModelCopyWithImpl<$Res>
     Object? path = null,
     Object? playerState = freezed,
   }) {
-    return _then(_$_GameViewModel(
+    return _then(_$GameViewModelImpl(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
@@ -102,8 +102,8 @@ class __$$_GameViewModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_GameViewModel implements _GameViewModel {
-  _$_GameViewModel({required this.path, required this.playerState});
+class _$GameViewModelImpl implements _GameViewModel {
+  _$GameViewModelImpl({required this.path, required this.playerState});
 
   @override
   final GamePath path;
@@ -119,7 +119,7 @@ class _$_GameViewModel implements _GameViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GameViewModel &&
+            other is _$GameViewModelImpl &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.playerState, playerState) ||
                 other.playerState == playerState));
@@ -131,14 +131,14 @@ class _$_GameViewModel implements _GameViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GameViewModelCopyWith<_$_GameViewModel> get copyWith =>
-      __$$_GameViewModelCopyWithImpl<_$_GameViewModel>(this, _$identity);
+  _$$GameViewModelImplCopyWith<_$GameViewModelImpl> get copyWith =>
+      __$$GameViewModelImplCopyWithImpl<_$GameViewModelImpl>(this, _$identity);
 }
 
 abstract class _GameViewModel implements GameViewModel {
   factory _GameViewModel(
       {required final GamePath path,
-      required final PlayerState? playerState}) = _$_GameViewModel;
+      required final PlayerState? playerState}) = _$GameViewModelImpl;
 
   @override
   GamePath get path;
@@ -146,6 +146,6 @@ abstract class _GameViewModel implements GameViewModel {
   PlayerState? get playerState;
   @override
   @JsonKey(ignore: true)
-  _$$_GameViewModelCopyWith<_$_GameViewModel> get copyWith =>
+  _$$GameViewModelImplCopyWith<_$GameViewModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

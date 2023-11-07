@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:camera/src/camera_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/camera_service.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
@@ -65,6 +66,8 @@ class CameraNotifier extends _$CameraNotifier {
   }
 
   void takePicture() async {
+    Logger().d('takePicture 0');
+    if (kIsWeb) cameraService.controller?.pausePreview();
     Logger().d('takePicture 1');
     setData(copy(cameraState: CameraState.isTakingPicture));
     Logger().d('takePicture 2');
@@ -77,8 +80,11 @@ class CameraNotifier extends _$CameraNotifier {
   }
 
   void discardPicture() async {
-    Logger().d('discardPicture 1');
+    Logger().d('discardPicture 0');
     await cameraService.discardPhoto();
+
+    Logger().d('discardPicture 1');
+    if (kIsWeb) cameraService.controller?.resumePreview();
     Logger().d('discardPicture 2');
     setData(copy(cameraState: CameraState.ready));
     Logger().d('discardPicture 3');

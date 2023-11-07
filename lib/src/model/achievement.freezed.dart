@@ -91,11 +91,11 @@ class _$AchievementCopyWithImpl<$Res, $Val extends Achievement>
 }
 
 /// @nodoc
-abstract class _$$_AchievementCopyWith<$Res>
+abstract class _$$AchievementImplCopyWith<$Res>
     implements $AchievementCopyWith<$Res> {
-  factory _$$_AchievementCopyWith(
-          _$_Achievement value, $Res Function(_$_Achievement) then) =
-      __$$_AchievementCopyWithImpl<$Res>;
+  factory _$$AchievementImplCopyWith(
+          _$AchievementImpl value, $Res Function(_$AchievementImpl) then) =
+      __$$AchievementImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -107,11 +107,11 @@ abstract class _$$_AchievementCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_AchievementCopyWithImpl<$Res>
-    extends _$AchievementCopyWithImpl<$Res, _$_Achievement>
-    implements _$$_AchievementCopyWith<$Res> {
-  __$$_AchievementCopyWithImpl(
-      _$_Achievement _value, $Res Function(_$_Achievement) _then)
+class __$$AchievementImplCopyWithImpl<$Res>
+    extends _$AchievementCopyWithImpl<$Res, _$AchievementImpl>
+    implements _$$AchievementImplCopyWith<$Res> {
+  __$$AchievementImplCopyWithImpl(
+      _$AchievementImpl _value, $Res Function(_$AchievementImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -123,7 +123,7 @@ class __$$_AchievementCopyWithImpl<$Res>
     Object? score = null,
     Object? iconPath = null,
   }) {
-    return _then(_$_Achievement(
+    return _then(_$AchievementImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -150,16 +150,16 @@ class __$$_AchievementCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Achievement implements _Achievement {
-  _$_Achievement(
+class _$AchievementImpl implements _Achievement {
+  _$AchievementImpl(
       {this.id,
       required this.title,
       required this.description,
       required this.score,
       required this.iconPath});
 
-  factory _$_Achievement.fromJson(Map<String, dynamic> json) =>
-      _$$_AchievementFromJson(json);
+  factory _$AchievementImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AchievementImplFromJson(json);
 
   @override
   final String? id;
@@ -181,7 +181,7 @@ class _$_Achievement implements _Achievement {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Achievement &&
+            other is _$AchievementImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
@@ -199,12 +199,12 @@ class _$_Achievement implements _Achievement {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AchievementCopyWith<_$_Achievement> get copyWith =>
-      __$$_AchievementCopyWithImpl<_$_Achievement>(this, _$identity);
+  _$$AchievementImplCopyWith<_$AchievementImpl> get copyWith =>
+      __$$AchievementImplCopyWithImpl<_$AchievementImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AchievementToJson(
+    return _$$AchievementImplToJson(
       this,
     );
   }
@@ -216,10 +216,10 @@ abstract class _Achievement implements Achievement {
       required final String title,
       required final String description,
       required final int score,
-      required final String iconPath}) = _$_Achievement;
+      required final String iconPath}) = _$AchievementImpl;
 
   factory _Achievement.fromJson(Map<String, dynamic> json) =
-      _$_Achievement.fromJson;
+      _$AchievementImpl.fromJson;
 
   @override
   String? get id;
@@ -233,6 +233,6 @@ abstract class _Achievement implements Achievement {
   String get iconPath;
   @override
   @JsonKey(ignore: true)
-  _$$_AchievementCopyWith<_$_Achievement> get copyWith =>
+  _$$AchievementImplCopyWith<_$AchievementImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -121,9 +121,9 @@ class LoginNavigationController
   PageRoute? generateRoute() {
     switch (nextRoutePath) {
       case 'options':
-        return BackwardPushFadeInRoute((context) => const LoginOptionsView());
+        return BackwardFadePushRoute((context) => const LoginOptionsView());
       case 'signUpEmail':
-        return ForwardPushFadeInRoute((_) => const SignUpEmailView());
+        return ForwardFadePushRoute((_) => const SignUpEmailView());
       case 'loading':
         return CoordinatedZoomFadeRoute((context) {
           final message = tryNextRoutePath;
@@ -172,10 +172,8 @@ class LoginNavigationHeaderController extends LoginNavigationController {
                 decoration: BoxDecoration(
                     //borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
                     color: Theme.of(context).primaryColor),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  
-                  children: [
+                child:
+                    Column(mainAxisAlignment: MainAxisAlignment.end, children: [
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -263,7 +261,6 @@ class SignUpFooter extends ConsumerStatefulWidget {
 
 class _SignUpFooterState extends ConsumerState<SignUpFooter>
     with Auth, MediaDimensions {
-
   bool isSigningUp = false;
 
   void onIsSigningUpChanged(bool value) {
@@ -312,7 +309,7 @@ class _SignUpFooterState extends ConsumerState<SignUpFooter>
   }
 }
 
-class SignUpButtonBar extends ConsumerWidget  {
+class SignUpButtonBar extends ConsumerWidget {
   const SignUpButtonBar({super.key});
 
   @override

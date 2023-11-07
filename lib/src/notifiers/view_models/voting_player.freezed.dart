@@ -63,22 +63,22 @@ class _$VotingPlayerCopyWithImpl<$Res, $Val extends VotingPlayer>
 }
 
 /// @nodoc
-abstract class _$$_VotingPlayerCopyWith<$Res>
+abstract class _$$VotingPlayerImplCopyWith<$Res>
     implements $VotingPlayerCopyWith<$Res> {
-  factory _$$_VotingPlayerCopyWith(
-          _$_VotingPlayer value, $Res Function(_$_VotingPlayer) then) =
-      __$$_VotingPlayerCopyWithImpl<$Res>;
+  factory _$$VotingPlayerImplCopyWith(
+          _$VotingPlayerImpl value, $Res Function(_$VotingPlayerImpl) then) =
+      __$$VotingPlayerImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({PublicPlayer player, VoteStatus voteStatus});
 }
 
 /// @nodoc
-class __$$_VotingPlayerCopyWithImpl<$Res>
-    extends _$VotingPlayerCopyWithImpl<$Res, _$_VotingPlayer>
-    implements _$$_VotingPlayerCopyWith<$Res> {
-  __$$_VotingPlayerCopyWithImpl(
-      _$_VotingPlayer _value, $Res Function(_$_VotingPlayer) _then)
+class __$$VotingPlayerImplCopyWithImpl<$Res>
+    extends _$VotingPlayerCopyWithImpl<$Res, _$VotingPlayerImpl>
+    implements _$$VotingPlayerImplCopyWith<$Res> {
+  __$$VotingPlayerImplCopyWithImpl(
+      _$VotingPlayerImpl _value, $Res Function(_$VotingPlayerImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -87,7 +87,7 @@ class __$$_VotingPlayerCopyWithImpl<$Res>
     Object? player = null,
     Object? voteStatus = null,
   }) {
-    return _then(_$_VotingPlayer(
+    return _then(_$VotingPlayerImpl(
       player: null == player
           ? _value.player
           : player // ignore: cast_nullable_to_non_nullable
@@ -102,8 +102,8 @@ class __$$_VotingPlayerCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_VotingPlayer implements _VotingPlayer {
-  _$_VotingPlayer({required this.player, required this.voteStatus});
+class _$VotingPlayerImpl implements _VotingPlayer {
+  _$VotingPlayerImpl({required this.player, required this.voteStatus});
 
   @override
   final PublicPlayer player;
@@ -119,7 +119,7 @@ class _$_VotingPlayer implements _VotingPlayer {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_VotingPlayer &&
+            other is _$VotingPlayerImpl &&
             (identical(other.player, player) || other.player == player) &&
             (identical(other.voteStatus, voteStatus) ||
                 other.voteStatus == voteStatus));
@@ -131,14 +131,14 @@ class _$_VotingPlayer implements _VotingPlayer {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_VotingPlayerCopyWith<_$_VotingPlayer> get copyWith =>
-      __$$_VotingPlayerCopyWithImpl<_$_VotingPlayer>(this, _$identity);
+  _$$VotingPlayerImplCopyWith<_$VotingPlayerImpl> get copyWith =>
+      __$$VotingPlayerImplCopyWithImpl<_$VotingPlayerImpl>(this, _$identity);
 }
 
 abstract class _VotingPlayer implements VotingPlayer {
   factory _VotingPlayer(
       {required final PublicPlayer player,
-      required final VoteStatus voteStatus}) = _$_VotingPlayer;
+      required final VoteStatus voteStatus}) = _$VotingPlayerImpl;
 
   @override
   PublicPlayer get player;
@@ -146,6 +146,6 @@ abstract class _VotingPlayer implements VotingPlayer {
   VoteStatus get voteStatus;
   @override
   @JsonKey(ignore: true)
-  _$$_VotingPlayerCopyWith<_$_VotingPlayer> get copyWith =>
+  _$$VotingPlayerImplCopyWith<_$VotingPlayerImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
