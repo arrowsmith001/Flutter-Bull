@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/views/new/home/auth/login_dialog.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,9 +14,10 @@ class HomeAuthButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     void onLoginPressed() async {
-      ref.read(authNotifierProvider.notifier).setRoute('login');
+
+      //ref.read(authNotifierProvider.notifier).setRoute('login');
+      
       await showDialog(
-        
           useRootNavigator: true,
           context: context,
           builder: (context) {
@@ -29,19 +32,19 @@ class HomeAuthButtons extends ConsumerWidget {
                   child: LoginDialog(),
                 ));
           });
-      ref.read(authNotifierProvider.notifier).setRoute('/');
+      //ref.read(authNotifierProvider.notifier).setRoute('/');
     }
 
     void onSignUpPressed(WidgetRef ref) {
-      ref.read(authNotifierProvider.notifier).onSignUpPage();
+      ref.read(stateNotifierProvider.notifier).openSignUpPage();
     }
 
-    if (unavailable)
-      return Column(
+    if (unavailable) {
+      return const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+           Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text(
               "Utter Bull is down for maintenance",
               textAlign: TextAlign.center,
@@ -50,6 +53,7 @@ class HomeAuthButtons extends ConsumerWidget {
           )
         ],
       );
+    }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

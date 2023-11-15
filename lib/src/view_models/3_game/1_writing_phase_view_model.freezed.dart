@@ -94,12 +94,11 @@ class _$WritingPhaseViewModelCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$WritingPhaseViewModelImplCopyWith<$Res>
+abstract class _$$_WritingPhaseViewModelCopyWith<$Res>
     implements $WritingPhaseViewModelCopyWith<$Res> {
-  factory _$$WritingPhaseViewModelImplCopyWith(
-          _$WritingPhaseViewModelImpl value,
-          $Res Function(_$WritingPhaseViewModelImpl) then) =
-      __$$WritingPhaseViewModelImplCopyWithImpl<$Res>;
+  factory _$$_WritingPhaseViewModelCopyWith(_$_WritingPhaseViewModel value,
+          $Res Function(_$_WritingPhaseViewModel) then) =
+      __$$_WritingPhaseViewModelCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -112,12 +111,11 @@ abstract class _$$WritingPhaseViewModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$WritingPhaseViewModelImplCopyWithImpl<$Res>
-    extends _$WritingPhaseViewModelCopyWithImpl<$Res,
-        _$WritingPhaseViewModelImpl>
-    implements _$$WritingPhaseViewModelImplCopyWith<$Res> {
-  __$$WritingPhaseViewModelImplCopyWithImpl(_$WritingPhaseViewModelImpl _value,
-      $Res Function(_$WritingPhaseViewModelImpl) _then)
+class __$$_WritingPhaseViewModelCopyWithImpl<$Res>
+    extends _$WritingPhaseViewModelCopyWithImpl<$Res, _$_WritingPhaseViewModel>
+    implements _$$_WritingPhaseViewModelCopyWith<$Res> {
+  __$$_WritingPhaseViewModelCopyWithImpl(_$_WritingPhaseViewModel _value,
+      $Res Function(_$_WritingPhaseViewModel) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -130,7 +128,7 @@ class __$$WritingPhaseViewModelImplCopyWithImpl<$Res>
     Object? playersSubmitted = null,
     Object? playersSubmittedTextPrompt = null,
   }) {
-    return _then(_$WritingPhaseViewModelImpl(
+    return _then(_$_WritingPhaseViewModel(
       playerWritingFor: null == playerWritingFor
           ? _value.playerWritingFor
           : playerWritingFor // ignore: cast_nullable_to_non_nullable
@@ -161,8 +159,8 @@ class __$$WritingPhaseViewModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$WritingPhaseViewModelImpl implements _WritingPhaseViewModel {
-  _$WritingPhaseViewModelImpl(
+class _$_WritingPhaseViewModel implements _WritingPhaseViewModel {
+  _$_WritingPhaseViewModel(
       {required this.playerWritingFor,
       required this.writingTruthOrLie,
       required this.writingPrompt,
@@ -192,7 +190,7 @@ class _$WritingPhaseViewModelImpl implements _WritingPhaseViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WritingPhaseViewModelImpl &&
+            other is _$_WritingPhaseViewModel &&
             (identical(other.playerWritingFor, playerWritingFor) ||
                 other.playerWritingFor == playerWritingFor) &&
             (identical(other.writingTruthOrLie, writingTruthOrLie) ||
@@ -222,9 +220,9 @@ class _$WritingPhaseViewModelImpl implements _WritingPhaseViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WritingPhaseViewModelImplCopyWith<_$WritingPhaseViewModelImpl>
-      get copyWith => __$$WritingPhaseViewModelImplCopyWithImpl<
-          _$WritingPhaseViewModelImpl>(this, _$identity);
+  _$$_WritingPhaseViewModelCopyWith<_$_WritingPhaseViewModel> get copyWith =>
+      __$$_WritingPhaseViewModelCopyWithImpl<_$_WritingPhaseViewModel>(
+          this, _$identity);
 }
 
 abstract class _WritingPhaseViewModel implements WritingPhaseViewModel {
@@ -235,7 +233,7 @@ abstract class _WritingPhaseViewModel implements WritingPhaseViewModel {
           required final bool hasSubmitted,
           required final int playersSubmitted,
           required final String playersSubmittedTextPrompt}) =
-      _$WritingPhaseViewModelImpl;
+      _$_WritingPhaseViewModel;
 
   @override
   PublicPlayer get playerWritingFor;
@@ -251,6 +249,6 @@ abstract class _WritingPhaseViewModel implements WritingPhaseViewModel {
   String get playersSubmittedTextPrompt;
   @override
   @JsonKey(ignore: true)
-  _$$WritingPhaseViewModelImplCopyWith<_$WritingPhaseViewModelImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$_WritingPhaseViewModelCopyWith<_$_WritingPhaseViewModel> get copyWith =>
+      throw _privateConstructorUsedError;
 }

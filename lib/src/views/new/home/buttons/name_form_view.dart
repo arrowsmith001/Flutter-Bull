@@ -36,43 +36,46 @@ class _ProfileSetupViewNewState extends ConsumerState<NameFormView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
       children: [
-        GestureDetector(
-          onTap: () => _nameFocus.requestFocus(),
-          child: AutoSizeText(
-            'Display name:',
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: FormField(
-            validator: (_) => InputValidators.nonEmptyStringValidator(
-                _nameInputController.text),
-            builder: (state) {
-              return UtterBullTextField(
-                
-                  readOnly: isSaving,
-                  focusNode: _nameFocus,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  maxLines: 1,
-                  errorText: state.errorText,
-                  controller: _nameInputController..addListener(() {setState(() {
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => _nameFocus.requestFocus(),
+              child: AutoSizeText(
+                'Display name:',
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FormField(
+                validator: (_) => InputValidators.nonEmptyStringValidator(
+                    _nameInputController.text),
+                builder: (state) {
+                  return UtterBullTextField(
                     
-                  });}));
-            },
-          ),
+                      readOnly: isSaving,
+                      focusNode: _nameFocus,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      maxLines: 1,
+                      errorText: state.errorText,
+                      controller: _nameInputController..addListener(() {setState(() {
+                        
+                      });}));
+                },
+              ),
+            ),
+            UtterBullButton(
+              leading: isSaving ? UtterBullCircularProgressIndicator() : null,
+              title: isSaving ? 'Saving' : 'OK',
+              onPressed: canSubmit && !isSaving ? () => _onSubmitName() : null,
+            )
+          ],
         ),
-        UtterBullButton(
-          leading: isSaving ? UtterBullCircularProgressIndicator() : null,
-          title: isSaving ? 'Saving' : 'OK',
-          onPressed: canSubmit && !isSaving ? () => _onSubmitName() : null,
-        )
       ],
     );
   }

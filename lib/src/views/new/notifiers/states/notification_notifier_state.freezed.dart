@@ -58,25 +58,25 @@ class _$NotificationNotifierStateCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$NotificationNotifierStateImplCopyWith<$Res>
+abstract class _$$_NotificationNotifierStateCopyWith<$Res>
     implements $NotificationNotifierStateCopyWith<$Res> {
-  factory _$$NotificationNotifierStateImplCopyWith(
-          _$NotificationNotifierStateImpl value,
-          $Res Function(_$NotificationNotifierStateImpl) then) =
-      __$$NotificationNotifierStateImplCopyWithImpl<$Res>;
+  factory _$$_NotificationNotifierStateCopyWith(
+          _$_NotificationNotifierState value,
+          $Res Function(_$_NotificationNotifierState) then) =
+      __$$_NotificationNotifierStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({List<Notification> notifs});
 }
 
 /// @nodoc
-class __$$NotificationNotifierStateImplCopyWithImpl<$Res>
+class __$$_NotificationNotifierStateCopyWithImpl<$Res>
     extends _$NotificationNotifierStateCopyWithImpl<$Res,
-        _$NotificationNotifierStateImpl>
-    implements _$$NotificationNotifierStateImplCopyWith<$Res> {
-  __$$NotificationNotifierStateImplCopyWithImpl(
-      _$NotificationNotifierStateImpl _value,
-      $Res Function(_$NotificationNotifierStateImpl) _then)
+        _$_NotificationNotifierState>
+    implements _$$_NotificationNotifierStateCopyWith<$Res> {
+  __$$_NotificationNotifierStateCopyWithImpl(
+      _$_NotificationNotifierState _value,
+      $Res Function(_$_NotificationNotifierState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -84,7 +84,7 @@ class __$$NotificationNotifierStateImplCopyWithImpl<$Res>
   $Res call({
     Object? notifs = null,
   }) {
-    return _then(_$NotificationNotifierStateImpl(
+    return _then(_$_NotificationNotifierState(
       notifs: null == notifs
           ? _value._notifs
           : notifs // ignore: cast_nullable_to_non_nullable
@@ -95,8 +95,8 @@ class __$$NotificationNotifierStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NotificationNotifierStateImpl implements _NotificationNotifierState {
-  _$NotificationNotifierStateImpl({final List<Notification> notifs = const []})
+class _$_NotificationNotifierState implements _NotificationNotifierState {
+  _$_NotificationNotifierState({final List<Notification> notifs = const []})
       : _notifs = notifs;
 
   final List<Notification> _notifs;
@@ -117,7 +117,7 @@ class _$NotificationNotifierStateImpl implements _NotificationNotifierState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NotificationNotifierStateImpl &&
+            other is _$_NotificationNotifierState &&
             const DeepCollectionEquality().equals(other._notifs, _notifs));
   }
 
@@ -128,19 +128,19 @@ class _$NotificationNotifierStateImpl implements _NotificationNotifierState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$NotificationNotifierStateImplCopyWith<_$NotificationNotifierStateImpl>
-      get copyWith => __$$NotificationNotifierStateImplCopyWithImpl<
-          _$NotificationNotifierStateImpl>(this, _$identity);
+  _$$_NotificationNotifierStateCopyWith<_$_NotificationNotifierState>
+      get copyWith => __$$_NotificationNotifierStateCopyWithImpl<
+          _$_NotificationNotifierState>(this, _$identity);
 }
 
 abstract class _NotificationNotifierState implements NotificationNotifierState {
   factory _NotificationNotifierState({final List<Notification> notifs}) =
-      _$NotificationNotifierStateImpl;
+      _$_NotificationNotifierState;
 
   @override
   List<Notification> get notifs;
   @override
   @JsonKey(ignore: true)
-  _$$NotificationNotifierStateImplCopyWith<_$NotificationNotifierStateImpl>
+  _$$_NotificationNotifierStateCopyWith<_$_NotificationNotifierState>
       get copyWith => throw _privateConstructorUsedError;
 }

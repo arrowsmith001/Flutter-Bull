@@ -58,22 +58,22 @@ class _$ResultNotifierState0CopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$ResultNotifierState0ImplCopyWith<$Res>
+abstract class _$$_ResultNotifierState0CopyWith<$Res>
     implements $ResultNotifierState0CopyWith<$Res> {
-  factory _$$ResultNotifierState0ImplCopyWith(_$ResultNotifierState0Impl value,
-          $Res Function(_$ResultNotifierState0Impl) then) =
-      __$$ResultNotifierState0ImplCopyWithImpl<$Res>;
+  factory _$$_ResultNotifierState0CopyWith(_$_ResultNotifierState0 value,
+          $Res Function(_$_ResultNotifierState0) then) =
+      __$$_ResultNotifierState0CopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({ResultGenerator resultGenerator});
 }
 
 /// @nodoc
-class __$$ResultNotifierState0ImplCopyWithImpl<$Res>
-    extends _$ResultNotifierState0CopyWithImpl<$Res, _$ResultNotifierState0Impl>
-    implements _$$ResultNotifierState0ImplCopyWith<$Res> {
-  __$$ResultNotifierState0ImplCopyWithImpl(_$ResultNotifierState0Impl _value,
-      $Res Function(_$ResultNotifierState0Impl) _then)
+class __$$_ResultNotifierState0CopyWithImpl<$Res>
+    extends _$ResultNotifierState0CopyWithImpl<$Res, _$_ResultNotifierState0>
+    implements _$$_ResultNotifierState0CopyWith<$Res> {
+  __$$_ResultNotifierState0CopyWithImpl(_$_ResultNotifierState0 _value,
+      $Res Function(_$_ResultNotifierState0) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -81,7 +81,7 @@ class __$$ResultNotifierState0ImplCopyWithImpl<$Res>
   $Res call({
     Object? resultGenerator = null,
   }) {
-    return _then(_$ResultNotifierState0Impl(
+    return _then(_$_ResultNotifierState0(
       resultGenerator: null == resultGenerator
           ? _value.resultGenerator
           : resultGenerator // ignore: cast_nullable_to_non_nullable
@@ -92,8 +92,8 @@ class __$$ResultNotifierState0ImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ResultNotifierState0Impl implements _ResultNotifierState0 {
-  _$ResultNotifierState0Impl({required this.resultGenerator});
+class _$_ResultNotifierState0 implements _ResultNotifierState0 {
+  _$_ResultNotifierState0({required this.resultGenerator});
 
   @override
   final ResultGenerator resultGenerator;
@@ -107,7 +107,7 @@ class _$ResultNotifierState0Impl implements _ResultNotifierState0 {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ResultNotifierState0Impl &&
+            other is _$_ResultNotifierState0 &&
             (identical(other.resultGenerator, resultGenerator) ||
                 other.resultGenerator == resultGenerator));
   }
@@ -118,21 +118,20 @@ class _$ResultNotifierState0Impl implements _ResultNotifierState0 {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ResultNotifierState0ImplCopyWith<_$ResultNotifierState0Impl>
-      get copyWith =>
-          __$$ResultNotifierState0ImplCopyWithImpl<_$ResultNotifierState0Impl>(
-              this, _$identity);
+  _$$_ResultNotifierState0CopyWith<_$_ResultNotifierState0> get copyWith =>
+      __$$_ResultNotifierState0CopyWithImpl<_$_ResultNotifierState0>(
+          this, _$identity);
 }
 
 abstract class _ResultNotifierState0 implements ResultNotifierState0 {
   factory _ResultNotifierState0(
           {required final ResultGenerator resultGenerator}) =
-      _$ResultNotifierState0Impl;
+      _$_ResultNotifierState0;
 
   @override
   ResultGenerator get resultGenerator;
   @override
   @JsonKey(ignore: true)
-  _$$ResultNotifierState0ImplCopyWith<_$ResultNotifierState0Impl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$_ResultNotifierState0CopyWith<_$_ResultNotifierState0> get copyWith =>
+      throw _privateConstructorUsedError;
 }

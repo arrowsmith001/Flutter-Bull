@@ -25,6 +25,7 @@ class _CameraViewState extends ConsumerState<CameraView> with MediaDimensions {
   final double borderRadius = 16.0;
   @override
   Widget build(BuildContext context) {
+
     final preview = ref.watch(cameraNotifierProvider).when(
         data: (data) {
           if (data.cameraState == CameraState.hasTakenPicture) {
@@ -35,37 +36,22 @@ class _CameraViewState extends ConsumerState<CameraView> with MediaDimensions {
           }
 
           if (data.cameraState == CameraState.ready) {
-
             return LayoutBuilder(builder: (context, constraints) {
 
-              final double shortest = constraints.biggest.shortestSide;
-
               return ClipRRect(
-              borderRadius: BorderRadius.circular(borderRadius),
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: Container(
-                  color: Colors.blueGrey.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(borderRadius),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Flexible(
-                        child: SizedBox(
-                          height: width,
-                          child: Container(
-                            //decoration: BoxDecoration(border: Border.symmetric(horizontal: BorderSide(width: 10, color: Theme.of(context).primaryColor))),
-                            child: CameraPreview(
-                              data.controller!,
-                              child: CustomPaint(
-                                painter: HolePainter(Colors.white.withAlpha(150)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      CameraPreview(
+                                  data.controller!,
+                                  child: CustomPaint(
+                                    painter: HolePainter(
+                                        Colors.white.withAlpha(150)),
+                                  ),
+                                ),
                     ],
-                  ),
-                )));
+                  ));
             });
           }
 
@@ -87,24 +73,27 @@ class _CameraViewState extends ConsumerState<CameraView> with MediaDimensions {
     return Stack(
       children: [
         Positioned.fill(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(child: preview)
-              // Flexible(
-              //     child: Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              //   child: Container(
-              //     decoration: BoxDecoration(
-              //         color: Colors.black,
-              //         borderRadius: BorderRadius.circular(borderRadius)),
-              //     child: Padding(
-              //       padding: const EdgeInsets.symmetric(vertical: 4.0),
-              //       child: preview,
-              //     ),
-              //   ),
-              // )),
-            ],
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child: preview)
+                // Flexible(
+                //     child: Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //         color: Colors.black,
+                //         borderRadius: BorderRadius.circular(borderRadius)),
+                //     child: Padding(
+                //       padding: const EdgeInsets.symmetric(vertical: 4.0),
+                //       child: preview,
+                //     ),
+                //   ),
+                // )),
+              ],
+            ),
           ),
         ),
         Positioned(bottom: 0, child: CameraControls())

@@ -34,7 +34,7 @@ abstract class _$AchievementNotifier
     extends BuildlessAsyncNotifier<AchievementWithIcon> {
   late final String achievementId;
 
-  FutureOr<AchievementWithIcon> build(
+  Future<AchievementWithIcon> build(
     String achievementId,
   );
 }
@@ -115,7 +115,7 @@ class AchievementNotifierProvider extends AsyncNotifierProviderImpl<
   final String achievementId;
 
   @override
-  FutureOr<AchievementWithIcon> runNotifierBuild(
+  Future<AchievementWithIcon> runNotifierBuild(
     covariant AchievementNotifier notifier,
   ) {
     return notifier.build(

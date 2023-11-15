@@ -9,7 +9,7 @@ import 'package:flutter_bull/src/views/new/home/buttons/photo_prompt_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:logger/logger.dart';
 import 'buttons/home_auth_buttons.dart';
 import 'buttons/home_game_buttons.dart';
 import '../loading.dart';
@@ -24,7 +24,6 @@ class HomeMainButtons extends ConsumerStatefulWidget {
 
 class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
     with MediaDimensions {
-      
   late String initialRoute =
       ref.read(authNotifierProvider).valueOrNull?.authState?.name ??
           AuthState.signedOut.name;
@@ -45,53 +44,84 @@ class _HomeMainButtonsState extends ConsumerState<HomeMainButtons>
         //   }
         // }
 
-        _navKey.currentState?.pushNamed(next.name);
+        final int prevIndex =
+            prev == null ? -1 : AuthState.values.toList().indexOf(prev);
+        final int nextIndex = AuthState.values.toList().indexOf(next);
+
+        _navKey.currentState
+            ?.pushReplacementNamed(next.name, arguments: nextIndex - prevIndex);
       }
     });
 
-    return Navigator(
-      observers: [CoordinatedRouteObserver(), HeroController()],
-      key: _navKey,
-      initialRoute: initialRoute,
-      onGenerateRoute: (settings) {
-        Widget? child;
-        final padding = EdgeInsets.symmetric(horizontal: width * 0.1);
-        switch (settings.name) {
-          case 'signedOut':
-            return BackwardFadePushRoute((_) => Padding(
-                  padding: padding,
-                  child: HomeAuthButtons(),
-                ));
-          case 'signedInNoPlayerProfile':
-            child = Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Loading(
-                  dim: width * 0.4,
-                ),
-                Text(
-                  "Creating Player Profile",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                )
-              ],
-            );
-          case 'signedInNoName':
-            child = NameFormView();
-          case 'signedInNoPic':
-            child = PhotoPromptView();
-          case 'signedIn':
-            return ForwardPopRoute((_) => Padding(
-                  padding: padding,
-                  child: HomeGameButtons(),
-                ));
-        }
-        child ??= ErrorWidget('No route found');
-
-        return ForwardFadePushRoute((_) => Padding(
-              padding: padding,
-              child: child!,
-            ));
+    return WillPopScope(
+      onWillPop: () async {
+        Logger().d("HomeMainButtons will POP");
+        _navKey.currentState?.maybePop();
+        return false;
       },
+      child: Navigator(
+        observers: [
+          CoordinatedRouteObserver(), 
+        HeroController()],
+        key: _navKey,
+        initialRoute: initialRoute,
+        onGenerateRoute: (settings) {
+          final String? name = settings.name;
+          final int direction = (settings.arguments as int?) ?? 0;
+
+          Logger().d(ref.read(authNotifierProvider).valueOrNull);
+
+          // TODO: Pass direction as arg from listen
+
+          Widget? child;
+
+          final padding = EdgeInsets.symmetric(horizontal: width * 0.1);
+          switch (settings.name) {
+            case 'signedOut':
+              return BackwardFadePushRoute((_) => Padding(
+                    padding: padding,
+                    child: HomeAuthButtons(),
+                  ));
+            case 'signedInNoPlayerProfile':
+              child = Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Loading(
+                    dim: width * 0.4,
+                  ),
+                  Text(
+                    "Creating Player Profile",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  )
+                ],
+              );
+            case 'signedInNoName':
+              child = NameFormView();
+            case 'signedInNoPic':
+              child = PhotoPromptView();
+            case 'signedIn':
+              return ForwardPopRoute((_) => Padding(
+                    padding: padding,
+                    child: HomeGameButtons(),
+                  ));
+          }
+          child ??= ErrorWidget('No route found');
+
+          child = Padding(
+            padding: padding,
+            child: child,
+          );
+
+
+          if (direction > 0) {
+            return ForwardFadePushRoute((_) => child!);
+          } else if (direction < 0) {
+            return BackwardFadePushRoute((_) => child!);
+          } else {
+            return PageRouteBuilder(pageBuilder: (_, __, ___) => child!);
+          }
+        },
+      ),
     );
   }
 }

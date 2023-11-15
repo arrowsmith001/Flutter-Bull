@@ -9,6 +9,8 @@ import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/photo_prompt_view.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/new/loading.dart';
@@ -30,7 +32,6 @@ class AuthBar extends ConsumerStatefulWidget {
 
 class _AuthBarState extends ConsumerState<AuthBar>
     with MediaDimensions, SingleTickerProviderStateMixin {
-      
   late final _animController =
       AnimationController(vsync: this, duration: Duration(milliseconds: 200));
   late final _zoomAnim =
@@ -42,7 +43,7 @@ class _AuthBarState extends ConsumerState<AuthBar>
   TextEditingController _nameController = TextEditingController();
   FocusNode _nameFocus = FocusNode();
   final _nameFieldKey = GlobalKey<FormFieldState>();
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,13 +63,14 @@ class _AuthBarState extends ConsumerState<AuthBar>
                 final String? userId = state.userId;
                 final bool isSignedIn = state.authState != null &&
                     state.authState != AuthState.signedOut;
-      
+
                 final avatar = Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 4.0, vertical: 4.0),
                   child: userId == null
                       ? const Opacity(
-                          opacity: 0.5, child: UtterBullPlayerAvatar(null, null))
+                          opacity: 0.5,
+                          child: UtterBullPlayerAvatar(null, null))
                       : ref.watch(playerNotifierProvider(userId)).when(
                           data: (data) {
                             return AnimatedBuilder(
@@ -115,7 +117,7 @@ class _AuthBarState extends ConsumerState<AuthBar>
                           error: (e, st) => ErrorWidget(e),
                           loading: () => const Loading(dim: 25)),
                 );
-      
+
                 final buttons = Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -146,13 +148,19 @@ class _AuthBarState extends ConsumerState<AuthBar>
                     ],
                   ),
                 );
-      
-                final name = userId == null
-                    ? ref.watch(authNotifierProvider).whenDefault((data) {
+
+                final Widget name = userId == null
+                    ? ref.watch(stateNotifierProvider).whenDefault((app) {
+
+                        final bool isLoggingIn =
+                            app.busyWith.contains(Busies.loggingIn);
+                        final bool isSigningUp =
+                            app.busyWith.contains(Busies.signingUp);
+
                         String? message;
-                        if (data.login ?? false) {
+                        if (isLoggingIn) {
                           message = 'Logging in...';
-                        } else if (data.signUp ?? false) {
+                        } else if (isSigningUp) {
                           message = 'Signing up...';
                         }
                         return AnimatedSwitcher(
@@ -163,18 +171,21 @@ class _AuthBarState extends ConsumerState<AuthBar>
                                   key: ValueKey(message),
                                   message,
                                   textAlign: TextAlign.end,
-                                  style:
-                                      Theme.of(context).textTheme.headlineLarge),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineLarge),
                         );
                       })
                     : ref.watch(playerNotifierProvider(userId)).when(
                         data: (data) {
                           if (isEditingName) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: FormField(
-                                validator: (_) => InputValidators.emptyValidator(
-                                    _nameController.text),
+                                validator: (_) =>
+                                    InputValidators.emptyValidator(
+                                        _nameController.text),
                                 key: _nameFieldKey,
                                 builder: (context) => UtterBullTextField(
                                     maxLength: 25,
@@ -185,7 +196,7 @@ class _AuthBarState extends ConsumerState<AuthBar>
                               ),
                             );
                           }
-      
+
                           return data.player.name == null
                               ? const SizedBox.shrink()
                               : Padding(
@@ -208,12 +219,14 @@ class _AuthBarState extends ConsumerState<AuthBar>
                                             ),
                                             Flexible(
                                               child: MouseRegion(
-                                                cursor: SystemMouseCursors.click,
+                                                cursor:
+                                                    SystemMouseCursors.click,
                                                 child: GestureDetector(
                                                   onTap: () {
                                                     setState(() {
                                                       _nameController.text =
-                                                          data.player.name ?? '';
+                                                          data.player.name ??
+                                                              '';
                                                       _nameFocus.requestFocus();
                                                       isEditingName = true;
                                                     });
@@ -225,8 +238,8 @@ class _AuthBarState extends ConsumerState<AuthBar>
                                                           .textTheme
                                                           .headlineLarge!
                                                           .copyWith(
-                                                              color:
-                                                                  Colors.white)),
+                                                              color: Colors
+                                                                  .white)),
                                                 ),
                                               ),
                                             ),
@@ -237,7 +250,7 @@ class _AuthBarState extends ConsumerState<AuthBar>
                         },
                         error: (e, st) => const SizedBox.shrink(),
                         loading: () => const SizedBox.shrink());
-      
+
                 return AnimatedSwitcher(
                   duration: const Duration(milliseconds: 500),
                   child: Row(
@@ -282,8 +295,8 @@ class _AuthBarState extends ConsumerState<AuthBar>
                   ),
                 );
               },
-              loading: () =>
-                  UtterBullCircularProgressIndicator(size: const Size(100, 100)),
+              loading: () => UtterBullCircularProgressIndicator(
+                  size: const Size(100, 100)),
               error: (e, st) => ErrorWidget(e),
             ),
       ),

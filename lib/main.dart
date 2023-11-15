@@ -97,7 +97,7 @@ void main() async {
     await FirebaseStorage.instance.useStorageEmulator(host, 9199);
   }
 
-  FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  if(kIsWeb) FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   runApp(MyApp());
 }

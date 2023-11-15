@@ -135,11 +135,11 @@ class _$GameRoundViewModelCopyWithImpl<$Res, $Val extends GameRoundViewModel>
 }
 
 /// @nodoc
-abstract class _$$GameRoundViewModelImplCopyWith<$Res>
+abstract class _$$_GameRoundViewModelCopyWith<$Res>
     implements $GameRoundViewModelCopyWith<$Res> {
-  factory _$$GameRoundViewModelImplCopyWith(_$GameRoundViewModelImpl value,
-          $Res Function(_$GameRoundViewModelImpl) then) =
-      __$$GameRoundViewModelImplCopyWithImpl<$Res>;
+  factory _$$_GameRoundViewModelCopyWith(_$_GameRoundViewModel value,
+          $Res Function(_$_GameRoundViewModel) then) =
+      __$$_GameRoundViewModelCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -158,11 +158,11 @@ abstract class _$$GameRoundViewModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$GameRoundViewModelImplCopyWithImpl<$Res>
-    extends _$GameRoundViewModelCopyWithImpl<$Res, _$GameRoundViewModelImpl>
-    implements _$$GameRoundViewModelImplCopyWith<$Res> {
-  __$$GameRoundViewModelImplCopyWithImpl(_$GameRoundViewModelImpl _value,
-      $Res Function(_$GameRoundViewModelImpl) _then)
+class __$$_GameRoundViewModelCopyWithImpl<$Res>
+    extends _$GameRoundViewModelCopyWithImpl<$Res, _$_GameRoundViewModel>
+    implements _$$_GameRoundViewModelCopyWith<$Res> {
+  __$$_GameRoundViewModelCopyWithImpl(
+      _$_GameRoundViewModel _value, $Res Function(_$_GameRoundViewModel) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -181,7 +181,7 @@ class __$$GameRoundViewModelImplCopyWithImpl<$Res>
     Object? whoseTurnIndex = null,
     Object? timeToReadOut = null,
   }) {
-    return _then(_$GameRoundViewModelImpl(
+    return _then(_$_GameRoundViewModel(
       roundPhase: null == roundPhase
           ? _value.roundPhase
           : roundPhase // ignore: cast_nullable_to_non_nullable
@@ -236,8 +236,8 @@ class __$$GameRoundViewModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$GameRoundViewModelImpl implements _GameRoundViewModel {
-  const _$GameRoundViewModelImpl(
+class _$_GameRoundViewModel implements _GameRoundViewModel {
+  const _$_GameRoundViewModel(
       {required this.roundPhase,
       required final List<String> playersLeftToPlayIds,
       required final Map<String, PublicPlayer> players,
@@ -308,7 +308,7 @@ class _$GameRoundViewModelImpl implements _GameRoundViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$GameRoundViewModelImpl &&
+            other is _$_GameRoundViewModel &&
             (identical(other.roundPhase, roundPhase) ||
                 other.roundPhase == roundPhase) &&
             const DeepCollectionEquality()
@@ -353,8 +353,8 @@ class _$GameRoundViewModelImpl implements _GameRoundViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$GameRoundViewModelImplCopyWith<_$GameRoundViewModelImpl> get copyWith =>
-      __$$GameRoundViewModelImplCopyWithImpl<_$GameRoundViewModelImpl>(
+  _$$_GameRoundViewModelCopyWith<_$_GameRoundViewModel> get copyWith =>
+      __$$_GameRoundViewModelCopyWithImpl<_$_GameRoundViewModel>(
           this, _$identity);
 }
 
@@ -371,7 +371,7 @@ abstract class _GameRoundViewModel implements GameRoundViewModel {
       required final bool isTruth,
       required final bool isFinalRound,
       required final int whoseTurnIndex,
-      required final int timeToReadOut}) = _$GameRoundViewModelImpl;
+      required final int timeToReadOut}) = _$_GameRoundViewModel;
 
   @override
   RoundPhase get roundPhase;
@@ -399,6 +399,6 @@ abstract class _GameRoundViewModel implements GameRoundViewModel {
   int get timeToReadOut;
   @override
   @JsonKey(ignore: true)
-  _$$GameRoundViewModelImplCopyWith<_$GameRoundViewModelImpl> get copyWith =>
+  _$$_GameRoundViewModelCopyWith<_$_GameRoundViewModel> get copyWith =>
       throw _privateConstructorUsedError;
 }

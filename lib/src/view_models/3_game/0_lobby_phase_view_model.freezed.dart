@@ -137,11 +137,11 @@ class _$LobbyPhaseViewModelCopyWithImpl<$Res, $Val extends LobbyPhaseViewModel>
 }
 
 /// @nodoc
-abstract class _$$LobbyPhaseViewModelImplCopyWith<$Res>
+abstract class _$$_LobbyPhaseViewModelCopyWith<$Res>
     implements $LobbyPhaseViewModelCopyWith<$Res> {
-  factory _$$LobbyPhaseViewModelImplCopyWith(_$LobbyPhaseViewModelImpl value,
-          $Res Function(_$LobbyPhaseViewModelImpl) then) =
-      __$$LobbyPhaseViewModelImplCopyWithImpl<$Res>;
+  factory _$$_LobbyPhaseViewModelCopyWith(_$_LobbyPhaseViewModel value,
+          $Res Function(_$_LobbyPhaseViewModel) then) =
+      __$$_LobbyPhaseViewModelCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -160,11 +160,11 @@ abstract class _$$LobbyPhaseViewModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$LobbyPhaseViewModelImplCopyWithImpl<$Res>
-    extends _$LobbyPhaseViewModelCopyWithImpl<$Res, _$LobbyPhaseViewModelImpl>
-    implements _$$LobbyPhaseViewModelImplCopyWith<$Res> {
-  __$$LobbyPhaseViewModelImplCopyWithImpl(_$LobbyPhaseViewModelImpl _value,
-      $Res Function(_$LobbyPhaseViewModelImpl) _then)
+class __$$_LobbyPhaseViewModelCopyWithImpl<$Res>
+    extends _$LobbyPhaseViewModelCopyWithImpl<$Res, _$_LobbyPhaseViewModel>
+    implements _$$_LobbyPhaseViewModelCopyWith<$Res> {
+  __$$_LobbyPhaseViewModelCopyWithImpl(_$_LobbyPhaseViewModel _value,
+      $Res Function(_$_LobbyPhaseViewModel) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -183,7 +183,7 @@ class __$$LobbyPhaseViewModelImplCopyWithImpl<$Res>
     Object? enoughPlayers = null,
     Object? isStartingGame = null,
   }) {
-    return _then(_$LobbyPhaseViewModelImpl(
+    return _then(_$_LobbyPhaseViewModel(
       roomCode: null == roomCode
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
@@ -238,8 +238,8 @@ class __$$LobbyPhaseViewModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LobbyPhaseViewModelImpl implements _LobbyPhaseViewModel {
-  _$LobbyPhaseViewModelImpl(
+class _$_LobbyPhaseViewModel implements _LobbyPhaseViewModel {
+  _$_LobbyPhaseViewModel(
       {required this.roomCode,
       required this.leaderId,
       required this.isLeader,
@@ -308,7 +308,7 @@ class _$LobbyPhaseViewModelImpl implements _LobbyPhaseViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LobbyPhaseViewModelImpl &&
+            other is _$_LobbyPhaseViewModel &&
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
             (identical(other.leaderId, leaderId) ||
@@ -353,8 +353,8 @@ class _$LobbyPhaseViewModelImpl implements _LobbyPhaseViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LobbyPhaseViewModelImplCopyWith<_$LobbyPhaseViewModelImpl> get copyWith =>
-      __$$LobbyPhaseViewModelImplCopyWithImpl<_$LobbyPhaseViewModelImpl>(
+  _$$_LobbyPhaseViewModelCopyWith<_$_LobbyPhaseViewModel> get copyWith =>
+      __$$_LobbyPhaseViewModelCopyWithImpl<_$_LobbyPhaseViewModel>(
           this, _$identity);
 }
 
@@ -371,7 +371,7 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
       required final Map<String, bool> playerReadies,
       required final String numberOfPlayersString,
       required final bool enoughPlayers,
-      required final bool isStartingGame}) = _$LobbyPhaseViewModelImpl;
+      required final bool isStartingGame}) = _$_LobbyPhaseViewModel;
 
   @override
   String get roomCode;
@@ -399,6 +399,6 @@ abstract class _LobbyPhaseViewModel implements LobbyPhaseViewModel {
   bool get isStartingGame;
   @override
   @JsonKey(ignore: true)
-  _$$LobbyPhaseViewModelImplCopyWith<_$LobbyPhaseViewModelImpl> get copyWith =>
+  _$$_LobbyPhaseViewModelCopyWith<_$_LobbyPhaseViewModel> get copyWith =>
       throw _privateConstructorUsedError;
 }

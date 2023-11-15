@@ -48,24 +48,24 @@ class _LoginViewState extends ConsumerState<LoginView> {
     //   }
     // });
 
-    ref.listen(authNotifierProvider.select((value) => value.valueOrNull?.route),
-        (prev, next) {
-      if (next != null) {
-        _navHeaderController.navigateTo(next);
-        _navController.navigateTo(next);
-        _navFooterController.navigateTo(next);
-      }
-    });
+    // ref.listen(authNotifierProvider.select((value) => value.valueOrNull?.route),
+    //     (prev, next) {
+    //   if (next != null) {
+    //     _navHeaderController.navigateTo(next);
+    //     _navController.navigateTo(next);
+    //     _navFooterController.navigateTo(next);
+    //   }
+    // });
 
-    ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
-        (prev, next) {
-      if (next == true) {
-        _navFooterController.navigateTo('isSigningUp');
-      } else if (next == false) {
-        _navFooterController.navigateTo('signUpEmail');
-      }
-    });
+    // ref.listen(
+    //     authNotifierProvider.select((value) => value.valueOrNull?.signUp),
+    //     (prev, next) {
+    //   if (next == true) {
+    //     _navFooterController.navigateTo('isSigningUp');
+    //   } else if (next == false) {
+    //     _navFooterController.navigateTo('signUpEmail');
+    //   }
+    // });
 
     final asyncData = ref.watch(authNotifierProvider);
 
@@ -271,11 +271,11 @@ class _SignUpFooterState extends ConsumerState<SignUpFooter>
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(
-        authNotifierProvider.select((value) => value.valueOrNull?.signUp),
-        (prev, next) {
-      if (next != null) onIsSigningUpChanged(next);
-    });
+    // ref.listen(
+    //     authNotifierProvider.select((value) => value.valueOrNull?.signUp),
+    //     (prev, next) {
+    //   if (next != null) onIsSigningUpChanged(next);
+    // });
 
     return AnimatedSwitcher(
       switchInCurve: Curves.elasticOut,
@@ -322,9 +322,10 @@ class SignUpButtonBar extends ConsumerWidget {
             Flexible(
               child: UtterBullButton(
                   title: 'Sign Up',
-                  onPressed: () => ref
-                      .read(authNotifierProvider.notifier)
-                      .setValidateSignUpForm(true)),
+                  // onPressed: () => ref
+                  //     .read(authNotifierProvider.notifier)
+                  //     .setValidateSignUpForm(true)
+                      ),
             ),
           ],
         ));
@@ -392,7 +393,7 @@ class SignUpHeader extends ConsumerWidget {
             child: IconButton(
           icon: Icon(Icons.exit_to_app),
           onPressed: () {
-            ref.read(authNotifierProvider.notifier).setRoute('options');
+            //ref.read(authNotifierProvider.notifier).setRoute('options');
           },
         )),
       ],

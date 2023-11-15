@@ -39,4 +39,5 @@ mixin Auth<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 mixin MediaDimensions<T extends StatefulWidget> on State<T> {
   late final height = MediaQuery.of(context).size.height;
   late final width = MediaQuery.of(context).size.width;
+  double get aspectRatio => height / width;
 }

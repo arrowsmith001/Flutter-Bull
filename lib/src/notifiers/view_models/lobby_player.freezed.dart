@@ -69,22 +69,22 @@ class _$LobbyPlayerCopyWithImpl<$Res, $Val extends LobbyPlayer>
 }
 
 /// @nodoc
-abstract class _$$LobbyPlayerImplCopyWith<$Res>
+abstract class _$$_LobbyPlayerCopyWith<$Res>
     implements $LobbyPlayerCopyWith<$Res> {
-  factory _$$LobbyPlayerImplCopyWith(
-          _$LobbyPlayerImpl value, $Res Function(_$LobbyPlayerImpl) then) =
-      __$$LobbyPlayerImplCopyWithImpl<$Res>;
+  factory _$$_LobbyPlayerCopyWith(
+          _$_LobbyPlayer value, $Res Function(_$_LobbyPlayer) then) =
+      __$$_LobbyPlayerCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({PublicPlayer player, bool isLeader, bool isReady});
 }
 
 /// @nodoc
-class __$$LobbyPlayerImplCopyWithImpl<$Res>
-    extends _$LobbyPlayerCopyWithImpl<$Res, _$LobbyPlayerImpl>
-    implements _$$LobbyPlayerImplCopyWith<$Res> {
-  __$$LobbyPlayerImplCopyWithImpl(
-      _$LobbyPlayerImpl _value, $Res Function(_$LobbyPlayerImpl) _then)
+class __$$_LobbyPlayerCopyWithImpl<$Res>
+    extends _$LobbyPlayerCopyWithImpl<$Res, _$_LobbyPlayer>
+    implements _$$_LobbyPlayerCopyWith<$Res> {
+  __$$_LobbyPlayerCopyWithImpl(
+      _$_LobbyPlayer _value, $Res Function(_$_LobbyPlayer) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -94,7 +94,7 @@ class __$$LobbyPlayerImplCopyWithImpl<$Res>
     Object? isLeader = null,
     Object? isReady = null,
   }) {
-    return _then(_$LobbyPlayerImpl(
+    return _then(_$_LobbyPlayer(
       player: null == player
           ? _value.player
           : player // ignore: cast_nullable_to_non_nullable
@@ -113,8 +113,8 @@ class __$$LobbyPlayerImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LobbyPlayerImpl implements _LobbyPlayer {
-  _$LobbyPlayerImpl(
+class _$_LobbyPlayer implements _LobbyPlayer {
+  _$_LobbyPlayer(
       {required this.player, required this.isLeader, required this.isReady});
 
   @override
@@ -133,7 +133,7 @@ class _$LobbyPlayerImpl implements _LobbyPlayer {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LobbyPlayerImpl &&
+            other is _$_LobbyPlayer &&
             (identical(other.player, player) || other.player == player) &&
             (identical(other.isLeader, isLeader) ||
                 other.isLeader == isLeader) &&
@@ -146,15 +146,15 @@ class _$LobbyPlayerImpl implements _LobbyPlayer {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LobbyPlayerImplCopyWith<_$LobbyPlayerImpl> get copyWith =>
-      __$$LobbyPlayerImplCopyWithImpl<_$LobbyPlayerImpl>(this, _$identity);
+  _$$_LobbyPlayerCopyWith<_$_LobbyPlayer> get copyWith =>
+      __$$_LobbyPlayerCopyWithImpl<_$_LobbyPlayer>(this, _$identity);
 }
 
 abstract class _LobbyPlayer implements LobbyPlayer {
   factory _LobbyPlayer(
       {required final PublicPlayer player,
       required final bool isLeader,
-      required final bool isReady}) = _$LobbyPlayerImpl;
+      required final bool isReady}) = _$_LobbyPlayer;
 
   @override
   PublicPlayer get player;
@@ -164,6 +164,6 @@ abstract class _LobbyPlayer implements LobbyPlayer {
   bool get isReady;
   @override
   @JsonKey(ignore: true)
-  _$$LobbyPlayerImplCopyWith<_$LobbyPlayerImpl> get copyWith =>
+  _$$_LobbyPlayerCopyWith<_$_LobbyPlayer> get copyWith =>
       throw _privateConstructorUsedError;
 }

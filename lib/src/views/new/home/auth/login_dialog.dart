@@ -5,6 +5,8 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/notification_center.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_back_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -35,12 +37,10 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 
-  bool isLoggingIn = false;
-
   void setIsLoggingIn(bool isLoggingIn) {
     if (mounted) {
       setState(() {
-        this.isLoggingIn = isLoggingIn;
+        //this.isLoggingIn = isLoggingIn;
       });
     }
   }
@@ -113,13 +113,18 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
               validator: (_) => InputValidators.emailValidator(
                   _emailInputController.text.trim()),
               builder: (state) {
-                return UtterBullTextField(
-                    readOnly: isLoggingIn,
-                    focusNode: _emailFocus,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    maxLines: 1,
-                    errorText: state.errorText,
-                    controller: _emailInputController);
+                return ref.watch(stateNotifierProvider).whenDefault((app) {
+                  
+                  bool isLoggingIn = app.busyWith.contains(Busies.loggingIn);
+
+                  return UtterBullTextField(
+                      readOnly: isLoggingIn,
+                      focusNode: _emailFocus,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      maxLines: 1,
+                      errorText: state.errorText,
+                      controller: _emailInputController);
+                });
               },
             ),
           ),
@@ -145,14 +150,18 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
               validator: (_) =>
                   InputValidators.passwordValidator(_passwordController.text),
               builder: (state) {
-                return UtterBullTextField(
-                    readOnly: isLoggingIn,
-                    focusNode: _passwordFocus,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    obscureText: true,
-                    maxLines: 1,
-                    errorText: state.errorText,
-                    controller: _passwordController);
+                return ref.watch(stateNotifierProvider).whenDefault((app) {
+                  bool isLoggingIn = app.busyWith.contains(Busies.loggingIn);
+
+                  return UtterBullTextField(
+                      readOnly: isLoggingIn,
+                      focusNode: _passwordFocus,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      obscureText: true,
+                      maxLines: 1,
+                      errorText: state.errorText,
+                      controller: _passwordController);
+                });
               },
             ),
           ),
@@ -171,14 +180,19 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
               child: UtterBullBackButton(onPressed: () => onExitLogin()),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ref.watch(authNotifierProvider).whenDefault((data) => UtterBullButton(
-                    leading: (data.login ?? false) ? UtterBullCircularProgressIndicator() : null,
-                    color: Theme.of(context).primaryColorDark,
-                    onPressed: (data.login ?? false) ? null : () => onValidateLoginForm(),
-                    title: (data.login ?? false) ? 'Logging in' : 'Login'))
-              ),
-            
+                padding: const EdgeInsets.all(8.0),
+                child: ref.watch(stateNotifierProvider).whenDefault((app) {
+                  bool isLoggingIn = app.busyWith.contains(Busies.loggingIn);
+
+                  return UtterBullButton(
+                      leading: isLoggingIn
+                          ? UtterBullCircularProgressIndicator()
+                          : null,
+                      color: Theme.of(context).primaryColorDark,
+                      onPressed:
+                          isLoggingIn ? null : () => onValidateLoginForm(),
+                      title: isLoggingIn ? 'Logging in' : 'Login');
+                })),
           ]),
         ));
 
@@ -202,28 +216,29 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
                 ],
               ),
               Flexible(
-                flex: 2,
+                  flex: 2,
                   child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.1, vertical: 12.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                          flex: 1,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
-                            child: email,
-                          )),
-                      Flexible(
-                          flex: 1,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
-                            child: password,
-                          )),
-                    ])),
-              )),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.1, vertical: 12.0),
+                    child: SingleChildScrollView(
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                          Flexible(
+                              flex: 1,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.0),
+                                child: email,
+                              )),
+                          Flexible(
+                              flex: 1,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.0),
+                                child: password,
+                              )),
+                        ])),
+                  )),
               Padding(
                 padding:
                     const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 8.0),

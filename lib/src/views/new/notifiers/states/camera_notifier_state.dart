@@ -12,6 +12,7 @@ class CameraNotifierState with _$CameraNotifierState {
   factory CameraNotifierState({
     CameraState? cameraState, CameraController? controller, Uint8List? lastPicture,
   }) = _CameraNotifierState;
+
 }
 
 

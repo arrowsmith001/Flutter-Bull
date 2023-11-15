@@ -8,8 +8,6 @@ import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'bar/auth_bar_container.dart';
-
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
@@ -54,22 +52,36 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
             ],
           ),
 
-        Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Spacer(),
-              Flexible(
-                child: SizedBox(
-                  width: width,
-                  child: HomeMainButtons()),
+      Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  SizedBox(
+                    width: width,
+                    height: height * 0.5,
+                    child: HomeMainButtons()),
+                ],
               ),
-            
-
-            ],
-          ),
+            ),
+          ],
         ),
+      )
+        // Scaffold(
+        //   resizeToAvoidBottomInset: true,
+        //   body: SizedBox(
+        //         width: width,
+        //         child: Column(
+        //           mainAxisAlignment: MainAxisAlignment.end,
+        //           mainAxisSize: MainAxisSize.max,
+        //           children: [
+        //             Spacer(),
+        //           Flexible(child: Container(color: Colors.red, child: HomeMainButtons()))
+        //         ],)),
+        // ),
       ],
     );
   }

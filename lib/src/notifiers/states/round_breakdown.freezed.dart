@@ -121,11 +121,11 @@ class _$RoundBreakdownCopyWithImpl<$Res, $Val extends RoundBreakdown>
 }
 
 /// @nodoc
-abstract class _$$RoundBreakdownImplCopyWith<$Res>
+abstract class _$$_RoundBreakdownCopyWith<$Res>
     implements $RoundBreakdownCopyWith<$Res> {
-  factory _$$RoundBreakdownImplCopyWith(_$RoundBreakdownImpl value,
-          $Res Function(_$RoundBreakdownImpl) then) =
-      __$$RoundBreakdownImplCopyWithImpl<$Res>;
+  factory _$$_RoundBreakdownCopyWith(
+          _$_RoundBreakdown value, $Res Function(_$_RoundBreakdown) then) =
+      __$$_RoundBreakdownCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -142,11 +142,11 @@ abstract class _$$RoundBreakdownImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$RoundBreakdownImplCopyWithImpl<$Res>
-    extends _$RoundBreakdownCopyWithImpl<$Res, _$RoundBreakdownImpl>
-    implements _$$RoundBreakdownImplCopyWith<$Res> {
-  __$$RoundBreakdownImplCopyWithImpl(
-      _$RoundBreakdownImpl _value, $Res Function(_$RoundBreakdownImpl) _then)
+class __$$_RoundBreakdownCopyWithImpl<$Res>
+    extends _$RoundBreakdownCopyWithImpl<$Res, _$_RoundBreakdown>
+    implements _$$_RoundBreakdownCopyWith<$Res> {
+  __$$_RoundBreakdownCopyWithImpl(
+      _$_RoundBreakdown _value, $Res Function(_$_RoundBreakdown) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -163,7 +163,7 @@ class __$$RoundBreakdownImplCopyWithImpl<$Res>
     Object? saboteurVote = freezed,
     Object? fooledProportion = null,
   }) {
-    return _then(_$RoundBreakdownImpl(
+    return _then(_$_RoundBreakdown(
       whoseTurnId: null == whoseTurnId
           ? _value.whoseTurnId
           : whoseTurnId // ignore: cast_nullable_to_non_nullable
@@ -210,8 +210,8 @@ class __$$RoundBreakdownImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$RoundBreakdownImpl implements _RoundBreakdown {
-  _$RoundBreakdownImpl(
+class _$_RoundBreakdown implements _RoundBreakdown {
+  _$_RoundBreakdown(
       {required this.whoseTurnId,
       required this.isTruth,
       required final Map<String, Vote> votes,
@@ -289,7 +289,7 @@ class _$RoundBreakdownImpl implements _RoundBreakdown {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$RoundBreakdownImpl &&
+            other is _$_RoundBreakdown &&
             (identical(other.whoseTurnId, whoseTurnId) ||
                 other.whoseTurnId == whoseTurnId) &&
             (identical(other.isTruth, isTruth) || other.isTruth == isTruth) &&
@@ -327,9 +327,8 @@ class _$RoundBreakdownImpl implements _RoundBreakdown {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$RoundBreakdownImplCopyWith<_$RoundBreakdownImpl> get copyWith =>
-      __$$RoundBreakdownImplCopyWithImpl<_$RoundBreakdownImpl>(
-          this, _$identity);
+  _$$_RoundBreakdownCopyWith<_$_RoundBreakdown> get copyWith =>
+      __$$_RoundBreakdownCopyWithImpl<_$_RoundBreakdown>(this, _$identity);
 }
 
 abstract class _RoundBreakdown implements RoundBreakdown {
@@ -343,7 +342,7 @@ abstract class _RoundBreakdown implements RoundBreakdown {
       required final List<String> playersNotVoted,
       required final String? saboteurId,
       required final String? saboteurVote,
-      required final FooledProportion fooledProportion}) = _$RoundBreakdownImpl;
+      required final FooledProportion fooledProportion}) = _$_RoundBreakdown;
 
   @override
   String get whoseTurnId;
@@ -367,6 +366,6 @@ abstract class _RoundBreakdown implements RoundBreakdown {
   FooledProportion get fooledProportion;
   @override
   @JsonKey(ignore: true)
-  _$$RoundBreakdownImplCopyWith<_$RoundBreakdownImpl> get copyWith =>
+  _$$_RoundBreakdownCopyWith<_$_RoundBreakdown> get copyWith =>
       throw _privateConstructorUsedError;
 }

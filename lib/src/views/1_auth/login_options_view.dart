@@ -108,7 +108,7 @@ class _LoginOptionsViewState extends ConsumerState<LoginOptionsView>
   }
 
   void _onSignUpWithEmail() {
-    ref.read(authNotifierProvider.notifier).setRoute('signUpEmail');
+    //ref.read(authNotifierProvider.notifier).setRoute('signUpEmail');
   }
 
   Widget _buildGoogleButton() {
