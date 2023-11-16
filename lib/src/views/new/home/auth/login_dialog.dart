@@ -5,8 +5,8 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/notification_center.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_back_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -24,6 +24,7 @@ class LoginDialog extends ConsumerStatefulWidget {
 
 class _LoginDialogState extends ConsumerState<LoginDialog>
     with MediaDimensions {
+
   @override
   void initState() {
     super.initState();
@@ -37,26 +38,19 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 
-  void setIsLoggingIn(bool isLoggingIn) {
-    if (mounted) {
-      setState(() {
-        //this.isLoggingIn = isLoggingIn;
-      });
-    }
-  }
+
+  bool get isLoggingIn => ref.watch(appNotifierProvider).valueOrNull?.busyWith.contains(Busy.loggingIn) ?? false;
+
 
   void onValidateLoginForm() async {
     bool isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
-
-    setIsLoggingIn(true);
 
     _notifKey.currentState?.dismiss();
 
     await ref.read(authNotifierProvider.notifier).signInWithEmailAndPassword(
         _emailInputController.text.trim(), _passwordController.text);
 
-    setIsLoggingIn(false);
   }
 
   void onExitLogin() {
@@ -113,18 +107,13 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
               validator: (_) => InputValidators.emailValidator(
                   _emailInputController.text.trim()),
               builder: (state) {
-                return ref.watch(stateNotifierProvider).whenDefault((app) {
-                  
-                  bool isLoggingIn = app.busyWith.contains(Busies.loggingIn);
-
-                  return UtterBullTextField(
+                return UtterBullTextField(
                       readOnly: isLoggingIn,
                       focusNode: _emailFocus,
                       style: Theme.of(context).textTheme.headlineMedium,
                       maxLines: 1,
                       errorText: state.errorText,
                       controller: _emailInputController);
-                });
               },
             ),
           ),
@@ -150,10 +139,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
               validator: (_) =>
                   InputValidators.passwordValidator(_passwordController.text),
               builder: (state) {
-                return ref.watch(stateNotifierProvider).whenDefault((app) {
-                  bool isLoggingIn = app.busyWith.contains(Busies.loggingIn);
-
-                  return UtterBullTextField(
+                return UtterBullTextField(
                       readOnly: isLoggingIn,
                       focusNode: _passwordFocus,
                       style: Theme.of(context).textTheme.headlineMedium,
@@ -161,7 +147,6 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
                       maxLines: 1,
                       errorText: state.errorText,
                       controller: _passwordController);
-                });
               },
             ),
           ),
@@ -181,18 +166,14 @@ class _LoginDialogState extends ConsumerState<LoginDialog>
             ),
             Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: ref.watch(stateNotifierProvider).whenDefault((app) {
-                  bool isLoggingIn = app.busyWith.contains(Busies.loggingIn);
-
-                  return UtterBullButton(
+                child:  UtterBullButton(
                       leading: isLoggingIn
                           ? UtterBullCircularProgressIndicator()
                           : null,
                       color: Theme.of(context).primaryColorDark,
                       onPressed:
                           isLoggingIn ? null : () => onValidateLoginForm(),
-                      title: isLoggingIn ? 'Logging in' : 'Login');
-                })),
+                      title: isLoggingIn ? 'Logging in' : 'Login')),
           ]),
         ));
 

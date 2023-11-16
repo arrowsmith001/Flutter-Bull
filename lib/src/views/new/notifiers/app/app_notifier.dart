@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_event_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
@@ -11,31 +12,41 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:logger/logger.dart';
 
-part 'state_notifier.g.dart';
+part 'app_notifier.g.dart';
+
+
+enum AuthBarState { hide, show }
+
+enum SignUpPageState { open, valid, validating, invalid, closed }
+
+enum CameraViewState { open, closed }
+
+enum Busy { loggingIn, signingUp, creatingGame, joiningGame, signingOut }
 
 @Riverpod(keepAlive: true)
-class StateNotifier extends _$StateNotifier {
-  AuthService get _authService => ref.read(authServiceProvider);
+class AppNotifier extends _$AppNotifier {
+  
+  AppEventNotifier get appEventNotifier =>
+      ref.read(appEventNotifierProvider.notifier);
 
   @override
   Stream<AppState> build() async* {
-
     yield AppState();
   }
 
+  void setAuthBarState(AuthBarState desiredState) {
+    setData(value.copyWith(authBarState: desiredState));
+  }
 
-  void openSignUpPage(){
-    setData(value.copyWith(signUpPageState: SignUpPageState.open, authBarState: AuthBarState.hide));
+  void setSignUpPageState(SignUpPageState desiredState) {
+    setData(value.copyWith(signUpPageState: desiredState));
   }
-  void validateSignUpPage(){
-    setData(value.copyWith(signUpPageState: SignUpPageState.validating));
-  }
-  void closeSignUpPage(){
-    setData(value.copyWith(signUpPageState: SignUpPageState.closed, authBarState: AuthBarState.show));
-  }
-  
 
-  void addBusy(Busies busy) {
+  void setCameraViewState(CameraViewState desiredState) {
+    setData(value.copyWith(cameraViewState: desiredState));
+  }
+
+  void addBusy(Busy busy) {
     final busies = state.valueOrNull?.busyWith ?? [];
 
     if (busies.contains(busy)) {
@@ -43,12 +54,10 @@ class StateNotifier extends _$StateNotifier {
       return;
     }
 
-    setData(value.copyWith(busyWith: busies..add(busy)));
+    setData(value.copyWith(busyWith: [...busies, busy], nowBusy: busy));
   }
 
-
-  void removeBusy(Busies busy) {
-    
+  void removeBusy(Busy busy) {
     final busies = state.valueOrNull?.busyWith ?? [];
 
     if (!busies.contains(busy)) {
@@ -56,16 +65,12 @@ class StateNotifier extends _$StateNotifier {
       return;
     }
 
-    setData(value.copyWith(busyWith: busies..remove(busy)));
+    setData(value.copyWith(busyWith: busies.where((e) => e != busy).toList(), nowNotBusy: busy));
   }
 
-  
   AppState get value => state.value ?? AppState();
 
   void setData(AppState newState) {
-    Logger().d('setting new AppState: $newState');
     state = AsyncData(newState);
   }
 }
-
-enum HomePageState { home, creatingRoom, joiningRoom }

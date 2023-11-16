@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'state_notifier.dart';
+part of 'app_event_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$stateNotifierHash() => r'8c382b934d354191a7cca4bb2997b95fc7ff87d6';
+String _$appEventNotifierHash() => r'9e26a326abe71fcc807bc1d7a785fa324b983b03';
 
-/// See also [StateNotifier].
-@ProviderFor(StateNotifier)
-final stateNotifierProvider =
-    StreamNotifierProvider<StateNotifier, AppState>.internal(
-  StateNotifier.new,
-  name: r'stateNotifierProvider',
+/// See also [AppEventNotifier].
+@ProviderFor(AppEventNotifier)
+final appEventNotifierProvider =
+    StreamNotifierProvider<AppEventNotifier, AppEvents>.internal(
+  AppEventNotifier.new,
+  name: r'appEventNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$stateNotifierHash,
+      : _$appEventNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$StateNotifier = StreamNotifier<AppState>;
+typedef _$AppEventNotifier = StreamNotifier<AppEvents>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

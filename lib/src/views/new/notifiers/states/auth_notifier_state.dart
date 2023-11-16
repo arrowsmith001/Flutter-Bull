@@ -1,5 +1,5 @@
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_notifier_state.freezed.dart';

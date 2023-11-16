@@ -16,10 +16,12 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AppState {
-  AuthBarState get authBarState => throw _privateConstructorUsedError;
-  SignUpPageState get signUpPageState => throw _privateConstructorUsedError;
-  CameraViewState get cameraViewState => throw _privateConstructorUsedError;
-  List<Busies> get busyWith => throw _privateConstructorUsedError;
+  AuthBarState? get authBarState => throw _privateConstructorUsedError;
+  SignUpPageState? get signUpPageState => throw _privateConstructorUsedError;
+  CameraViewState? get cameraViewState => throw _privateConstructorUsedError;
+  List<Busy> get busyWith => throw _privateConstructorUsedError;
+  Busy? get nowBusy => throw _privateConstructorUsedError;
+  Busy? get nowNotBusy => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppStateCopyWith<AppState> get copyWith =>
@@ -32,10 +34,12 @@ abstract class $AppStateCopyWith<$Res> {
       _$AppStateCopyWithImpl<$Res, AppState>;
   @useResult
   $Res call(
-      {AuthBarState authBarState,
-      SignUpPageState signUpPageState,
-      CameraViewState cameraViewState,
-      List<Busies> busyWith});
+      {AuthBarState? authBarState,
+      SignUpPageState? signUpPageState,
+      CameraViewState? cameraViewState,
+      List<Busy> busyWith,
+      Busy? nowBusy,
+      Busy? nowNotBusy});
 }
 
 /// @nodoc
@@ -51,28 +55,38 @@ class _$AppStateCopyWithImpl<$Res, $Val extends AppState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? authBarState = null,
-    Object? signUpPageState = null,
-    Object? cameraViewState = null,
+    Object? authBarState = freezed,
+    Object? signUpPageState = freezed,
+    Object? cameraViewState = freezed,
     Object? busyWith = null,
+    Object? nowBusy = freezed,
+    Object? nowNotBusy = freezed,
   }) {
     return _then(_value.copyWith(
-      authBarState: null == authBarState
+      authBarState: freezed == authBarState
           ? _value.authBarState
           : authBarState // ignore: cast_nullable_to_non_nullable
-              as AuthBarState,
-      signUpPageState: null == signUpPageState
+              as AuthBarState?,
+      signUpPageState: freezed == signUpPageState
           ? _value.signUpPageState
           : signUpPageState // ignore: cast_nullable_to_non_nullable
-              as SignUpPageState,
-      cameraViewState: null == cameraViewState
+              as SignUpPageState?,
+      cameraViewState: freezed == cameraViewState
           ? _value.cameraViewState
           : cameraViewState // ignore: cast_nullable_to_non_nullable
-              as CameraViewState,
+              as CameraViewState?,
       busyWith: null == busyWith
           ? _value.busyWith
           : busyWith // ignore: cast_nullable_to_non_nullable
-              as List<Busies>,
+              as List<Busy>,
+      nowBusy: freezed == nowBusy
+          ? _value.nowBusy
+          : nowBusy // ignore: cast_nullable_to_non_nullable
+              as Busy?,
+      nowNotBusy: freezed == nowNotBusy
+          ? _value.nowNotBusy
+          : nowNotBusy // ignore: cast_nullable_to_non_nullable
+              as Busy?,
     ) as $Val);
   }
 }
@@ -85,10 +99,12 @@ abstract class _$$_AppStateCopyWith<$Res> implements $AppStateCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {AuthBarState authBarState,
-      SignUpPageState signUpPageState,
-      CameraViewState cameraViewState,
-      List<Busies> busyWith});
+      {AuthBarState? authBarState,
+      SignUpPageState? signUpPageState,
+      CameraViewState? cameraViewState,
+      List<Busy> busyWith,
+      Busy? nowBusy,
+      Busy? nowNotBusy});
 }
 
 /// @nodoc
@@ -102,28 +118,38 @@ class __$$_AppStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? authBarState = null,
-    Object? signUpPageState = null,
-    Object? cameraViewState = null,
+    Object? authBarState = freezed,
+    Object? signUpPageState = freezed,
+    Object? cameraViewState = freezed,
     Object? busyWith = null,
+    Object? nowBusy = freezed,
+    Object? nowNotBusy = freezed,
   }) {
     return _then(_$_AppState(
-      authBarState: null == authBarState
+      authBarState: freezed == authBarState
           ? _value.authBarState
           : authBarState // ignore: cast_nullable_to_non_nullable
-              as AuthBarState,
-      signUpPageState: null == signUpPageState
+              as AuthBarState?,
+      signUpPageState: freezed == signUpPageState
           ? _value.signUpPageState
           : signUpPageState // ignore: cast_nullable_to_non_nullable
-              as SignUpPageState,
-      cameraViewState: null == cameraViewState
+              as SignUpPageState?,
+      cameraViewState: freezed == cameraViewState
           ? _value.cameraViewState
           : cameraViewState // ignore: cast_nullable_to_non_nullable
-              as CameraViewState,
+              as CameraViewState?,
       busyWith: null == busyWith
           ? _value._busyWith
           : busyWith // ignore: cast_nullable_to_non_nullable
-              as List<Busies>,
+              as List<Busy>,
+      nowBusy: freezed == nowBusy
+          ? _value.nowBusy
+          : nowBusy // ignore: cast_nullable_to_non_nullable
+              as Busy?,
+      nowNotBusy: freezed == nowNotBusy
+          ? _value.nowNotBusy
+          : nowNotBusy // ignore: cast_nullable_to_non_nullable
+              as Busy?,
     ));
   }
 }
@@ -132,33 +158,37 @@ class __$$_AppStateCopyWithImpl<$Res>
 
 class _$_AppState implements _AppState {
   _$_AppState(
-      {this.authBarState = AuthBarState.show,
-      this.signUpPageState = SignUpPageState.closed,
-      this.cameraViewState = CameraViewState.closed,
-      final List<Busies> busyWith = const []})
+      {this.authBarState,
+      this.signUpPageState,
+      this.cameraViewState,
+      final List<Busy> busyWith = const [],
+      this.nowBusy,
+      this.nowNotBusy})
       : _busyWith = busyWith;
 
   @override
-  @JsonKey()
-  final AuthBarState authBarState;
+  final AuthBarState? authBarState;
+  @override
+  final SignUpPageState? signUpPageState;
+  @override
+  final CameraViewState? cameraViewState;
+  final List<Busy> _busyWith;
   @override
   @JsonKey()
-  final SignUpPageState signUpPageState;
-  @override
-  @JsonKey()
-  final CameraViewState cameraViewState;
-  final List<Busies> _busyWith;
-  @override
-  @JsonKey()
-  List<Busies> get busyWith {
+  List<Busy> get busyWith {
     if (_busyWith is EqualUnmodifiableListView) return _busyWith;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_busyWith);
   }
 
   @override
+  final Busy? nowBusy;
+  @override
+  final Busy? nowNotBusy;
+
+  @override
   String toString() {
-    return 'AppState(authBarState: $authBarState, signUpPageState: $signUpPageState, cameraViewState: $cameraViewState, busyWith: $busyWith)';
+    return 'AppState(authBarState: $authBarState, signUpPageState: $signUpPageState, cameraViewState: $cameraViewState, busyWith: $busyWith, nowBusy: $nowBusy, nowNotBusy: $nowNotBusy)';
   }
 
   @override
@@ -172,12 +202,21 @@ class _$_AppState implements _AppState {
                 other.signUpPageState == signUpPageState) &&
             (identical(other.cameraViewState, cameraViewState) ||
                 other.cameraViewState == cameraViewState) &&
-            const DeepCollectionEquality().equals(other._busyWith, _busyWith));
+            const DeepCollectionEquality().equals(other._busyWith, _busyWith) &&
+            (identical(other.nowBusy, nowBusy) || other.nowBusy == nowBusy) &&
+            (identical(other.nowNotBusy, nowNotBusy) ||
+                other.nowNotBusy == nowNotBusy));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, authBarState, signUpPageState,
-      cameraViewState, const DeepCollectionEquality().hash(_busyWith));
+  int get hashCode => Object.hash(
+      runtimeType,
+      authBarState,
+      signUpPageState,
+      cameraViewState,
+      const DeepCollectionEquality().hash(_busyWith),
+      nowBusy,
+      nowNotBusy);
 
   @JsonKey(ignore: true)
   @override
@@ -188,19 +227,25 @@ class _$_AppState implements _AppState {
 
 abstract class _AppState implements AppState {
   factory _AppState(
-      {final AuthBarState authBarState,
-      final SignUpPageState signUpPageState,
-      final CameraViewState cameraViewState,
-      final List<Busies> busyWith}) = _$_AppState;
+      {final AuthBarState? authBarState,
+      final SignUpPageState? signUpPageState,
+      final CameraViewState? cameraViewState,
+      final List<Busy> busyWith,
+      final Busy? nowBusy,
+      final Busy? nowNotBusy}) = _$_AppState;
 
   @override
-  AuthBarState get authBarState;
+  AuthBarState? get authBarState;
   @override
-  SignUpPageState get signUpPageState;
+  SignUpPageState? get signUpPageState;
   @override
-  CameraViewState get cameraViewState;
+  CameraViewState? get cameraViewState;
   @override
-  List<Busies> get busyWith;
+  List<Busy> get busyWith;
+  @override
+  Busy? get nowBusy;
+  @override
+  Busy? get nowNotBusy;
   @override
   @JsonKey(ignore: true)
   _$$_AppStateCopyWith<_$_AppState> get copyWith =>

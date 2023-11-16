@@ -13,9 +13,10 @@ import 'package:flutter_bull/src/views/2_main/game_view.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/join_game_view.dart';
 import 'package:flutter_bull/src/views/3_game/2_game_round_view.dart';
 import 'package:flutter_bull/src/views/new/notification_center.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_event_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/notification_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
@@ -102,20 +103,11 @@ class _UtterBullState extends ConsumerState<UtterBull>
   @override
   Widget build(BuildContext context) {
     ref.listen(
-        stateNotifierProvider.select((data) => data.valueOrNull?.authBarState),
+        appEventNotifierProvider.select((data) => data.valueOrNull?.newAuthBarState),
         (_, next) {
       _toggleAuthBar(next);
     });
 
-    ref.listen(
-        stateNotifierProvider
-            .select((value) => value.valueOrNull?.cameraViewState), (_, next) {
-      if (next == CameraViewState.open) {
-        _toggleAuthBar(AuthBarState.hide);
-      } else if (next == CameraViewState.closed) {
-        _toggleAuthBar(AuthBarState.show);
-      }
-    });
 
     ref.listen(authNotifierProvider.select((data) => data.requireValue.error),
         (_, error) {
@@ -233,35 +225,11 @@ class HomeNavigator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     void onCloseSignUpPage() {
-      ref.read(stateNotifierProvider.notifier).closeSignUpPage();
+      ref.read(appNotifierProvider.notifier).setSignUpPageState(SignUpPageState.closed);
     }
 
-    ref.listen(
-        stateNotifierProvider
-            .select((data) => data.valueOrNull?.signUpPageState), (prev, next) {
-      if(prev != null)
-      {
-        if (next == SignUpPageState.open) {
-        navKey.currentState?.pushNamed('signUp');
-        } else if (next == SignUpPageState.closed) {
-          navKey.currentState?.pop();
-        }
-      }
-    });
-
-    ref.listen(
-        stateNotifierProvider
-            .select((value) => value.valueOrNull?.cameraViewState), (prev, next) {
-      if(prev != null)
-      {
-        if (next == CameraViewState.open) {
-        navKey.currentState?.pushNamed('camera');
-        } else if (prev == CameraViewState.open && next == CameraViewState.closed) {
-        navKey.currentState?.pop();
-        }
-      }
-    });
 
     return Navigator(
       observers: [CoordinatedRouteObserver(), HeroController()],

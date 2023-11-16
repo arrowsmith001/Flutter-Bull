@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
@@ -67,13 +67,13 @@ class AuthNotifier extends _$AuthNotifier {
 
   Future<void> signOut() async {
 
-    ref.read(stateNotifierProvider.notifier).addBusy(Busies.signingOut);
+    ref.read(appNotifierProvider.notifier).addBusy(Busy.signingOut);
 
     state = state.copyWithPrevious(const AsyncLoading());
 
     await _authService.signOut();
     
-    ref.read(stateNotifierProvider.notifier).removeBusy(Busies.signingOut);
+    ref.read(appNotifierProvider.notifier).removeBusy(Busy.signingOut);
   }
 
   Future<void> signUpWithEmailAndPassword(String email, String password) async {

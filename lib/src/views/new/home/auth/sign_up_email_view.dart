@@ -3,9 +3,10 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/views/new/notification_center.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_event_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
@@ -61,14 +62,20 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
 
     if (!isValid) {
       ref
-          .read(stateNotifierProvider.notifier)
-          .openSignUpPage();
+          .read(appNotifierProvider.notifier)
+          .setSignUpPageState(SignUpPageState.invalid);
       return;
+    }
+    else
+    {
+      ref
+          .read(appNotifierProvider.notifier)
+          .setSignUpPageState(SignUpPageState.valid);
     }
 
     _notifKey.currentState?.dismiss();
 
-    ref.read(stateNotifierProvider.notifier).addBusy(Busies.signingUp);
+    ref.read(appNotifierProvider.notifier).addBusy(Busy.signingUp);
 
     await auth.signUpWithEmailAndPassword(
         _emailInputController.text.trim(), _passwordInputController.text);
@@ -80,10 +87,9 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     }
   }
 
-  void onSigningUpChanged(bool isSigningUp) async {
+  void onSigningUpEvent() async {
     setState(() {
       errorMessage = null;
-      this.isSigningUp = isSigningUp;
     });
   }
 
@@ -113,22 +119,21 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
 
   @override
   Widget build(BuildContext context) {
+
     ref.listen(
-        stateNotifierProvider
-            .select((value) => value.valueOrNull?.signUpPageState), (_, next) {
+        appEventNotifierProvider
+            .select((value) => value.valueOrNull?.newSignUpPageState), (_, next) {
       if (next == SignUpPageState.validating) {
         onSignUpFormValidation();
-      } else if (next == SignUpPageState.closed) {
-        onSignUpPageClosed();
       }
     });
 
     ref.listen(
-        stateNotifierProvider
-            .select((value) => value.valueOrNull?.busyWith.contains(Busies.signingUp)),
+        appEventNotifierProvider
+            .select((value) => value.valueOrNull?.newBusy),
         (_, next) {
-      if (next != null) {
-        onSigningUpChanged(next);
+      if (next == Busy.signingUp) {
+        onSigningUpEvent();
       }
     });
 

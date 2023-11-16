@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/views/0_app/auth_container.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_master_background.dart';
@@ -31,17 +31,19 @@ class UtterBullApp extends ConsumerWidget {
   }
 
   bool onBackPressed(WidgetRef ref) {
+
     final auth = ref.read(authNotifierProvider).valueOrNull;
-    final state = ref.read(stateNotifierProvider).valueOrNull;
+    final app = ref.read(appNotifierProvider).valueOrNull;
 
     final authNotifier = ref.read(authNotifierProvider.notifier);
-    final stateNotifier = ref.read(stateNotifierProvider.notifier);
+    final appNotifier = ref.read(appNotifierProvider.notifier);
 
     if (auth == null) return true;
-    if (state?.signUpPageState == SignUpPageState.open) {
-      stateNotifier.closeSignUpPage();
+    if (app?.signUpPageState == SignUpPageState.open) {
+      appNotifier.setSignUpPageState(SignUpPageState.closed);
       return false;
     }
+    
     switch (auth.authState) {
       case null:
         break;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_back_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
@@ -19,15 +19,15 @@ class SignUpControlBar extends ConsumerStatefulWidget {
 class _SignUpControlBarState extends ConsumerState<SignUpControlBar> {
 
   void onExitSignUp() {
-    ref.read(stateNotifierProvider.notifier).closeSignUpPage();
+    ref.read(appNotifierProvider.notifier).setSignUpPageState(SignUpPageState.closed);
   }
 
   void onValidateSignUpForm() {
-    ref.read(stateNotifierProvider.notifier).validateSignUpPage();
+    ref.read(appNotifierProvider.notifier).setSignUpPageState(SignUpPageState.validating);
   }
 
   bool get isSigningUp =>
-      ref.watch(stateNotifierProvider).valueOrNull?.busyWith.contains(Busies.signingUp) ?? false;
+      ref.watch(appNotifierProvider).valueOrNull?.busyWith.contains(Busy.signingUp) ?? false;
 
   @override
   Widget build(BuildContext context) {

@@ -9,8 +9,8 @@ import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/views/new/home/buttons/photo_prompt_view.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/state_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/app_state.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/new/loading.dart';
@@ -150,12 +150,12 @@ class _AuthBarState extends ConsumerState<AuthBar>
                 );
 
                 final Widget name = userId == null
-                    ? ref.watch(stateNotifierProvider).whenDefault((app) {
+                    ? ref.watch(appNotifierProvider).whenDefault((app) {
 
                         final bool isLoggingIn =
-                            app.busyWith.contains(Busies.loggingIn);
+                            app.busyWith.contains(Busy.loggingIn);
                         final bool isSigningUp =
-                            app.busyWith.contains(Busies.signingUp);
+                            app.busyWith.contains(Busy.signingUp);
 
                         String? message;
                         if (isLoggingIn) {
