@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/mixins/consumer.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/camera_notifier_state.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_back_button.dart';
@@ -14,10 +16,11 @@ class CameraControls extends ConsumerStatefulWidget {
 }
 
 class _CameraControlsState extends ConsumerState<CameraControls>
-    with MediaDimensions {
-
-  void _onClose() {
-    ref.read(cameraNotifierProvider.notifier).close();
+    with MediaDimensions, ConsumerFunctions {
+  void _onClose() async {
+    await ref.read(cameraNotifierProvider.notifier).close();
+    ref.invalidate(cameraNotifierProvider);
+    appNotifier.setCameraViewState(CameraViewState.closed);
   }
 
   void _onTakePicture() {
@@ -28,8 +31,9 @@ class _CameraControlsState extends ConsumerState<CameraControls>
     ref.read(cameraNotifierProvider.notifier).discardPicture();
   }
 
-  void _onUploadPhoto() {
-    ref.read(cameraNotifierProvider.notifier).uploadPhoto();
+  void _onUploadPhoto() async {
+    await ref.read(cameraNotifierProvider.notifier).uploadPhoto();
+    appNotifier.setCameraViewState(CameraViewState.closed);
   }
 
   @override
@@ -53,15 +57,17 @@ class _CameraControlsState extends ConsumerState<CameraControls>
       width: width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: 
-        [
-        IconButton(
-          iconSize: 50,
-          onPressed: () => _onDiscardPhoto(), icon: Icon(Icons.delete)),
+        children: [
           IconButton(
-          iconSize: 50,
-          onPressed: () => _onUploadPhoto(), icon: Icon(Icons.upload))
-      ],),
+              iconSize: 50,
+              onPressed: () => _onDiscardPhoto(),
+              icon: Icon(Icons.delete)),
+          IconButton(
+              iconSize: 50,
+              onPressed: () => _onUploadPhoto(),
+              icon: Icon(Icons.upload))
+        ],
+      ),
     );
   }
 
@@ -73,7 +79,9 @@ class _CameraControlsState extends ConsumerState<CameraControls>
           clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
           children: [
-            SizedBox(height: 100,),
+            SizedBox(
+              height: 100,
+            ),
             ClipPath(
               clipper: const _BottomAppBarClipper(
                   shape: CircularNotchedRectangle(), notchMargin: 5),
@@ -101,15 +109,14 @@ class _CameraControlsState extends ConsumerState<CameraControls>
                   width: 50,
                   height: 50,
                   child: UtterBullBackButton(
-                    color: Colors.white.withOpacity(0),
-                    onPressed: () => _onClose()),
+                      color: Colors.white.withOpacity(0),
+                      onPressed: () => _onClose()),
                 ))
           ],
         )
       ],
     );
   }
-  
 }
 
 class _BottomAppBarClipper extends CustomClipper<Path> {

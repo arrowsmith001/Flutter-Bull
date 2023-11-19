@@ -6,7 +6,7 @@ part of 'app_event_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appEventNotifierHash() => r'9e26a326abe71fcc807bc1d7a785fa324b983b03';
+String _$appEventNotifierHash() => r'c27f999fb59a6f83d51cfa042f68b725db45f743';
 
 /// See also [AppEventNotifier].
 @ProviderFor(AppEventNotifier)

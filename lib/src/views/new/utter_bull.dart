@@ -53,9 +53,7 @@ class UtterBull extends ConsumerStatefulWidget {
 
 class _UtterBullState extends ConsumerState<UtterBull>
     with MediaDimensions, UserID {
-
-      
-    final _primaryNavKey = GlobalKey<NavigatorState>();
+  final _primaryNavKey = GlobalKey<NavigatorState>();
 
   String errorText = '';
 
@@ -98,16 +96,10 @@ class _UtterBullState extends ConsumerState<UtterBull>
   //   return ;
   // }
 
-  bool isAuthBarShowing = true;
+  bool get isAuthBarShowing => ref.watch(appNotifierProvider.select((value) => value.valueOrNull?.authBarState == AuthBarState.show));
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(
-        appEventNotifierProvider.select((data) => data.valueOrNull?.newAuthBarState),
-        (_, next) {
-      _toggleAuthBar(next);
-    });
-
 
     ref.listen(authNotifierProvider.select((data) => data.requireValue.error),
         (_, error) {
@@ -195,27 +187,6 @@ class _UtterBullState extends ConsumerState<UtterBull>
       }),
     );
   }
-
-  void hideAuthBar() {
-    _toggleAuthBar(AuthBarState.hide);
-  }
-
-  void showAuthBar() {
-    _toggleAuthBar(AuthBarState.show);
-  }
-
-  void _toggleAuthBar(AuthBarState? authState) {
-    if (authState == null) return;
-    if (authState == AuthBarState.hide) {
-      setState(() {
-        isAuthBarShowing = false;
-      });
-    } else if (authState == AuthBarState.show) {
-      setState(() {
-        isAuthBarShowing = true;
-      });
-    }
-  }
 }
 
 class HomeNavigator extends ConsumerWidget {
@@ -225,11 +196,11 @@ class HomeNavigator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     void onCloseSignUpPage() {
-      ref.read(appNotifierProvider.notifier).setSignUpPageState(SignUpPageState.closed);
+      ref
+          .read(appNotifierProvider.notifier)
+          .setSignUpPageState(SignUpPageState.closed);
     }
-
 
     return Navigator(
       observers: [CoordinatedRouteObserver(), HeroController()],
@@ -284,7 +255,7 @@ class HomeNavigator extends ConsumerWidget {
 class PrimaryNavigator extends ConsumerWidget {
   PrimaryNavigator(this.navKey, {super.key});
 
-    final _homeNavKey = GlobalKey<NavigatorState>();
+  final _homeNavKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> navKey;
 
   @override
@@ -305,8 +276,7 @@ class PrimaryNavigator extends ConsumerWidget {
       initialRoute: '/',
       onGenerateRoute: (settings) {
         if (settings.name == '/') {
-          return BackwardFadePushRoute(
-              (_) => HomeNavigator(_homeNavKey));
+          return BackwardFadePushRoute((_) => HomeNavigator(_homeNavKey));
         } else if (settings.name!.contains('game')) {
           final roomId = settings.name!.split('/').last;
           return ForwardFadePushRoute((_) => ProviderScope(overrides: [

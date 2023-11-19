@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/extensions/build_context.dart';
+import 'package:flutter_bull/mixins/consumer.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/new/home/bar/auth_bar.dart';
 import 'package:flutter_bull/src/views/new/home/home_main_buttons.dart';
@@ -6,6 +8,8 @@ import 'package:flutter_bull/src/views/new/notification_center.dart';
 import 'package:flutter_bull/src/views/new/notifiers/app/app_event_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
+import 'package:flutter_bull/src/views/new/notifiers/states/camera_notifier_state.dart';
 import 'package:flutter_bull/src/views/new/utter_bull.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,41 +21,50 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
-  @override
-  void initState() {
-    super.initState();
-
-    // ref.read(authNotifierProvider.notifier).setRoute('/');
-  }
+class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions, ConsumerFunctions {
 
   bool get _keyboardVisible => MediaQuery.of(context).viewInsets.bottom != 0;
 
+  void onNewSignUpPageState<T>(T? _, T? next) {
+    if (next == SignUpPageState.open) {
+      context.pushNamed('signUp');
+      hideAuthBar();
+    } else if (next == SignUpPageState.closed) {
+      context.pop();
+      showAuthBar();
+    }
+  }
+
+  void onNewCameraViewState<T>(T? _, T? next) {
+    if (next == CameraViewState.open) {
+      context.pushNamed('camera');
+      hideAuthBar();
+    }
+  }
+
+  // void onCameraState<T>(T? _, T? next) {
+  //   if (next == CameraState.ready) {
+  //     context.pushNamed('camera');
+  //     hideAuthBar();
+  //   } else if (next == CameraState.closed) {
+  //     context.pop();
+  //     showAuthBar();
+  //   }
+  // }
+
+
+
   @override
   Widget build(BuildContext context) {
+
     ref.listen(
         appEventNotifierProvider
-            .select((data) => data.valueOrNull?.newSignUpPageState), (_, next) {
-      if (next == SignUpPageState.open) {
-        Navigator.of(context).pushNamed('signUp');
-        hideAuthBar();
-      } else if (next == SignUpPageState.closed) {
-        Navigator.of(context).pop();
-        showAuthBar();
-      }
-    });
+            .select((data) => data.valueOrNull?.newSignUpPageState), onNewSignUpPageState);
 
     ref.listen(
         appEventNotifierProvider.select(
-            (value) => value.valueOrNull?.newCameraViewState), (_, next) {
-      if (next == CameraViewState.open) {
-        Navigator.of(context).pushNamed('camera');
-        hideAuthBar();
-      } else if (next == CameraViewState.closed) {
-        Navigator.of(context).pop();
-        showAuthBar();
-      }
-    });
+            (value) => value.valueOrNull?.newCameraViewState), onNewCameraViewState);
+
 
     return Stack(
       children: [
@@ -106,16 +119,6 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions {
     );
   }
   
-  void hideAuthBar() {
-    
-        ref
-            .read(appNotifierProvider.notifier)
-            .setAuthBarState(AuthBarState.hide);
-  }
-  void showAuthBar() {
-    
-        ref
-            .read(appNotifierProvider.notifier)
-            .setAuthBarState(AuthBarState.show);
-  }
+
+
 }

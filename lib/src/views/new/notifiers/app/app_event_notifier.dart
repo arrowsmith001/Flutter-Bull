@@ -48,7 +48,7 @@ class AppEventNotifier extends _$AppEventNotifier {
         });
 
     ref.listen(
-        appNotifierProvider.select((value) => value.valueOrNull?.nowBusy),
+        appNotifierProvider.select((value) => value.valueOrNull?.nowNotBusy),
         (prev, next) {
           setData(AppEvents(newNotBusy: next));
         });
@@ -64,7 +64,7 @@ class AppEventNotifier extends _$AppEventNotifier {
   //   setData(AppEvents(newAuthBarState: state));
   // }
 
-  // void addBusyEvent(Busies busy) {
+  // void addBusyEvent(Busy busy) {
   //   setData(AppEvents(newBusy: busy));
   // }
 
@@ -72,7 +72,7 @@ class AppEventNotifier extends _$AppEventNotifier {
   //   setData(AppEvents(newCameraViewState: state));
   // }
 
-  // void addNotBusyEvent(Busies notBusy) {
+  // void addNotBusyEvent(Busy notBusy) {
   //   setData(AppEvents(newNotBusy: notBusy));
   // }
 

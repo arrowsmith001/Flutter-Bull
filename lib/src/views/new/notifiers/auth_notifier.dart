@@ -20,6 +20,8 @@ class AuthNotifier extends _$AuthNotifier {
   DataStreamService get _streamService => ref.read(dataStreamServiceProvider);
   DataService get _dataService => ref.read(dataServiceProvider);
 
+  AppNotifier get appNotifier => ref.read(appNotifierProvider.notifier);
+
   @override
   Stream<AuthNotifierState> build() async* {
     yield* _authService.streamUserId().switchMap((userId) async* {
@@ -59,32 +61,34 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  Future<void> signUp() async {
+  Future<void> signInAnonymously() async {
     state = state.copyWithPrevious(const AsyncLoading());
 
     await _authService.signInAnonymously();
   }
 
   Future<void> signOut() async {
-
     ref.read(appNotifierProvider.notifier).addBusy(Busy.signingOut);
 
     state = state.copyWithPrevious(const AsyncLoading());
 
     await _authService.signOut();
-    
+
     ref.read(appNotifierProvider.notifier).removeBusy(Busy.signingOut);
   }
 
   Future<void> signUpWithEmailAndPassword(String email, String password) async {
-    //setData(value.copyWith(signUp: true, validateSignUpForm: false));
+
+      appNotifier.addBusy(Busy.signingUp);
 
     try {
       await _authService.createUserWithEmailAndPassword(email, password);
 
-      //setData(value.copyWith(signUp: false, signUpPage: false));
+      appNotifier.setSignUpPageState(SignUpPageState.closed);
+      appNotifier.removeBusy(Busy.signingUp);
+
     } catch (e) {
-      //setData(value.copyWith(error: AuthError("Error signing up: $e"), signUp: false));
+      setData(value.copyWith(error: AuthError("Error signing up: $e")));
     }
   }
 

@@ -9,13 +9,14 @@ import 'package:universal_html/html.dart' as html;
 
 // TODO: Debug this shit (breakpointn at camcontroller initialize), fails particularly on first invoke
 class CameraService {
+
   List<CameraDescription>? cameras;
 
   Future<void> initialize() async {
-    Logger().d('initialize');
+    Logger().d('CameraService initialize');
     try {
       cameras ??= await availableCameras();
-      Logger().d('initialization complete');
+      Logger().d('got availableCameras');
     } catch (e) {
       Logger().d(e);
     }
@@ -43,7 +44,8 @@ class CameraService {
     try {
       assert(cameras != null);
 
-      Iterator<List<CameraLensDirection>> preferences = [
+      Iterator<List<CameraLensDirection>> preferences = 
+      [
         [CameraLensDirection.front],
         [CameraLensDirection.external],
         CameraLensDirection.values
@@ -103,7 +105,7 @@ class CameraService {
     final newController =
         CameraController(cam, resolutionPreset, enableAudio: false);
 
-    Logger().d('newController.initialize();');
+    Logger().d('newController.initialize()...');
     await newController.initialize();
     Logger().d('newController.initialize() COMPLETE');
 

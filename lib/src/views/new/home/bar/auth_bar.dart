@@ -60,6 +60,7 @@ class _AuthBarState extends ConsumerState<AuthBar>
         padding: widget.innerPadding ?? EdgeInsets.zero,
         child: ref.watch(authNotifierProvider).when(
               data: (AuthNotifierState state) {
+                
                 final String? userId = state.userId;
                 final bool isSignedIn = state.authState != null &&
                     state.authState != AuthState.signedOut;

@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/mixins/consumer.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/views/new/notifiers/app/app_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,7 +25,7 @@ class _PhotoPromptViewState extends ConsumerState<PhotoPromptView>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         AutoSizeText(
-          'It\' more fun with a photo!',
+          "It's more fun with a photo!",
           maxLines: 1,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineMedium,
@@ -47,7 +49,7 @@ class PhotoPromptButtons extends ConsumerStatefulWidget {
 }
 
 class _PhotoPromptButtonsState extends ConsumerState<PhotoPromptButtons>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, ConsumerFunctions {
   late final AnimationController controller =
       AnimationController(vsync: this, duration: Duration(milliseconds: 400));
   late final Animation<double> anim1 = CurvedAnimation(
@@ -62,6 +64,7 @@ class _PhotoPromptButtonsState extends ConsumerState<PhotoPromptButtons>
 
   Curve curve = Curves.elasticOut;
   Tween<double> tween = Tween(begin: 1.0, end: 0.0);
+
   @override
   void initState() {
     super.initState();
@@ -80,7 +83,14 @@ class _PhotoPromptButtonsState extends ConsumerState<PhotoPromptButtons>
 
   void onCameraPressed() async {
     _invokeOptionalCallback();
-    await ref.read(cameraNotifierProvider.notifier).initialize();
+
+    final bool success =
+        await ref.read(cameraNotifierProvider.notifier).initialize();
+
+    if (success) {
+      appNotifier
+          .setCameraViewState(CameraViewState.open);
+    }
   }
 
   void onUploadPressed() async {
@@ -91,7 +101,7 @@ class _PhotoPromptButtonsState extends ConsumerState<PhotoPromptButtons>
       if (status.isPermanentlyDenied) return; // TODO: Actually push error
       if (!status.isGranted) {
         status = await Permission.camera.request();
-        if(!status.isGranted)  return;
+        if (!status.isGranted) return;
       }
     }
 

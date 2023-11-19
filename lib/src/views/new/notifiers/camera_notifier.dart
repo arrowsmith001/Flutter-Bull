@@ -17,14 +17,14 @@ import 'package:logger/logger.dart';
 
 part 'camera_notifier.g.dart';
 
-@Riverpod(keepAlive: false)
+@Riverpod(keepAlive: true)
 class CameraNotifier extends _$CameraNotifier {
   CameraService cameraService = CameraService();
 
   @override
   Stream<CameraNotifierState> build() async* {}
 
-  Future<void> initialize() async {
+  Future<bool> initialize() async {
     setData(copy(cameraState: CameraState.requested));
 
     if (await cameraService.isPermissionGranted) {
@@ -33,15 +33,19 @@ class CameraNotifier extends _$CameraNotifier {
       await cameraService.initialize();
       final success = await cameraService.createController();
       //}
-      Logger().d(success);
+
+      Logger().d('camera initialize: $success');
 
       if (success) {
         setData(copy(
-            cameraState: CameraState.open,
+            cameraState: CameraState.ready,
             controller: cameraService.controller));
-        setData(copy(cameraState: CameraState.ready));
       }
+
+      return success;
     }
+
+    return false;
   }
 
   Future<void> dispose() async {
@@ -61,6 +65,7 @@ class CameraNotifier extends _$CameraNotifier {
 
   $CameraNotifierStateCopyWith<CameraNotifierState> get copy =>
       (state.value ?? CameraNotifierState()).copyWith;
+
   void setData(CameraNotifierState newState) {
     state = AsyncData(newState);
   }
@@ -90,14 +95,14 @@ class CameraNotifier extends _$CameraNotifier {
     Logger().d('discardPicture 3');
   }
 
-  void uploadPhoto() async {
+  Future<void> uploadPhoto() async {
     assert(cameraService.imageData != null, 'No image to upload');
     assert(cameraService.imageDataAvailable == true,
         'Image data deemed unavailable even though it exists');
 
     await _upload(cameraService.imageData!);
 
-    close();
+    await close();
   }
 
   Future<void> pickImage() async {

@@ -39,7 +39,7 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
   }
 
   final _emailInputController = TextEditingController()
-    ..text = Random().nextInt(100000).toString() + "@a.com";
+    ..text = "${Random().nextInt(100000)}@a.com";
 
   final _passwordInputController = TextEditingController()..text = "a" * 8;
   final _confirmPasswordInputController = TextEditingController()
@@ -75,8 +75,6 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
 
     _notifKey.currentState?.dismiss();
 
-    ref.read(appNotifierProvider.notifier).addBusy(Busy.signingUp);
-
     await auth.signUpWithEmailAndPassword(
         _emailInputController.text.trim(), _passwordInputController.text);
 
@@ -87,11 +85,6 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
     }
   }
 
-  void onSigningUpEvent() async {
-    setState(() {
-      errorMessage = null;
-    });
-  }
 
   void onSignUpPageClosed() {
     if (mounted) {
@@ -133,7 +126,18 @@ class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
             .select((value) => value.valueOrNull?.newBusy),
         (_, next) {
       if (next == Busy.signingUp) {
-        onSigningUpEvent();
+        setState(() {
+          errorMessage = null;
+        });
+      }
+    });
+
+    ref.listen(
+        appEventNotifierProvider
+            .select((value) => value.valueOrNull?.newNotBusy),
+        (_, next) {
+      if (next == Busy.signingUp) {
+        ref.read(appNotifierProvider.notifier).setSignUpPageState(SignUpPageState.closed);
       }
     });
 
