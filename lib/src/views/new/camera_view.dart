@@ -34,7 +34,6 @@ class _CameraViewState extends ConsumerState<CameraView> with MediaDimensions, C
         appNotifierProvider
             .select((value) => value.valueOrNull?.cameraViewState), (_, next) {
       if (next == CameraViewState.closed) {
-        showAuthBar();
         context.pop();
       }
     });

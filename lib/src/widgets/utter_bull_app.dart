@@ -43,6 +43,10 @@ class UtterBullApp extends ConsumerWidget {
       appNotifier.setSignUpPageState(SignUpPageState.closed);
       return false;
     }
+    else if (app?.cameraViewState == CameraViewState.open) {
+      appNotifier.setCameraViewState(CameraViewState.closed);
+      return false;
+    }
     
     switch (auth.authState) {
       case null:

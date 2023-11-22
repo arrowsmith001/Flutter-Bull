@@ -9,7 +9,6 @@ class Loading extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-        child: UtterBullCircularProgressIndicator(size: Size(dim, dim)));
+    return UtterBullCircularProgressIndicator(size: Size(dim, dim));
   }
 }

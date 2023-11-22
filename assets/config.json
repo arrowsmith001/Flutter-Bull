@@ -1,5 +1,5 @@
 {
-    "emulating": false,
+    "emulating": true,
     "devMode": true,
     "playable": true,
     "testMode": false

@@ -11,6 +11,8 @@ import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/camera_notifier_state.dart';
 import 'package:flutter_bull/src/views/new/utter_bull.dart';
+import 'package:flutter_bull/src/widgets/common/loading_message.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,17 +30,14 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions, Consu
   void onNewSignUpPageState<T>(T? _, T? next) {
     if (next == SignUpPageState.open) {
       context.pushNamed('signUp');
-      hideAuthBar();
     } else if (next == SignUpPageState.closed) {
       context.pop();
-      showAuthBar();
     }
   }
 
   void onNewCameraViewState<T>(T? _, T? next) {
     if (next == CameraViewState.open) {
       context.pushNamed('camera');
-      hideAuthBar();
     }
   }
 
@@ -96,7 +95,30 @@ class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions, Consu
                     SizedBox(
                         width: width,
                         height: height * 0.5,
-                        child: HomeMainButtons()),
+                        child: AnimatedSwitcher(
+                          switchInCurve: Curves.easeInOut,
+                          switchOutCurve: Curves.easeInOut,
+              transitionBuilder: (child, animation) {
+                return AnimatedBuilder(
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: animation.value,
+                      child: child,
+                    );
+                  },
+                  child: child,
+                  animation: animation,
+                );
+              },
+              duration: const Duration(milliseconds: 300),
+              child: isCreatingRoom ? LoadingMessage('Creating room...')
+                  : isJoiningRoom ? LoadingMessage('Joining room...') 
+                  : isSigningOut ? LoadingMessage('Signing out...') 
+                  : isSigningUp ? LoadingMessage('Signing up...') 
+                  : HomeMainButtons(),
+            )
+                        
+                          ),
                   ],
                 ),
               ),

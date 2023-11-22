@@ -6,6 +6,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bull/mixins/consumer.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/rounded_border.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
@@ -31,6 +32,7 @@ import 'package:flutter_bull/src/views/new/notifiers/camera_notifier.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/camera_notifier_state.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_bull/src/widgets/utter_bull_title.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_bull/src/views/new/notifiers/states/notification_notifier_state.dart'
@@ -52,10 +54,12 @@ class UtterBull extends ConsumerStatefulWidget {
 }
 
 class _UtterBullState extends ConsumerState<UtterBull>
-    with MediaDimensions, UserID {
+    with MediaDimensions, UserID, ConsumerFunctions {
   final _primaryNavKey = GlobalKey<NavigatorState>();
 
   String errorText = '';
+
+  bool get isAuthBarShowing => isSignedIn && !(isOnSignUpPage || isOnCameraPage || isCreatingRoom || isJoiningRoom || isInGame);
 
   void onCreateRoom() async {
     //signedInPlayerNotifier.createRoom();
@@ -63,9 +67,6 @@ class _UtterBullState extends ConsumerState<UtterBull>
     if (userId == null) {
       Logger().e('Error: userId null when creating room');
     } else {
-      setState(() {
-        creatingRoom = true;
-      });
 
       try {
         await ref.read(authNotifierProvider.notifier).createRoom(userId);
@@ -73,15 +74,10 @@ class _UtterBullState extends ConsumerState<UtterBull>
         ref
             .read(authNotifierProvider.notifier)
             .pushError('Something went wrong: $e');
-      } finally {
-        setState(() {
-          creatingRoom = false;
-        });
-      }
+      } 
     }
   }
 
-  bool creatingRoom = false;
 
   void onJoinRoomPressed() async {}
 
@@ -96,7 +92,6 @@ class _UtterBullState extends ConsumerState<UtterBull>
   //   return ;
   // }
 
-  bool get isAuthBarShowing => ref.watch(appNotifierProvider.select((value) => value.valueOrNull?.authBarState == AuthBarState.show));
 
   @override
   Widget build(BuildContext context) {

@@ -46,6 +46,18 @@ class _AuthBarState extends ConsumerState<AuthBar>
 
   @override
   Widget build(BuildContext context) {
+
+    // ref.listen(
+    //     appNotifierProvider.select((value) => value.valueOrNull?.nowNotBusy),
+    //     (_, next) {
+    //   if (next != null &&
+    //       (next == Busy.creatingGame || next == Busy.joiningGame)) {
+    //     setState(() {
+    //       ref.read(appNotifierProvider.notifier).setAuthBarState(AuthBarState.show);
+    //     });
+    //   }
+    // });
+
     return Container(
       width: width,
       decoration: BoxDecoration(
@@ -60,7 +72,6 @@ class _AuthBarState extends ConsumerState<AuthBar>
         padding: widget.innerPadding ?? EdgeInsets.zero,
         child: ref.watch(authNotifierProvider).when(
               data: (AuthNotifierState state) {
-                
                 final String? userId = state.userId;
                 final bool isSignedIn = state.authState != null &&
                     state.authState != AuthState.signedOut;
@@ -116,7 +127,9 @@ class _AuthBarState extends ConsumerState<AuthBar>
                             );
                           },
                           error: (e, st) => ErrorWidget(e),
-                          loading: () => const Loading(dim: 25)),
+                          loading: () => const Opacity(
+                              opacity: 0.5,
+                              child: UtterBullPlayerAvatar(null, null))),
                 );
 
                 final buttons = Padding(
@@ -152,7 +165,6 @@ class _AuthBarState extends ConsumerState<AuthBar>
 
                 final Widget name = userId == null
                     ? ref.watch(appNotifierProvider).whenDefault((app) {
-
                         final bool isLoggingIn =
                             app.busyWith.contains(Busy.loggingIn);
                         final bool isSigningUp =

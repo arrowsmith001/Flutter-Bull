@@ -31,7 +31,7 @@ class AppNotifier extends _$AppNotifier {
 
   @override
   Stream<AppState> build() async* {
-    yield AppState(authBarState: AuthBarState.show);
+    yield AppState(authBarState: AuthBarState.hide);
   }
 
   void setAuthBarState(AuthBarState desiredState) {

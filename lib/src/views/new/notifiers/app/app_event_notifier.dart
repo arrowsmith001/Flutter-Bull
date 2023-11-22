@@ -50,6 +50,7 @@ class AppEventNotifier extends _$AppEventNotifier {
     ref.listen(
         appNotifierProvider.select((value) => value.valueOrNull?.nowNotBusy),
         (prev, next) {
+          Logger().d('nowNotBusy changed from $prev to $next');
           setData(AppEvents(newNotBusy: next));
         });
 

@@ -78,17 +78,16 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signUpWithEmailAndPassword(String email, String password) async {
-
-      appNotifier.addBusy(Busy.signingUp);
+    appNotifier.addBusy(Busy.signingUp);
 
     try {
       await _authService.createUserWithEmailAndPassword(email, password);
 
       appNotifier.setSignUpPageState(SignUpPageState.closed);
-      appNotifier.removeBusy(Busy.signingUp);
-
     } catch (e) {
       setData(value.copyWith(error: AuthError("Error signing up: $e")));
+    } finally {
+      appNotifier.removeBusy(Busy.signingUp);
     }
   }
 
@@ -124,23 +123,24 @@ class AuthNotifier extends _$AuthNotifier {
 
   Future<void> createRoom(String userId) async {
     //setData(value.copyWith(homePageState: HomePageState.joiningRoom));
+    appNotifier.addBusy(Busy.creatingGame);
     try {
       await ref.read(utterBullServerProvider).createRoom(userId);
     } catch (e) {
-      pushError('$e');
+      setData(value.copyWith(error: AuthError(e.toString())));
     } finally {
-      //setData(value.copyWith(homePageState: HomePageState.home));
+      appNotifier.removeBusy(Busy.creatingGame);
     }
   }
 
   Future<void> joinRoom(String userId, String roomCode) async {
-    //setData(value.copyWith(homePageState: HomePageState.joiningRoom));
+    appNotifier.addBusy(Busy.joiningGame);
     try {
       await ref.read(utterBullServerProvider).joinRoom(userId, roomCode);
     } catch (e) {
       pushError('$e');
     } finally {
-      //setData(value.copyWith(homePageState: HomePageState.home));
+      appNotifier.removeBusy(Busy.joiningGame);
     }
   }
 
@@ -149,3 +149,8 @@ class AuthNotifier extends _$AuthNotifier {
     state = AsyncData(newState);
   }
 }
+
+// class CreateGameError extends Error {
+//   final String message;
+//   CreateGameError(this.message);
+// }
