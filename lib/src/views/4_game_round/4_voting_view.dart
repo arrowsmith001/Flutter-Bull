@@ -1,15 +1,12 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/custom/widgets/rounded_border.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
 import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
@@ -23,7 +20,6 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jumping_dot/jumping_dot.dart';
-import 'package:logger/logger.dart';
 
 class VotingPhaseView extends ConsumerStatefulWidget {
   const VotingPhaseView({super.key});
@@ -262,7 +258,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
         color: Theme.of(context).primaryColor,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: AnimatedSwitcher(duration: Duration(seconds: 1), child: child),
+          child: AnimatedSwitcher(duration: const Duration(seconds: 1), child: child),
         ),
       ),
     );
@@ -277,7 +273,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   Widget _buildVoteButtons(VotingPhaseViewModel vm) {
     final enabled = !vm.hasVoted && (vm.roundStatus == RoundStatus.inProgress);
-    final aspect = 1.0;
+    const aspect = 1.0;
     return Row(children: [
       Expanded(
           child: UtterBullButton(
@@ -335,7 +331,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 EdgeInsets voterAvatarPadding = const EdgeInsets.all(4.0);
 
 class PlayersVotedWrapList extends StatelessWidget {
-  PlayersVotedWrapList({
+  const PlayersVotedWrapList({
     super.key,
     required this.vm,
   });
@@ -433,8 +429,8 @@ class _VoterAvatarState extends State<VoterAvatar>
                   fill: Colors.grey.shade800,
                   isActive: !widget.hasVoted && !widget.isRoundInProgress),
               AvatarStateLabel(
-                  child: LoadingDots(),
-                  isActive: !widget.hasVoted && widget.isRoundInProgress)
+                  isActive: !widget.hasVoted && widget.isRoundInProgress,
+                  child: const LoadingDots())
             ]),
           ),
         ),
@@ -452,7 +448,7 @@ class LoadingDots extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Transform.translate(
-          offset: Offset(2, 2),
+          offset: const Offset(2, 2),
           child: JumpingDots(
             innerPadding: 5,
             color: Colors.black,
@@ -504,7 +500,7 @@ class _TimesUpAnimationViewState extends State<TimesUpAnimationView> {
           );
         },
         child: Container(
-          decoration: BoxDecoration(),
+          decoration: const BoxDecoration(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: UglyOutlinedText(text: widget.message,
@@ -564,13 +560,13 @@ class TimeDisplayWidgetState extends State<TimeDisplayWidget>
 
   void windDown() {
     _windDownAnimationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 2000));
-    final Animation<Duration> _windDownAnimation = CurvedAnimation(
+        vsync: this, duration: const Duration(milliseconds: 2000));
+    final Animation<Duration> windDownAnimation = CurvedAnimation(
             parent: _windDownAnimationController!, curve: Curves.easeOut)
         .drive(Tween(begin: time.timeRemaining, end: Duration.zero));
 
     _windDownAnimationController!.addListener(() {
-      setTime(TimeData(_windDownAnimation.value));
+      setTime(TimeData(windDownAnimation.value));
     });
 
     _windDownAnimationController!.forward();
@@ -608,8 +604,9 @@ class TimeDisplayWidgetState extends State<TimeDisplayWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (time.timeRemaining == null)
-      return Center(child: UtterBullCircularProgressIndicator());
+    if (time.timeRemaining == null) {
+      return const Center(child: UtterBullCircularProgressIndicator());
+    }
 
     return Center(
         child: Row(
@@ -673,13 +670,13 @@ class SaboteurPickerLayer extends StatefulWidget {
 class _SaboteurPickerLayerState extends State<SaboteurPickerLayer>
     with TickerProviderStateMixin {
   late final AnimationController _entryAnimationController =
-      AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
   late final Animation<double> _entryAnimation = CurvedAnimation(
           parent: _entryAnimationController, curve: Curves.elasticOut)
       .drive(Tween(begin: 0, end: scale));
 
   late final AnimationController _exitAnimationController =
-      AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
   late final Animation<double> _exitAnimation = CurvedAnimation(
           parent: _exitAnimationController, curve: Curves.decelerate)
       .drive(Tween(begin: 1, end: exitScale));

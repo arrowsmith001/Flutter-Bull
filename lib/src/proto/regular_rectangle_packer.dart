@@ -1,7 +1,4 @@
-import 'dart:math';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bull/src/proto/fixed_size_regular_rectangle_packer.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 
 class RegularRectanglePacker extends StatelessWidget {

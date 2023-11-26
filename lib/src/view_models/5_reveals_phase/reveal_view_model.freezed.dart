@@ -108,11 +108,11 @@ class _$RevealViewModelCopyWithImpl<$Res, $Val extends RevealViewModel>
 }
 
 /// @nodoc
-abstract class _$$_RevealViewModelCopyWith<$Res>
+abstract class _$$RevealViewModelImplCopyWith<$Res>
     implements $RevealViewModelCopyWith<$Res> {
-  factory _$$_RevealViewModelCopyWith(
-          _$_RevealViewModel value, $Res Function(_$_RevealViewModel) then) =
-      __$$_RevealViewModelCopyWithImpl<$Res>;
+  factory _$$RevealViewModelImplCopyWith(_$RevealViewModelImpl value,
+          $Res Function(_$RevealViewModelImpl) then) =
+      __$$RevealViewModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -127,11 +127,11 @@ abstract class _$$_RevealViewModelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_RevealViewModelCopyWithImpl<$Res>
-    extends _$RevealViewModelCopyWithImpl<$Res, _$_RevealViewModel>
-    implements _$$_RevealViewModelCopyWith<$Res> {
-  __$$_RevealViewModelCopyWithImpl(
-      _$_RevealViewModel _value, $Res Function(_$_RevealViewModel) _then)
+class __$$RevealViewModelImplCopyWithImpl<$Res>
+    extends _$RevealViewModelCopyWithImpl<$Res, _$RevealViewModelImpl>
+    implements _$$RevealViewModelImplCopyWith<$Res> {
+  __$$RevealViewModelImplCopyWithImpl(
+      _$RevealViewModelImpl _value, $Res Function(_$RevealViewModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -146,7 +146,7 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
     Object? isMyTurn = null,
     Object? achievements = null,
   }) {
-    return _then(_$_RevealViewModel(
+    return _then(_$RevealViewModelImpl(
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
@@ -185,8 +185,8 @@ class __$$_RevealViewModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_RevealViewModel implements _RevealViewModel {
-  _$_RevealViewModel(
+class _$RevealViewModelImpl implements _RevealViewModel {
+  _$RevealViewModelImpl(
       {required this.playerWhoseTurn,
       required this.playerWhoseTurnStatement,
       required this.isStatementTruth,
@@ -243,7 +243,7 @@ class _$_RevealViewModel implements _RevealViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RevealViewModel &&
+            other is _$RevealViewModelImpl &&
             (identical(other.playerWhoseTurn, playerWhoseTurn) ||
                 other.playerWhoseTurn == playerWhoseTurn) &&
             (identical(
@@ -278,8 +278,9 @@ class _$_RevealViewModel implements _RevealViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RevealViewModelCopyWith<_$_RevealViewModel> get copyWith =>
-      __$$_RevealViewModelCopyWithImpl<_$_RevealViewModel>(this, _$identity);
+  _$$RevealViewModelImplCopyWith<_$RevealViewModelImpl> get copyWith =>
+      __$$RevealViewModelImplCopyWithImpl<_$RevealViewModelImpl>(
+          this, _$identity);
 }
 
 abstract class _RevealViewModel implements RevealViewModel {
@@ -291,7 +292,7 @@ abstract class _RevealViewModel implements RevealViewModel {
       required final List<PublicPlayer> playersVotedTruth,
       required final bool isRevealed,
       required final bool isMyTurn,
-      required final List<Achievement> achievements}) = _$_RevealViewModel;
+      required final List<Achievement> achievements}) = _$RevealViewModelImpl;
 
   @override
   PublicPlayer get playerWhoseTurn;
@@ -311,6 +312,6 @@ abstract class _RevealViewModel implements RevealViewModel {
   List<Achievement> get achievements;
   @override
   @JsonKey(ignore: true)
-  _$$_RevealViewModelCopyWith<_$_RevealViewModel> get copyWith =>
+  _$$RevealViewModelImplCopyWith<_$RevealViewModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

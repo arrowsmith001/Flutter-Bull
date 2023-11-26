@@ -2,10 +2,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:logger/logger.dart';
 
 class PlaceholderButton extends StatelessWidget {
-  const PlaceholderButton({this.onPressed, required this.title});
+  const PlaceholderButton({super.key, this.onPressed, required this.title});
 
   final VoidCallback? onPressed;
   final String title;
@@ -14,18 +13,18 @@ class PlaceholderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Padding(
-        padding: EdgeInsets.all(8), //constraints.maxHeight * 0.1),
+        padding: const EdgeInsets.all(8), //constraints.maxHeight * 0.1),
         child: GestureDetector(
           onTap: onPressed == null ? null : () => onPressed!(),
           child: Container(
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(32.0)),
             child: Padding(
-              padding: EdgeInsets.all(8), //constraints.maxHeight * 0.1),
+              padding: const EdgeInsets.all(8), //constraints.maxHeight * 0.1),
               child: Center(
                   child: AutoSizeText(
                 title,
-                style: TextStyle(fontSize: 100),
+                style: const TextStyle(fontSize: 100),
               )),
             ),
           ),
@@ -79,8 +78,8 @@ class _UtterBullButtonState extends State<UtterBullButton>
           reverseCurve: Curves.decelerate)
       .drive(Tween(begin: 1, end: reactionEndScale));
 
-  late Animation<Offset> offsetAnim =
-      animController.drive(Tween(begin: Offset(0, -3), end: Offset(0, 3)));
+  late Animation<Offset> offsetAnim = animController
+      .drive(Tween(begin: const Offset(0, -3), end: const Offset(0, 3)));
 
   late Animation<Color?> colorAnim =
       ColorTween(begin: baseColor, end: reactionColor).animate(animController);
@@ -111,9 +110,11 @@ class _UtterBullButtonState extends State<UtterBullButton>
     if (animController.isAnimating) {
       animController.stop();
     }
-    animController
-        .forward(from: 0)
-        .then((_) => animController.reverse(from: 1));
+    animController.forward(from: 0).then((_) {
+      if (mounted) {
+        animController.reverse(from: 1);
+      }
+    });
     widget.onPressed!();
   }
 
@@ -226,7 +227,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
                           end: Alignment.bottomCenter),
                   borderRadius: BorderRadius.circular(radius)),
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Stack(children: [_buildContents()]),
               ));
         });
@@ -241,7 +242,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               widget.isLoading
-                  ? UtterBullCircularProgressIndicator()
+                  ? const UtterBullCircularProgressIndicator()
                   : _buildLeading(),
               Expanded(child: LayoutBuilder(builder: (context, constraints) {
                 final hFull = constraints.biggest.height;
@@ -281,7 +282,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
                           },
                         );
                       },
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 500),
                       child: Container(
                         key: ValueKey<bool>(widget.below == null),
                         child: widget.below,
@@ -303,8 +304,7 @@ class _UtterBullButtonState extends State<UtterBullButton>
 
 class UglyOutlinedText extends StatelessWidget {
   UglyOutlinedText(
-      {
-        this.text,
+      {this.text,
       this.textSpan,
       this.outlineColor,
       this.fillColor,
@@ -322,40 +322,38 @@ class UglyOutlinedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(textSpan != null)
-    {
- return Stack(
-      alignment: Alignment.center,
-      children: [
-        AutoSizeText.rich(
-          textSpan!,
-          minFontSize: 4,
-          maxLines: maxLines,
-          style: TextStyle(
-              fontSize: 100,
-              fontWeight: FontWeight.bold,
-              foreground: Paint()
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = 4
-                ..color = outlineColor ?? Colors.grey.withAlpha(150)
-                ),
-          textAlign: textAlign ?? TextAlign.center,
-        ),
-        AutoSizeText.rich(
-          group: group,
-          textSpan!,
-          maxLines: maxLines,
-          style: TextStyle(
+    if (textSpan != null) {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          AutoSizeText.rich(
+            textSpan!,
+            minFontSize: 4,
+            maxLines: maxLines,
+            style: TextStyle(
+                fontSize: 100,
+                fontWeight: FontWeight.bold,
+                foreground: Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = 4
+                  ..color = outlineColor ?? Colors.grey.withAlpha(150)),
+            textAlign: textAlign ?? TextAlign.center,
+          ),
+          AutoSizeText.rich(
+            group: group,
+            textSpan!,
+            maxLines: maxLines,
+            style: const TextStyle(
               fontSize: 100,
               fontWeight: FontWeight.bold,
               // foreground: Paint()
               //   ..style = PaintingStyle.fill
               //   ..color = fillColor ?? Colors.white
-                ),
-          textAlign: textAlign ?? TextAlign.center,
-        )
-      ],
-    );
+            ),
+            textAlign: textAlign ?? TextAlign.center,
+          )
+        ],
+      );
     }
     return Stack(
       alignment: Alignment.center,
@@ -398,7 +396,8 @@ class PaddedRRect extends StatelessWidget {
   final Color color;
 
   const PaddedRRect(
-      {required this.child,
+      {super.key,
+      required this.child,
       this.padding = const EdgeInsets.all(8.0),
       this.radius = 8.0,
       this.color = Colors.white});

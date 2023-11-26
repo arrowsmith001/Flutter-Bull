@@ -1,9 +1,7 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/1_auth/login_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_single_option_dismissable_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,9 +131,7 @@ class _LoginOptionsViewState extends ConsumerState<LoginOptionsView>
   void _onSignUpExplanationPressed(BuildContext context) {
     showDialog(
         context: context,
-        builder: (context) => UtterBullSingleOptionDismissableDialog(
-            message: 'Utter Bull requires an account for players to identify and interact with one another.' +
-                '\n\nAfter creating an account, all content you produce in the game is associated with an anonymized player profile.' +
-                '\n\nWe do not actively collect or store the data produced by your interactions with this application for purposes beyond game functionality.'));
+        builder: (context) => const UtterBullSingleOptionDismissableDialog(
+            message: 'Utter Bull requires an account for players to identify and interact with one another.\n\nAfter creating an account, all content you produce in the game is associated with an anonymized player profile.\n\nWe do not actively collect or store the data produced by your interactions with this application for purposes beyond game functionality.'));
   }
 }

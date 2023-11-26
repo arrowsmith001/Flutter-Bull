@@ -3,10 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
 import 'package:flutter_bull/src/model/achievement.dart';
-import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
-import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'achievement_notifier.g.dart';

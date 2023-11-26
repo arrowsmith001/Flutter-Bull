@@ -1,11 +1,10 @@
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
+import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier.dart';
 import 'package:flutter_bull/src/proto/animated_regular_rectangle_packer.dart';
@@ -21,6 +20,7 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
+import '../../mixins/game_hooks.dart';
 import '../../notifiers/view_models/lobby_player.dart';
 
 class LobbyPhaseView extends ConsumerStatefulWidget {
@@ -31,8 +31,8 @@ class LobbyPhaseView extends ConsumerStatefulWidget {
 }
 
 class _LobbyViewState extends ConsumerState<LobbyPhaseView>
-    with UserID, RoomID, TickerProviderStateMixin {
-  late final _vmProvider = lobbyPhaseViewNotifierProvider(roomId, userId!);
+    with UserID, RoomID, TickerProviderStateMixin, GameHooks {
+  late final _vmProvider = lobbyPhaseViewNotifierProvider(gameId!, userId!);
   final _rectKey =
       GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
 
@@ -52,7 +52,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   void onReadyUp(bool isReady) {
     _getServer.setPlayerState(
-        roomId, userId!, isReady ? PlayerState.unready : PlayerState.ready);
+        gameId!, userId!, isReady ? PlayerState.unready : PlayerState.ready);
   }
 
   @override
@@ -99,10 +99,12 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8),
-                  child: _buildPlayerDisplay(context, vm),
+                  child: isLeavingGame
+                      ? UtterBullTextBox('Leaving Game...')
+                      : _buildPlayerDisplay(context, vm),
                 ),
               ),
-              _buildBottomControls(vm)
+              isLeavingGame ? SizedBox.shrink() : _buildBottomControls(vm)
             ],
           )
         ],
@@ -126,7 +128,8 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          AutoSizeText(vm.roomCode, maxLines: 1, style: TextStyle(fontSize: 64))
+          AutoSizeText(vm.roomCode,
+              maxLines: 1, style: const TextStyle(fontSize: 64))
         ]),
       ),
     );
@@ -190,16 +193,16 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                      onPressed: () =>
-                          _getServer.removeFromRoom(userId!, roomId),
+                      onPressed: () => onLeaveGamePressed(),
                       icon: Transform.flip(
-                          flipX: true, child: Icon(Icons.exit_to_app_rounded))),
+                          flipX: true,
+                          child: const Icon(Icons.exit_to_app_rounded))),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: SizedBox(
                       height: 85,
-                      child: vm.isStartingGame
-                          ? UtterBullCircularProgressIndicator()
+                      child: isStartingGame || isMidGame
+                          ? const UtterBullCircularProgressIndicator()
                           : button,
                     ),
                   )
@@ -308,12 +311,17 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   void onStartGamePressed(bool canStartGame) {
     if (canStartGame) {
-      _getServer.startGame(roomId);
+      game.startGame();
     } else {
       showDialog(
           context: context,
-          builder: (context) => UtterBullSingleOptionDismissableDialog(message: 'Not everyone is ready'));
+          builder: (context) => const UtterBullSingleOptionDismissableDialog(
+              message: 'Not everyone is ready'));
     }
+  }
+
+  void onLeaveGamePressed() {
+    game.leaveGame(userId);
   }
 }
 
@@ -363,7 +371,7 @@ class AvatarStateLabel extends StatelessWidget {
   final Color? fill;
 
   final bool isActive;
-  final Duration duration = Duration(milliseconds: 300);
+  final Duration duration = const Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
@@ -379,8 +387,8 @@ class AvatarStateLabel extends StatelessWidget {
         child: Transform.rotate(
             angle: pi * 0.06,
             child: text != null
-                ? UglyOutlinedText(text: 
-                    text!,
+                ? UglyOutlinedText(
+                    text: text!,
                     outlineColor: outline ?? Colors.white,
                     fillColor: fill ?? Colors.black,
                   )

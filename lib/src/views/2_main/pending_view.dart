@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final int timeoutSeconds = 3;
+const int timeoutSeconds = 3;
 
 class PendingView extends ConsumerStatefulWidget {
   const PendingView({super.key});
@@ -14,7 +14,7 @@ class PendingView extends ConsumerStatefulWidget {
 
 class _PendingViewState extends ConsumerState<PendingView> {
 
-  late Timer t = Timer(Duration(seconds: timeoutSeconds), onTimeout);
+  late Timer t = Timer(const Duration(seconds: timeoutSeconds), onTimeout);
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _PendingViewState extends ConsumerState<PendingView> {
     return Scaffold(
         body: Center(
             child: Column(
-      children: [Text(message), CircularProgressIndicator()],
+      children: [Text(message), const CircularProgressIndicator()],
     )));
   }
 

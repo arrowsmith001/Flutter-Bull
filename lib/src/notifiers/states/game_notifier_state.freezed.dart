@@ -16,8 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$GameNotifierState {
+  String get gameId => throw _privateConstructorUsedError;
   GameRoom get gameRoom => throw _privateConstructorUsedError;
   Map<String, PublicPlayer> get players => throw _privateConstructorUsedError;
+  GameError? get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameNotifierStateCopyWith<GameNotifierState> get copyWith =>
@@ -30,7 +32,11 @@ abstract class $GameNotifierStateCopyWith<$Res> {
           GameNotifierState value, $Res Function(GameNotifierState) then) =
       _$GameNotifierStateCopyWithImpl<$Res, GameNotifierState>;
   @useResult
-  $Res call({GameRoom gameRoom, Map<String, PublicPlayer> players});
+  $Res call(
+      {String gameId,
+      GameRoom gameRoom,
+      Map<String, PublicPlayer> players,
+      GameError? error});
 
   $GameRoomCopyWith<$Res> get gameRoom;
 }
@@ -48,10 +54,16 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? gameId = null,
     Object? gameRoom = null,
     Object? players = null,
+    Object? error = freezed,
   }) {
     return _then(_value.copyWith(
+      gameId: null == gameId
+          ? _value.gameId
+          : gameId // ignore: cast_nullable_to_non_nullable
+              as String,
       gameRoom: null == gameRoom
           ? _value.gameRoom
           : gameRoom // ignore: cast_nullable_to_non_nullable
@@ -60,6 +72,10 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
           ? _value.players
           : players // ignore: cast_nullable_to_non_nullable
               as Map<String, PublicPlayer>,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as GameError?,
     ) as $Val);
   }
 
@@ -73,34 +89,44 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
 }
 
 /// @nodoc
-abstract class _$$_GameNotifierStateCopyWith<$Res>
+abstract class _$$GameNotifierStateImplCopyWith<$Res>
     implements $GameNotifierStateCopyWith<$Res> {
-  factory _$$_GameNotifierStateCopyWith(_$_GameNotifierState value,
-          $Res Function(_$_GameNotifierState) then) =
-      __$$_GameNotifierStateCopyWithImpl<$Res>;
+  factory _$$GameNotifierStateImplCopyWith(_$GameNotifierStateImpl value,
+          $Res Function(_$GameNotifierStateImpl) then) =
+      __$$GameNotifierStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GameRoom gameRoom, Map<String, PublicPlayer> players});
+  $Res call(
+      {String gameId,
+      GameRoom gameRoom,
+      Map<String, PublicPlayer> players,
+      GameError? error});
 
   @override
   $GameRoomCopyWith<$Res> get gameRoom;
 }
 
 /// @nodoc
-class __$$_GameNotifierStateCopyWithImpl<$Res>
-    extends _$GameNotifierStateCopyWithImpl<$Res, _$_GameNotifierState>
-    implements _$$_GameNotifierStateCopyWith<$Res> {
-  __$$_GameNotifierStateCopyWithImpl(
-      _$_GameNotifierState _value, $Res Function(_$_GameNotifierState) _then)
+class __$$GameNotifierStateImplCopyWithImpl<$Res>
+    extends _$GameNotifierStateCopyWithImpl<$Res, _$GameNotifierStateImpl>
+    implements _$$GameNotifierStateImplCopyWith<$Res> {
+  __$$GameNotifierStateImplCopyWithImpl(_$GameNotifierStateImpl _value,
+      $Res Function(_$GameNotifierStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? gameId = null,
     Object? gameRoom = null,
     Object? players = null,
+    Object? error = freezed,
   }) {
-    return _then(_$_GameNotifierState(
+    return _then(_$GameNotifierStateImpl(
+      gameId: null == gameId
+          ? _value.gameId
+          : gameId // ignore: cast_nullable_to_non_nullable
+              as String,
       gameRoom: null == gameRoom
           ? _value.gameRoom
           : gameRoom // ignore: cast_nullable_to_non_nullable
@@ -109,19 +135,27 @@ class __$$_GameNotifierStateCopyWithImpl<$Res>
           ? _value._players
           : players // ignore: cast_nullable_to_non_nullable
               as Map<String, PublicPlayer>,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as GameError?,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_GameNotifierState extends _GameNotifierState {
-  _$_GameNotifierState(
-      {required this.gameRoom,
-      required final Map<String, PublicPlayer> players})
+class _$GameNotifierStateImpl extends _GameNotifierState {
+  _$GameNotifierStateImpl(
+      {required this.gameId,
+      required this.gameRoom,
+      required final Map<String, PublicPlayer> players,
+      this.error})
       : _players = players,
         super._();
 
+  @override
+  final String gameId;
   @override
   final GameRoom gameRoom;
   final Map<String, PublicPlayer> _players;
@@ -133,44 +167,55 @@ class _$_GameNotifierState extends _GameNotifierState {
   }
 
   @override
+  final GameError? error;
+
+  @override
   String toString() {
-    return 'GameNotifierState(gameRoom: $gameRoom, players: $players)';
+    return 'GameNotifierState(gameId: $gameId, gameRoom: $gameRoom, players: $players, error: $error)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GameNotifierState &&
+            other is _$GameNotifierStateImpl &&
+            (identical(other.gameId, gameId) || other.gameId == gameId) &&
             (identical(other.gameRoom, gameRoom) ||
                 other.gameRoom == gameRoom) &&
-            const DeepCollectionEquality().equals(other._players, _players));
+            const DeepCollectionEquality().equals(other._players, _players) &&
+            (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, gameRoom, const DeepCollectionEquality().hash(_players));
+  int get hashCode => Object.hash(runtimeType, gameId, gameRoom,
+      const DeepCollectionEquality().hash(_players), error);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>
-      __$$_GameNotifierStateCopyWithImpl<_$_GameNotifierState>(
+  _$$GameNotifierStateImplCopyWith<_$GameNotifierStateImpl> get copyWith =>
+      __$$GameNotifierStateImplCopyWithImpl<_$GameNotifierStateImpl>(
           this, _$identity);
 }
 
 abstract class _GameNotifierState extends GameNotifierState {
   factory _GameNotifierState(
-      {required final GameRoom gameRoom,
-      required final Map<String, PublicPlayer> players}) = _$_GameNotifierState;
+      {required final String gameId,
+      required final GameRoom gameRoom,
+      required final Map<String, PublicPlayer> players,
+      final GameError? error}) = _$GameNotifierStateImpl;
   _GameNotifierState._() : super._();
 
+  @override
+  String get gameId;
   @override
   GameRoom get gameRoom;
   @override
   Map<String, PublicPlayer> get players;
   @override
+  GameError? get error;
+  @override
   @JsonKey(ignore: true)
-  _$$_GameNotifierStateCopyWith<_$_GameNotifierState> get copyWith =>
+  _$$GameNotifierStateImplCopyWith<_$GameNotifierStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -6,7 +6,7 @@ part of 'result_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$resultNotifierHash() => r'123faea171f7b941caf476dd37b7c28748f382bd';
+String _$resultNotifierHash() => r'dab050a288f913c6be4228139c7d95dae0a35909';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,10 +31,10 @@ class _SystemHash {
 
 abstract class _$ResultNotifier
     extends BuildlessStreamNotifier<ResultNotifierState0> {
-  late final String? roomId;
+  late final String roomId;
 
   Stream<ResultNotifierState0> build(
-    String? roomId,
+    String roomId,
   );
 }
 
@@ -49,7 +49,7 @@ class ResultNotifierFamily extends Family<AsyncValue<ResultNotifierState0>> {
 
   /// See also [ResultNotifier].
   ResultNotifierProvider call(
-    String? roomId,
+    String roomId,
   ) {
     return ResultNotifierProvider(
       roomId,
@@ -85,7 +85,7 @@ class ResultNotifierProvider
     extends StreamNotifierProviderImpl<ResultNotifier, ResultNotifierState0> {
   /// See also [ResultNotifier].
   ResultNotifierProvider(
-    String? roomId,
+    String roomId,
   ) : this._internal(
           () => ResultNotifier()..roomId = roomId,
           from: resultNotifierProvider,
@@ -110,7 +110,7 @@ class ResultNotifierProvider
     required this.roomId,
   }) : super.internal();
 
-  final String? roomId;
+  final String roomId;
 
   @override
   Stream<ResultNotifierState0> runNotifierBuild(
@@ -159,7 +159,7 @@ class ResultNotifierProvider
 
 mixin ResultNotifierRef on StreamNotifierProviderRef<ResultNotifierState0> {
   /// The parameter `roomId` of this provider.
-  String? get roomId;
+  String get roomId;
 }
 
 class _ResultNotifierProviderElement
@@ -168,7 +168,7 @@ class _ResultNotifierProviderElement
   _ResultNotifierProviderElement(super.provider);
 
   @override
-  String? get roomId => (origin as ResultNotifierProvider).roomId;
+  String get roomId => (origin as ResultNotifierProvider).roomId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

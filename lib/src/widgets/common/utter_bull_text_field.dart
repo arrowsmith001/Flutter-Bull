@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:auto_size_text_field/auto_size_text_field.dart';
-import 'package:flutter_bull/gen/fonts.gen.dart';
 
 // TODO: Allow submit on ENTER
 
@@ -39,7 +38,7 @@ class UtterBullTextField extends StatelessWidget {
     return AutoSizeTextField(
       obscureText: obscureText,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(8),
+          contentPadding: const EdgeInsets.all(8),
           filled: true,
           fillColor: Colors.white.withOpacity(0.7),
           errorText: errorText, errorMaxLines: 3, errorStyle: TextStyle(fontSize: 18, color: Colors.red.shade900)),

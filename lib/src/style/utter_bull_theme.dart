@@ -1,17 +1,16 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 
 class UtterBullGlobal {
   
-  static Color backgroundDark = Color.fromARGB(255, 196, 196, 196);
+  static Color backgroundDark = const Color.fromARGB(255, 196, 196, 196);
 
-  static Color truthColor = Color.fromARGB(255, 86, 111, 255);
-  static Color lieColor = Color.fromARGB(255, 255, 49, 49);
+  static Color truthColor = const Color.fromARGB(255, 86, 111, 255);
+  static Color lieColor = const Color.fromARGB(255, 255, 49, 49);
 
   static ThemeData theme = ThemeData(
-    bottomAppBarTheme: BottomAppBarTheme(color: Colors.transparent),
+    bottomAppBarTheme: const BottomAppBarTheme(color: Colors.transparent),
       scaffoldBackgroundColor: Colors.transparent,
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
     height: 140.0,
     minWidth: double.infinity,
     textTheme: ButtonTextTheme.primary,
@@ -38,10 +37,10 @@ class UtterBullGlobal {
   static Color silverColor = const Color.fromARGB(255, 211, 211, 211);
   static Color goldColor = const Color.fromARGB(255, 255, 199, 14);
 
-  static Color greatVibe = Color.fromARGB(255, 23, 139, 0);
-  static Color goodVibe = Color.fromARGB(255, 116, 179, 0);
-  static Color okayVibe = Color.fromARGB(255, 192, 157, 0);
-  static Color badVibe = Color.fromARGB(255, 121, 0, 0);
+  static Color greatVibe = const Color.fromARGB(255, 23, 139, 0);
+  static Color goodVibe = const Color.fromARGB(255, 116, 179, 0);
+  static Color okayVibe = const Color.fromARGB(255, 192, 157, 0);
+  static Color badVibe = const Color.fromARGB(255, 121, 0, 0);
 
 
   static const Duration playerSelectionAnimationDuration = Duration(milliseconds: 2500);

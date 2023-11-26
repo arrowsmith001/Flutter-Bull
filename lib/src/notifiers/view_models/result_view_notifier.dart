@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/result_notifier.dart';
-import 'package:flutter_bull/src/notifiers/states/result_notifier_state_0.dart';
 import 'package:flutter_bull/src/utils/result_generator.dart';
 import 'package:flutter_bull/src/view_models/3_game/4_result_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

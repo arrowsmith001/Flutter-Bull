@@ -1,10 +1,7 @@
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier.dart';
 import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
-import 'package:logger/logger.dart';
 
 // TODO: Optimize and generalize
 class AnimatedRegularRectanglePacker<T> extends StatefulWidget {
@@ -48,7 +45,7 @@ class AnimatedRegularRectanglePackerState<T>
     final tag = widget.itemToId(item);
 
     return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       transform: tagsToRemove.contains(tag) ? Matrix4.identity() * 0.05 : Matrix4.identity(),
       child: Hero(tag: tag, child: built));
   }
@@ -154,7 +151,7 @@ class AnimatedRegularRectanglePackerState<T>
     for (int i = 0; i < this.items.length; i++) {
       final tag = widget.itemToId(items[i]);
       if (map.containsKey(tag)) {
-        newItemList.add(map[tag]!);
+        newItemList.add(map[tag] as T);
       } else {
         newItemList.add(this.items[i]);
       }
@@ -188,7 +185,7 @@ class AnimatedRegularRectanglePackerState<T>
 
   PageRoute _getRoute() {
     return PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 500),
         pageBuilder: (_, __, ___) {
           return RegularRectanglePacker(items: List.from(views));
         });
@@ -207,7 +204,7 @@ class CustomRectTween extends RectTween {
 
   @override
   Rect lerp(double t) {
-    final t0 = Cubic(0.72, 0.15, 0.5, 1.23).transform(t);
+    final t0 = const Cubic(0.72, 0.15, 0.5, 1.23).transform(t);
 
     return Rect.fromLTRB(
       lerpDouble(a.left, b.left, t0),
@@ -252,7 +249,7 @@ class _ShrinkingWidgetState extends State<ShrinkingWidget>
   void initState() {
     super.initState();
     anim =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     anim.addListener(() {
       setState(() {});
     });

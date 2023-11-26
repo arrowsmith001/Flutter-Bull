@@ -20,6 +20,50 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
-        }
+        },
+        {
+            "name": "flutter_bull_web_1",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "52585"
+            ],
+        },
+        {
+            "name": "flutter_bull_web_2",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "52586"
+            ],
+        },
+        {
+            "name": "flutter_bull_web_3",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "52587"
+            ],
+        },
+        {
+            "name": "flutter_bull_web_4",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "52588"
+            ],
+        },
     ]
 }

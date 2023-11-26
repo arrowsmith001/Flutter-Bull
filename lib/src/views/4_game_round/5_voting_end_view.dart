@@ -63,11 +63,11 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
             Flexible(child: _buildTimer(vm.timeData.toString())),
             Flexible(flex: 5, child: _buildVoteButtons()),
             vm.isReading && vm.roundStatus != RoundStatus.inProgress
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Flexible(
                     flex: 1,
                     child: TextButton(
-                      child: Text('End Round'),
+                      child: const Text('End Round'),
                       onPressed: () => onEndRound(),
                     )),
           ],
@@ -95,10 +95,10 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
     return Row(children: [
       Expanded(
           child: TextButton(
-              onPressed: () => onVoteTrue(), child: Text(voteTrueButtonLabel))),
+              onPressed: () => onVoteTrue(), child: const Text(voteTrueButtonLabel))),
       Expanded(
           child: TextButton(
-              onPressed: () => onVoteBull(), child: Text(voteBullButtonLabel))),
+              onPressed: () => onVoteBull(), child: const Text(voteBullButtonLabel))),
     ]);
   }
 
@@ -162,7 +162,7 @@ class _TimerDisplayState extends State<TimerDisplay>
         s == 0 ? '--' : s.toString().padLeft(2 - s.toString().length, '0');
     final String minuteString = m == 0 ? '--' : m.toString(); */
 
-    return minutesLeft.toString() + ' : ' + secondsLeft.toString();
+    return '$minutesLeft : $secondsLeft';
     //return '$minuteString:$secondString:$millisecondString';
   }
 

@@ -1,10 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter_bull/src/model/achievement.dart';
-import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
-import 'package:flutter_bull/src/notifiers/achievement_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/utils/game_data_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -44,7 +42,7 @@ class RevealViewModel with _$RevealViewModel {
 
       Logger().e('Failed to create RevealViewModel: $e');
       return RevealViewModel._(
-          playerWhoseTurn: PublicPlayer(Player(name: 'player.name'), Uint8List(0)),
+          playerWhoseTurn: PublicPlayer(const Player(name: 'player.name'), Uint8List(0)),
           playerWhoseTurnStatement: 'playerWhoseTurnStatement',
           isStatementTruth: false,
           playersVotedLie: [],

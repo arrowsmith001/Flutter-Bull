@@ -15,7 +15,7 @@ class TimerNotifier extends _$TimerNotifier {
     final remainingMs = utcEnd - DateTime.now().millisecondsSinceEpoch;
     if (remainingMs <= 0) return Stream.value(TimerState());
 
-    return Stream.periodic(Duration(seconds: 1), (_) {
+    return Stream.periodic(const Duration(seconds: 1), (_) {
       return _buildState(utcEnd);
     })
     .startWith(TimerState(timeRemaining: Duration(milliseconds: remainingMs)));

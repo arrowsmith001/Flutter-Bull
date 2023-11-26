@@ -7,10 +7,10 @@ import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
-import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
+import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
@@ -30,7 +30,7 @@ class UtterBullDeveloperPanel extends ConsumerStatefulWidget {
 
 class _UtterBullDeveloperPanelState
     extends ConsumerState<UtterBullDeveloperPanel>  {
-  late ScrollController _scrollController = ScrollController();
+  late final ScrollController _scrollController = ScrollController();
 
   String? get userId => authAsync.value?.userId;
   String? get roomId => roomAsync.value?.gameRoom.id;
@@ -45,7 +45,7 @@ class _UtterBullDeveloperPanelState
   AuthNotifier get authNotifier => ref.read(authNotifierProvider.notifier);
 
   SignedInPlayerStatusNotifierProvider playerProviderCustom(String? id) =>
-      signedInPlayerStatusNotifierProvider(id);
+      signedInPlayerStatusNotifierProvider(id!);
   SignedInPlayerStatusNotifierProvider get playerProvider =>
       playerProviderCustom(authAsync.valueOrNull?.userId);
   AsyncValue<SignedInPlayerStatusNotifierState> get playerAsync =>
@@ -53,10 +53,10 @@ class _UtterBullDeveloperPanelState
   SignedInPlayerStatusNotifier get playerNotifier =>
       ref.read(playerProvider.notifier);
 
-  GameNotifierProvider get roomProvider =>
-      gameNotifierProvider(playerAsync.valueOrNull?.player?.occupiedRoomId);
-  AsyncValue<GameNotifierState> get roomAsync => ref.watch(roomProvider);
-  GameNotifier get roomNotifier => ref.read(roomProvider.notifier);
+  GameNotifierProvider? get roomProvider => playerAsync.valueOrNull?.player?.occupiedRoomId == null ? null :
+      gameNotifierProvider(playerAsync.valueOrNull!.player!.occupiedRoomId!);
+  AsyncValue<GameNotifierState> get roomAsync => roomProvider == null ? AsyncLoading() : ref.watch(roomProvider!);
+  GameNotifier? get roomNotifier => roomProvider == null ? null : ref.read(roomProvider!.notifier);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class _UtterBullDeveloperPanelState
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             ElevatedButton(
                 onPressed: () => authNotifier.signOut(),
-                child: Text("Sign out")),
+                child: const Text("Sign out")),
             LabelledAsyncData('userId', authAsync.valueOrNull,
                 stringifyValue: (data) => data?.userId),
             Row(
@@ -85,7 +85,7 @@ class _UtterBullDeveloperPanelState
                     Container(child: _buildExtendedRoomFunctions()),
                     LabelledAsyncData('room', roomAsync.valueOrNull,
                         stringifyValue: (r) =>
-                            _jsonPrettyString(r?.gameRoom.toJson())),
+                            _jsonPrettyString(r?.gameRoom!.toJson())),
                   ],
                 ),
               ),
@@ -108,11 +108,11 @@ class _UtterBullDeveloperPanelState
 
   bool _playerIsInRoom(String? id) {
     if (id == null || roomId == null) return false;
-    return roomAsync.value!.gameRoom.playerIds.contains(id);
+    return roomAsync.value!.gameRoom!.playerIds.contains(id);
   }
 
   String _jsonPrettyString(Object? obj) =>
-      obj == null ? 'null' : JsonEncoder.withIndent('\t').convert(obj);
+      obj == null ? 'null' : const JsonEncoder.withIndent('\t').convert(obj);
 
   Widget _buildPlayerFunctions(String? id) {
     if (id == null) return Container();
@@ -121,34 +121,34 @@ class _UtterBullDeveloperPanelState
           onPressed: roomId == null || !_playerIsInRoom(id)
               ? null
               : () => _server.removeFromRoom(id, roomId!),
-          child: Text('Remove from room')),
+          child: const Text('Remove from room')),
       ElevatedButton(
           onPressed: roomId == null || !_playerIsInRoom(id)
               ? null
               : () => _server.setPlayerState(
                   roomId!,
                   id,
-                  roomAsync.requireValue.gameRoom.playerStates[id] !=
+                  roomAsync.requireValue.gameRoom!.playerStates[id] !=
                           PlayerState.ready
                       ? PlayerState.ready
                       : PlayerState.unready),
-          child: Text('Toggle Ready')),
+          child: const Text('Toggle Ready')),
       ElevatedButton(
           onPressed: roomId == null
               ? null
               : () => _server.submitText(roomId!, id, _generateText(id)),
-          child: Text('Submit Text')),
+          child: const Text('Submit Text')),
       Wrap(
         children: [
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.vote(roomId!, id, true),
-              child: Text('Vote T')),
+              child: const Text('Vote T')),
           ElevatedButton(
               onPressed: roomId == null
                   ? null
                   : () => _server.vote(roomId!, id, false),
-              child: Text('Vote L'))
+              child: const Text('Vote L'))
         ],
       ),
     ]);
@@ -161,36 +161,36 @@ class _UtterBullDeveloperPanelState
         Wrap(children: [
           ElevatedButton(
               onPressed: () => addRandomPlayer(),
-              child: Text('Add Random Player')),
+              child: const Text('Add Random Player')),
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.startGame(roomId!),
-              child: Text('Start Game')),
+              child: const Text('Start Game')),
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.returnToLobby(roomId!),
-              child: Text('Return to Lobby')),
+              child: const Text('Return to Lobby')),
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.startRound(roomId!, ''),
-              child: Text('Start Round')),
+              child: const Text('Start Round')),
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.endRound(roomId!, ''),
-              child: Text('End Round')),
+              child: const Text('End Round')),
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.reveal(roomId!, ''),
-              child: Text('Reveal')),
+              child: const Text('Reveal')),
           ElevatedButton(
               onPressed:
                   roomId == null ? null : () => _server.revealNext(roomId!, ''),
-              child: Text('Next Reveal')),
+              child: const Text('Next Reveal')),
           ElevatedButton(
               onPressed: roomId == null
                   ? null
                   : () => _server.calculateResults(roomId!),
-              child: Text('Calculate results')),
+              child: const Text('Calculate results')),
         ]),
 
         // TODO: Test with arbitrary phase changing
@@ -207,11 +207,11 @@ Row(children: [
         Row(children: [
           ElevatedButton(
               onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
-              child: Text('-')),
-          Text('Sub'),
+              child: const Text('-')),
+          const Text('Sub'),
           ElevatedButton(
               onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
-              child: Text('+')),
+              child: const Text('+')),
         ])
       ],
     );
@@ -223,7 +223,7 @@ Row(children: [
       children: [
         Wrap(children: [
           ElevatedButton(
-              onPressed: () => readyAllUp(), child: Text('Ready All Up')),
+              onPressed: () => readyAllUp(), child: const Text('Ready All Up')),
         ]),
 
         // TODO: Test with arbitrary phase changing
@@ -240,11 +240,11 @@ Row(children: [
         Row(children: [
           ElevatedButton(
               onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
-              child: Text('-')),
-          Text('Sub'),
+              child: const Text('-')),
+          const Text('Sub'),
           ElevatedButton(
               onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
-              child: Text('+')),
+              child: const Text('+')),
         ])
       ],
     );
@@ -259,7 +259,7 @@ Row(children: [
         profilePhotoPath: _getPhotoFromName(name),
         occupiedRoomId: roomId);
     await _data.createPlayer(newPlayer);
-    await _server.joinRoom(id, roomAsync.requireValue.gameRoom.roomCode);
+    await _server.joinRoom(id, roomAsync.requireValue.gameRoom!.roomCode);
   }
 
   String _getRandomName([String? seed]) {
@@ -270,17 +270,17 @@ Row(children: [
   }
 
   String _generateText(String id) {
-    final targets = roomAsync.requireValue.gameRoom.targets;
+    final targets = roomAsync.requireValue.gameRoom!.targets;
     return GameDataFunctions.generatePlaceholderText(id, targets);
   }
 
   GamePhase _phasePlus(int i) {
-    final newIndex = roomAsync.requireValue.gameRoom.phase.index + i;
+    final newIndex = roomAsync.requireValue.gameRoom!.phase.index + i;
     return GamePhase.values[newIndex % GamePhase.values.length];
   }
 
   int _subPhasePlus(int i) {
-    return max(0, roomAsync.requireValue.gameRoom.subPhase + i);
+    return max(0, roomAsync.requireValue.gameRoom!.subPhase + i);
   }
 
   Color? _getColorCode(String? id) {
@@ -293,7 +293,7 @@ Row(children: [
 
   bool _isPlayersTurn(String? id) {
     try {
-      final room = roomAsync.requireValue.gameRoom;
+      final room = roomAsync.requireValue.gameRoom!;
       return room.playerOrder[room.progress] == id;
     } catch (e) {}
     return false;
@@ -308,15 +308,15 @@ Row(children: [
   }
 
   void readyAllUp() {
-    for(String id in roomAsync.requireValue.gameRoom.playerIds)
+    for(String id in roomAsync.requireValue.gameRoom!.playerIds)
     {
-      roomNotifier.setReady(id, PlayerState.ready);
+      roomNotifier?.setReady(id, PlayerState.ready);
     }
   }
 }
 
 class LabelledAsyncData<T> extends StatelessWidget {
-  const LabelledAsyncData(this.label, this.asyncData, {this.stringifyValue});
+  const LabelledAsyncData(this.label, this.asyncData, {super.key, this.stringifyValue});
 
   final String label;
   final T asyncData;
@@ -356,7 +356,7 @@ class LabelledAsyncData<T> extends StatelessWidget {
 class ListedLabelledAsyncData<T, S> extends StatelessWidget {
   const ListedLabelledAsyncData(
       this.label, this.asyncData, this.listFromAsyncData,
-      {this.stringifyValue, this.buildTextColor, this.buildTrailing});
+      {super.key, this.stringifyValue, this.buildTextColor, this.buildTrailing});
 
   final String label;
   final T asyncData;
@@ -378,7 +378,7 @@ class ListedLabelledAsyncData<T, S> extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: LayoutBuilder(builder: (context, constraints) {
                 final list = listFromAsyncData(asyncData);
-                if (list == null) return Text('<null>');
+                if (list == null) return const Text('<null>');
 
                 return ListView(
                     shrinkWrap: true,

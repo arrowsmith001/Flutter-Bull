@@ -23,6 +23,7 @@ enum PlayerStates {
 }
 
 const lobbyPhase = 0;
+const resultsPhase = 4;
 const startVotingSubphase = 4;
 
 
@@ -74,7 +75,8 @@ export const removeFromRoom = http.onCall(
         var userId = req.data['userId'] as string;
         var roomId = req.data['roomId'] as string;
 
-        removeFromRoomImpl(userId, roomId);
+        await removeFromRoomImpl(userId, roomId);
+
     });
 
 
@@ -83,13 +85,8 @@ export const startGame = http.onCall(
 
         var roomId = req.data as string;
 
-        try {
+        await startGameImpl(roomId);
 
-            await startGameImpl(roomId);
-        }
-        catch (e) {
-            console.log(e);
-        }
     });
 
 export const returnToLobby = http.onCall(
@@ -97,7 +94,7 @@ export const returnToLobby = http.onCall(
 
         var roomId = req.data as string;
 
-        returnToLobbyImpl(roomId);
+        await returnToLobbyImpl(roomId);
     });
 
 
@@ -108,7 +105,7 @@ export const submitText = http.onCall(
         var userId = req.data['userId'] as string;
         var text = req.data['text'];
 
-        submitTextImpl(roomId, userId, text);
+        await submitTextImpl(roomId, userId, text);
     });
 
 
@@ -267,7 +264,8 @@ async function joinGameRoomImpl(userId: string, roomCode: string) {
         var roomRef = room.ref;
         var roomData = room.data();
 
-        var isInLobbyPhase = (roomData['phase'] as number) == lobbyPhase;
+        const phase = roomData['phase'] as number;
+        var isInLobbyPhase = phase == lobbyPhase || phase == resultsPhase;
         if (!isInLobbyPhase) throw Error('Error: Player \'' + userId + '\' cannot join game with code \'' + roomCode + '\' (game id: \'' + roomRef.id + '\' because game \'' + roomRef.id + '\' is in progress');
 
         var playerIds = roomData['playerIds'] as string[];
@@ -339,49 +337,62 @@ enum GameRoomPhase {
 // TODO: Ensure all players are ready/spectating before starting game
 async function startGameImpl(roomId: string) {
 
-    await db.collection('rooms').doc(roomId).update({ 'state': 'startingGame' });
+    var roomRef = db.collection('rooms').doc(roomId);
 
     await db.runTransaction(async (txn) => {
-
-        var roomRef = db.collection('rooms').doc(roomId);
-
-        var roomQuery = await txn.get(roomRef);
-        var room = roomQuery.data();
-
-        // TODO: Allow for spectators
-        var playerIds = room!['playerIds'] as string[];
-
-        // Generate targets map
-        var targets = _getTruthOrLieTargetMap(playerIds);
-        var truths = new Map(Array.from(targets).map((([k, v]) => [k, k == v])));
-
-        // Generate empty texts
-        var texts = new Map<String, String>();
-
-        // Generate random player order
-        var playerOrder = Array.from(playerIds);
-        _shuffleArray(playerOrder);
-
-        // Generate empty votes & vote times & states
-        var votes = new Map<String, String[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? 'p' : '-')]));
-        var voteTimes = new Map<String, Number[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? -999 : -1)]));
-        var states = new Map<String, number>(Array.from(playerIds, (id) => [id, PlayerStates.inGame]));
-
         txn
-            .update(roomRef, { 'targets': Object.fromEntries(targets) })
-            .update(roomRef, { 'truths': Object.fromEntries(truths) })
-            .update(roomRef, { 'votes': Object.fromEntries(votes) })
-            .update(roomRef, { 'voteTimes': Object.fromEntries(voteTimes) })
-            .update(roomRef, { 'texts': Object.fromEntries(texts) })
-            .update(roomRef, { 'playerOrder': playerOrder })
-            .update(roomRef, { 'playerStates': Object.fromEntries(states) })
-            .update(roomRef, { 'progress': 0 })
-            .update(roomRef, { 'phase': GameRoomPhase.writing })
-            .update(roomRef, { 'subPhase': 0 });
+            .update(roomRef, { 'state': 'startingGame' });
     });
 
+    try {
+        await db.runTransaction(async (txn) => {
 
-    await db.collection('rooms').doc(roomId).update({ 'state': null });
+            var roomQuery = await txn.get(roomRef);
+            var room = roomQuery.data();
+
+            // TODO: Allow for spectators
+            var playerIds = room!['playerIds'] as string[];
+
+            // Generate targets map
+            var targets = _getTruthOrLieTargetMap(playerIds);
+            var truths = new Map(Array.from(targets).map((([k, v]) => [k, k == v])));
+
+            // Generate empty texts
+            var texts = new Map<String, String>();
+
+            // Generate random player order
+            var playerOrder = Array.from(playerIds);
+            _shuffleArray(playerOrder);
+
+            // Generate empty votes & vote times & states
+            var votes = new Map<String, String[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? 'p' : '-')]));
+            var voteTimes = new Map<String, Number[]>(Array.from(playerIds, (id) => [id, playerOrder.map((orderId) => orderId == id ? -999 : -1)]));
+            var states = new Map<String, number>(Array.from(playerIds, (id) => [id, PlayerStates.inGame]));
+
+            txn
+                .update(roomRef, { 'targets': Object.fromEntries(targets) })
+                .update(roomRef, { 'truths': Object.fromEntries(truths) })
+                .update(roomRef, { 'votes': Object.fromEntries(votes) })
+                .update(roomRef, { 'voteTimes': Object.fromEntries(voteTimes) })
+                .update(roomRef, { 'texts': Object.fromEntries(texts) })
+                .update(roomRef, { 'playerOrder': playerOrder })
+                .update(roomRef, { 'playerStates': Object.fromEntries(states) })
+                .update(roomRef, { 'progress': 0 })
+                .update(roomRef, { 'phase': GameRoomPhase.writing })
+                .update(roomRef, { 'subPhase': 0 })
+                .update(roomRef, { 'state': null });
+        });
+    }
+    catch (e) {
+        console.log('Error starting game: ' + e);
+
+        db.runTransaction(async (txn) => {
+            txn
+                .update(roomRef, { 'state': null });
+        });
+
+        throw e;
+    }
 
 }
 

@@ -15,7 +15,7 @@ class GameViewNotifier extends _$GameViewNotifier {
     final game = ref.watch(gameNotifierProvider(roomId));
 
     if (game is AsyncData) {
-      yield _buildViewModel(game.requireValue.gameRoom, userId);
+      yield _buildViewModel(game.requireValue.gameRoom!, userId);
     }
   }
 

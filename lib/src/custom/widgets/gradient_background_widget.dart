@@ -12,7 +12,7 @@ class GradientBackgroundWidget extends StatelessWidget {
             gradient: RadialGradient(
               focalRadius: 20.0,
               colors: [theme.shadowColor, theme.colorScheme.background],
-              stops: [0, 0.75])),
+              stops: const [0, 0.75])),
      
           child: child,
         );

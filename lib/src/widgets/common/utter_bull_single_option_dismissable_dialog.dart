@@ -17,7 +17,7 @@ class UtterBullSingleOptionDismissableDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Spacer(flex: 1),
+            const Spacer(flex: 1),
             Flexible(flex: 2,
                   child: UtterBullTextBox(message)),
             UtterBullButton(
@@ -25,7 +25,7 @@ class UtterBullSingleOptionDismissableDialog extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 }),
-            Spacer(flex: 1),
+            const Spacer(flex: 1),
           ],
         ),
       ),

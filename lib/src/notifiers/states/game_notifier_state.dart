@@ -1,6 +1,4 @@
-import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
-import 'package:flutter_bull/src/notifiers/achievement_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,15 +8,20 @@ part 'game_notifier_state.freezed.dart';
 class GameNotifierState with _$GameNotifierState {
   GameNotifierState._();
 
-  factory GameNotifierState(
-      {
-        required GameRoom gameRoom,
-        required Map<String, PublicPlayer> players,
-        //GameResult? result, 
-        //@Default([]) List<AchievementWithIcon> achievementsWithIcons
-        }) = _GameNotifierState;
+  factory GameNotifierState({
+    required String gameId,
+    required GameRoom gameRoom,
+    required Map<String, PublicPlayer> players,
+    GameError? error,
+    //GameResult? result,
+    //@Default([]) List<AchievementWithIcon> achievementsWithIcons
+  }) = _GameNotifierState;
+}
 
+class GameError {
+  final Object error;
 
+  GameError(this.error);
 }
 /* 
 @freezed

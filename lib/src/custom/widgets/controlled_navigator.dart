@@ -3,7 +3,7 @@ import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 
 class ControlledNavigator<T> extends StatelessWidget {
 
-  const ControlledNavigator({required this.controller, required this.data, this.observers = const []});
+  const ControlledNavigator({super.key, required this.controller, required this.data, this.observers = const []});
 
   final NavigationController<T> controller;
   final T data;

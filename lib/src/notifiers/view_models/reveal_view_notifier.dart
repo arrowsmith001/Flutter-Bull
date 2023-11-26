@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bull/src/model/achievement.dart';
-import 'package:flutter_bull/src/model/game_result.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
-import 'package:flutter_bull/src/notifiers/achievement_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/result_notifier.dart';
@@ -27,7 +25,7 @@ class RevealViewNotifier extends _$RevealViewNotifier {
       final game = gameAsync.requireValue;
       final result = resultAsync.requireValue;
 
-      yield _buildViewModel(game.gameRoom, game.players, 
+      yield _buildViewModel(game.gameRoom!, game.players, 
           userId, whoseTurnId,
           result.resultGenerator);
     }

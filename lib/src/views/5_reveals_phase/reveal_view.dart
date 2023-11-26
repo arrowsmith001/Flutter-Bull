@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.d
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
-import 'package:logger/logger.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -127,7 +125,7 @@ class RevealViewState extends ConsumerState<RevealView>
                 vm.isMyTurn
                     ? _buildRevealerControls(vm.isRevealed)
                     : AnimatedSwitcher(
-                        duration: Duration(seconds: 1),
+                        duration: const Duration(seconds: 1),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 16.0, horizontal: 24.0),
@@ -182,7 +180,7 @@ class RevealViewState extends ConsumerState<RevealView>
 
             Flexible(
               child: AnimatedSwitcher(
-                duration: Duration(seconds: 1),
+                duration: const Duration(seconds: 1),
                 child: RoundedBorder(
                   color: (!isRevealed
                           ? Colors.white
@@ -190,7 +188,7 @@ class RevealViewState extends ConsumerState<RevealView>
                               ? UtterBullGlobal.truthColor
                               : UtterBullGlobal.lieColor)
                       .withOpacity(0.9),
-                  child: Container(
+                  child: SizedBox(
                     height: MediaQuery.of(context).size.width * 0.4,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -234,7 +232,7 @@ class RevealViewState extends ConsumerState<RevealView>
 
     final avatarList = playersVoted
         .map((p) => Padding(
-              padding: EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12.0),
               child: UtterBullPlayerAvatar(p.player.name!, p.avatarData),
             ))
         .toList();

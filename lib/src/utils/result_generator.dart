@@ -3,7 +3,6 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/states/player_breakdown.dart';
 import 'package:flutter_bull/src/notifiers/states/round_breakdown.dart';
 import 'package:logger/logger.dart';
-import 'dart:math' as Math;
 
 class ResultGenerator {
   ResultGenerator(this.game, this.achievements) {

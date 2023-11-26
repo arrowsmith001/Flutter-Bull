@@ -13,7 +13,6 @@ import 'package:flutter_bull/src/view_models/3_game/3_reveals_phase_view_model.d
 import 'package:flutter_bull/src/views/0_app/splash_view.dart';
 import 'package:flutter_bull/src/views/5_reveals_phase/reveal_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 class RevealsPhaseView extends ConsumerStatefulWidget {
   const RevealsPhaseView({super.key});
@@ -104,7 +103,7 @@ class RevealsPhaseNavigationController
     extends NavigationController<RevealsPhaseViewModel> {
   @override
   Route get defaultRoute =>
-      MaterialPageRoute(builder: (context) => SplashView());
+      MaterialPageRoute(builder: (context) => const SplashView());
 
   @override
   String generateInitialRoute(RevealsPhaseViewModel data) {
@@ -117,6 +116,6 @@ class RevealsPhaseNavigationController
 
     return ForwardPushRoute((context) => ProviderScope(
         overrides: [getPlayerWhoseTurnIdProvider.overrideWithValue(whoseTurn)],
-        child: RevealView()));
+        child: const RevealView()));
   }
 }

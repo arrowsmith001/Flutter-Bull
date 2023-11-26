@@ -21,7 +21,7 @@ class VotingPhaseViewNotifier extends _$VotingPhaseViewNotifier {
     if (gameAsync is AsyncData) {
       final game = gameAsync.requireValue;
 
-      yield _buildViewModel(game.gameRoom, game.players, userId, whoseTurnId);
+      yield _buildViewModel(game.gameRoom!, game.players, userId, whoseTurnId);
     }
   }
 

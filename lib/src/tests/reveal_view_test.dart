@@ -10,11 +10,11 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
 import 'package:flutter_bull/src/views/5_reveals_phase/reveal_view.dart';
-import 'package:flutter_bull/src/widgets/main/mobile_app_layout_container.dart';
+import 'package:flutter_bull/src/widgets/unique/mobile_app_layout_container.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RevealViewTest extends StatefulWidget {
-  RevealViewTest({super.key});
+  const RevealViewTest({super.key});
 
   static const userId = '1';
   static const roomId = '';
@@ -82,7 +82,7 @@ class _RevealViewTestState extends State<RevealViewTest> {
       builder: (context, child) => FutureBuilder(
           future: setup(),
           builder: ((context, snapshot) {
-            if (!snapshot.hasData) return CircularProgressIndicator();
+            if (!snapshot.hasData) return const CircularProgressIndicator();
 
             final List<PublicPlayer> players = List.generate(
                     RevealViewTest.numberOfPlayers,
@@ -115,7 +115,7 @@ class _RevealViewTestState extends State<RevealViewTest> {
                       onGenerateRoute: (settings) {
                         return PageRouteBuilder(pageBuilder:
                             (_, __, ___) {
-                          return RevealView();
+                          return const RevealView();
                         });
                       },
                     ),

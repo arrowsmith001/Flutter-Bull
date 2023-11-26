@@ -3,10 +3,8 @@ import 'dart:math';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
-import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/utils/game_data_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:logger/logger.dart';
 
 part '3_voting_phase_view_model.freezed.dart';
 
@@ -46,7 +44,7 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
     final List<String> playerNotVotedIds =
         eligibleVoterIds.where((id) => !playerVotedIds.contains(id)).toList();
 
-    final String? vote = game.votes[userId]![progress];
+    final String vote = game.votes[userId]![progress];
     final bool hasVoted = vote != '-';
 
     final PublicPlayer playerWhoseTurn = players[whoseTurnId]!.player;

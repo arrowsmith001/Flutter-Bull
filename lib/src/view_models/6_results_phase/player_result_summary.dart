@@ -1,8 +1,6 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import 'package:flutter_bull/src/view_models/3_game/4_result_view_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'player_result_summary.freezed.dart';

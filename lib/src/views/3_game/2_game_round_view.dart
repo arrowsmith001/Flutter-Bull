@@ -16,7 +16,6 @@ import 'package:flutter_bull/src/views/4_game_round/3_reading_out_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/4_voting_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/5_voting_end_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 // TODO: reader onwards
 
@@ -72,16 +71,16 @@ class GameRoundNavigationController
             scoped(SelectingPlayerPhaseView(isFinalRound: isFinalRound)));
       case 'shuffling':
         return ForwardPushRoute(
-            (context) => scoped(ShufflePlayersAnimationView()));
+            (context) => scoped(const ShufflePlayersAnimationView()));
       case 'reader':
-        return UpwardPushRoute((context) => scoped(ReaderView()));
+        return UpwardPushRoute((context) => scoped(const ReaderView()));
       case 'reading':
         return PageRouteBuilder(
-            pageBuilder: (context, anim, anim2) => scoped(ReadingOutView()));
+            pageBuilder: (context, anim, anim2) => scoped(const ReadingOutView()));
       case 'voting':
-        return ForwardPopRoute((context) => scoped(VotingPhaseView()));
+        return ForwardPopRoute((context) => scoped(const VotingPhaseView()));
       case 'votingEnd':
-        return ForwardPushRoute((context) => scoped(VotingEndView()));
+        return ForwardPushRoute((context) => scoped(const VotingEndView()));
     }
 
     return null;
@@ -108,10 +107,10 @@ class ExitDropTurnRoute extends CoordinatedPageRoute {
     final anim = CurvedAnimation(parent: animation, curve: Curves.easeIn);
 
     return SlideTransition(
-      position: anim.drive(Tween(begin: Offset.zero, end: Offset(0, 1))),
+      position: anim.drive(Tween(begin: Offset.zero, end: const Offset(0, 1))),
       child: RotationTransition(
-          child: child,
-          turns: anim.drive(Tween(begin: 0, end: turn * (pi / 4)))),
+          turns: anim.drive(Tween(begin: 0, end: turn * (pi / 4))),
+          child: child),
     );
   }
 }

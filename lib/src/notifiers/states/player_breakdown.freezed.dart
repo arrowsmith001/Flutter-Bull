@@ -130,11 +130,11 @@ class _$PlayerBreakdownCopyWithImpl<$Res, $Val extends PlayerBreakdown>
 }
 
 /// @nodoc
-abstract class _$$_PlayerBreakdownCopyWith<$Res>
+abstract class _$$PlayerBreakdownImplCopyWith<$Res>
     implements $PlayerBreakdownCopyWith<$Res> {
-  factory _$$_PlayerBreakdownCopyWith(
-          _$_PlayerBreakdown value, $Res Function(_$_PlayerBreakdown) then) =
-      __$$_PlayerBreakdownCopyWithImpl<$Res>;
+  factory _$$PlayerBreakdownImplCopyWith(_$PlayerBreakdownImpl value,
+          $Res Function(_$PlayerBreakdownImpl) then) =
+      __$$PlayerBreakdownImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -152,11 +152,11 @@ abstract class _$$_PlayerBreakdownCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PlayerBreakdownCopyWithImpl<$Res>
-    extends _$PlayerBreakdownCopyWithImpl<$Res, _$_PlayerBreakdown>
-    implements _$$_PlayerBreakdownCopyWith<$Res> {
-  __$$_PlayerBreakdownCopyWithImpl(
-      _$_PlayerBreakdown _value, $Res Function(_$_PlayerBreakdown) _then)
+class __$$PlayerBreakdownImplCopyWithImpl<$Res>
+    extends _$PlayerBreakdownCopyWithImpl<$Res, _$PlayerBreakdownImpl>
+    implements _$$PlayerBreakdownImplCopyWith<$Res> {
+  __$$PlayerBreakdownImplCopyWithImpl(
+      _$PlayerBreakdownImpl _value, $Res Function(_$PlayerBreakdownImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -174,7 +174,7 @@ class __$$_PlayerBreakdownCopyWithImpl<$Res>
     Object? saboteurfooledProportion = freezed,
     Object? totalScore = null,
   }) {
-    return _then(_$_PlayerBreakdown(
+    return _then(_$PlayerBreakdownImpl(
       playerId: null == playerId
           ? _value.playerId
           : playerId // ignore: cast_nullable_to_non_nullable
@@ -225,8 +225,8 @@ class __$$_PlayerBreakdownCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_PlayerBreakdown implements _PlayerBreakdown {
-  _$_PlayerBreakdown(
+class _$PlayerBreakdownImpl implements _PlayerBreakdown {
+  _$PlayerBreakdownImpl(
       {required this.playerId,
       required this.turnNumber,
       required this.ownRoundFooledProportion,
@@ -271,7 +271,7 @@ class _$_PlayerBreakdown implements _PlayerBreakdown {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PlayerBreakdown &&
+            other is _$PlayerBreakdownImpl &&
             (identical(other.playerId, playerId) ||
                 other.playerId == playerId) &&
             (identical(other.turnNumber, turnNumber) ||
@@ -317,8 +317,9 @@ class _$_PlayerBreakdown implements _PlayerBreakdown {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PlayerBreakdownCopyWith<_$_PlayerBreakdown> get copyWith =>
-      __$$_PlayerBreakdownCopyWithImpl<_$_PlayerBreakdown>(this, _$identity);
+  _$$PlayerBreakdownImplCopyWith<_$PlayerBreakdownImpl> get copyWith =>
+      __$$PlayerBreakdownImplCopyWithImpl<_$PlayerBreakdownImpl>(
+          this, _$identity);
 }
 
 abstract class _PlayerBreakdown implements PlayerBreakdown {
@@ -333,7 +334,7 @@ abstract class _PlayerBreakdown implements PlayerBreakdown {
       required final bool? targetsLieTurnedOutTrue,
       required final int? saboteursUncovered,
       required final FooledProportion? saboteurfooledProportion,
-      required final int totalScore}) = _$_PlayerBreakdown;
+      required final int totalScore}) = _$PlayerBreakdownImpl;
 
   @override
   String get playerId;
@@ -359,6 +360,6 @@ abstract class _PlayerBreakdown implements PlayerBreakdown {
   int get totalScore;
   @override
   @JsonKey(ignore: true)
-  _$$_PlayerBreakdownCopyWith<_$_PlayerBreakdown> get copyWith =>
+  _$$PlayerBreakdownImplCopyWith<_$PlayerBreakdownImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

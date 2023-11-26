@@ -66,11 +66,11 @@ class _$ResultViewModelCopyWithImpl<$Res, $Val extends ResultViewModel>
 }
 
 /// @nodoc
-abstract class _$$_ResultViewModelCopyWith<$Res>
+abstract class _$$ResultViewModelImplCopyWith<$Res>
     implements $ResultViewModelCopyWith<$Res> {
-  factory _$$_ResultViewModelCopyWith(
-          _$_ResultViewModel value, $Res Function(_$_ResultViewModel) then) =
-      __$$_ResultViewModelCopyWithImpl<$Res>;
+  factory _$$ResultViewModelImplCopyWith(_$ResultViewModelImpl value,
+          $Res Function(_$ResultViewModelImpl) then) =
+      __$$ResultViewModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -79,11 +79,11 @@ abstract class _$$_ResultViewModelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ResultViewModelCopyWithImpl<$Res>
-    extends _$ResultViewModelCopyWithImpl<$Res, _$_ResultViewModel>
-    implements _$$_ResultViewModelCopyWith<$Res> {
-  __$$_ResultViewModelCopyWithImpl(
-      _$_ResultViewModel _value, $Res Function(_$_ResultViewModel) _then)
+class __$$ResultViewModelImplCopyWithImpl<$Res>
+    extends _$ResultViewModelCopyWithImpl<$Res, _$ResultViewModelImpl>
+    implements _$$ResultViewModelImplCopyWith<$Res> {
+  __$$ResultViewModelImplCopyWithImpl(
+      _$ResultViewModelImpl _value, $Res Function(_$ResultViewModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -92,7 +92,7 @@ class __$$_ResultViewModelCopyWithImpl<$Res>
     Object? playerMap = null,
     Object? playerResultSummaries = null,
   }) {
-    return _then(_$_ResultViewModel(
+    return _then(_$ResultViewModelImpl(
       playerMap: null == playerMap
           ? _value._playerMap
           : playerMap // ignore: cast_nullable_to_non_nullable
@@ -107,8 +107,8 @@ class __$$_ResultViewModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ResultViewModel implements _ResultViewModel {
-  _$_ResultViewModel(
+class _$ResultViewModelImpl implements _ResultViewModel {
+  _$ResultViewModelImpl(
       {required final Map<String, PublicPlayer> playerMap,
       required final List<PlayerResultSummary> playerResultSummaries})
       : _playerMap = playerMap,
@@ -140,7 +140,7 @@ class _$_ResultViewModel implements _ResultViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ResultViewModel &&
+            other is _$ResultViewModelImpl &&
             const DeepCollectionEquality()
                 .equals(other._playerMap, _playerMap) &&
             const DeepCollectionEquality()
@@ -156,15 +156,16 @@ class _$_ResultViewModel implements _ResultViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ResultViewModelCopyWith<_$_ResultViewModel> get copyWith =>
-      __$$_ResultViewModelCopyWithImpl<_$_ResultViewModel>(this, _$identity);
+  _$$ResultViewModelImplCopyWith<_$ResultViewModelImpl> get copyWith =>
+      __$$ResultViewModelImplCopyWithImpl<_$ResultViewModelImpl>(
+          this, _$identity);
 }
 
 abstract class _ResultViewModel implements ResultViewModel {
   factory _ResultViewModel(
           {required final Map<String, PublicPlayer> playerMap,
           required final List<PlayerResultSummary> playerResultSummaries}) =
-      _$_ResultViewModel;
+      _$ResultViewModelImpl;
 
   @override
   Map<String, PublicPlayer> get playerMap;
@@ -172,6 +173,6 @@ abstract class _ResultViewModel implements ResultViewModel {
   List<PlayerResultSummary> get playerResultSummaries;
   @override
   @JsonKey(ignore: true)
-  _$$_ResultViewModelCopyWith<_$_ResultViewModel> get copyWith =>
+  _$$ResultViewModelImplCopyWith<_$ResultViewModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

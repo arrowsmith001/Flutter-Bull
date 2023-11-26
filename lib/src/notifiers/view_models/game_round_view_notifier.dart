@@ -19,7 +19,7 @@ class GameRoundViewNotifier extends _$GameRoundViewNotifier {
 
     if (game is AsyncData) 
     {
-      yield* _buildViewModel(userId, game.requireValue.gameRoom, game.requireValue.players, whoseTurnId);
+      yield* _buildViewModel(userId, game.requireValue.gameRoom!, game.requireValue.players, whoseTurnId);
     }
   }
 

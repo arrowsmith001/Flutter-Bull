@@ -7,10 +7,10 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/navigation/coordinated_routes/swap_route.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
-import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
+import 'package:flutter_bull/src/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/new/home/auth/sign_up_email_view.dart';
+import 'package:flutter_bull/src/new/main/auth/sign_up_email_view.dart';
 import 'package:flutter_bull/src/widgets/common/error_popup.dart';
 import 'package:flutter_bull/src/widgets/common/loading_widget.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -19,7 +19,7 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_single_option_dismiss
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
-import '../new/bottom_bar.dart';
+import '../../new/main/bottom_bar.dart';
 import 'login_options_view.dart';
 
 class LoginView extends ConsumerStatefulWidget {

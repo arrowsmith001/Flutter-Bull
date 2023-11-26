@@ -76,8 +76,9 @@ class GameDataFunctions {
     final target = targets[id];
     if (target == id) {
       return 'Write a TRUTH about yourself!';
-    } else
+    } else {
       return 'Write a LIE about $target';
+    }
   }
 
   static String? getTargetText(GameRoom game, String userId) {

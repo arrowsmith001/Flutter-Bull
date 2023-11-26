@@ -5,7 +5,6 @@ import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_view_notifier.dart';
-import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/2_main/game_view_model.dart';
@@ -27,7 +26,8 @@ class GameView extends ConsumerStatefulWidget {
 }
 
 class _GameViewState extends ConsumerState<GameView> with UserID, RoomID {
-  final navController = GameRouteNavigationController();
+
+  late final navController = GameRouteNavigationController();
 
   late final vmProvider = gameViewNotifierProvider(roomId, userId!);
 
@@ -74,7 +74,7 @@ class GameRouteNavigationController
     extends NavigationController<GameViewModel> {
   @override
   Route get defaultRoute =>
-      MaterialPageRoute(builder: (context) => SplashView());
+      MaterialPageRoute(builder: (context) => const SplashView());
 
   @override
   String generateInitialRoute(GameViewModel data) {
@@ -86,18 +86,18 @@ class GameRouteNavigationController
   PageRoute? generateRoute() {
     switch (nextRoutePath) {
       case 'lobby':
-        return BackwardPushRoute((context) => scoped(LobbyPhaseView()));
+        return BackwardPushRoute((context) => scoped(const LobbyPhaseView()));
       case 'writing':
-        return ForwardPushRoute((context) => scoped(WritingPhaseView()));
+        return ForwardPushRoute((context) => scoped(const WritingPhaseView()));
       case 'round':
         final whoseTurnOverride =
             getPlayerWhoseTurnIdProvider.overrideWithValue(nextRoutePath);
         return ForwardPushRoute((context) =>
-            scoped(GameRoundView(), overrides: [whoseTurnOverride]));
+            scoped(const GameRoundView(), overrides: [whoseTurnOverride]));
       case 'reveals':
-        return ForwardPushRoute((context) => scoped(RevealsPhaseView()));
+        return ForwardPushRoute((context) => scoped(const RevealsPhaseView()));
       case 'results':
-        return ForwardPushRoute((context) => scoped(ResultView()));
+        return ForwardPushRoute((context) => scoped(const ResultView()));
     }
 
     return null;

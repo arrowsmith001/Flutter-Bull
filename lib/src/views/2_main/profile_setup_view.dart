@@ -1,9 +1,6 @@
 
-import 'dart:typed_data';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -190,8 +187,9 @@ class InputValidators {
   }
 
   static String? passwordValidator(String password) {
-    if (password.length < 8)
+    if (password.length < 8) {
       return 'Password must be at least 8 characters long';
+    }
 
     if (password.contains(' ')) return 'Password must not contain whitespace';
 

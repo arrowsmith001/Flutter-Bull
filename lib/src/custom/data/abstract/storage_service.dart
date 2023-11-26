@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:logger/logger.dart';
-import 'package:image/image.dart';
 //import 'package:path_provider/path_provider.dart';
 
 abstract class ImageStorageService {

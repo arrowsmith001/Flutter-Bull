@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/views/new/notifiers/auth_notifier.dart';
-import 'package:flutter_bull/src/views/new/notifiers/states/auth_notifier_state.dart';
+import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
+import 'package:flutter_bull/src/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -187,11 +187,11 @@ class _$VotingPhaseViewModelCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_VotingPhaseViewModelCopyWith<$Res>
+abstract class _$$VotingPhaseViewModelImplCopyWith<$Res>
     implements $VotingPhaseViewModelCopyWith<$Res> {
-  factory _$$_VotingPhaseViewModelCopyWith(_$_VotingPhaseViewModel value,
-          $Res Function(_$_VotingPhaseViewModel) then) =
-      __$$_VotingPhaseViewModelCopyWithImpl<$Res>;
+  factory _$$VotingPhaseViewModelImplCopyWith(_$VotingPhaseViewModelImpl value,
+          $Res Function(_$VotingPhaseViewModelImpl) then) =
+      __$$VotingPhaseViewModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -217,11 +217,11 @@ abstract class _$$_VotingPhaseViewModelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
-    extends _$VotingPhaseViewModelCopyWithImpl<$Res, _$_VotingPhaseViewModel>
-    implements _$$_VotingPhaseViewModelCopyWith<$Res> {
-  __$$_VotingPhaseViewModelCopyWithImpl(_$_VotingPhaseViewModel _value,
-      $Res Function(_$_VotingPhaseViewModel) _then)
+class __$$VotingPhaseViewModelImplCopyWithImpl<$Res>
+    extends _$VotingPhaseViewModelCopyWithImpl<$Res, _$VotingPhaseViewModelImpl>
+    implements _$$VotingPhaseViewModelImplCopyWith<$Res> {
+  __$$VotingPhaseViewModelImplCopyWithImpl(_$VotingPhaseViewModelImpl _value,
+      $Res Function(_$VotingPhaseViewModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -247,7 +247,7 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
     Object? eligibleVoterIds = null,
     Object? eligibleVoterStatus = null,
   }) {
-    return _then(_$_VotingPhaseViewModel(
+    return _then(_$VotingPhaseViewModelImpl(
       playerWhoseTurn: null == playerWhoseTurn
           ? _value.playerWhoseTurn
           : playerWhoseTurn // ignore: cast_nullable_to_non_nullable
@@ -330,8 +330,8 @@ class __$$_VotingPhaseViewModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
-  const _$_VotingPhaseViewModel(
+class _$VotingPhaseViewModelImpl implements _VotingPhaseViewModel {
+  const _$VotingPhaseViewModelImpl(
       {required this.playerWhoseTurn,
       required final Map<String, VotingPlayer> votingPlayers,
       required this.playersWhoseTurnStatement,
@@ -437,7 +437,7 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_VotingPhaseViewModel &&
+            other is _$VotingPhaseViewModelImpl &&
             (identical(other.playerWhoseTurn, playerWhoseTurn) ||
                 other.playerWhoseTurn == playerWhoseTurn) &&
             const DeepCollectionEquality()
@@ -508,9 +508,10 @@ class _$_VotingPhaseViewModel implements _VotingPhaseViewModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_VotingPhaseViewModelCopyWith<_$_VotingPhaseViewModel> get copyWith =>
-      __$$_VotingPhaseViewModelCopyWithImpl<_$_VotingPhaseViewModel>(
-          this, _$identity);
+  _$$VotingPhaseViewModelImplCopyWith<_$VotingPhaseViewModelImpl>
+      get copyWith =>
+          __$$VotingPhaseViewModelImplCopyWithImpl<_$VotingPhaseViewModelImpl>(
+              this, _$identity);
 }
 
 abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
@@ -534,7 +535,7 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
           required final List<String> playersNotVotedIds,
           required final List<String> eligibleVoterIds,
           required final Map<String, bool> eligibleVoterStatus}) =
-      _$_VotingPhaseViewModel;
+      _$VotingPhaseViewModelImpl;
 
   @override
   PublicPlayer get playerWhoseTurn;
@@ -576,6 +577,6 @@ abstract class _VotingPhaseViewModel implements VotingPhaseViewModel {
   Map<String, bool> get eligibleVoterStatus;
   @override
   @JsonKey(ignore: true)
-  _$$_VotingPhaseViewModelCopyWith<_$_VotingPhaseViewModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$VotingPhaseViewModelImplCopyWith<_$VotingPhaseViewModelImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }

@@ -1,4 +1,3 @@
-import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/achievement.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/model/player_status.dart';
 import 'package:flutter_bull/src/model/game_result.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/local_achievement_service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -87,7 +85,7 @@ class DatabaseDrivenDataLayer extends DataService {
   Future<void> removeFromRoom(String userId, String gameRoomId) async {
     await playerRepo.setField(userId, 'occupiedRoomId', null);
 
-    final room = await gameRoomRepo!.getItemById(gameRoomId);
+    final room = await gameRoomRepo.getItemById(gameRoomId);
     await gameRoomRepo.setField(
         gameRoomId, 'playerIds', List.from(room.playerIds)..remove(userId));
   }

@@ -3,7 +3,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -96,11 +95,11 @@ class _ChangeAvatarViewState extends ConsumerState<ChangeAvatarView>
   }
 
   Widget _buildCameraDenied(BuildContext context) {
-    return Text("Camera Denied", style: TextStyle(color: Colors.red));
+    return const Text("Camera Denied", style: TextStyle(color: Colors.red));
   }
 
   Widget _buildCameraPrompted(BuildContext context) {
-    return Text("Camera Requested", style: TextStyle(color: Colors.blue));
+    return const Text("Camera Requested", style: TextStyle(color: Colors.blue));
   }
 
   Widget _buildCameraPermissionUnknown(BuildContext context) {

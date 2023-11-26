@@ -17,7 +17,7 @@ extension RiverpodExtensions<T> on AsyncValue<T> {
       data: data, 
       error: (error, stackTrace) => ErrorWidget(error) as R, 
       loading: loading ?? () => 
-      Center(
+      const Center(
         child: Column(
           children: [
             Spacer(),

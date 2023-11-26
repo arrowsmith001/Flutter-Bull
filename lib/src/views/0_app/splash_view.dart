@@ -11,6 +11,6 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
-    return Center( child: Text("Utter Bull Splash Page"));
+    return const Center( child: Text("Utter Bull Splash Page"));
   }
 }

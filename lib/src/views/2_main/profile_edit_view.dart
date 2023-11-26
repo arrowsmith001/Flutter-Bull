@@ -1,13 +1,10 @@
 
-import 'dart:typed_data';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 // TODO: Profile edit: Both-in-one
 
@@ -35,12 +32,12 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> with UserID {
     });
 
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           
-          Spacer(),
+          const Spacer(),
 
           Flexible(
             flex: 1,
@@ -74,7 +71,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> with UserID {
               onPressed: () => ref
                   .read(playerNotifierProvider(userId!).notifier)
                   .setName(_nameInputController.text),
-              child: Text('Set Name')),
+              child: const Text('Set Name')),
 
           Text(
             'Set display picture (optional):',
@@ -89,7 +86,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> with UserID {
 
           ],)),
 
-          Spacer()
+          const Spacer()
         ],
       ),
     );

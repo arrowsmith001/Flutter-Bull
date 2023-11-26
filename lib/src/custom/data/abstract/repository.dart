@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter_bull/src/model/game_room.dart';
 
 import 'database_service.dart';
 import 'entity.dart';

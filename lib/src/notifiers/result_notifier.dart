@@ -1,18 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
 import 'package:flutter_bull/src/model/achievement.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
-import 'package:flutter_bull/src/notifiers/achievement_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/result_notifier_state_0.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
-import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:logger/logger.dart';
-import 'package:rxdart/rxdart.dart';
 
 part 'result_notifier.g.dart';
 
@@ -24,12 +18,12 @@ class ResultNotifier extends _$ResultNotifier {
   //String? get roomId => state.value!..id;
 
   @override
-  Stream<ResultNotifierState0> build(String? roomId) async* {
+  Stream<ResultNotifierState0> build(String roomId) async* {
     final gameAsync = ref.watch(gameNotifierProvider(roomId));
 
     if (gameAsync is AsyncData) {
       final game = gameAsync.requireValue;
-      yield await _buildState(game.gameRoom);
+      yield await _buildState(game.gameRoom!);
     }
   }
 

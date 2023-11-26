@@ -6,7 +6,7 @@ part of 'game_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameNotifierHash() => r'c51c6b69fbbcb2693704ebdf50c050cd6495c41f';
+String _$gameNotifierHash() => r'07230c456f495aeb1863bf8838bcaed459c1af8a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,10 +31,10 @@ class _SystemHash {
 
 abstract class _$GameNotifier
     extends BuildlessStreamNotifier<GameNotifierState> {
-  late final String? gameRoomId;
+  late final String gameRoomId;
 
   Stream<GameNotifierState> build(
-    String? gameRoomId,
+    String gameRoomId,
   );
 }
 
@@ -49,7 +49,7 @@ class GameNotifierFamily extends Family<AsyncValue<GameNotifierState>> {
 
   /// See also [GameNotifier].
   GameNotifierProvider call(
-    String? gameRoomId,
+    String gameRoomId,
   ) {
     return GameNotifierProvider(
       gameRoomId,
@@ -85,7 +85,7 @@ class GameNotifierProvider
     extends StreamNotifierProviderImpl<GameNotifier, GameNotifierState> {
   /// See also [GameNotifier].
   GameNotifierProvider(
-    String? gameRoomId,
+    String gameRoomId,
   ) : this._internal(
           () => GameNotifier()..gameRoomId = gameRoomId,
           from: gameNotifierProvider,
@@ -110,7 +110,7 @@ class GameNotifierProvider
     required this.gameRoomId,
   }) : super.internal();
 
-  final String? gameRoomId;
+  final String gameRoomId;
 
   @override
   Stream<GameNotifierState> runNotifierBuild(
@@ -159,7 +159,7 @@ class GameNotifierProvider
 
 mixin GameNotifierRef on StreamNotifierProviderRef<GameNotifierState> {
   /// The parameter `gameRoomId` of this provider.
-  String? get gameRoomId;
+  String get gameRoomId;
 }
 
 class _GameNotifierProviderElement
@@ -168,7 +168,7 @@ class _GameNotifierProviderElement
   _GameNotifierProviderElement(super.provider);
 
   @override
-  String? get gameRoomId => (origin as GameNotifierProvider).gameRoomId;
+  String get gameRoomId => (origin as GameNotifierProvider).gameRoomId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -7,7 +7,7 @@ part of 'signed_in_player_status_notifier.dart';
 // **************************************************************************
 
 String _$signedInPlayerStatusNotifierHash() =>
-    r'f128cac4f60a34f77c3753aadcb49bfc8a966e79';
+    r'3ad00917226112981f747182a8bd56c51f9e2611';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,10 +32,10 @@ class _SystemHash {
 
 abstract class _$SignedInPlayerStatusNotifier
     extends BuildlessStreamNotifier<SignedInPlayerStatusNotifierState> {
-  late final String? userId;
+  late final String userId;
 
   Stream<SignedInPlayerStatusNotifierState> build(
-    String? userId,
+    String userId,
   );
 }
 
@@ -52,7 +52,7 @@ class SignedInPlayerStatusNotifierFamily
 
   /// See also [SignedInPlayerStatusNotifier].
   SignedInPlayerStatusNotifierProvider call(
-    String? userId,
+    String userId,
   ) {
     return SignedInPlayerStatusNotifierProvider(
       userId,
@@ -88,7 +88,7 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
     SignedInPlayerStatusNotifier, SignedInPlayerStatusNotifierState> {
   /// See also [SignedInPlayerStatusNotifier].
   SignedInPlayerStatusNotifierProvider(
-    String? userId,
+    String userId,
   ) : this._internal(
           () => SignedInPlayerStatusNotifier()..userId = userId,
           from: signedInPlayerStatusNotifierProvider,
@@ -113,7 +113,7 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
     required this.userId,
   }) : super.internal();
 
-  final String? userId;
+  final String userId;
 
   @override
   Stream<SignedInPlayerStatusNotifierState> runNotifierBuild(
@@ -164,7 +164,7 @@ class SignedInPlayerStatusNotifierProvider extends StreamNotifierProviderImpl<
 mixin SignedInPlayerStatusNotifierRef
     on StreamNotifierProviderRef<SignedInPlayerStatusNotifierState> {
   /// The parameter `userId` of this provider.
-  String? get userId;
+  String get userId;
 }
 
 class _SignedInPlayerStatusNotifierProviderElement
@@ -174,7 +174,7 @@ class _SignedInPlayerStatusNotifierProviderElement
   _SignedInPlayerStatusNotifierProviderElement(super.provider);
 
   @override
-  String? get userId => (origin as SignedInPlayerStatusNotifierProvider).userId;
+  String get userId => (origin as SignedInPlayerStatusNotifierProvider).userId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

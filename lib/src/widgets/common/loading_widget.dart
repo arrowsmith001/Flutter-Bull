@@ -16,7 +16,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Spacer(),
+        const Spacer(),
         Flexible(
             child: Center(
           child: Container(
@@ -32,7 +32,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
                     Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: AnimatedSwitcher(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           layoutBuilder: (child, prev) {
                             return widget.message == null
                                 ? const SizedBox.shrink()
@@ -40,7 +40,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
                                     style: Theme.of(context).textTheme.bodyLarge);
                           }),
                     ),
-                    SizedBox(
+                    const SizedBox(
                         width: 50,
                         height: 50,
                         child: UtterBullCircularProgressIndicator()),
@@ -48,7 +48,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
                 ),
               )),
         )),
-        Spacer()
+        const Spacer()
       ],
     );
   }

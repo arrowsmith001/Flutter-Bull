@@ -1,6 +1,5 @@
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/src/custom/data/abstract/database_service.dart';
-import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/model/achievement.dart';
 import 'package:logger/logger.dart';
 

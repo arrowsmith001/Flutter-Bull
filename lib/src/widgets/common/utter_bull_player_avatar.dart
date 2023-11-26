@@ -2,13 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
-import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 
 // TODO: Incorporate
 enum NamePosition { below, rightCenter }
 
 class UtterBullPlayerAvatar extends StatefulWidget {
-  const UtterBullPlayerAvatar(this.name, this.data, {this.whiteout = 0.0});
+  const UtterBullPlayerAvatar(this.name, this.data, {super.key, this.whiteout = 0.0});
 
   final Uint8List? data;
   final String? name;
@@ -32,7 +31,7 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
               children: [
                 _buildAvatar(context),
                 widget.name == null
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : PositionedDirectional(
                         bottom: -constraints.maxHeight * 0.05,
                         child: SizedBox(
@@ -88,7 +87,7 @@ class _UtterBullPlayerAvatarState extends State<UtterBullPlayerAvatar> {
 }
 
 class CropCircled extends StatelessWidget {
-  const CropCircled({required this.child});
+  const CropCircled({super.key, required this.child});
 
   final Widget child;
 

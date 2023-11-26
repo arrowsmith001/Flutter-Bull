@@ -10,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bull/firebase_options.dart';
 import 'package:flutter_bull/src/custom/data/abstract/repository.dart';
 import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
@@ -34,20 +35,20 @@ import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/services/local_achievement_service.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/5_reveals_phase/reveal_view_model.dart';
-import 'package:flutter_bull/src/views/new/utter_bull.dart';
+import 'package:flutter_bull/src/new/main/utter_bull.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/4_voting_view.dart';
 import 'package:flutter_bull/src/views/5_reveals_phase/reveal_view.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_web_container.dart';
-import 'package:flutter_bull/src/widgets/utter_bull_app.dart';
+import 'package:flutter_bull/src/widgets/unique/utter_bull_web_container.dart';
+import 'package:flutter_bull/src/widgets/unique/utter_bull_app.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'src/custom/data/implemented/firebase.dart';
-import 'src/widgets/main/mobile_app_layout_container.dart';
+import 'src/widgets/unique/mobile_app_layout_container.dart';
 
 ////////////////////////////////////////////////////////////////
 
@@ -70,7 +71,10 @@ const int instances = 1;
 const bool overrideMediaQuery = true;
 
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
+
+  //debugSemanticsDisableAnimations = true;
 
   FlutterError.demangleStackTrace = (StackTrace stack) {
     if (stack is Trace) return stack.vmTrace;
@@ -97,7 +101,7 @@ void main() async {
     await FirebaseStorage.instance.useStorageEmulator(host, 9199);
   }
 
-  if(kIsWeb) FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  if (kIsWeb) FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
   runApp(MyApp());
 }
@@ -126,9 +130,10 @@ class MyApp extends StatelessWidget {
       imageStorageServiceProvider.overrideWithValue(images)
     ];
 
-    final provisionedApp = ProviderScope(overrides: provisions, child: UtterBullApp());
+    final provisionedApp =
+        ProviderScope(overrides: provisions, child: UtterBullApp());
 
-    if(!kIsWeb) return provisionedApp;
+    if (!kIsWeb) return provisionedApp;
 
     final mobileApp = MobileAppLayoutContainer(
       child: provisionedApp,
@@ -140,9 +145,9 @@ class MyApp extends StatelessWidget {
 
       return WidgetsApp(
         builder: (context, _) => WillPopScope(
-               onWillPop: () async {
-          return false;
-        },
+          onWillPop: () async {
+            return false;
+          },
           child: Container(
             color: const Color.fromARGB(255, 130, 205, 255),
             child: Row(
@@ -160,9 +165,7 @@ class MyApp extends StatelessWidget {
         color: Colors.black,
       );
     } else {
-    
-        return UtterBullWebContainer(drag: false, child: mobileApp);
-  
+      return UtterBullWebContainer(drag: false, child: mobileApp);
     }
   }
 

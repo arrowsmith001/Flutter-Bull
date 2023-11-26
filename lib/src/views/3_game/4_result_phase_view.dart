@@ -10,10 +10,8 @@ import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
-import 'package:flutter_bull/src/view_models/3_game/4_result_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
-import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -63,7 +61,7 @@ class _ResultViewViewState extends ConsumerState<ResultView>
 
     return Scaffold(
       bottomNavigationBar: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         height: _isVisible ? height * 0.15 : 0.0,
         child: BottomAppBar(
           //height: ,
@@ -212,7 +210,7 @@ class _PlayerResultSummaryViewState extends State<PlayerResultSummaryView> {
         ),
         Flexible(
           child: ListView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             children: widget.prs.items
                 .map((summaryItem) => Padding(
@@ -248,11 +246,11 @@ class ShimmeringBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
       period: const Duration(seconds: 3),
+      highlightColor: Colors.white,
+      baseColor: color ?? Colors.white,
       child: Container(
         color: Colors.white.withAlpha(100),
       ),
-      highlightColor: Colors.white,
-      baseColor: color ?? Colors.white,
     );
   }
 }

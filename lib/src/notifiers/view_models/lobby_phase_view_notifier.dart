@@ -5,9 +5,7 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:logger/logger.dart';
 
 import 'lobby_player.dart';
 
@@ -20,7 +18,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
     final game = ref.watch(gameNotifierProvider(roomId));
     if (game is AsyncData) {
       yield _buildViewModel(
-          game.requireValue.gameRoom, game.requireValue.players, userId);
+          game.requireValue.gameRoom!, game.requireValue.players, userId);
     }
   }
 
@@ -72,7 +70,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
       List<String> prevPlayers,
       List<String> nextPlayers) {
     if (prevPlayers.isEmpty ||
-        ListEquality().equals(prevPlayers, nextPlayers)) {
+        const ListEquality().equals(prevPlayers, nextPlayers)) {
       return ListChangeData(ListChangeType.unchanged, null, null);
     } else if (prevPlayers.length < nextPlayers.length) {
       final newPlayerId =

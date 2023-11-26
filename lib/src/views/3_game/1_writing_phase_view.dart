@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/game_hooks.dart';
 import 'package:flutter_bull/src/notifiers/view_models/writing_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -21,7 +22,7 @@ class WritingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
-    with RoomID, UserID {
+    with GameHooks {
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
   final TextEditingController _submissionController = TextEditingController();
@@ -33,37 +34,28 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
     _focusNode.requestFocus();
   }
 
-  bool isSubmissionPending = false;
-
   Future<void> _onSubmitText() async {
-    setState(() {
-      isSubmissionPending = true;
-    });
-
-    await _getServer.submitText(roomId, userId!, _submissionController.text);
+    await game.submitText(userId, _submissionController.text);
 
     setState(() {
-      isSubmissionPending = false;
-      _focusNode.canRequestFocus = false;
-    });
-  }
-
-  Future<void> _onWithdrawText() async {
-    setState(() {
-      isSubmissionPending = true;
-    });
-
-    await _getServer.submitText(roomId, userId!, null);
-
-    setState(() {
-      isSubmissionPending = false;
       _focusNode.canRequestFocus = true;
     });
   }
 
+  Future<void> _onWithdrawText() async {
+    try {
+      await game.submitText(userId, null);
+
+      setState(() {
+        _focusNode.canRequestFocus = true;
+      });
+    } catch (e) {}
+    ;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final vmProvider = writingPhaseViewNotifierProvider(roomId, userId!);
+    final vmProvider = writingPhaseViewNotifierProvider(gameId!, userId!);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(
@@ -94,8 +86,8 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
   }
 
   SizedBox _buildBottom(BuildContext context, WritingPhaseViewModel vm) {
-    final bool hasSubmitted = vm.hasSubmitted;
-    final bool canSubmit = !isSubmissionPending && !hasSubmitted;
+    // TODO: Make smoother
+    final bool canSubmit = !isSubmittingText && !hasSubmittedText;
 
     final submitTextButton = UtterBullButton(
         onPressed: canSubmit ? () => _onSubmitText() : null,
@@ -104,7 +96,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
 
     final editTextButton = UtterBullButton(
         isShimmering: false,
-        onPressed: () {
+        onPressed: isSubmittingText ? null : () {
           _onWithdrawText();
         },
         title: 'Edit');
@@ -125,11 +117,8 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
       ],
     );
 
-    
-
     return SizedBox(
-        height: 65,
-        child: hasSubmitted ? editBar : submitTextButton);
+        height: 65, child: hasSubmittedText ? editBar : submitTextButton);
 
     // return SizedBox(
     //     height: 65,
@@ -218,7 +207,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
           hintText: "Type your submission here!",
           maxLines: null,
           expands: true,
-          readOnly: hasSubmitted,
+          readOnly: hasSubmitted || isSubmittingText,
         ),
       )),
     );

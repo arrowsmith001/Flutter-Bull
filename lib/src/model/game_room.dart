@@ -1,6 +1,5 @@
 import 'package:flutter_bull/src/custom/data/abstract/entity.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'game_room.freezed.dart';

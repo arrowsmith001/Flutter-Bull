@@ -1,13 +1,10 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
-import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,7 +85,7 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
 }
 
 class CircularTimer extends StatefulWidget {
-  const CircularTimer(this.maxSeconds, {this.onComplete});
+  const CircularTimer(this.maxSeconds, {super.key, this.onComplete});
 
   final int maxSeconds;
   final VoidCallback? onComplete;

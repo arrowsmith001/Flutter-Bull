@@ -12,7 +12,7 @@ class UtterBullBackButton extends StatelessWidget {
     return Ink(
       decoration: ShapeDecoration(
         color: color,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
       ),
       child: IconButton(
           onPressed: onPressed,

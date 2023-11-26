@@ -1,6 +1,5 @@
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
-import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../notifiers/view_models/lobby_player.dart';
@@ -15,7 +14,7 @@ enum ListChangeType { unchanged, add, remove }
 class ListChangeData<T> {
   @override
   String toString() {
-    return '${listChangeType.name} ${data} $changeIndex';
+    return '${listChangeType.name} $data $changeIndex';
   }
 
   final int? changeIndex;

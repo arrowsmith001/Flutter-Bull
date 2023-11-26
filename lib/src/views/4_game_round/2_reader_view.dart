@@ -10,7 +10,6 @@ import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/src/consumer.dart';
 
 class ReaderView extends ConsumerStatefulWidget {
   const ReaderView({super.key});

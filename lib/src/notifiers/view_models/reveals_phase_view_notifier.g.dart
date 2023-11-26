@@ -7,7 +7,7 @@ part of 'reveals_phase_view_notifier.dart';
 // **************************************************************************
 
 String _$revealsPhaseViewNotifierHash() =>
-    r'848e451ca4949b96cba0d02a1e919f1da5966c65';
+    r'810ca5798cf6d2045037b509d0a193aa6ff84a3b';
 
 /// Copied from Dart SDK
 class _SystemHash {

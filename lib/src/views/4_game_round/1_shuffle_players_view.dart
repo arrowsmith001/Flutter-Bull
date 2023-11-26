@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'dart:math' as Math;
 
 class ShufflePlayersAnimationView extends ConsumerStatefulWidget {
   const ShufflePlayersAnimationView({super.key});
@@ -146,7 +144,7 @@ class _LinearScrollingPlayerSelectorState
     int j = shuffledIds.length - 1;
     while (idsForward[n - 2] != whoseTurn) {
       idsForward = [shuffledIds[j], ...idsForward.sublist(0, n - 1)];
-      Logger().d('new: ' + idsForward.toString());
+      Logger().d('new: $idsForward');
       j = (j - 1) % shuffledIds.length;
     }
 
@@ -256,7 +254,7 @@ class _LinearScrollingPlayerSelectorState
 
 // TODO: Implement
 class RotaryPlayerSelector extends PlayerSelector {
-  RotaryPlayerSelector(
+  const RotaryPlayerSelector(
       {super.key,
       required super.shuffledPlayerIds,
       required super.playerAvatars,

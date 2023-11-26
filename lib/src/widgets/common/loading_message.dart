@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/new/loading.dart';
+import 'package:flutter_bull/src/widgets/common/loading.dart';
 
 class LoadingMessage extends StatefulWidget {
   LoadingMessage(this.message, {super.key});

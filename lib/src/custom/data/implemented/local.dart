@@ -39,7 +39,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
 
       return list.map<T>(deserializeDocument).toList();
     } catch (e) {
-      Logger()..d(e);
+      Logger().d(e);
     }
 
     return [];
@@ -56,7 +56,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
       json.addAll({'id': q['id'].toString()});
       return deserializeDocument(json);
     } catch (e) {
-      Logger()..d(e);
+      Logger().d(e);
     }
 
     throw Exception();
@@ -74,7 +74,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
           .toList();
       return list.map<T>(deserializeDocument).toList();
     } catch (e) {
-      Logger()..d(e);
+      Logger().d(e);
     }
 
     return [];
@@ -118,7 +118,7 @@ class LocalJSONDatabaseService<T extends Entity> implements DatabaseService<T> {
   @override
   Future<void> delete(String itemId) async {
     final count =
-        await database.rawDelete('DELETE FROM $tableName WHERE id = ${itemId}');
+        await database.rawDelete('DELETE FROM $tableName WHERE id = $itemId');
   }
 
   @override

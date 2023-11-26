@@ -70,5 +70,5 @@ abstract class NavigationController<T> extends ValueNotifier<String?> {
   @protected
   ProviderScope scoped(Widget child,
           {List<Override> overrides = const <Override>[]}) =>
-      ProviderScope(child: child, overrides: overrides);
+      ProviderScope(overrides: overrides, child: child);
 }

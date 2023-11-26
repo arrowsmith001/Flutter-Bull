@@ -1,8 +1,5 @@
 import 'package:coordinated_page_route/coordinated_page_route.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/animation/animation.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class SwapRoute extends CoordinatedPageRoute {
   SwapRoute(super.builder, {Duration? duration})

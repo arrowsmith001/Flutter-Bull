@@ -6,7 +6,7 @@ part of 'game_view_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameViewNotifierHash() => r'bca6da9c65609b521bef8307d8f06ba45b6e3233';
+String _$gameViewNotifierHash() => r'c9d6c10dfde96013e345e27616785697e3b1820e';
 
 /// Copied from Dart SDK
 class _SystemHash {

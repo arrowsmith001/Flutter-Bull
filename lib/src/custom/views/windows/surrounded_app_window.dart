@@ -88,10 +88,10 @@ class _SurroundedAppWindowState extends State<SurroundedAppWindow> {
 
   Widget _buildWindowBar() => GestureDetector(
     onTapDown: (details) => startDragging(),
-    child: Row(
+    child: const Row(
       children: [
       Expanded(child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: Text("Flashcard App", style: TextStyle(color: Colors.black)),
       ))
     ],));
