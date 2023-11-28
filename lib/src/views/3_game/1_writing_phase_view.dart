@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/mixins/game_hooks.dart';
 import 'package:flutter_bull/src/notifiers/view_models/writing_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
@@ -8,7 +9,9 @@ import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/3_game/1_writing_phase_view_model.dart';
+import 'package:flutter_bull/src/widgets/common/loading_message.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,11 +25,13 @@ class WritingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
-    with GameHooks {
+    with GameHooks, AuthHooks {
+
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
   final TextEditingController _submissionController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+
 
   @override
   void initState() {
@@ -35,7 +40,12 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
   }
 
   Future<void> _onSubmitText() async {
-    await game.submitText(userId, _submissionController.text);
+    if (_submissionController.text.isEmpty) {
+      _focusNode.requestFocus();
+      return;
+    }
+
+    await game.submitText(userId!, _submissionController.text);
 
     setState(() {
       _focusNode.canRequestFocus = true;
@@ -55,53 +65,48 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider = writingPhaseViewNotifierProvider(gameId!, userId!);
-    final vmAsync = ref.watch(vmProvider);
-
-    return Scaffold(
-      body: vmAsync.whenDefault((WritingPhaseViewModel vm) {
-        return Center(
+    
+        return Scaffold(
+      body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: _buildPrompt(context, vm),
+                child: _buildPrompt(context),
               )),
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: _buildTextSubmission(context, vm),
+                child: _buildTextSubmission(context),
               )),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: _buildBottom(context, vm),
+                child: _buildBottom(context),
               )
             ],
           ),
-        );
-      }),
+        ),
     );
   }
 
-  SizedBox _buildBottom(BuildContext context, WritingPhaseViewModel vm) {
-    // TODO: Make smoother
+  SizedBox _buildBottom(BuildContext context) {
     final bool canSubmit = !isSubmittingText && !hasSubmittedText;
+    final bool canEdit = !isSubmittingText && hasSubmittedText;
 
     final submitTextButton = UtterBullButton(
+        key: const ValueKey('submitTextButton'),
         onPressed: canSubmit ? () => _onSubmitText() : null,
-        isLoading: !canSubmit,
         title: 'Submit');
 
     final editTextButton = UtterBullButton(
+        key: const ValueKey('editTextButton'),
+        onPressed: canEdit ? () => _onWithdrawText() : null,
         isShimmering: false,
-        onPressed: isSubmittingText ? null : () {
-          _onWithdrawText();
-        },
         title: 'Edit');
 
-    final playersReadyPrompt = AutoSizeText(vm.playersSubmittedTextPrompt,
+    final playersReadyPrompt = AutoSizeText(playersSubmittedTextPrompt,
         style: const TextStyle(fontSize: 32), maxLines: 2);
 
     final editBar = Row(
@@ -118,7 +123,15 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
     );
 
     return SizedBox(
-        height: 65, child: hasSubmittedText ? editBar : submitTextButton);
+        height: 65,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          child: canEdit
+              ? editBar
+              : canSubmit
+                  ? submitTextButton
+                  : UtterBullCircularProgressIndicator(),
+        ));
 
     // return SizedBox(
     //     height: 65,
@@ -134,7 +147,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
     //     ));
   }
 
-  Widget _buildPrompt(BuildContext context, WritingPhaseViewModel vm) {
+  Widget _buildPrompt(BuildContext context) {
     var column = Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -145,9 +158,9 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
                   style: Theme.of(context).textTheme.headlineSmall),
               const TextSpan(text: " "),
               TextSpan(
-                text: vm.writingPrompt.truthOrLie,
+                text: writingPrompt.truthOrLie,
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                    color: vm.writingTruthOrLie
+                    color: writingTruthOrLie
                         ? UtterBullGlobal.truthColor
                         : UtterBullGlobal.lieColor),
               ),
@@ -156,11 +169,11 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
         Text.rich(
           TextSpan(children: [
             TextSpan(
-                text: vm.writingPrompt.forOrAbout,
+                text: writingPrompt.forOrAbout,
                 style: Theme.of(context).textTheme.headlineSmall!),
             const TextSpan(text: " "),
             TextSpan(
-              text: vm.writingPrompt.target,
+              text: writingPrompt.target,
               style: Theme.of(context)
                   .textTheme
                   .headlineLarge!
@@ -182,18 +195,17 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
         Expanded(
             child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: UtterBullPlayerAvatar(null, vm.playerWritingFor.avatarData),
+          child: UtterBullPlayerAvatar(null, playerWritingFor.avatarData),
         )),
       ],
     );
   }
 
-  Widget _buildTextSubmission(BuildContext context, WritingPhaseViewModel vm) {
-    final bool hasSubmitted = vm.hasSubmitted;
+  Widget _buildTextSubmission(BuildContext context) {
 
     return Container(
       decoration: BoxDecoration(
-          color: hasSubmitted
+          color: hasSubmittedText
               ? const Color.fromARGB(255, 202, 202, 202).withOpacity(0.7)
               : Colors.white.withOpacity(0.7),
           borderRadius: BorderRadius.circular(16.0)),
@@ -207,7 +219,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
           hintText: "Type your submission here!",
           maxLines: null,
           expands: true,
-          readOnly: hasSubmitted || isSubmittingText,
+          readOnly: hasSubmittedText || isSubmittingText,
         ),
       )),
     );

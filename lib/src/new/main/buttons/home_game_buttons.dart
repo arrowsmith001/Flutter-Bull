@@ -1,5 +1,6 @@
 import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/new/main/buttons/join_game_view.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
@@ -14,7 +15,7 @@ class HomeGameButtons extends ConsumerStatefulWidget {
       _HomeGameButtonsState();
 }
 
-class _HomeGameButtonsState extends ConsumerState<HomeGameButtons> with UserID {
+class _HomeGameButtonsState extends ConsumerState<HomeGameButtons> with AuthHooks {
   void onJoinRoomPressed() {
     Navigator.of(context).push(ForwardFadePushRoute((_) => const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),

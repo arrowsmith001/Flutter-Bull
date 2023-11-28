@@ -9,6 +9,7 @@ part 'app_event_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class AppEventNotifier extends _$AppEventNotifier {
+  
   @override
   Stream<AppEvents> build() async* {
 
@@ -71,5 +72,3 @@ class AppEventNotifier extends _$AppEventNotifier {
     state = AsyncData(newState);
   }
 }
-
-enum HomePageState { home, creatingRoom, joiningRoom }

@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -20,11 +21,11 @@ class VotingEndView extends ConsumerStatefulWidget {
 }
 
 class _VotingEndViewState extends ConsumerState<VotingEndView>
-    with RoomID, UserID, WhoseTurnID {
+    with  AuthHooks, Progress {
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 
-  get gameNotifier => ref.read(gameNotifierProvider(roomId).notifier);
+  get gameNotifier => ref.read(gameNotifierProvider(gameId!).notifier);
   
   void onVoteTrue() => vote(true);
 
@@ -42,7 +43,7 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
   @override
   Widget build(BuildContext context) {
     final vmProvider =
-        votingPhaseViewNotifierProvider(roomId, userId!, whoseTurnId);
+        votingPhaseViewNotifierProvider(gameId!, userId!, 'progress');
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(

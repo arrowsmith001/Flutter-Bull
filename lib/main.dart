@@ -155,9 +155,12 @@ class MyApp extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Flexible(
+                  flex: 1,
                   child: mobileApp,
                 ),
-                Expanded(child: devTools)
+                Expanded(
+                  flex: 3,
+                  child: devTools)
               ],
             ),
           ),
@@ -301,7 +304,7 @@ class _WidgetTestState extends State<WidgetTest> {
               overrides: [
                 getCurrentGameRoomIdProvider.overrideWithValue(roomId),
                 getSignedInPlayerIdProvider.overrideWithValue(userId),
-                getPlayerWhoseTurnIdProvider.overrideWithValue(whoseTurnId),
+                //getPlayerWhoseTurnIdProvider.overrideWithValue(whoseTurnId),
               ],
               child: Scaffold(
                 floatingActionButton:

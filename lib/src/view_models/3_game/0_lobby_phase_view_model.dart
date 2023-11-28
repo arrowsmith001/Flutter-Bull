@@ -6,7 +6,7 @@ import '../../notifiers/view_models/lobby_player.dart';
 
 part '0_lobby_phase_view_model.freezed.dart';
 
-// TODO: Outsource variable
+
 const int numberOfPlayersNeededForGame = 3;
 
 enum ListChangeType { unchanged, add, remove }

@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
+import 'package:flutter_bull/src/new/notifiers/game/game_event_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier.dart';
@@ -31,24 +33,13 @@ class LobbyPhaseView extends ConsumerStatefulWidget {
 }
 
 class _LobbyViewState extends ConsumerState<LobbyPhaseView>
-    with UserID, RoomID, TickerProviderStateMixin, GameHooks {
-  late final _vmProvider = lobbyPhaseViewNotifierProvider(gameId!, userId!);
+    with TickerProviderStateMixin, GameHooks, AuthHooks {
+
   final _rectKey =
       GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
 
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
-  //late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-/*     _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
-    _controller.addListener(() {
-      setState(() {});
-    }); */
-  }
 
   void onReadyUp(bool isReady) {
     _getServer.setPlayerState(
@@ -57,64 +48,61 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   @override
   Widget build(BuildContext context) {
-    final vmAsync = ref.watch(_vmProvider);
 
-    ref.listen(_vmProvider.select((state) => state.valueOrNull?.presentPlayers),
-        (prev, next) {
-      if (prev != null && next != null) {
-        //if (setEquals(prev.keys.toSet(), next.keys.toSet())) {
-        _rectKey.currentState?.setItems(next.values.toList());
-        //}
+    ref.listen(gameEventNotifierProvider(gameId).select((state) => state.valueOrNull?.newPresentPlayers),
+        (_, next) {
+      if (next != null) {
+        _rectKey.currentState?.setItems(next);
       }
     });
 
-    ref.listen(_vmProvider.select((state) => state.value?.listChangeData),
-        (_, next) {
-      if (next == null) return;
+    // ref.listen(_vmProvider.select((state) => state.value?.listChangeData),
+    //     (_, next) {
+    //   if (next == null) return;
 
-      Logger().d('$userId lobby.playerIds: \n\t$next');
+    //   Logger().d('$userId lobby.playerIds: \n\t$next');
 
-      // if (next.listChangeType == ListChangeType.add) {
-      //   final newPlayer = next.data!;
-      //   _rectKey.currentState!.addItem(newPlayer);
-      // }
-      // if (next.listChangeType == ListChangeType.remove) {
-      //   _rectKey.currentState!.removeItem(next.data!);
-      // }
+    //   // if (next.listChangeType == ListChangeType.add) {
+    //   //   final newPlayer = next.data!;
+    //   //   _rectKey.currentState!.addItem(newPlayer);
+    //   // }
+    //   // if (next.listChangeType == ListChangeType.remove) {
+    //   //   _rectKey.currentState!.removeItem(next.data!);
+    //   // }
 
-      // if (next.listChangeType == ListChangeType.add) {
-      //   _insertIntoPlayerList(next.data?.player.id, next.changeIndex);
-      // } else if (next.listChangeType == ListChangeType.remove) {
-      //   _removeFromPlayerList(next.data, next.changeIndex);
-      // }
-    });
+    //   // if (next.listChangeType == ListChangeType.add) {
+    //   //   _insertIntoPlayerList(next.data?.player.id, next.changeIndex);
+    //   // } else if (next.listChangeType == ListChangeType.remove) {
+    //   //   _removeFromPlayerList(next.data, next.changeIndex);
+    //   // }
+    // });
 
-    return Scaffold(body: vmAsync.whenDefault((vm) {
-      return Stack(
+    return Scaffold(body: Stack(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildGameCodeDisplay(context, vm),
+              _buildGameCodeDisplay(context),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8),
                   child: isLeavingGame
                       ? UtterBullTextBox('Leaving Game...')
-                      : _buildPlayerDisplay(context, vm),
+                      : _buildPlayerDisplay(context),
                 ),
               ),
-              isLeavingGame ? SizedBox.shrink() : _buildBottomControls(vm)
+              isLeavingGame ? SizedBox.shrink() : _buildBottomControls()
             ],
           )
         ],
-      );
-    }));
+      ));
   }
 
-  Container _buildGameCodeDisplay(
-      BuildContext context, LobbyPhaseViewModel vm) {
-    return Container(
+  Widget _buildGameCodeDisplay(
+      BuildContext context) {
+
+    return gameCode == null ? UtterBullCircularProgressIndicator()
+    : Container(
       // decoration: BoxDecoration(
       //     gradient: LinearGradient(
       //         begin: Alignment.topCenter,
@@ -128,14 +116,14 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          AutoSizeText(vm.roomCode,
+          AutoSizeText(gameCode!,
               maxLines: 1, style: const TextStyle(fontSize: 64))
         ]),
       ),
     );
   }
 
-  Container _buildPlayerDisplay(BuildContext context, LobbyPhaseViewModel vm) {
+  Container _buildPlayerDisplay(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.45),
@@ -152,7 +140,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
             Expanded(
                 child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: __buildRectanglePacker(vm),
+              child: __buildRectanglePacker(),
             )),
           ],
         ),
@@ -160,14 +148,11 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
     );
   }
 
-  Container _buildBottomControls(LobbyPhaseViewModel vm) {
-    final bool isLeader = vm.isLeader;
-    final bool isReady = vm.isReady;
-
+  Container _buildBottomControls() {
     final button = isLeader
         ? UtterBullButton(
-            onPressed: vm.enoughPlayers
-                ? () => onStartGamePressed(vm.canStartGame)
+            onPressed: enoughPlayers
+                ? () => onStartGamePressed(canStartGame)
                 : null,
             title: 'Start Game')
         : isReady
@@ -187,7 +172,8 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(vm.numberOfPlayersString),
+          Text('$numberOfPlayers player${numberOfPlayers == 1 ? '' : 's'}',
+              style: Theme.of(context).textTheme.headlineSmall),
           Flexible(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -272,17 +258,15 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   AnimatedRegularRectanglePacker<LobbyPlayer>? rectPacker;
 
-  Widget __buildRectanglePacker(LobbyPhaseViewModel vm) {
+  Widget __buildRectanglePacker() {
     rectPacker ??= AnimatedRegularRectanglePacker<LobbyPlayer>(
         key: _rectKey,
-        initialData: vm.presentPlayers.values.toList(),
+        initialData: lobbyListInitialData,
         builder: (LobbyPlayer e) => __buildListItem(
             e.player,
             e.isReady,
             e.isLeader,
-            vm.absentPlayers
-                .map((e) => e.player.id)
-                .contains(e.player.player.id)),
+            isPlayerAbsent(e.player)),
         itemToId: (LobbyPlayer lp) => lp.player.player.id!);
     return rectPacker!;
   }

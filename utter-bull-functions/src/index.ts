@@ -380,6 +380,7 @@ async function startGameImpl(roomId: string) {
                 .update(roomRef, { 'progress': 0 })
                 .update(roomRef, { 'phase': GameRoomPhase.writing })
                 .update(roomRef, { 'subPhase': 0 })
+                .update(roomRef, { 'roundEndUtc': null })
                 .update(roomRef, { 'state': null });
         });
     }

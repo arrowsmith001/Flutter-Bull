@@ -32,7 +32,7 @@ class GameViewNotifier extends _$GameViewNotifier {
     }
 
     return GameViewModel(
-        path: GamePath(phase: phase, arg: arg), playerState: playerState);
+        path: GamePath(phase: phase!, arg: arg), playerState: playerState);
   }
 }
 

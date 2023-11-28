@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -18,8 +21,8 @@ class ReadingOutView extends ConsumerStatefulWidget {
 }
 
 class _ReadingOutViewState extends ConsumerState<ReadingOutView>
-    with RoomID, WhoseTurnID, UserID {
-  get vmProvider => gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
+    with  Progress, AuthHooks {
+  get vmProvider => gameRoundViewNotifierProvider(userId!, gameId!, 'progress');
 
   AsyncValue<GameRoundViewModel> get vmAsync => ref.watch(vmProvider);
 
@@ -30,7 +33,7 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
       startingRound = true;
     });
 
-    ref.read(gameNotifierProvider(roomId).notifier).startRound(userId!);
+    ref.read(gameNotifierProvider(gameId!).notifier).startRound(userId!);
   }
 
   @override
@@ -40,7 +43,7 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
       decoration: UtterBullGlobal.gameViewDecoration,
       child: Center(child: vmAsync.whenDefault((vm) {
         final playerWhoseTurn =
-            vm.players[whoseTurnId]!;
+            vm.players['progress']!;
     
         Widget avatar = Hero(
             tag: 'avatar',
@@ -63,20 +66,28 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: avatar,
-            ),
             Flexible(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: avatar,
+              ),
+            ),
+            Expanded(
+              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: prompt,
               ),
             ),
-            SizedBox(
-                height: 200,
+            Flexible(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: CircularTimer(vm.timeToReadOut,
-                    onComplete: () => onTimerEnd()))
+                        onComplete: () => onTimerEnd()),
+              ),
+            )
           ],
         );
       })),
@@ -96,6 +107,7 @@ class CircularTimer extends StatefulWidget {
 
 class _CircularTimerState extends State<CircularTimer>
     with SingleTickerProviderStateMixin {
+
   late AnimationController animController;
   late Animation<double> anim;
 
@@ -138,12 +150,17 @@ class _CircularTimerState extends State<CircularTimer>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        CircularPercentIndicator(radius: 30, percent: animController.value),
-        Text(secondsRemaining.toString())
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double radius = min(constraints.maxWidth, constraints.maxHeight) / 2;
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            CircularPercentIndicator(radius: radius, percent: animController.value),
+            Text(secondsRemaining.toString())
+          ],
+        );
+      }
     );
   }
 }

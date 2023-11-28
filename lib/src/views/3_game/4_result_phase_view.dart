@@ -13,6 +13,7 @@ import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../view_models/6_results_phase/player_result_summary.dart';
@@ -27,7 +28,7 @@ class ResultView extends ConsumerStatefulWidget {
 }
 
 class _ResultViewViewState extends ConsumerState<ResultView>
-    with RoomID, UserID, MediaDimensions {
+    with AuthHooks, MediaDimensions {
   UtterBullServer get server => ref.read(utterBullServerProvider);
 
   late ScrollController _hideButtonController;
@@ -56,7 +57,7 @@ class _ResultViewViewState extends ConsumerState<ResultView>
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider = resultViewNotifierProvider(roomId, userId!);
+    final vmProvider = resultViewNotifierProvider(gameId!, userId!);
     final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(
@@ -107,7 +108,7 @@ class _ResultViewViewState extends ConsumerState<ResultView>
   }
 
   void onReturnToLobby() {
-    server.setPlayerState(roomId, userId!, PlayerState.unready);
+    server.setPlayerState(gameId!, userId!, PlayerState.unready);
   }
 }
 

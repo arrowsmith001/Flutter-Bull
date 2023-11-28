@@ -163,10 +163,12 @@ class MainRouteNavigatorController
       case 'game':
         final roomId = nextRoutePath;
         final roomOverride =
-            getCurrentGameRoomIdProvider.overrideWithValue(roomId);
+            getCurrentGameRoomIdProvider.overrideWithValue('r');
+        final userOverride =
+            getCurrentGameRoomIdProvider.overrideWithValue('u');
         final child = ProviderScope(
           child: GameView(),
-          overrides: [roomOverride],
+          overrides: [roomOverride, userOverride],
         );
         return ForwardPushRoute((context) => child);
     }

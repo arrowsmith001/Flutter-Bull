@@ -10,14 +10,13 @@ import 'package:logger/logger.dart';
 import 'home/home_navigator.dart';
 
 class MainNavigator extends ConsumerStatefulWidget {
-  MainNavigator({super.key});
+  const MainNavigator({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MainNavigatorState();
 }
 
 class _MainNavigatorState extends ConsumerState<MainNavigator> {
-
   @override
   void initState() {
     super.initState();
@@ -31,7 +30,7 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
     ref.listen(
         authNotifierProvider.select((data) => data.valueOrNull?.occupiedRoomId),
         (prev, next) {
-          Logger().d('MainNavigator: occupiedRoomId changed from $prev to $next');
+      Logger().d('MainNavigator: occupiedRoomId changed from $prev to $next');
       if (next != null) {
         _navKey.currentState?.pushReplacementNamed('game/$next');
       } else if (prev != null && next == null) {
@@ -48,8 +47,10 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
           return BackwardFadePushRoute((_) => HomeNavigator());
         } else if (settings.name!.contains('game')) {
           final roomId = settings.name!.split('/').last;
+          final userId = ref.read(authNotifierProvider).value!.userId!;
           return ForwardFadePushRoute((_) => ProviderScope(overrides: [
-                getCurrentGameRoomIdProvider.overrideWithValue(roomId)
+                getCurrentGameRoomIdProvider.overrideWithValue(roomId),
+                getSignedInPlayerIdProvider.overrideWithValue(userId),
               ], child: const GameView()));
         }
       },

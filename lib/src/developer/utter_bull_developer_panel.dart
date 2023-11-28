@@ -204,15 +204,15 @@ Row(children: [
               onPressed: () => _server.setRoomPhase(roomId!, _phasePlus(1)),
               child: Text('+')),
         ]), */
-        Row(children: [
-          ElevatedButton(
-              onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
-              child: const Text('-')),
-          const Text('Sub'),
-          ElevatedButton(
-              onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
-              child: const Text('+')),
-        ])
+        // Row(children: [
+        //   ElevatedButton(
+        //       onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
+        //       child: const Text('-')),
+        //   const Text('Sub'),
+        //   ElevatedButton(
+        //       onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
+        //       child: const Text('+')),
+        // ])
       ],
     );
   }
@@ -237,15 +237,15 @@ Row(children: [
               onPressed: () => _server.setRoomPhase(roomId!, _phasePlus(1)),
               child: Text('+')),
         ]), */
-        Row(children: [
-          ElevatedButton(
-              onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
-              child: const Text('-')),
-          const Text('Sub'),
-          ElevatedButton(
-              onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
-              child: const Text('+')),
-        ])
+        // Row(children: [
+        //   ElevatedButton(
+        //       onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(-1)),
+        //       child: const Text('-')),
+        //   const Text('Sub'),
+        //   ElevatedButton(
+        //       onPressed: () => _server.setSubPhase(roomId!, _subPhasePlus(1)),
+        //       child: const Text('+')),
+        // ])
       ],
     );
   }
@@ -274,14 +274,14 @@ Row(children: [
     return GameDataFunctions.generatePlaceholderText(id, targets);
   }
 
-  GamePhase _phasePlus(int i) {
-    final newIndex = roomAsync.requireValue.gameRoom!.phase.index + i;
-    return GamePhase.values[newIndex % GamePhase.values.length];
-  }
+  // GamePhase _phasePlus(int i) {
+  //   final newIndex = roomAsync.requireValue.gameRoom!.phase.index + i;
+  //   return GamePhase.values[newIndex % GamePhase.values.length];
+  // }
 
-  int _subPhasePlus(int i) {
-    return max(0, roomAsync.requireValue.gameRoom!.subPhase + i);
-  }
+  // int _subPhasePlus(int i) {
+  //   return max(0, roomAsync.requireValue.gameRoom!.subPhase + i);
+  // }
 
   Color? _getColorCode(String? id) {
     try {
@@ -440,8 +440,7 @@ const Map<String, Gender> randomFirstNames = {
 };
 
 final femalePhotos = [
-  ...List.generate(8, (i) => 'pp/default/female${i + 1}.jpg'),
-  'pp/default/beauty.png'
+  ...List.generate(8, (i) => 'pp/default/female${i + 1}.jpg')
 ];
 
 final malePhotos = [...List.generate(7, (i) => 'pp/default/male${i + 1}.jpg')];

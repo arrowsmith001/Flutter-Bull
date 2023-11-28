@@ -104,8 +104,7 @@ class _RevealViewTestState extends State<RevealViewTest> {
                     getCurrentGameRoomIdProvider.overrideWithValue(''),
                     getSignedInPlayerIdProvider
                         .overrideWithValue(RevealViewTest.userId),
-                    getPlayerWhoseTurnIdProvider.overrideWithValue(
-                        RevealViewTest.whoseTurnId),
+     
                   ],
                   child: Scaffold(
                     floatingActionButton:

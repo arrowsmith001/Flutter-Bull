@@ -38,21 +38,19 @@ final getCurrentGameRoomIdProvider = Provider<String>.internal(
 );
 
 typedef GetCurrentGameRoomIdRef = ProviderRef<String>;
-String _$getPlayerWhoseTurnIdHash() =>
-    r'a9d56020a72c3059b0725333d5be0c1da61e5d50';
+String _$getProgressHash() => r'aed06db6338091f1aed36a7fce9ace1287c4f630';
 
-/// See also [getPlayerWhoseTurnId].
-@ProviderFor(getPlayerWhoseTurnId)
-final getPlayerWhoseTurnIdProvider = Provider<String>.internal(
-  getPlayerWhoseTurnId,
-  name: r'getPlayerWhoseTurnIdProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$getPlayerWhoseTurnIdHash,
+/// See also [getProgress].
+@ProviderFor(getProgress)
+final getProgressProvider = Provider<int>.internal(
+  getProgress,
+  name: r'getProgressProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$getProgressHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef GetPlayerWhoseTurnIdRef = ProviderRef<String>;
+typedef GetProgressRef = ProviderRef<int>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

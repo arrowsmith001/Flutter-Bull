@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
@@ -30,7 +31,7 @@ class VotingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
-    with RoomID, UserID, WhoseTurnID, SingleTickerProviderStateMixin {
+    with AuthHooks, Progress, SingleTickerProviderStateMixin {
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 
@@ -66,7 +67,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   double get screenHeight => MediaQuery.of(context).size.height / 2;
 
   GameNotifier get gameNotifier =>
-      ref.read(gameNotifierProvider(roomId).notifier);
+      ref.read(gameNotifierProvider(gameId!).notifier);
 
   final _timerKey = GlobalKey<TimeDisplayWidgetState>();
 
@@ -111,7 +112,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   @override
   Widget build(BuildContext context) {
     final vmProvider =
-        votingPhaseViewNotifierProvider(roomId, userId!, whoseTurnId);
+        votingPhaseViewNotifierProvider(gameId!, userId!, 'progress');
     final vmAsync = ref.watch(vmProvider);
 
     ref.listen(vmProvider.select((vm) => vm.valueOrNull?.timeData),

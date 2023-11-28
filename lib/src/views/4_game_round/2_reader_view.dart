@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
+import 'package:flutter_bull/src/mixins/game_hooks.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
@@ -19,8 +21,10 @@ class ReaderView extends ConsumerStatefulWidget {
 }
 
 class _ReaderViewState extends ConsumerState<ReaderView>
-    with RoomID, WhoseTurnID, UserID {
-  get vmProvider => gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
+    with  Progress, AuthHooks, GameHooks {
+
+dynamic vm;
+
 
   Decoration? decoration;
   @override
@@ -38,24 +42,16 @@ class _ReaderViewState extends ConsumerState<ReaderView>
     });
   }
 
-  AsyncValue<GameRoundViewModel> get vmAsync => ref.watch(vmProvider);
-
   Future<void> onRevealStatement() async {
     Navigator.of(context).pushReplacementNamed(RoundPhase.reading.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      body: Container(
-        decoration: decoration,
-        child: Center(child: vmAsync.whenDefault((vm) {
-        final playerWhoseTurn = vm.players[whoseTurnId]!;
-      
+
         Widget avatar = Hero(
             tag: 'avatar',
-            child: UtterBullPlayerAvatar(null, playerWhoseTurn.avatarData));
+            child: UtterBullPlayerAvatar(null,  null));//'playerWhoseTurn(fixedProgress).avatarData'));
       
         Widget prompt = Hero(
           tag: 'prompt',
@@ -108,7 +104,12 @@ class _ReaderViewState extends ConsumerState<ReaderView>
             : Text('Waiting for ${vm.playerWhoseTurn.player.name}...',
                 style: Theme.of(context).textTheme.headlineMedium);
       
-        return Column(
+      
+      return Scaffold(
+      
+      body: Container(
+        decoration: decoration,
+        child: Center(child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
@@ -133,8 +134,8 @@ class _ReaderViewState extends ConsumerState<ReaderView>
               ),
             )
           ],
-        );
-          })),
+        )),
       ));
   }
+  
 }

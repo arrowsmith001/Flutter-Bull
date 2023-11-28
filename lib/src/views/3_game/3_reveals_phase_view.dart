@@ -5,6 +5,7 @@ import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveals_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -24,8 +25,7 @@ class RevealsPhaseView extends ConsumerStatefulWidget {
 // TODO: Subsume timer stuff into class/hook
 // TODO: In-out zoom/hero effect?
 class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
-    with UserID, RoomID, WhoseTurnID {
-  final navController = RevealsPhaseNavigationController();
+    with AuthHooks, Progress {
 
   late Timer _timer;
 
@@ -52,7 +52,7 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
 
   final _preambleNavKey = GlobalKey<NavigatorState>();
 
-  late final vmProvider = revealsPhaseViewNotifierProvider(roomId);
+  late final vmProvider = revealsPhaseViewNotifierProvider(gameId!);
   AsyncValue<RevealsPhaseViewModel> get vmAsync => ref.watch(vmProvider);
 
   @override
@@ -60,10 +60,7 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
 /*    final vmProvider = revealsPhaseViewNotifierProvider(roomId);
    final vmAsync = ref.watch(vmProvider); */
 
-    ref.listen(vmProvider.select((value) => value.valueOrNull?.path),
-        (_, next) {
-      if (next != null) navController.navigateTo(next);
-    });
+
 
     return Navigator(
       key: _preambleNavKey,
@@ -87,35 +84,12 @@ class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
         return ForwardFadePushRoute((context) {
           return Center(
             child: vmAsync.whenDefault((vm) {
-              return ControlledNavigator(
-                  observers: [CoordinatedRouteObserver()],
-                  controller: navController,
-                  data: vm);
+              return Navigator(
+                  observers: [CoordinatedRouteObserver()]);
             }),
           );
         });
       },
     );
-  }
-}
-
-class RevealsPhaseNavigationController
-    extends NavigationController<RevealsPhaseViewModel> {
-  @override
-  Route get defaultRoute =>
-      MaterialPageRoute(builder: (context) => const SplashView());
-
-  @override
-  String generateInitialRoute(RevealsPhaseViewModel data) {
-    return data.path;
-  }
-
-  @override
-  PageRoute? generateRoute() {
-    final whoseTurn = nextRoutePath;
-
-    return ForwardPushRoute((context) => ProviderScope(
-        overrides: [getPlayerWhoseTurnIdProvider.overrideWithValue(whoseTurn)],
-        child: const RevealView()));
   }
 }

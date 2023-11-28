@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/services/camera_service.dart';
@@ -24,7 +25,7 @@ class ProfileSetupView extends ConsumerStatefulWidget {
 }
 
 class _ProfileSetupViewState extends ConsumerState<ProfileSetupView>
-    with UserID {
+    with AuthHooks {
   final _nameInputController = TextEditingController();
 
   final _formFieldKey = GlobalKey<FormFieldState>();

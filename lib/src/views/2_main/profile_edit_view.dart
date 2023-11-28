@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,7 @@ class ProfileEditView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _ProfileEditViewState();
 }
 
-class _ProfileEditViewState extends ConsumerState<ProfileEditView> with UserID {
+class _ProfileEditViewState extends ConsumerState<ProfileEditView> with AuthHooks {
   final _nameInputController = TextEditingController();
 
   @override

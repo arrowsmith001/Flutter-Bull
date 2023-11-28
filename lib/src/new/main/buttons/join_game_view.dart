@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -16,7 +17,7 @@ class JoinGameView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _JoinGameViewState();
 }
 
-class _JoinGameViewState extends ConsumerState<JoinGameView> with UserID {
+class _JoinGameViewState extends ConsumerState<JoinGameView> with AuthHooks {
   late final TextEditingController _textEditController = TextEditingController()
   ..addListener(() {
       setState(() {});

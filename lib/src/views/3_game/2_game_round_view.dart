@@ -4,7 +4,10 @@ import 'package:coordinated_page_route/coordinated_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/mixins/game_hooks.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
+import 'package:flutter_bull/src/new/notifiers/game/game_event_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
@@ -15,7 +18,9 @@ import 'package:flutter_bull/src/views/4_game_round/2_reader_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/3_reading_out_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/4_voting_view.dart';
 import 'package:flutter_bull/src/views/4_game_round/5_voting_end_view.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 
 // TODO: reader onwards
 
@@ -27,63 +32,43 @@ class GameRoundView extends ConsumerStatefulWidget {
 }
 
 class _GameRoundViewState extends ConsumerState<GameRoundView>
-    with UserID, RoomID, WhoseTurnID {
-  final navController = GameRoundNavigationController();
+    with Progress, GameHooks, AuthHooks {
+
+  late final navKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider =
-        gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
 
-    ref.listen(vmProvider.select((value) => value.value), (_, next) {
-      if (next != null) navController.navigate(next);
+    ref.listen(gameEventNotifierProvider(gameId).select((value) => value.valueOrNull?.newGameRoute?.subPhase), (_, next) {
+      if (next != null) navKey.currentState?.pushNamed(RoundPhase.values[next].name);
     });
 
-    final vmAsync = ref.watch(vmProvider);
-    return vmAsync.whenDefault((data) => ControlledNavigator(
+    return Navigator(
+      initialRoute: subPhase == null ? '/' : RoundPhase.values[subPhase!].name,
         observers: [CoordinatedRouteObserver(), HeroController()],
-        controller: navController,
-        data: data));
-  }
-}
+        onGenerateRoute: (settings){
 
-class GameRoundNavigationController
-    extends NavigationController<GameRoundViewModel> {
-  void navigate(GameRoundViewModel data) => navigateTo(dataToRoute(data));
+              switch (settings.name) {
+                case 'selecting':
+                  return ForwardPushRoute((context) =>
+                      SelectingPlayerPhaseView());
+                case 'shuffling':
+                  return ForwardPushRoute((context) => ShufflePlayersAnimationView());
+                case 'reader':
+                  return isFinalRound ? 
+                  ForwardPushRoute((context) => const ReaderView())
+                  : UpwardPushRoute((context) => const ReaderView());
+                case 'reading':
+                  return PageRouteBuilder(
+                      pageBuilder: (context, anim, anim2) => const ReadingOutView());
+                case 'voting':
+                  return ForwardPopRoute((context) => const VotingPhaseView());
+                case 'votingEnd':
+                  return ForwardPushRoute((context) => const VotingEndView());
+              }
 
-  @override
-  Route get defaultRoute => throw UnimplementedError();
-
-  @override
-  String generateInitialRoute(GameRoundViewModel data) {
-    return dataToRoute(data);
-  }
-
-  String dataToRoute(GameRoundViewModel data) =>
-      '${data.roundPhase.name}/${data.isFinalRound}';
-
-  @override
-  PageRoute? generateRoute() {
-    switch (nextRoutePath) {
-      case 'selecting':
-        final isFinalRound = bool.parse(nextRoutePath);
-        return ForwardPushRoute((context) =>
-            scoped(SelectingPlayerPhaseView(isFinalRound: isFinalRound)));
-      case 'shuffling':
-        return ForwardPushRoute(
-            (context) => scoped(const ShufflePlayersAnimationView()));
-      case 'reader':
-        return UpwardPushRoute((context) => scoped(const ReaderView()));
-      case 'reading':
-        return PageRouteBuilder(
-            pageBuilder: (context, anim, anim2) => scoped(const ReadingOutView()));
-      case 'voting':
-        return ForwardPopRoute((context) => scoped(const VotingPhaseView()));
-      case 'votingEnd':
-        return ForwardPushRoute((context) => scoped(const VotingEndView()));
-    }
-
-    return null;
+              return PageRouteBuilder(pageBuilder: (context, anim, anim2) => UtterBullCircularProgressIndicator());
+        });
   }
 }
 

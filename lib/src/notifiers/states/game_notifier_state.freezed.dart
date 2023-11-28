@@ -19,6 +19,7 @@ mixin _$GameNotifierState {
   String get gameId => throw _privateConstructorUsedError;
   GameRoom get gameRoom => throw _privateConstructorUsedError;
   Map<String, PublicPlayer> get players => throw _privateConstructorUsedError;
+  List<LobbyPlayer> get presentPlayers => throw _privateConstructorUsedError;
   GameError? get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -36,6 +37,7 @@ abstract class $GameNotifierStateCopyWith<$Res> {
       {String gameId,
       GameRoom gameRoom,
       Map<String, PublicPlayer> players,
+      List<LobbyPlayer> presentPlayers,
       GameError? error});
 
   $GameRoomCopyWith<$Res> get gameRoom;
@@ -57,6 +59,7 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
     Object? gameId = null,
     Object? gameRoom = null,
     Object? players = null,
+    Object? presentPlayers = null,
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
@@ -72,6 +75,10 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
           ? _value.players
           : players // ignore: cast_nullable_to_non_nullable
               as Map<String, PublicPlayer>,
+      presentPlayers: null == presentPlayers
+          ? _value.presentPlayers
+          : presentPlayers // ignore: cast_nullable_to_non_nullable
+              as List<LobbyPlayer>,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -100,6 +107,7 @@ abstract class _$$GameNotifierStateImplCopyWith<$Res>
       {String gameId,
       GameRoom gameRoom,
       Map<String, PublicPlayer> players,
+      List<LobbyPlayer> presentPlayers,
       GameError? error});
 
   @override
@@ -120,6 +128,7 @@ class __$$GameNotifierStateImplCopyWithImpl<$Res>
     Object? gameId = null,
     Object? gameRoom = null,
     Object? players = null,
+    Object? presentPlayers = null,
     Object? error = freezed,
   }) {
     return _then(_$GameNotifierStateImpl(
@@ -135,6 +144,10 @@ class __$$GameNotifierStateImplCopyWithImpl<$Res>
           ? _value._players
           : players // ignore: cast_nullable_to_non_nullable
               as Map<String, PublicPlayer>,
+      presentPlayers: null == presentPlayers
+          ? _value._presentPlayers
+          : presentPlayers // ignore: cast_nullable_to_non_nullable
+              as List<LobbyPlayer>,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -150,8 +163,10 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
       {required this.gameId,
       required this.gameRoom,
       required final Map<String, PublicPlayer> players,
+      required final List<LobbyPlayer> presentPlayers,
       this.error})
       : _players = players,
+        _presentPlayers = presentPlayers,
         super._();
 
   @override
@@ -166,12 +181,20 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
     return EqualUnmodifiableMapView(_players);
   }
 
+  final List<LobbyPlayer> _presentPlayers;
+  @override
+  List<LobbyPlayer> get presentPlayers {
+    if (_presentPlayers is EqualUnmodifiableListView) return _presentPlayers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_presentPlayers);
+  }
+
   @override
   final GameError? error;
 
   @override
   String toString() {
-    return 'GameNotifierState(gameId: $gameId, gameRoom: $gameRoom, players: $players, error: $error)';
+    return 'GameNotifierState(gameId: $gameId, gameRoom: $gameRoom, players: $players, presentPlayers: $presentPlayers, error: $error)';
   }
 
   @override
@@ -183,12 +206,19 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
             (identical(other.gameRoom, gameRoom) ||
                 other.gameRoom == gameRoom) &&
             const DeepCollectionEquality().equals(other._players, _players) &&
+            const DeepCollectionEquality()
+                .equals(other._presentPlayers, _presentPlayers) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, gameId, gameRoom,
-      const DeepCollectionEquality().hash(_players), error);
+  int get hashCode => Object.hash(
+      runtimeType,
+      gameId,
+      gameRoom,
+      const DeepCollectionEquality().hash(_players),
+      const DeepCollectionEquality().hash(_presentPlayers),
+      error);
 
   @JsonKey(ignore: true)
   @override
@@ -203,6 +233,7 @@ abstract class _GameNotifierState extends GameNotifierState {
       {required final String gameId,
       required final GameRoom gameRoom,
       required final Map<String, PublicPlayer> players,
+      required final List<LobbyPlayer> presentPlayers,
       final GameError? error}) = _$GameNotifierStateImpl;
   _GameNotifierState._() : super._();
 
@@ -212,6 +243,8 @@ abstract class _GameNotifierState extends GameNotifierState {
   GameRoom get gameRoom;
   @override
   Map<String, PublicPlayer> get players;
+  @override
+  List<LobbyPlayer> get presentPlayers;
   @override
   GameError? get error;
   @override

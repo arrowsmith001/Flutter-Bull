@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
+import 'package:flutter_bull/src/mixins/game_hooks.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -23,7 +25,7 @@ class ShufflePlayersAnimationView extends ConsumerStatefulWidget {
 
 class _ShufflePlayersAnimationViewState
     extends ConsumerState<ShufflePlayersAnimationView>
-    with RoomID, WhoseTurnID, UserID {
+    with Progress, AuthHooks, GameHooks {
   late Duration duration = UtterBullGlobal.playerSelectionAnimationDuration;
 
   @override
@@ -40,22 +42,18 @@ class _ShufflePlayersAnimationViewState
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider =
-        gameRoundViewNotifierProvider(userId!, roomId, whoseTurnId);
-    final vmAsync = ref.watch(vmProvider);
-
-    return Scaffold(body: Center(child: vmAsync.whenDefault((vm) {
-      final PlayerSelector playerSelector = LinearScrollingPlayerSelector(
-          width: MediaQuery.of(context).size.width,
-          maxDuration: duration,
-          shuffledPlayerIds: vm.playersLeftToPlayIds,
-          playerAvatars: vm.players,
-          whoseTurn: whoseTurnId,
-          onAnimationEnd: () => _onTimerEnd());
-
-      return playerSelector;
-    })));
+    return Scaffold(
+        body: Center(
+          child: LinearScrollingPlayerSelector(
+              width: MediaQuery.of(context).size.width,
+              maxDuration: duration,
+              shuffledPlayerIds: ['playersLeftToPlay(fixedProgress)'],
+              playerAvatars: allPlayers,
+              whoseTurn: 'whoseTurn(fixedProgress)',
+              onAnimationEnd: () => _onTimerEnd()),
+        ));
   }
+  
 }
 
 abstract class PlayerSelector extends StatefulWidget {
@@ -248,7 +246,7 @@ class _LinearScrollingPlayerSelectorState
 
     await wrapUpAnimController.forward(from: 0);
 
-    navigator.pushReplacementNamed(RoundPhase.reader.name);
+    navigator.pushReplacementNamed(RoundPhase.reader.name + '/false');
   }
 }
 

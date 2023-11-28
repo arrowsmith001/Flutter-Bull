@@ -56,7 +56,7 @@ class UtterBull extends ConsumerStatefulWidget {
 }
 
 class _UtterBullState extends ConsumerState<UtterBull>
-    with MediaDimensions, UserID, AuthHooks {
+    with MediaDimensions, AuthHooks {
   bool get isAuthBarShowing =>
       isSignedIn &&
       !(isOnSignUpPage ||

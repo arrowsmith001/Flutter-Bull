@@ -10,10 +10,10 @@ _$GameRoomImpl _$$GameRoomImplFromJson(Map<String, dynamic> json) =>
     _$GameRoomImpl(
       id: json['id'] as String?,
       roomCode: json['roomCode'] as String,
-      leaderId: json['leaderId'] as String?,
-      phase: $enumDecodeNullable(_$GamePhaseEnumMap, json['phase']) ??
-          GamePhase.lobby,
+      phase: $enumDecodeNullable(_$GamePhaseEnumMap, json['phase']),
+      progress: json['progress'] as int? ?? 0,
       subPhase: json['subPhase'] as int? ?? 0,
+      leaderId: json['leaderId'] as String?,
       state: json['state'] as String?,
       playerIds: (json['playerIds'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -49,7 +49,6 @@ _$GameRoomImpl _$$GameRoomImplFromJson(Map<String, dynamic> json) =>
                 MapEntry(k, (e as List<dynamic>).map((e) => e as int).toList()),
           ) ??
           const {},
-      progress: json['progress'] as int? ?? 0,
       roundEndUTC: json['roundEndUTC'] as int?,
       settings: json['settings'] == null
           ? const GameRoomSettings(roundTimeSeconds: 60 * 3)
@@ -60,9 +59,10 @@ Map<String, dynamic> _$$GameRoomImplToJson(_$GameRoomImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'roomCode': instance.roomCode,
-      'leaderId': instance.leaderId,
-      'phase': _$GamePhaseEnumMap[instance.phase]!,
+      'phase': _$GamePhaseEnumMap[instance.phase],
+      'progress': instance.progress,
       'subPhase': instance.subPhase,
+      'leaderId': instance.leaderId,
       'state': instance.state,
       'playerIds': instance.playerIds,
       'playerOrder': instance.playerOrder,
@@ -73,7 +73,6 @@ Map<String, dynamic> _$$GameRoomImplToJson(_$GameRoomImpl instance) =>
       'texts': instance.texts,
       'votes': instance.votes,
       'voteTimes': instance.voteTimes,
-      'progress': instance.progress,
       'roundEndUTC': instance.roundEndUTC,
       'settings': instance.settings,
     };

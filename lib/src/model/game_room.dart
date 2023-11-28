@@ -21,9 +21,10 @@ class GameRoom extends Entity with _$GameRoom {
     String? id,
     //String? resultId,
     required String roomCode,
-    String? leaderId,
-    @Default(GamePhase.lobby) GamePhase phase,
+    GamePhase? phase, //  /mainPhase/countablePhase/subPhase
+    @Default(0) int progress,
     @Default(0) int subPhase,
+    String? leaderId,
     String? state,
     @Default([]) List<String> playerIds,
     @Default([]) List<String> playerOrder,
@@ -33,7 +34,6 @@ class GameRoom extends Entity with _$GameRoom {
     @Default({}) Map<String, String?> texts,
     @Default({}) Map<String, List<String>> votes,
     @Default({}) Map<String, List<int>> voteTimes,
-    @Default(0) int progress,
     int? roundEndUTC,
     @Default(GameRoomSettings(roundTimeSeconds: 60*3)) GameRoomSettings settings,
   }) = _GameRoom;

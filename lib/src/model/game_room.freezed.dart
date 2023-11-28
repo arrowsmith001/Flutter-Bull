@@ -22,9 +22,11 @@ GameRoom _$GameRoomFromJson(Map<String, dynamic> json) {
 mixin _$GameRoom {
   String? get id => throw _privateConstructorUsedError; //String? resultId,
   String get roomCode => throw _privateConstructorUsedError;
-  String? get leaderId => throw _privateConstructorUsedError;
-  GamePhase get phase => throw _privateConstructorUsedError;
+  GamePhase? get phase =>
+      throw _privateConstructorUsedError; //  /mainPhase/countablePhase/subPhase
+  int get progress => throw _privateConstructorUsedError;
   int get subPhase => throw _privateConstructorUsedError;
+  String? get leaderId => throw _privateConstructorUsedError;
   String? get state => throw _privateConstructorUsedError;
   List<String> get playerIds => throw _privateConstructorUsedError;
   List<String> get playerOrder => throw _privateConstructorUsedError;
@@ -35,7 +37,6 @@ mixin _$GameRoom {
   Map<String, String?> get texts => throw _privateConstructorUsedError;
   Map<String, List<String>> get votes => throw _privateConstructorUsedError;
   Map<String, List<int>> get voteTimes => throw _privateConstructorUsedError;
-  int get progress => throw _privateConstructorUsedError;
   int? get roundEndUTC => throw _privateConstructorUsedError;
   GameRoomSettings get settings => throw _privateConstructorUsedError;
 
@@ -53,9 +54,10 @@ abstract class $GameRoomCopyWith<$Res> {
   $Res call(
       {String? id,
       String roomCode,
-      String? leaderId,
-      GamePhase phase,
+      GamePhase? phase,
+      int progress,
       int subPhase,
+      String? leaderId,
       String? state,
       List<String> playerIds,
       List<String> playerOrder,
@@ -65,7 +67,6 @@ abstract class $GameRoomCopyWith<$Res> {
       Map<String, String?> texts,
       Map<String, List<String>> votes,
       Map<String, List<int>> voteTimes,
-      int progress,
       int? roundEndUTC,
       GameRoomSettings settings});
 
@@ -87,9 +88,10 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
   $Res call({
     Object? id = freezed,
     Object? roomCode = null,
-    Object? leaderId = freezed,
-    Object? phase = null,
+    Object? phase = freezed,
+    Object? progress = null,
     Object? subPhase = null,
+    Object? leaderId = freezed,
     Object? state = freezed,
     Object? playerIds = null,
     Object? playerOrder = null,
@@ -99,7 +101,6 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
     Object? texts = null,
     Object? votes = null,
     Object? voteTimes = null,
-    Object? progress = null,
     Object? roundEndUTC = freezed,
     Object? settings = null,
   }) {
@@ -112,18 +113,22 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
-      leaderId: freezed == leaderId
-          ? _value.leaderId
-          : leaderId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phase: null == phase
+      phase: freezed == phase
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
-              as GamePhase,
+              as GamePhase?,
+      progress: null == progress
+          ? _value.progress
+          : progress // ignore: cast_nullable_to_non_nullable
+              as int,
       subPhase: null == subPhase
           ? _value.subPhase
           : subPhase // ignore: cast_nullable_to_non_nullable
               as int,
+      leaderId: freezed == leaderId
+          ? _value.leaderId
+          : leaderId // ignore: cast_nullable_to_non_nullable
+              as String?,
       state: freezed == state
           ? _value.state
           : state // ignore: cast_nullable_to_non_nullable
@@ -160,10 +165,6 @@ class _$GameRoomCopyWithImpl<$Res, $Val extends GameRoom>
           ? _value.voteTimes
           : voteTimes // ignore: cast_nullable_to_non_nullable
               as Map<String, List<int>>,
-      progress: null == progress
-          ? _value.progress
-          : progress // ignore: cast_nullable_to_non_nullable
-              as int,
       roundEndUTC: freezed == roundEndUTC
           ? _value.roundEndUTC
           : roundEndUTC // ignore: cast_nullable_to_non_nullable
@@ -195,9 +196,10 @@ abstract class _$$GameRoomImplCopyWith<$Res>
   $Res call(
       {String? id,
       String roomCode,
-      String? leaderId,
-      GamePhase phase,
+      GamePhase? phase,
+      int progress,
       int subPhase,
+      String? leaderId,
       String? state,
       List<String> playerIds,
       List<String> playerOrder,
@@ -207,7 +209,6 @@ abstract class _$$GameRoomImplCopyWith<$Res>
       Map<String, String?> texts,
       Map<String, List<String>> votes,
       Map<String, List<int>> voteTimes,
-      int progress,
       int? roundEndUTC,
       GameRoomSettings settings});
 
@@ -228,9 +229,10 @@ class __$$GameRoomImplCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? roomCode = null,
-    Object? leaderId = freezed,
-    Object? phase = null,
+    Object? phase = freezed,
+    Object? progress = null,
     Object? subPhase = null,
+    Object? leaderId = freezed,
     Object? state = freezed,
     Object? playerIds = null,
     Object? playerOrder = null,
@@ -240,7 +242,6 @@ class __$$GameRoomImplCopyWithImpl<$Res>
     Object? texts = null,
     Object? votes = null,
     Object? voteTimes = null,
-    Object? progress = null,
     Object? roundEndUTC = freezed,
     Object? settings = null,
   }) {
@@ -253,18 +254,22 @@ class __$$GameRoomImplCopyWithImpl<$Res>
           ? _value.roomCode
           : roomCode // ignore: cast_nullable_to_non_nullable
               as String,
-      leaderId: freezed == leaderId
-          ? _value.leaderId
-          : leaderId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phase: null == phase
+      phase: freezed == phase
           ? _value.phase
           : phase // ignore: cast_nullable_to_non_nullable
-              as GamePhase,
+              as GamePhase?,
+      progress: null == progress
+          ? _value.progress
+          : progress // ignore: cast_nullable_to_non_nullable
+              as int,
       subPhase: null == subPhase
           ? _value.subPhase
           : subPhase // ignore: cast_nullable_to_non_nullable
               as int,
+      leaderId: freezed == leaderId
+          ? _value.leaderId
+          : leaderId // ignore: cast_nullable_to_non_nullable
+              as String?,
       state: freezed == state
           ? _value.state
           : state // ignore: cast_nullable_to_non_nullable
@@ -301,10 +306,6 @@ class __$$GameRoomImplCopyWithImpl<$Res>
           ? _value._voteTimes
           : voteTimes // ignore: cast_nullable_to_non_nullable
               as Map<String, List<int>>,
-      progress: null == progress
-          ? _value.progress
-          : progress // ignore: cast_nullable_to_non_nullable
-              as int,
       roundEndUTC: freezed == roundEndUTC
           ? _value.roundEndUTC
           : roundEndUTC // ignore: cast_nullable_to_non_nullable
@@ -323,9 +324,10 @@ class _$GameRoomImpl implements _GameRoom {
   _$GameRoomImpl(
       {this.id,
       required this.roomCode,
-      this.leaderId,
-      this.phase = GamePhase.lobby,
+      this.phase,
+      this.progress = 0,
       this.subPhase = 0,
+      this.leaderId,
       this.state,
       final List<String> playerIds = const [],
       final List<String> playerOrder = const [],
@@ -335,7 +337,6 @@ class _$GameRoomImpl implements _GameRoom {
       final Map<String, String?> texts = const {},
       final Map<String, List<String>> votes = const {},
       final Map<String, List<int>> voteTimes = const {},
-      this.progress = 0,
       this.roundEndUTC,
       this.settings = const GameRoomSettings(roundTimeSeconds: 60 * 3)})
       : _playerIds = playerIds,
@@ -356,13 +357,16 @@ class _$GameRoomImpl implements _GameRoom {
   @override
   final String roomCode;
   @override
-  final String? leaderId;
+  final GamePhase? phase;
+//  /mainPhase/countablePhase/subPhase
   @override
   @JsonKey()
-  final GamePhase phase;
+  final int progress;
   @override
   @JsonKey()
   final int subPhase;
+  @override
+  final String? leaderId;
   @override
   final String? state;
   final List<String> _playerIds;
@@ -438,9 +442,6 @@ class _$GameRoomImpl implements _GameRoom {
   }
 
   @override
-  @JsonKey()
-  final int progress;
-  @override
   final int? roundEndUTC;
   @override
   @JsonKey()
@@ -448,7 +449,7 @@ class _$GameRoomImpl implements _GameRoom {
 
   @override
   String toString() {
-    return 'GameRoom(id: $id, roomCode: $roomCode, leaderId: $leaderId, phase: $phase, subPhase: $subPhase, state: $state, playerIds: $playerIds, playerOrder: $playerOrder, playerStates: $playerStates, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, progress: $progress, roundEndUTC: $roundEndUTC, settings: $settings)';
+    return 'GameRoom(id: $id, roomCode: $roomCode, phase: $phase, progress: $progress, subPhase: $subPhase, leaderId: $leaderId, state: $state, playerIds: $playerIds, playerOrder: $playerOrder, playerStates: $playerStates, targets: $targets, truths: $truths, texts: $texts, votes: $votes, voteTimes: $voteTimes, roundEndUTC: $roundEndUTC, settings: $settings)';
   }
 
   @override
@@ -459,11 +460,13 @@ class _$GameRoomImpl implements _GameRoom {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.roomCode, roomCode) ||
                 other.roomCode == roomCode) &&
-            (identical(other.leaderId, leaderId) ||
-                other.leaderId == leaderId) &&
             (identical(other.phase, phase) || other.phase == phase) &&
+            (identical(other.progress, progress) ||
+                other.progress == progress) &&
             (identical(other.subPhase, subPhase) ||
                 other.subPhase == subPhase) &&
+            (identical(other.leaderId, leaderId) ||
+                other.leaderId == leaderId) &&
             (identical(other.state, state) || other.state == state) &&
             const DeepCollectionEquality()
                 .equals(other._playerIds, _playerIds) &&
@@ -477,8 +480,6 @@ class _$GameRoomImpl implements _GameRoom {
             const DeepCollectionEquality().equals(other._votes, _votes) &&
             const DeepCollectionEquality()
                 .equals(other._voteTimes, _voteTimes) &&
-            (identical(other.progress, progress) ||
-                other.progress == progress) &&
             (identical(other.roundEndUTC, roundEndUTC) ||
                 other.roundEndUTC == roundEndUTC) &&
             (identical(other.settings, settings) ||
@@ -491,9 +492,10 @@ class _$GameRoomImpl implements _GameRoom {
       runtimeType,
       id,
       roomCode,
-      leaderId,
       phase,
+      progress,
       subPhase,
+      leaderId,
       state,
       const DeepCollectionEquality().hash(_playerIds),
       const DeepCollectionEquality().hash(_playerOrder),
@@ -503,7 +505,6 @@ class _$GameRoomImpl implements _GameRoom {
       const DeepCollectionEquality().hash(_texts),
       const DeepCollectionEquality().hash(_votes),
       const DeepCollectionEquality().hash(_voteTimes),
-      progress,
       roundEndUTC,
       settings);
 
@@ -525,9 +526,10 @@ abstract class _GameRoom implements GameRoom {
   factory _GameRoom(
       {final String? id,
       required final String roomCode,
-      final String? leaderId,
-      final GamePhase phase,
+      final GamePhase? phase,
+      final int progress,
       final int subPhase,
+      final String? leaderId,
       final String? state,
       final List<String> playerIds,
       final List<String> playerOrder,
@@ -537,7 +539,6 @@ abstract class _GameRoom implements GameRoom {
       final Map<String, String?> texts,
       final Map<String, List<String>> votes,
       final Map<String, List<int>> voteTimes,
-      final int progress,
       final int? roundEndUTC,
       final GameRoomSettings settings}) = _$GameRoomImpl;
 
@@ -549,11 +550,13 @@ abstract class _GameRoom implements GameRoom {
   @override //String? resultId,
   String get roomCode;
   @override
-  String? get leaderId;
-  @override
-  GamePhase get phase;
+  GamePhase? get phase;
+  @override //  /mainPhase/countablePhase/subPhase
+  int get progress;
   @override
   int get subPhase;
+  @override
+  String? get leaderId;
   @override
   String? get state;
   @override
@@ -572,8 +575,6 @@ abstract class _GameRoom implements GameRoom {
   Map<String, List<String>> get votes;
   @override
   Map<String, List<int>> get voteTimes;
-  @override
-  int get progress;
   @override
   int? get roundEndUTC;
   @override

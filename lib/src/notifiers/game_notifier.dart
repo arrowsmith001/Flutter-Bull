@@ -7,6 +7,7 @@ import 'package:flutter_bull/src/new/notifiers/app/app_state_notifier.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
+import 'package:flutter_bull/src/notifiers/view_models/lobby_player.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
@@ -45,6 +46,12 @@ class GameNotifier extends _$GameNotifier {
   Future<GameNotifierState> _buildState(GameRoom room) async {
     final playerAvatars = await _getPlayerAvatars(room.playerIds);
 
+    
+    final presentPlayers = playerAvatars.entries
+      .where((entry) => room.playerIds.contains(entry.key))
+      .map((p) => LobbyPlayer(player: p.value, isLeader: p.key == room.leaderId, isReady: room.playerStates[p.key] == PlayerState.ready))
+      .toList();
+
     //final result = await _getResult(room.resultId);
     //final achievementsWithIcons = await _getAchievements(result);
     
@@ -52,6 +59,7 @@ class GameNotifier extends _$GameNotifier {
       gameId: room.id!,
       gameRoom: room,
       players: playerAvatars,
+      presentPlayers: presentPlayers,
       //result: result,
       //achievementsWithIcons: achievementsWithIcons
     );

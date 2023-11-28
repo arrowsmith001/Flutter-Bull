@@ -3,6 +3,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -25,7 +26,7 @@ class ChangeAvatarView extends ConsumerStatefulWidget {
 }
 
 class _ChangeAvatarViewState extends ConsumerState<ChangeAvatarView>
-    with UserID {
+    with AuthHooks {
 
   @override
   void initState() {

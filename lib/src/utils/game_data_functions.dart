@@ -96,7 +96,6 @@ class GameDataFunctions {
   }
 
   static int calculateTimeToReadOut(String statement) {
-    return 1;
     final int wordCount = statement.split(' ').length;
     final int expectedRate = wordCount * 2;
     if (expectedRate < 3) return 3;

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
@@ -28,7 +29,7 @@ class RevealView extends ConsumerStatefulWidget {
 }
 
 class RevealViewState extends ConsumerState<RevealView>
-    with WhoseTurnID, UserID, RoomID, SingleTickerProviderStateMixin {
+    with Progress, AuthHooks, SingleTickerProviderStateMixin {
       
   late AnimationController animController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 800))
@@ -40,10 +41,10 @@ class RevealViewState extends ConsumerState<RevealView>
       CurvedAnimation(parent: animController, curve: Curves.elasticInOut);
 
   late final vmProvider =
-      revealViewNotifierProvider(roomId, userId!, whoseTurnId);
+      revealViewNotifierProvider(gameId!, userId!, 'progress');
 
   GameNotifier get gameNotifier =>
-      ref.read(gameNotifierProvider(roomId).notifier);
+      ref.read(gameNotifierProvider(gameId!).notifier);
 
   AsyncValue<RevealViewModel> get vmAsync => ref.watch(vmProvider);
 
@@ -155,11 +156,11 @@ class RevealViewState extends ConsumerState<RevealView>
   }
 
   void _onRevealPressed() {
-    ref.read(gameNotifierProvider(roomId).notifier).reveal(userId!);
+    ref.read(gameNotifierProvider(gameId!).notifier).reveal(userId!);
   }
 
   void _onRevealNextPressed() {
-    ref.read(gameNotifierProvider(roomId).notifier).revealNext(userId!);
+    ref.read(gameNotifierProvider(gameId!).notifier).revealNext(userId!);
   }
 
   Widget _buildPlayerStatementPreamble(PublicPlayer playerWhoseTurn,
