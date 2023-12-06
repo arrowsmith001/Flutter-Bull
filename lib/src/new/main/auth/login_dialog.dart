@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/app_hooks.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/profile_setup_view.dart';
 import 'package:flutter_bull/src/widgets/notifications/notification_view.dart';
@@ -26,7 +27,7 @@ class LoginDialog extends ConsumerStatefulWidget {
 }
 
 class _LoginDialogState extends ConsumerState<LoginDialog>
-    with MediaDimensions, AuthHooks {
+    with MediaDimensions, AuthHooks, AppHooks {
 
   @override
   void initState() {

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/controlled_navigator.dart';
 import 'package:flutter_bull/src/mixins/auth_hooks.dart';
+import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/navigation/navigation_controller.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveals_phase_view_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -25,7 +26,7 @@ class RevealsPhaseView extends ConsumerStatefulWidget {
 // TODO: Subsume timer stuff into class/hook
 // TODO: In-out zoom/hero effect?
 class _RevealsPhaseState extends ConsumerState<RevealsPhaseView>
-    with AuthHooks, Progress {
+    with AuthHooks, RoundHooks {
 
   late Timer _timer;
 

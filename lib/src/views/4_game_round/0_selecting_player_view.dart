@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/mixins/game_hooks.dart';
+import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,7 +22,7 @@ class SelectingPlayerPhaseView extends ConsumerStatefulWidget {
 
 class _SelectingPlayerPhaseViewState
     extends ConsumerState<SelectingPlayerPhaseView>
-    with Progress, GameHooks {
+    with RoundHooks, GameHooks {
   late Timer _timer;
 
   late Duration timerDurationMs =
@@ -42,7 +43,7 @@ class _SelectingPlayerPhaseViewState
   void _onTimerEnd() {
     if(widget.isFinalRound)
     {
-      Navigator.of(context).pushReplacementNamed('${RoundPhase.reader.name}/true');
+      Navigator.of(context).pushReplacementNamed(RoundPhase.reader.name);
     }
     else
     {

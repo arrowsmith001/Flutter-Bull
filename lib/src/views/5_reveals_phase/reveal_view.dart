@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/mixins/auth_hooks.dart';
+import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/reveal_view_notifier.dart';
@@ -29,7 +30,7 @@ class RevealView extends ConsumerStatefulWidget {
 }
 
 class RevealViewState extends ConsumerState<RevealView>
-    with Progress, AuthHooks, SingleTickerProviderStateMixin {
+    with RoundHooks, SingleTickerProviderStateMixin {
       
   late AnimationController animController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 800))

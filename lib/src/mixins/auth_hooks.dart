@@ -19,20 +19,8 @@ mixin AuthHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _auth?.authState?.isNotIn([null, AuthState.signedOut]) ?? false;
   bool get isInGame => _auth?.occupiedRoomId != null;
 
-  // Activities
-  bool get isCreatingRoom =>
-      _app?.busyWith.contains(Busy.creatingGame) ?? false;
-  bool get isJoiningRoom => _app?.busyWith.contains(Busy.joiningGame) ?? false;
-  bool get isSigningUp => _app?.busyWith.contains(Busy.signingUp) ?? false;
-  bool get isSigningOut => _app?.busyWith.contains(Busy.signingOut) ?? false;
-  bool get isLoggingIn => _app?.busyWith.contains(Busy.loggingIn) ?? false;
 
-  // Page States
-  bool get isOnSignUpPage =>
-      _app?.signUpPageState.isNotIn([null, SignUpPageState.closed]) ?? false;
-  bool get isOnCameraPage =>
-      _app?.cameraViewState.isNotIn([null, CameraViewState.closed]) ?? false;
-
-  AppState? get _app => ref.watch(appStateNotifierProvider).valueOrNull;
   AuthNotifierState? get _auth => ref.watch(authNotifierProvider).valueOrNull;
+
+
 }

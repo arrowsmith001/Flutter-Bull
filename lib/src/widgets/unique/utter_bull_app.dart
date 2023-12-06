@@ -22,9 +22,9 @@ class UtterBullApp extends ConsumerWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: UtterBullGlobal.theme,
-        home: WillPopScope(
-          onWillPop: () async {
-            return onBackPressed(ref);
+        home: PopScope(
+          onPopInvoked: (b) async {
+            onBackPressed(ref);
           },
           child: const UtterBullMasterBackground(child: UtterBull()),
         ));

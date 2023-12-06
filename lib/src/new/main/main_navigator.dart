@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/new/main/utter_bull.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/views/2_main/game_view.dart';
+import 'package:flutter_bull/src/new/notifiers/game/game_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
@@ -48,7 +48,8 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
         } else if (settings.name!.contains('game')) {
           final roomId = settings.name!.split('/').last;
           final userId = ref.read(authNotifierProvider).value!.userId!;
-          return ForwardFadePushRoute((_) => ProviderScope(overrides: [
+          return ForwardFadePushRoute((_) => ProviderScope(
+            overrides: [
                 getCurrentGameRoomIdProvider.overrideWithValue(roomId),
                 getSignedInPlayerIdProvider.overrideWithValue(userId),
               ], child: const GameView()));

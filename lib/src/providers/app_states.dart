@@ -16,9 +16,7 @@ String getSignedInPlayerId(Ref ref) =>
 String getCurrentGameRoomId(Ref ref) =>
     throw UnimplementedError('getCurrentGameRoomId');
 
-mixin Progress<T extends ConsumerStatefulWidget> on ConsumerState<T> {
-  int get fixedProgress => ref.watch(getProgressProvider);
-}
+
 
 @Riverpod(keepAlive: true)
 int getProgress(Ref ref) =>

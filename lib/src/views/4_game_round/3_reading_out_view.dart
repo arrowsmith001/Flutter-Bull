@@ -1,13 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/mixins/auth_hooks.dart';
+import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
-import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
-import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,10 +17,7 @@ class ReadingOutView extends ConsumerStatefulWidget {
 }
 
 class _ReadingOutViewState extends ConsumerState<ReadingOutView>
-    with  Progress, AuthHooks {
-  get vmProvider => gameRoundViewNotifierProvider(userId!, gameId!, 'progress');
-
-  AsyncValue<GameRoundViewModel> get vmAsync => ref.watch(vmProvider);
+    with RoundHooks {
 
   bool startingRound = false;
 
@@ -38,16 +31,10 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: 
-    Container(
-      decoration: UtterBullGlobal.gameViewDecoration,
-      child: Center(child: vmAsync.whenDefault((vm) {
-        final playerWhoseTurn =
-            vm.players['progress']!;
-    
-        Widget avatar = Hero(
+
+            Widget avatar = Hero(
             tag: 'avatar',
-            child: UtterBullPlayerAvatar(null, playerWhoseTurn.avatarData));
+            child: UtterBullPlayerAvatar(null, playerWhoseTurn?.avatarData));
     
         Widget prompt = Hero(
           tag: 'prompt',
@@ -57,13 +44,16 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
                 borderRadius: BorderRadius.circular(16.0)),
             child: Column(children: [
               Expanded(
-                child: UtterBullTextBox(vm.playerWhoseTurnStatement),
+                child: UtterBullTextBox(playerWhoseTurnStatement ?? ''),
               ),
             ]),
           ),
         );
-    
-        return Column(
+
+    return Scaffold(body: 
+    Container(
+      decoration: UtterBullGlobal.gameViewDecoration,
+      child: Center(child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Flexible(
@@ -84,13 +74,12 @@ class _ReadingOutViewState extends ConsumerState<ReadingOutView>
               flex: 1,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: CircularTimer(vm.timeToReadOut,
+                child: CircularTimer(timeToReadOut,
                         onComplete: () => onTimerEnd()),
               ),
             )
           ],
-        );
-      })),
+        )),
     ));
   }
 }

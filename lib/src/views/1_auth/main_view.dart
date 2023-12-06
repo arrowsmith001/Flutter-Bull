@@ -6,7 +6,7 @@ import 'package:flutter_bull/src/notifiers/signed_in_player_status_notifier.dart
 import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/views/2_main/change_avatar_view.dart';
-import 'package:flutter_bull/src/views/2_main/game_view.dart';
+import 'package:flutter_bull/src/new/notifiers/game/game_view.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/new/main/utter_bull.dart';
 import 'package:flutter_bull/src/new/main/buttons/join_game_view.dart';

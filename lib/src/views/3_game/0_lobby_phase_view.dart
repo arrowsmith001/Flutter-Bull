@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/app_hooks.dart';
 import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/new/notifiers/game/game_event_notifier.dart';
@@ -33,7 +34,7 @@ class LobbyPhaseView extends ConsumerStatefulWidget {
 }
 
 class _LobbyViewState extends ConsumerState<LobbyPhaseView>
-    with TickerProviderStateMixin, GameHooks, AuthHooks {
+    with TickerProviderStateMixin, GameHooks, AppHooks {
 
   final _rectKey =
       GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
@@ -49,7 +50,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   @override
   Widget build(BuildContext context) {
 
-    ref.listen(gameEventNotifierProvider(gameId).select((state) => state.valueOrNull?.newPresentPlayers),
+    ref.listen(gameEvents.select((state) => state.valueOrNull?.newPresentPlayers),
         (_, next) {
       if (next != null) {
         _rectKey.currentState?.setItems(next);
@@ -266,7 +267,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
             e.player,
             e.isReady,
             e.isLeader,
-            isPlayerAbsent(e.player)),
+            e.isAbsent),
         itemToId: (LobbyPlayer lp) => lp.player.player.id!);
     return rectPacker!;
   }

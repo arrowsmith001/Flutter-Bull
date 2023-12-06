@@ -8,5 +8,6 @@ class LobbyPlayer with _$LobbyPlayer {
   factory LobbyPlayer(
       {required PublicPlayer player,
       required bool isLeader,
-      required bool isReady}) = _LobbyPlayer;
+      required bool isReady,
+      required bool isAbsent}) = _LobbyPlayer;
 }

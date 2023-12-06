@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_bull/extensions/iterable.dart';
 import 'package:flutter_bull/extensions/object.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
@@ -49,7 +50,7 @@ class GameNotifier extends _$GameNotifier {
     
     final presentPlayers = playerAvatars.entries
       .where((entry) => room.playerIds.contains(entry.key))
-      .map((p) => LobbyPlayer(player: p.value, isLeader: p.key == room.leaderId, isReady: room.playerStates[p.key] == PlayerState.ready))
+      .map((p) => LobbyPlayer(player: p.value, isLeader: p.key == room.leaderId, isReady: room.playerStates[p.key] == PlayerState.ready, isAbsent: room.playerIds.doesNotContain(p.key)))
       .toList();
 
     //final result = await _getResult(room.resultId);

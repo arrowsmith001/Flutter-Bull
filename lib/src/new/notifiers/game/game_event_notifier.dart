@@ -30,10 +30,15 @@ class GameRoute {
   @override
   int get hashCode => phase.hashCode ^ progress.hashCode ^ subPhase.hashCode;
   
+  @override
+  String toString() {
+    return 'GameRoute(phase: $phase, progress: $progress, subPhase: $subPhase)';
+  }
 }
 
 @Riverpod(keepAlive: true)
 class GameEventNotifier extends _$GameEventNotifier {
+  
   @override
   Stream<GameEvents> build(String? gameId) async* {
     if (gameId == null) return;

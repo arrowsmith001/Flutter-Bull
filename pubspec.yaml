@@ -50,6 +50,7 @@ dependencies:
   device_info_plus: ^9.1.0
   permission_handler: ^11.0.1
   coordinated_page_route: ^0.0.4
+  hooks_riverpod: ^2.4.9
 
 dev_dependencies:
   flutter_test:

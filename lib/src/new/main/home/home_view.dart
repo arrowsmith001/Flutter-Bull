@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/extensions/build_context.dart';
+import 'package:flutter_bull/src/mixins/app_hooks.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/new/main/auth_bar.dart';
 import 'package:flutter_bull/src/new/main/home/home_buttons.dart';
@@ -24,7 +25,7 @@ class HomeView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions, AuthHooks {
+class _HomeViewState extends ConsumerState<HomeView> with MediaDimensions, AuthHooks, AppHooks {
 
   bool get _keyboardVisible => MediaQuery.of(context).viewInsets.bottom != 0;
 

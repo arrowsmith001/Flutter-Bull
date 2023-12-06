@@ -5,10 +5,9 @@ import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/mixins/game_hooks.dart';
-import 'package:flutter_bull/src/notifiers/view_models/game_round_view_notifier.dart';
+import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
-import 'package:flutter_bull/src/view_models/3_game/2_game_round_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,12 +20,13 @@ class ReaderView extends ConsumerStatefulWidget {
 }
 
 class _ReaderViewState extends ConsumerState<ReaderView>
-    with  Progress, AuthHooks, GameHooks {
-
-dynamic vm;
-
+    with RoundHooks, GameHooks {
 
   Decoration? decoration;
+
+
+  
+
   @override
   void initState() {
     super.initState();
@@ -71,7 +71,7 @@ dynamic vm;
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
                           child: AutoSizeText(
-                            vm.roleDescriptionStrings.first,
+                            roleDescriptionStrings.first,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.displayLarge,
                           ),
@@ -84,7 +84,7 @@ dynamic vm;
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
                           child: AutoSizeText(
-                            vm.roleDescriptionStrings.last,
+                            roleDescriptionStrings.last,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.displaySmall,
                           ),
@@ -95,13 +95,13 @@ dynamic vm;
             ),
           ),
         );
-      
-        Widget bottomWidget = vm.isMyTurn
+
+        Widget bottomWidget = isMyTurn
             ? UtterBullButton(
                 title: 'Reveal Statement',
                 onPressed: () => onRevealStatement(),
               )
-            : Text('Waiting for ${vm.playerWhoseTurn.player.name}...',
+            : Text('Waiting for ${playerWhoseTurn?.player.name}...',
                 style: Theme.of(context).textTheme.headlineMedium);
       
       

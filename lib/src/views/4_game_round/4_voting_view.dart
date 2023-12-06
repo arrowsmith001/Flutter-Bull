@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/mixins/auth_hooks.dart';
+import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
@@ -31,7 +32,7 @@ class VotingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
-    with AuthHooks, Progress, SingleTickerProviderStateMixin {
+    with RoundHooks, SingleTickerProviderStateMixin {
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 

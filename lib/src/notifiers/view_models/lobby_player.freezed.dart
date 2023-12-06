@@ -19,6 +19,7 @@ mixin _$LobbyPlayer {
   PublicPlayer get player => throw _privateConstructorUsedError;
   bool get isLeader => throw _privateConstructorUsedError;
   bool get isReady => throw _privateConstructorUsedError;
+  bool get isAbsent => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LobbyPlayerCopyWith<LobbyPlayer> get copyWith =>
@@ -31,7 +32,7 @@ abstract class $LobbyPlayerCopyWith<$Res> {
           LobbyPlayer value, $Res Function(LobbyPlayer) then) =
       _$LobbyPlayerCopyWithImpl<$Res, LobbyPlayer>;
   @useResult
-  $Res call({PublicPlayer player, bool isLeader, bool isReady});
+  $Res call({PublicPlayer player, bool isLeader, bool isReady, bool isAbsent});
 }
 
 /// @nodoc
@@ -50,6 +51,7 @@ class _$LobbyPlayerCopyWithImpl<$Res, $Val extends LobbyPlayer>
     Object? player = null,
     Object? isLeader = null,
     Object? isReady = null,
+    Object? isAbsent = null,
   }) {
     return _then(_value.copyWith(
       player: null == player
@@ -64,6 +66,10 @@ class _$LobbyPlayerCopyWithImpl<$Res, $Val extends LobbyPlayer>
           ? _value.isReady
           : isReady // ignore: cast_nullable_to_non_nullable
               as bool,
+      isAbsent: null == isAbsent
+          ? _value.isAbsent
+          : isAbsent // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -76,7 +82,7 @@ abstract class _$$LobbyPlayerImplCopyWith<$Res>
       __$$LobbyPlayerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({PublicPlayer player, bool isLeader, bool isReady});
+  $Res call({PublicPlayer player, bool isLeader, bool isReady, bool isAbsent});
 }
 
 /// @nodoc
@@ -93,6 +99,7 @@ class __$$LobbyPlayerImplCopyWithImpl<$Res>
     Object? player = null,
     Object? isLeader = null,
     Object? isReady = null,
+    Object? isAbsent = null,
   }) {
     return _then(_$LobbyPlayerImpl(
       player: null == player
@@ -107,6 +114,10 @@ class __$$LobbyPlayerImplCopyWithImpl<$Res>
           ? _value.isReady
           : isReady // ignore: cast_nullable_to_non_nullable
               as bool,
+      isAbsent: null == isAbsent
+          ? _value.isAbsent
+          : isAbsent // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -115,7 +126,10 @@ class __$$LobbyPlayerImplCopyWithImpl<$Res>
 
 class _$LobbyPlayerImpl implements _LobbyPlayer {
   _$LobbyPlayerImpl(
-      {required this.player, required this.isLeader, required this.isReady});
+      {required this.player,
+      required this.isLeader,
+      required this.isReady,
+      required this.isAbsent});
 
   @override
   final PublicPlayer player;
@@ -123,10 +137,12 @@ class _$LobbyPlayerImpl implements _LobbyPlayer {
   final bool isLeader;
   @override
   final bool isReady;
+  @override
+  final bool isAbsent;
 
   @override
   String toString() {
-    return 'LobbyPlayer(player: $player, isLeader: $isLeader, isReady: $isReady)';
+    return 'LobbyPlayer(player: $player, isLeader: $isLeader, isReady: $isReady, isAbsent: $isAbsent)';
   }
 
   @override
@@ -137,11 +153,14 @@ class _$LobbyPlayerImpl implements _LobbyPlayer {
             (identical(other.player, player) || other.player == player) &&
             (identical(other.isLeader, isLeader) ||
                 other.isLeader == isLeader) &&
-            (identical(other.isReady, isReady) || other.isReady == isReady));
+            (identical(other.isReady, isReady) || other.isReady == isReady) &&
+            (identical(other.isAbsent, isAbsent) ||
+                other.isAbsent == isAbsent));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, player, isLeader, isReady);
+  int get hashCode =>
+      Object.hash(runtimeType, player, isLeader, isReady, isAbsent);
 
   @JsonKey(ignore: true)
   @override
@@ -154,7 +173,8 @@ abstract class _LobbyPlayer implements LobbyPlayer {
   factory _LobbyPlayer(
       {required final PublicPlayer player,
       required final bool isLeader,
-      required final bool isReady}) = _$LobbyPlayerImpl;
+      required final bool isReady,
+      required final bool isAbsent}) = _$LobbyPlayerImpl;
 
   @override
   PublicPlayer get player;
@@ -162,6 +182,8 @@ abstract class _LobbyPlayer implements LobbyPlayer {
   bool get isLeader;
   @override
   bool get isReady;
+  @override
+  bool get isAbsent;
   @override
   @JsonKey(ignore: true)
   _$$LobbyPlayerImplCopyWith<_$LobbyPlayerImpl> get copyWith =>

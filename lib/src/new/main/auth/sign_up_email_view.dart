@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bull/src/mixins/app_hooks.dart';
 import 'package:flutter_bull/src/widgets/notifications/notification_view.dart';
 import 'package:flutter_bull/src/new/notifiers/app/app_event_notifier.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
@@ -32,7 +33,7 @@ class SignUpEmailView extends ConsumerStatefulWidget {
 }
 
 class _SignUpEmailViewState extends ConsumerState<SignUpEmailView>
-    with Auth, MediaDimensions, AuthHooks {
+    with Auth, MediaDimensions, AuthHooks, AppHooks {
   @override
   void initState() {
     super.initState();

@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -18,7 +17,7 @@ class GameDataFunctions {
 
   static PublicPlayer playerFromId(
       String id, Map<String, PublicPlayer> players) {
-      return players[id]!;
+    return players[id]!;
   }
 
   static String playersWhoseTurnStatement(GameRoom game, String whoseTurnId) =>
@@ -93,14 +92,51 @@ class GameDataFunctions {
         game.texts.values.map((s) => s?.length ?? 0).reduce((v, e) => v + e);
 
     return pseudoShuffledIds..shuffle(Random(seed));
+
   }
 
-  static int calculateTimeToReadOut(String statement) {
-    final int wordCount = statement.split(' ').length;
+  static int calculateTimeToReadOut(String? statement) {
+    final int wordCount = statement?.split(' ').length ?? 0;
     final int expectedRate = wordCount * 2;
     if (expectedRate < 3) return 3;
     if (expectedRate > 10) return 10;
     return expectedRate;
   }
 
+  static List<String> getRoleDescriptionStrings(GameRoom game,
+      Map<String, PublicPlayer> players, String userId, int progress) {
+    final String whoseTurnId = game.playerOrder[progress];
+    final PublicPlayer playerWhoseTurn = players[whoseTurnId]!;
+
+    final bool isTruth = game.truths[whoseTurnId] ?? false;
+
+    final bool isMyTurn = userId == whoseTurnId;
+    final bool isSaboteur =
+        GameDataFunctions.isSaboteur(game, userId, whoseTurnId);
+    final PlayerRole role = isMyTurn
+        ? PlayerRole.reading
+        : isSaboteur
+            ? PlayerRole.saboteur
+            : PlayerRole.voting;
+
+    switch (role) {
+      case PlayerRole.reading:
+        return [
+          'Get ready to read out your statement...',
+          'You\'re about to read out a ${isTruth ? 'truth' : 'lie'}. Convince people it\'s a ${!isTruth ? 'truth' : 'lie'}!'
+        ];
+      case PlayerRole.voting:
+        return [
+          '${playerWhoseTurn.player.name} will now read out their statement.',
+          'Get ready to vote!'
+        ];
+      case PlayerRole.saboteur:
+        return [
+          '${playerWhoseTurn.player.name} will now read out their statement.',
+          'Try and persuade people to vote TRUE this round...'
+        ];
+    }
+  }
 }
+
+enum PlayerRole { reading, voting, saboteur }

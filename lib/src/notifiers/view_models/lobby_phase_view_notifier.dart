@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bull/extensions/iterable.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
@@ -52,6 +53,7 @@ class LobbyPhaseViewNotifier extends _$LobbyPhaseViewNotifier {
         LobbyPlayer(
             player: p,
             isLeader: id == game.leaderId,
+            isAbsent: game.playerIds.doesNotContain(id),
             isReady: nextReadies.contains(id))));
 
     ListChangeData<LobbyPlayer> listChange =

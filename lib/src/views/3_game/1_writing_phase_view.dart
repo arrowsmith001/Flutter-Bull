@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
+import 'package:flutter_bull/src/mixins/app_hooks.dart';
 import 'package:flutter_bull/src/mixins/auth_hooks.dart';
 import 'package:flutter_bull/src/mixins/game_hooks.dart';
 import 'package:flutter_bull/src/notifiers/view_models/writing_phase_view_notifier.dart';
@@ -25,7 +26,7 @@ class WritingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
-    with GameHooks, AuthHooks {
+    with GameHooks, AppHooks {
 
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
@@ -160,9 +161,10 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
               TextSpan(
                 text: writingPrompt.truthOrLie,
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                    color: writingTruthOrLie
+                    color: writingTruthOrLie == null ? Colors.white 
+                    : (writingTruthOrLie ?? false
                         ? UtterBullGlobal.truthColor
-                        : UtterBullGlobal.lieColor),
+                        : UtterBullGlobal.lieColor)),
               ),
             ]),
             textAlign: TextAlign.center),
@@ -195,7 +197,7 @@ class _WritingPhaseViewState extends ConsumerState<WritingPhaseView>
         Expanded(
             child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: UtterBullPlayerAvatar(null, playerWritingFor.avatarData),
+          child: UtterBullPlayerAvatar(null, playerWritingFor?.avatarData),
         )),
       ],
     );

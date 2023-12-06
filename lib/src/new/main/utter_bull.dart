@@ -8,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/custom/widgets/rounded_border.dart';
+import 'package:flutter_bull/src/mixins/app_hooks.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
-import 'package:flutter_bull/src/views/2_main/game_view.dart';
+import 'package:flutter_bull/src/new/notifiers/game/game_view.dart';
 import 'package:flutter_bull/src/new/main/buttons/join_game_view.dart';
 import 'package:flutter_bull/src/views/3_game/2_game_round_view.dart';
 import 'package:flutter_bull/src/widgets/notifications/notification_view.dart';
@@ -56,7 +57,7 @@ class UtterBull extends ConsumerStatefulWidget {
 }
 
 class _UtterBullState extends ConsumerState<UtterBull>
-    with MediaDimensions, AuthHooks {
+    with MediaDimensions, AuthHooks, AppHooks {
   bool get isAuthBarShowing =>
       isSignedIn &&
       !(isOnSignUpPage ||
