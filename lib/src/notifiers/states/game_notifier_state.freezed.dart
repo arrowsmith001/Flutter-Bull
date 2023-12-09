@@ -20,6 +20,8 @@ mixin _$GameNotifierState {
   GameRoom get gameRoom => throw _privateConstructorUsedError;
   Map<String, PublicPlayer> get players => throw _privateConstructorUsedError;
   List<LobbyPlayer> get presentPlayers => throw _privateConstructorUsedError;
+  Duration? get timeRemaining => throw _privateConstructorUsedError;
+  RoundStatus? get roundStatus => throw _privateConstructorUsedError;
   GameError? get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -38,6 +40,8 @@ abstract class $GameNotifierStateCopyWith<$Res> {
       GameRoom gameRoom,
       Map<String, PublicPlayer> players,
       List<LobbyPlayer> presentPlayers,
+      Duration? timeRemaining,
+      RoundStatus? roundStatus,
       GameError? error});
 
   $GameRoomCopyWith<$Res> get gameRoom;
@@ -60,6 +64,8 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
     Object? gameRoom = null,
     Object? players = null,
     Object? presentPlayers = null,
+    Object? timeRemaining = freezed,
+    Object? roundStatus = freezed,
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
@@ -79,6 +85,14 @@ class _$GameNotifierStateCopyWithImpl<$Res, $Val extends GameNotifierState>
           ? _value.presentPlayers
           : presentPlayers // ignore: cast_nullable_to_non_nullable
               as List<LobbyPlayer>,
+      timeRemaining: freezed == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as Duration?,
+      roundStatus: freezed == roundStatus
+          ? _value.roundStatus
+          : roundStatus // ignore: cast_nullable_to_non_nullable
+              as RoundStatus?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -108,6 +122,8 @@ abstract class _$$GameNotifierStateImplCopyWith<$Res>
       GameRoom gameRoom,
       Map<String, PublicPlayer> players,
       List<LobbyPlayer> presentPlayers,
+      Duration? timeRemaining,
+      RoundStatus? roundStatus,
       GameError? error});
 
   @override
@@ -129,6 +145,8 @@ class __$$GameNotifierStateImplCopyWithImpl<$Res>
     Object? gameRoom = null,
     Object? players = null,
     Object? presentPlayers = null,
+    Object? timeRemaining = freezed,
+    Object? roundStatus = freezed,
     Object? error = freezed,
   }) {
     return _then(_$GameNotifierStateImpl(
@@ -148,6 +166,14 @@ class __$$GameNotifierStateImplCopyWithImpl<$Res>
           ? _value._presentPlayers
           : presentPlayers // ignore: cast_nullable_to_non_nullable
               as List<LobbyPlayer>,
+      timeRemaining: freezed == timeRemaining
+          ? _value.timeRemaining
+          : timeRemaining // ignore: cast_nullable_to_non_nullable
+              as Duration?,
+      roundStatus: freezed == roundStatus
+          ? _value.roundStatus
+          : roundStatus // ignore: cast_nullable_to_non_nullable
+              as RoundStatus?,
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -164,6 +190,8 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
       required this.gameRoom,
       required final Map<String, PublicPlayer> players,
       required final List<LobbyPlayer> presentPlayers,
+      required this.timeRemaining,
+      required this.roundStatus,
       this.error})
       : _players = players,
         _presentPlayers = presentPlayers,
@@ -190,11 +218,15 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
   }
 
   @override
+  final Duration? timeRemaining;
+  @override
+  final RoundStatus? roundStatus;
+  @override
   final GameError? error;
 
   @override
   String toString() {
-    return 'GameNotifierState(gameId: $gameId, gameRoom: $gameRoom, players: $players, presentPlayers: $presentPlayers, error: $error)';
+    return 'GameNotifierState(gameId: $gameId, gameRoom: $gameRoom, players: $players, presentPlayers: $presentPlayers, timeRemaining: $timeRemaining, roundStatus: $roundStatus, error: $error)';
   }
 
   @override
@@ -208,6 +240,10 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
             const DeepCollectionEquality().equals(other._players, _players) &&
             const DeepCollectionEquality()
                 .equals(other._presentPlayers, _presentPlayers) &&
+            (identical(other.timeRemaining, timeRemaining) ||
+                other.timeRemaining == timeRemaining) &&
+            (identical(other.roundStatus, roundStatus) ||
+                other.roundStatus == roundStatus) &&
             (identical(other.error, error) || other.error == error));
   }
 
@@ -218,6 +254,8 @@ class _$GameNotifierStateImpl extends _GameNotifierState {
       gameRoom,
       const DeepCollectionEquality().hash(_players),
       const DeepCollectionEquality().hash(_presentPlayers),
+      timeRemaining,
+      roundStatus,
       error);
 
   @JsonKey(ignore: true)
@@ -234,6 +272,8 @@ abstract class _GameNotifierState extends GameNotifierState {
       required final GameRoom gameRoom,
       required final Map<String, PublicPlayer> players,
       required final List<LobbyPlayer> presentPlayers,
+      required final Duration? timeRemaining,
+      required final RoundStatus? roundStatus,
       final GameError? error}) = _$GameNotifierStateImpl;
   _GameNotifierState._() : super._();
 
@@ -245,6 +285,10 @@ abstract class _GameNotifierState extends GameNotifierState {
   Map<String, PublicPlayer> get players;
   @override
   List<LobbyPlayer> get presentPlayers;
+  @override
+  Duration? get timeRemaining;
+  @override
+  RoundStatus? get roundStatus;
   @override
   GameError? get error;
   @override

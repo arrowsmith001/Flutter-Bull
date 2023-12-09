@@ -16,6 +16,7 @@ import 'package:flutter_bull/src/view_models/3_game/1_writing_phase_view_model.d
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
+
   late final String userId = ref.watch(getSignedInPlayerIdProvider);
   late final String gameId = ref.watch(getCurrentGameRoomIdProvider);
 
@@ -42,6 +43,7 @@ mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _playerIds.every((id) => isPlayerReady(id) || id == _leaderId);
   int get numberOfPlayers => _watchThen(_getNumberOfPlayers) ?? 0;
 
+
   // Writing
   String get playersSubmittedTextPrompt =>
       '${_texts.length}/$numberOfPlayers ready';
@@ -49,6 +51,7 @@ mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   WritingPrompt get writingPrompt =>
       WritingPrompt(_watchThen((game) => game.gameRoom.targets[userId]));
   PublicPlayer? get playerWritingFor => _watchThen(_getPlayerWritingFor);
+
 
   // Page States
   bool get isMidGame =>
@@ -63,6 +66,7 @@ mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
           (g) => g.gameRoom.progress == g.gameRoom.playerIds.length - 1) ??
       false;
 
+
   // Common
   Map<String, PublicPlayer> get allPlayers =>
       _watchThen((game) => game.players) ?? {};
@@ -76,7 +80,9 @@ mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   String _getGameCode(GameNotifierState game) => game.gameRoom.roomCode;
   GamePhase? _getGamePhase(GameNotifierState game) => game.gameRoom.phase;
   int? _getGameSubphase(GameNotifierState game) => game.gameRoom.subPhase;
-int? _getNumberOfPlayers(GameNotifierState game) => game.gameRoom.playerIds.length;
+  int? _getNumberOfPlayers(GameNotifierState game) => game.gameRoom.playerIds.length;
+
+
 
   List<LobbyPlayer> _getLobbyList(GameNotifierState game) {
     return game.players.values

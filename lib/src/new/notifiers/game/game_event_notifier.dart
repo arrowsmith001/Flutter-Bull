@@ -5,6 +5,8 @@ import 'package:flutter_bull/src/new/notifiers/app/app_events.dart';
 import 'package:flutter_bull/src/new/notifiers/app/app_state_notifier.dart';
 import 'package:flutter_bull/src/new/notifiers/game/game_events.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
+import 'package:flutter_bull/src/notifiers/timer_notifier.dart';
+import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logger/logger.dart';
 
@@ -57,8 +59,17 @@ class GameEventNotifier extends _$GameEventNotifier {
       if(phase == null || progress == null || subPhase == null) return null;
       return GameRoute(phase, progress, subPhase);
     }), (_, next) {
-      
       if (next != null) setData(GameEvents(newGameRoute: next));
+    });
+
+    ref.listen(gameNotifierProvider(gameId).select((value) => value.valueOrNull?.timeRemaining), 
+    (_, next) {
+      if (next != null) setData(GameEvents(newTimeData: TimeData(next)));
+    });
+
+    ref.listen(gameNotifierProvider(gameId).select((value) => value.valueOrNull?.roundStatus), 
+    (_, next) {
+      if (next != null) setData(GameEvents(newRoundStatus: next));
     });
 
     yield GameEvents();

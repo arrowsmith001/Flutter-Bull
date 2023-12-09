@@ -5,14 +5,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/mixins/auth_hooks.dart';
-import 'package:flutter_bull/src/mixins/round_hooks.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
+import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
 import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/providers/round_data.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
@@ -23,6 +21,7 @@ import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jumping_dot/jumping_dot.dart';
 
+
 class VotingPhaseView extends ConsumerStatefulWidget {
   const VotingPhaseView({super.key});
 
@@ -32,7 +31,8 @@ class VotingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
-    with RoundHooks, SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
+      
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 
@@ -47,6 +47,20 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   bool roundOverAnimationReversing = false;
 
   Color? testColor;
+
+
+  late final String userId = ref.watch(getSignedInPlayerIdProvider);
+  late final String gameId = ref.watch(getCurrentGameRoomIdProvider);
+
+  late final PublicPlayer? playerWhoseTurn = ref.watch(playerWhoseTurnProvider);
+  
+  TimeData timeData;
+  
+  String playersWhoseTurnStatement;
+
+
+
+
   @override
   void initState() {
     super.initState();
@@ -112,18 +126,15 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider =
-        votingPhaseViewNotifierProvider(gameId!, userId!, 'progress');
-    final vmAsync = ref.watch(vmProvider);
 
-    ref.listen(vmProvider.select((vm) => vm.valueOrNull?.timeData),
+    ref.listen(timeDataProvider(gameId).select((vm) => vm.valueOrNull?.newTimeData),
         (prev, next) {
-      if (prev != null && next != null && prev != next) {
+      if (next != null) {
         onTimerChange(next);
       }
     });
 
-    ref.listen(vmProvider.select((vm) => vm.valueOrNull?.roundStatus),
+    ref.listen(roundStatusProvider(gameId).select((vm) => vm.valueOrNull?.newRoundStatus),
         (prev, next) {
       if (next == RoundStatus.endedDueToTime) {
         onRoundTimerEnd();
@@ -133,23 +144,22 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
       }
     });
 
-    return Scaffold(
-      body: vmAsync.whenDefault((vm) {
-        final Widget main = Column(
+
+            final Widget main = Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              child: _buildTop(context, vm),
+              child: _buildTop(context),
             ),
             Expanded(
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-                child: _buildMiddle(vm),
+                child: _buildMiddle(context),
               ),
             ),
             Flexible(
-              child: _buildBottom(context, vm),
+              child: _buildBottom(context),
             ),
           ],
         );
@@ -159,26 +169,26 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
             animation: _roundOverAnim,
             isReversing: roundOverAnimationReversing);
 
-        return Stack(
+    return Scaffold(
+      body: Stack(
           alignment: Alignment.center,
           children: [main, timesUpAnimationView],
-        );
-      }),
+        ),
     );
   }
 
-  Column _buildTop(BuildContext context, VotingPhaseViewModel vm) {
+  Column _buildTop(BuildContext context) {
     final height = size(context).height;
     final width = size(context).width;
 
     final time = Container(
         color: testColor ?? Theme.of(context).primaryColor,
-        child: TimeDisplayWidget(key: _timerKey, vm.timeData));
+        child: TimeDisplayWidget(key: _timerKey, timeData));
 
-    final avatar = UtterBullPlayerAvatar(null, vm.playerWhoseTurn.avatarData);
+    final avatar = UtterBullPlayerAvatar(null, playerWhoseTurn?.avatarData);
 
     final text = UtterBullTextBox(
-      vm.playersWhoseTurnStatement,
+      playersWhoseTurnStatement,
       opacity: 0.8,
       padding: const EdgeInsets.all(12.0),
     );
@@ -216,14 +226,14 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     ]);
   }
 
-  Stack _buildMiddle(VotingPhaseViewModel vm) {
+  Stack _buildMiddle(BuildContext context) {
     return Stack(children: [
       PlayersVotedWrapList(vm: vm),
       //SaboteurPickerLayer(ids: vm.eligibleVoterIds, onChanged: onSelectedSaboteurChanged)
     ]);
   }
 
-  ClipRRect _buildBottom(BuildContext context, VotingPhaseViewModel vm) {
+  ClipRRect _buildBottom(BuildContext context) {
     late final Widget child;
 
     switch (vm.voteOptionsState) {

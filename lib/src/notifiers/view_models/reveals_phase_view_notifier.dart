@@ -16,7 +16,7 @@ class RevealsPhaseViewNotifier extends _$RevealsPhaseViewNotifier {
 
     if (revealsphase is AsyncData) {
       
-      yield*_buildViewModel(revealsphase.requireValue.gameRoom!);
+      yield*_buildViewModel(revealsphase.requireValue.gameRoom);
     }
   }
 

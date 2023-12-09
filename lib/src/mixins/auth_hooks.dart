@@ -7,20 +7,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 mixin AuthHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
-  String? get userId => ref.watch(authNotifierProvider).valueOrNull?.userId;
-  String? get gameId => ref.watch(authNotifierProvider).valueOrNull?.occupiedRoomId;
+  late String? userId = ref.watch(authNotifierProvider).valueOrNull?.userId;
+  late String? gameId = ref.watch(authNotifierProvider).valueOrNull?.occupiedRoomId;
 
   // Notifiers
   AppStateNotifier get appNotifier =>
       ref.read(appStateNotifierProvider.notifier);
 
   // Auth
-  bool get isSignedIn =>
-      _auth?.authState?.isNotIn([null, AuthState.signedOut]) ?? false;
-  bool get isInGame => _auth?.occupiedRoomId != null;
+  late bool isSignedIn =
+        ref.watch(authNotifierProvider).valueOrNull?.authState.isNotIn([null, AuthState.signedOut]) ?? false;
 
+  late bool isInGame = ref.watch(authNotifierProvider).valueOrNull?.occupiedRoomId != null;
 
-  AuthNotifierState? get _auth => ref.watch(authNotifierProvider).valueOrNull;
 
 
 }

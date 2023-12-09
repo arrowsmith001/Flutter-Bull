@@ -90,6 +90,8 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
     }
 
     return VotingPhaseViewModel._(
+        timeData: TimeData(timeRemaining),
+        roundStatus: roundStatus,
         playerWhoseTurn: playerWhoseTurn,
         votingPlayers: votingPlayers,
         playersWhoseTurnStatement:
@@ -98,11 +100,9 @@ class VotingPhaseViewModel with _$VotingPhaseViewModel {
         playersNotVotedIds: playerNotVotedIds,
         eligibleVoterIds: eligibleVoterIds,
         eligibleVoterStatus: eligibleVoterStatus,
-        timeData: TimeData(timeRemaining),
         timeForReaderToSwitchToTruth: timeForReaderToSwitchToTruth,
         voteOptionsState: voteOptionsState,
         isThereTimeRemaining: timeRemaining != Duration.zero,
-        roundStatus: roundStatus,
         hasEveryoneVoted: numberOfPlayersVoted == numberOfPlayersVoting,
         numberOfPlayersVoted: numberOfPlayersVoted,
         numberOfPlayersVoting: numberOfPlayersVoting,

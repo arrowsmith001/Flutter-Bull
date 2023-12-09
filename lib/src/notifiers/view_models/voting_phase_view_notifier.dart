@@ -27,6 +27,8 @@ class VotingPhaseViewNotifier extends _$VotingPhaseViewNotifier {
 
   VotingPhaseViewModel _buildViewModel(GameRoom game,
       Map<String, PublicPlayer> players, String userId, String whoseTurnId) {
+
+        
     final RoundStatus? lastStatus = state.valueOrNull?.roundStatus;
     final bool readTimer =
         lastStatus == null || lastStatus == RoundStatus.inProgress;

@@ -1,6 +1,7 @@
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/lobby_player.dart';
+import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'game_notifier_state.freezed.dart';
@@ -14,6 +15,8 @@ class GameNotifierState with _$GameNotifierState {
     required GameRoom gameRoom,
     required Map<String, PublicPlayer> players,
     required List<LobbyPlayer> presentPlayers,
+    required Duration? timeRemaining,
+    required RoundStatus? roundStatus,
     GameError? error,
     //GameResult? result,
     //@Default([]) List<AchievementWithIcon> achievementsWithIcons

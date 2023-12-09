@@ -19,6 +19,8 @@ mixin _$GameEvents {
   List<LobbyPlayer>? get newPresentPlayers =>
       throw _privateConstructorUsedError;
   GameRoute? get newGameRoute => throw _privateConstructorUsedError;
+  TimeData? get newTimeData => throw _privateConstructorUsedError;
+  RoundStatus? get newRoundStatus => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GameEventsCopyWith<GameEvents> get copyWith =>
@@ -31,7 +33,11 @@ abstract class $GameEventsCopyWith<$Res> {
           GameEvents value, $Res Function(GameEvents) then) =
       _$GameEventsCopyWithImpl<$Res, GameEvents>;
   @useResult
-  $Res call({List<LobbyPlayer>? newPresentPlayers, GameRoute? newGameRoute});
+  $Res call(
+      {List<LobbyPlayer>? newPresentPlayers,
+      GameRoute? newGameRoute,
+      TimeData? newTimeData,
+      RoundStatus? newRoundStatus});
 }
 
 /// @nodoc
@@ -49,6 +55,8 @@ class _$GameEventsCopyWithImpl<$Res, $Val extends GameEvents>
   $Res call({
     Object? newPresentPlayers = freezed,
     Object? newGameRoute = freezed,
+    Object? newTimeData = freezed,
+    Object? newRoundStatus = freezed,
   }) {
     return _then(_value.copyWith(
       newPresentPlayers: freezed == newPresentPlayers
@@ -59,6 +67,14 @@ class _$GameEventsCopyWithImpl<$Res, $Val extends GameEvents>
           ? _value.newGameRoute
           : newGameRoute // ignore: cast_nullable_to_non_nullable
               as GameRoute?,
+      newTimeData: freezed == newTimeData
+          ? _value.newTimeData
+          : newTimeData // ignore: cast_nullable_to_non_nullable
+              as TimeData?,
+      newRoundStatus: freezed == newRoundStatus
+          ? _value.newRoundStatus
+          : newRoundStatus // ignore: cast_nullable_to_non_nullable
+              as RoundStatus?,
     ) as $Val);
   }
 }
@@ -71,7 +87,11 @@ abstract class _$$GameEventsImplCopyWith<$Res>
       __$$GameEventsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<LobbyPlayer>? newPresentPlayers, GameRoute? newGameRoute});
+  $Res call(
+      {List<LobbyPlayer>? newPresentPlayers,
+      GameRoute? newGameRoute,
+      TimeData? newTimeData,
+      RoundStatus? newRoundStatus});
 }
 
 /// @nodoc
@@ -87,6 +107,8 @@ class __$$GameEventsImplCopyWithImpl<$Res>
   $Res call({
     Object? newPresentPlayers = freezed,
     Object? newGameRoute = freezed,
+    Object? newTimeData = freezed,
+    Object? newRoundStatus = freezed,
   }) {
     return _then(_$GameEventsImpl(
       newPresentPlayers: freezed == newPresentPlayers
@@ -97,6 +119,14 @@ class __$$GameEventsImplCopyWithImpl<$Res>
           ? _value.newGameRoute
           : newGameRoute // ignore: cast_nullable_to_non_nullable
               as GameRoute?,
+      newTimeData: freezed == newTimeData
+          ? _value.newTimeData
+          : newTimeData // ignore: cast_nullable_to_non_nullable
+              as TimeData?,
+      newRoundStatus: freezed == newRoundStatus
+          ? _value.newRoundStatus
+          : newRoundStatus // ignore: cast_nullable_to_non_nullable
+              as RoundStatus?,
     ));
   }
 }
@@ -105,7 +135,10 @@ class __$$GameEventsImplCopyWithImpl<$Res>
 
 class _$GameEventsImpl implements _GameEvents {
   _$GameEventsImpl(
-      {final List<LobbyPlayer>? newPresentPlayers, this.newGameRoute})
+      {final List<LobbyPlayer>? newPresentPlayers,
+      this.newGameRoute,
+      this.newTimeData,
+      this.newRoundStatus})
       : _newPresentPlayers = newPresentPlayers;
 
   final List<LobbyPlayer>? _newPresentPlayers;
@@ -121,10 +154,14 @@ class _$GameEventsImpl implements _GameEvents {
 
   @override
   final GameRoute? newGameRoute;
+  @override
+  final TimeData? newTimeData;
+  @override
+  final RoundStatus? newRoundStatus;
 
   @override
   String toString() {
-    return 'GameEvents(newPresentPlayers: $newPresentPlayers, newGameRoute: $newGameRoute)';
+    return 'GameEvents(newPresentPlayers: $newPresentPlayers, newGameRoute: $newGameRoute, newTimeData: $newTimeData, newRoundStatus: $newRoundStatus)';
   }
 
   @override
@@ -135,12 +172,20 @@ class _$GameEventsImpl implements _GameEvents {
             const DeepCollectionEquality()
                 .equals(other._newPresentPlayers, _newPresentPlayers) &&
             (identical(other.newGameRoute, newGameRoute) ||
-                other.newGameRoute == newGameRoute));
+                other.newGameRoute == newGameRoute) &&
+            (identical(other.newTimeData, newTimeData) ||
+                other.newTimeData == newTimeData) &&
+            (identical(other.newRoundStatus, newRoundStatus) ||
+                other.newRoundStatus == newRoundStatus));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_newPresentPlayers), newGameRoute);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_newPresentPlayers),
+      newGameRoute,
+      newTimeData,
+      newRoundStatus);
 
   @JsonKey(ignore: true)
   @override
@@ -152,12 +197,18 @@ class _$GameEventsImpl implements _GameEvents {
 abstract class _GameEvents implements GameEvents {
   factory _GameEvents(
       {final List<LobbyPlayer>? newPresentPlayers,
-      final GameRoute? newGameRoute}) = _$GameEventsImpl;
+      final GameRoute? newGameRoute,
+      final TimeData? newTimeData,
+      final RoundStatus? newRoundStatus}) = _$GameEventsImpl;
 
   @override
   List<LobbyPlayer>? get newPresentPlayers;
   @override
   GameRoute? get newGameRoute;
+  @override
+  TimeData? get newTimeData;
+  @override
+  RoundStatus? get newRoundStatus;
   @override
   @JsonKey(ignore: true)
   _$$GameEventsImplCopyWith<_$GameEventsImpl> get copyWith =>

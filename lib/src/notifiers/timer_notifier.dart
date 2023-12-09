@@ -8,14 +8,23 @@ part 'timer_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class TimerNotifier extends _$TimerNotifier {
+
   @override
-  Stream<TimerState> build(int? utcEnd) {
-    if (utcEnd == null) return Stream.value(TimerState());
+  Stream<TimerState> build(int? utcEnd) async* {
 
+    if (utcEnd == null) {
+      yield TimerState();
+      return;
+    }
+  
     final remainingMs = utcEnd - DateTime.now().millisecondsSinceEpoch;
-    if (remainingMs <= 0) return Stream.value(TimerState());
+    if (remainingMs <= 0) {
+      yield TimerState();
+      return;
+    }
+    
 
-    return Stream.periodic(const Duration(seconds: 1), (_) {
+    yield* Stream.periodic(const Duration(seconds: 1), (_) {
       return _buildState(utcEnd);
     })
     .startWith(TimerState(timeRemaining: Duration(milliseconds: remainingMs)));
