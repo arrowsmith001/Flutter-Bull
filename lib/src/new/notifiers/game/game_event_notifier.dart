@@ -62,15 +62,6 @@ class GameEventNotifier extends _$GameEventNotifier {
       if (next != null) setData(GameEvents(newGameRoute: next));
     });
 
-    ref.listen(gameNotifierProvider(gameId).select((value) => value.valueOrNull?.timeRemaining), 
-    (_, next) {
-      if (next != null) setData(GameEvents(newTimeData: TimeData(next)));
-    });
-
-    ref.listen(gameNotifierProvider(gameId).select((value) => value.valueOrNull?.roundStatus), 
-    (_, next) {
-      if (next != null) setData(GameEvents(newRoundStatus: next));
-    });
 
     yield GameEvents();
   }

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bull/src/custom/data/abstract/auth_service.dart';
+import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
@@ -14,10 +15,13 @@ import 'package:flutter_bull/src/new/notifiers/states/auth_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/states/signed_in_player_status_notifier_state.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
+import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/providers/game_data.dart';
 import 'package:flutter_bull/src/services/data_layer.dart';
 import 'package:flutter_bull/src/services/data_stream_service.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/utils/game_data_functions.dart';
+import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UtterBullDeveloperPanel extends ConsumerStatefulWidget {
@@ -29,7 +33,7 @@ class UtterBullDeveloperPanel extends ConsumerStatefulWidget {
 }
 
 class _UtterBullDeveloperPanelState
-    extends ConsumerState<UtterBullDeveloperPanel>  {
+    extends ConsumerState<UtterBullDeveloperPanel> {
   late final ScrollController _scrollController = ScrollController();
 
   String? get userId => authAsync.value?.userId;
@@ -53,13 +57,26 @@ class _UtterBullDeveloperPanelState
   SignedInPlayerStatusNotifier get playerNotifier =>
       ref.read(playerProvider.notifier);
 
-  GameNotifierProvider? get roomProvider => playerAsync.valueOrNull?.player?.occupiedRoomId == null ? null :
-      gameNotifierProvider(playerAsync.valueOrNull!.player!.occupiedRoomId!);
-  AsyncValue<GameNotifierState> get roomAsync => roomProvider == null ? AsyncLoading() : ref.watch(roomProvider!);
-  GameNotifier? get roomNotifier => roomProvider == null ? null : ref.read(roomProvider!.notifier);
+  GameNotifierProvider? get roomProvider => playerAsync
+              .valueOrNull?.player?.occupiedRoomId ==
+          null
+      ? null
+      : gameNotifierProvider(playerAsync.valueOrNull!.player!.occupiedRoomId!);
+  AsyncValue<GameNotifierState> get roomAsync =>
+      roomProvider == null ? AsyncLoading() : ref.watch(roomProvider!);
+  GameNotifier? get roomNotifier =>
+      roomProvider == null ? null : ref.read(roomProvider!.notifier);
 
   @override
   Widget build(BuildContext context) {
+    
+    return playerAsync.whenDefault((p) => p.player?.occupiedRoomId == null 
+      ? UtterBullCircularProgressIndicator() 
+      : ProviderScope(
+      overrides: [getCurrentGameRoomIdProvider.overrideWithValue(p.player!.occupiedRoomId!)],
+      child: W()));
+    
+    
     return Container(
         color: const Color.fromRGBO(245, 245, 245, 1),
         child: SingleChildScrollView(
@@ -308,15 +325,15 @@ Row(children: [
   }
 
   void readyAllUp() {
-    for(String id in roomAsync.requireValue.gameRoom!.playerIds)
-    {
+    for (String id in roomAsync.requireValue.gameRoom!.playerIds) {
       roomNotifier?.setReady(id, PlayerState.ready);
     }
   }
 }
 
 class LabelledAsyncData<T> extends StatelessWidget {
-  const LabelledAsyncData(this.label, this.asyncData, {super.key, this.stringifyValue});
+  const LabelledAsyncData(this.label, this.asyncData,
+      {super.key, this.stringifyValue});
 
   final String label;
   final T asyncData;
@@ -356,7 +373,10 @@ class LabelledAsyncData<T> extends StatelessWidget {
 class ListedLabelledAsyncData<T, S> extends StatelessWidget {
   const ListedLabelledAsyncData(
       this.label, this.asyncData, this.listFromAsyncData,
-      {super.key, this.stringifyValue, this.buildTextColor, this.buildTrailing});
+      {super.key,
+      this.stringifyValue,
+      this.buildTextColor,
+      this.buildTrailing});
 
   final String label;
   final T asyncData;
@@ -444,3 +464,18 @@ final femalePhotos = [
 ];
 
 final malePhotos = [...List.generate(7, (i) => 'pp/default/male${i + 1}.jpg')];
+
+
+class W extends ConsumerWidget {
+  const W({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Developer Panel')),
+        body: Text(ref.watch(getGameProvider)?.toJson().toString() ?? 'null'),
+      ),
+    );
+  }
+}

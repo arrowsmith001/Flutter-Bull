@@ -44,7 +44,7 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
       initialRoute: '/',
       onGenerateRoute: (settings) {
         if (settings.name == '/') {
-          return BackwardFadePushRoute((_) => HomeNavigator());
+          return BackwardFadePushRoute((_) => const HomeNavigator());
         } else if (settings.name!.contains('game')) {
           final roomId = settings.name!.split('/').last;
           final userId = ref.read(authNotifierProvider).value!.userId!;

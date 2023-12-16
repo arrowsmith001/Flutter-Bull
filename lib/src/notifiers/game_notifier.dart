@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bull/extensions/iterable.dart';
 import 'package:flutter_bull/extensions/object.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/mixins/voting_phase_view_model.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/new/notifiers/app/app_state_notifier.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';

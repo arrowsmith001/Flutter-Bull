@@ -1,3 +1,4 @@
+import 'package:flutter_bull/src/mixins/voting_phase_view_model.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/lobby_player.dart';

@@ -3,13 +3,8 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_bull/src/custom/extensions/riverpod_extensions.dart';
-import 'package:flutter_bull/src/mixins/auth_hooks.dart';
-import 'package:flutter_bull/src/mixins/round_hooks.dart';
+import 'package:flutter_bull/src/mixins/voting_phase_view_model.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/view_models/voting_phase_view_notifier.dart';
-import 'package:flutter_bull/src/providers/app_states.dart';
-import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +17,7 @@ class VotingEndView extends ConsumerStatefulWidget {
 }
 
 class _VotingEndViewState extends ConsumerState<VotingEndView>
-    with RoundHooks {
+   with VotingPhaseViewModel  {
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
 
@@ -43,28 +38,24 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
 
   @override
   Widget build(BuildContext context) {
-    final vmProvider =
-        votingPhaseViewNotifierProvider(gameId!, userId!, 'progress');
-    final vmAsync = ref.watch(vmProvider);
 
     return Scaffold(
-      body: vmAsync.whenDefault((vm) {
-        return Column(
+      body: Column(
           children: [
             Flexible(
               flex: 3,
               child: Column(children: [
                 Expanded(
                     child:
-                        _buildStatementTextBox(vm.playersWhoseTurnStatement)),
+                        _buildStatementTextBox(playersWhoseTurnStatement)),
                 Expanded(
                     child:
-                        UtterBullPlayerAvatar(vm.playerWhoseTurn.player.name!, vm.playerWhoseTurn.avatarData)),
+                        UtterBullPlayerAvatar(playerWhoseTurn?.player.name!, playerWhoseTurn?.avatarData)),
               ]),
             ),
-            Flexible(child: _buildTimer(vm.timeData.toString())),
+            Flexible(child: _buildTimer(TimeData(Duration(seconds: timeRemaining ?? 0)).toString())),
             Flexible(flex: 5, child: _buildVoteButtons()),
-            vm.isReading && vm.roundStatus != RoundStatus.inProgress
+            (isReading ?? false) && roundStatus != RoundStatus.inProgress
                 ? const SizedBox.shrink()
                 : Flexible(
                     flex: 1,
@@ -73,12 +64,11 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
                       onPressed: () => onEndRound(),
                     )),
           ],
-        );
-      }),
+        ),
     );
   }
 
-  Widget _buildStatementTextBox(String statement) {
+  Widget _buildStatementTextBox(String? statement) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(12.0)),
@@ -86,7 +76,7 @@ class _VotingEndViewState extends ConsumerState<VotingEndView>
         padding: const EdgeInsets.all(8.0),
         child: Center(
             child: AutoSizeText(
-          statement,
+          statement ?? '',
           style: Theme.of(context).textTheme.bodyMedium,
         )),
       ),

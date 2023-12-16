@@ -13,6 +13,8 @@ import 'package:flutter_bull/src/notifiers/view_models/lobby_phase_view_notifier
 import 'package:flutter_bull/src/proto/animated_regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/providers/game_data.dart';
+import 'package:flutter_bull/src/providers/round_data.dart';
 import 'package:flutter_bull/src/services/game_server.dart';
 import 'package:flutter_bull/src/view_models/3_game/0_lobby_phase_view_model.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
@@ -34,13 +36,35 @@ class LobbyPhaseView extends ConsumerStatefulWidget {
 }
 
 class _LobbyViewState extends ConsumerState<LobbyPhaseView>
-    with TickerProviderStateMixin, GameHooks, AppHooks {
+    with TickerProviderStateMixin, AppHooks {
 
   final _rectKey =
       GlobalKey<AnimatedRegularRectanglePackerState<LobbyPlayer>>();
+      
+   
+                
+                  //var gameNotifier;
 
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
+
+  late final String gameId = ref.watch(getCurrentGameRoomIdProvider);
+  late final String userId = ref.watch(getSignedInPlayerIdProvider);
+
+     late final String? gameCode = ref.watch(getGameCodeProvider);
+        
+    late final bool isLeader = ref.watch(getIsUserLeaderProvider);
+    
+      late final bool enoughPlayers = ref.watch(getHasEnoughPlayersProvider);
+      
+        late final bool isReady = ref.watch(getIsUserReadingProvider);
+        
+          late final int numberOfPlayers = ref.watch(getNumberOfPlayersProvider);
+                
+
+  late final bool canStartGame = ref.watch(canStartGameProvider);
+  late final bool isMidGame = ref.watch(isMidGameProvider);
+  late final lobbyListInitialData = ref.watch(lobbyListInitialDataProvider);
 
   void onReadyUp(bool isReady) {
     _getServer.setPlayerState(
@@ -50,11 +74,10 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   @override
   Widget build(BuildContext context) {
 
-    ref.listen(gameEvents.select((state) => state.valueOrNull?.newPresentPlayers),
+    ref.listen(lobbyListInitialDataProvider,
         (_, next) {
-      if (next != null) {
         _rectKey.currentState?.setItems(next);
-      }
+      
     });
 
     // ref.listen(_vmProvider.select((state) => state.value?.listChangeData),
@@ -117,7 +140,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          AutoSizeText(gameCode!,
+          AutoSizeText(gameCode ?? '-',
               maxLines: 1, style: const TextStyle(fontSize: 64))
         ]),
       ),
@@ -296,7 +319,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
 
   void onStartGamePressed(bool canStartGame) {
     if (canStartGame) {
-      game.startGame();
+      ref.read(gameNotifierProvider(gameId).notifier).startGame();
     } else {
       showDialog(
           context: context,
@@ -306,7 +329,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   }
 
   void onLeaveGamePressed() {
-    game.leaveGame(userId);
+    ref.read(gameNotifierProvider(gameId).notifier).leaveGame(userId);
   }
 }
 

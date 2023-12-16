@@ -5,22 +5,20 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bull/gen/assets.gen.dart';
+import 'package:flutter_bull/src/mixins/voting_phase_view_model.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
-import 'package:flutter_bull/src/notifiers/player_notifier.dart';
 import 'package:flutter_bull/src/notifiers/view_models/voting_player.dart';
 import 'package:flutter_bull/src/proto/regular_rectangle_packer.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
 import 'package:flutter_bull/src/providers/round_data.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
-import 'package:flutter_bull/src/view_models/4_game_round/3_voting_phase_view_model.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_button.dart';
-import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_player_avatar.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_text_box.dart';
+import 'package:flutter_bull/src/widgets/unique/time_display_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jumping_dot/jumping_dot.dart';
-
 
 class VotingPhaseView extends ConsumerStatefulWidget {
   const VotingPhaseView({super.key});
@@ -31,10 +29,10 @@ class VotingPhaseView extends ConsumerStatefulWidget {
 }
 
 class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
-    with SingleTickerProviderStateMixin {
-      
+    with VotingPhaseViewModel, SingleTickerProviderStateMixin, MediaDimensions {
   static const String voteTrueButtonLabel = 'TRUE';
   static const String voteBullButtonLabel = 'BULL';
+
 
   late final AnimationController _roundOverAnimController = AnimationController(
       vsync: this,
@@ -47,19 +45,6 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   bool roundOverAnimationReversing = false;
 
   Color? testColor;
-
-
-  late final String userId = ref.watch(getSignedInPlayerIdProvider);
-  late final String gameId = ref.watch(getCurrentGameRoomIdProvider);
-
-  late final PublicPlayer? playerWhoseTurn = ref.watch(playerWhoseTurnProvider);
-  
-  TimeData timeData;
-  
-  String playersWhoseTurnStatement;
-
-
-
 
   @override
   void initState() {
@@ -79,10 +64,8 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     super.dispose();
   }
 
-  double get screenHeight => MediaQuery.of(context).size.height / 2;
-
   GameNotifier get gameNotifier =>
-      ref.read(gameNotifierProvider(gameId!).notifier);
+      ref.read(gameNotifierProvider(gameId).notifier);
 
   final _timerKey = GlobalKey<TimeDisplayWidgetState>();
 
@@ -90,25 +73,18 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   void onVoteBull() => vote(false);
 
-  void onEndRound() {
-    gameNotifier.endRound(userId!);
+  void onEndRound() => gameNotifier.endRound(userId);
+
+  void vote(bool trueOrFalse) => gameNotifier.vote(userId, trueOrFalse);
+
+  void onTimerChange(int seconds) {
+    final timeData = TimeData.fromSeconds(seconds);
+    _timerKey.currentState?.onChange(timeData);
   }
 
-  void vote(bool trueOrFalse) {
-    gameNotifier.vote(userId!, trueOrFalse);
-  }
+  void onRoundTimerEnd() => playRoundOverAnimation('TIMES UP!');
 
-  void onTimerChange(TimeData time) {
-    _timerKey.currentState?.onChange(time);
-  }
-
-  void onRoundTimerEnd() async {
-    playRoundOverAnimation('TIMES UP!');
-  }
-
-  void onAllPlayersVoted() async {
-    playRoundOverAnimation('VOTES ARE IN!');
-  }
+  void onAllPlayersVoted() => playRoundOverAnimation('VOTES ARE IN!');
 
   String? roundEndAnimationMessage;
   void playRoundOverAnimation(String message) async {
@@ -126,69 +102,64 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   @override
   Widget build(BuildContext context) {
-
-    ref.listen(timeDataProvider(gameId).select((vm) => vm.valueOrNull?.newTimeData),
-        (prev, next) {
+    ref.listen(getRoundTimeRemainingSecondsProvider, (prev, next) {
       if (next != null) {
         onTimerChange(next);
       }
     });
 
-    ref.listen(roundStatusProvider(gameId).select((vm) => vm.valueOrNull?.newRoundStatus),
-        (prev, next) {
-      if (next == RoundStatus.endedDueToTime) {
-        onRoundTimerEnd();
-      }
-      if (next == RoundStatus.endedDueToVotes) {
-        onAllPlayersVoted();
+    ref.listen(getRoundStatusProvider, (prev, next) {
+      if (prev == RoundStatus.inProgress) {
+        if (next == RoundStatus.endedDueToTime) {
+          onRoundTimerEnd();
+        } else if (next == RoundStatus.endedDueToVotes) {
+          onAllPlayersVoted();
+        }
       }
     });
 
+    final Widget main = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: _buildTop(context),
+        ),
+        Expanded(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
+            child: _buildMiddle(context),
+          ),
+        ),
+        Flexible(
+          child: _buildBottom(context),
+        ),
+      ],
+    );
 
-            final Widget main = Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: _buildTop(context),
-            ),
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-                child: _buildMiddle(context),
-              ),
-            ),
-            Flexible(
-              child: _buildBottom(context),
-            ),
-          ],
-        );
-
-        final Widget timesUpAnimationView = TimesUpAnimationView(
-            message: roundEndAnimationMessage ?? '',
-            animation: _roundOverAnim,
-            isReversing: roundOverAnimationReversing);
+    final Widget timesUpAnimationView = TimesUpAnimationView(
+        message: roundEndAnimationMessage ?? '',
+        animation: _roundOverAnim,
+        isReversing: roundOverAnimationReversing);
 
     return Scaffold(
       body: Stack(
-          alignment: Alignment.center,
-          children: [main, timesUpAnimationView],
-        ),
+        alignment: Alignment.center,
+        children: [main, timesUpAnimationView],
+      ),
     );
   }
 
   Column _buildTop(BuildContext context) {
-    final height = size(context).height;
-    final width = size(context).width;
-
     final time = Container(
         color: testColor ?? Theme.of(context).primaryColor,
-        child: TimeDisplayWidget(key: _timerKey, timeData));
+        child: TimeDisplayWidget(
+            key: _timerKey, TimeData.fromSeconds(timeRemaining)));
 
     final avatar = UtterBullPlayerAvatar(null, playerWhoseTurn?.avatarData);
 
     final text = UtterBullTextBox(
-      playersWhoseTurnStatement,
+      playersWhoseTurnStatement ?? '',
       opacity: 0.8,
       padding: const EdgeInsets.all(12.0),
     );
@@ -228,7 +199,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   Stack _buildMiddle(BuildContext context) {
     return Stack(children: [
-      PlayersVotedWrapList(vm: vm),
+      PlayersVotedWrapList(),
       //SaboteurPickerLayer(ids: vm.eligibleVoterIds, onChanged: onSelectedSaboteurChanged)
     ]);
   }
@@ -236,29 +207,31 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   ClipRRect _buildBottom(BuildContext context) {
     late final Widget child;
 
-    switch (vm.voteOptionsState) {
+    switch (voteOptionsState) {
       case VoteOptionsState.voterCanVote:
-        child = _buildVoteButtons(vm);
+        child = _buildVoteButtons();
       case VoteOptionsState.voterCannotVote:
         child = AutoSizeText(
-          "${vm.numberOfPlayersVoting} left to vote...",
+          "${getNumberOfPlayersVoting} left to vote...",
           style: Theme.of(context).textTheme.displayMedium,
         );
       case VoteOptionsState.voterRoundEnd:
         child = AutoSizeText(
-          "Waiting for ${vm.playerWhoseTurn.player.name} to continue...",
+          "Waiting for ${playerWhoseTurn?.player.name} to continue...",
           maxLines: 1,
           style: Theme.of(context).textTheme.displayMedium,
         );
       case VoteOptionsState.readerCanSwitchToTruth:
-        child = _buildTruthSwitchPrompt(vm.timeForReaderToSwitchToTruth ?? 0);
+        child = _buildTruthSwitchPrompt(timeElapsed ?? 0);
       case VoteOptionsState.readerAwaitingVoters:
         child = AutoSizeText(
-          "${vm.numberOfPlayersVoting} left to vote...",
+          "${getNumberOfPlayersVoting} left to vote...",
           style: Theme.of(context).textTheme.displayMedium,
         );
       case VoteOptionsState.readerRoundEnd:
-        child = _buildEndRoundButton(vm.roundStatus != RoundStatus.inProgress);
+        child = _buildEndRoundButton(roundStatus != RoundStatus.inProgress);
+      case null:
+      // TODO: Handle this case.
     }
 
     return ClipRRect(
@@ -270,7 +243,8 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
         color: Theme.of(context).primaryColor,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: AnimatedSwitcher(duration: const Duration(seconds: 1), child: child),
+          child: AnimatedSwitcher(
+              duration: const Duration(seconds: 1), child: child),
         ),
       ),
     );
@@ -283,8 +257,8 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
     });
   }
 
-  Widget _buildVoteButtons(VotingPhaseViewModel vm) {
-    final enabled = !vm.hasVoted && (vm.roundStatus == RoundStatus.inProgress);
+  Widget _buildVoteButtons() {
+    final enabled = !(hasVoted ?? false) && (getRoundStatus == RoundStatus.inProgress);
     const aspect = 1.0;
     return Row(children: [
       Expanded(
@@ -303,8 +277,8 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
         below: selectedSaboteurId == null
             ? null
             : Row(children: [
-                UtterBullPlayerAvatar(null,
-                    vm.votingPlayers[selectedSaboteurId]!.player.avatarData),
+                UtterBullPlayerAvatar(
+                    null, votingPlayers[selectedSaboteurId]!.player.avatarData),
                 Assets.images.icons.achievements.saboteur.image()
               ]),
         isShimmering: false,
@@ -321,7 +295,7 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
 
   Widget _buildWaitingForPlayerText(VotingPhaseViewModel vm) {
     return AutoSizeText(
-      vm.waitingForPlayerText,
+      "Waiting for ${playerWhoseTurn?.player.name}",
       maxLines: 1,
       textAlign: TextAlign.center,
       style: Theme.of(context).textTheme.displayLarge,
@@ -340,25 +314,27 @@ class _VotingPhaseViewState extends ConsumerState<VotingPhaseView>
   }
 }
 
+
 EdgeInsets voterAvatarPadding = const EdgeInsets.all(4.0);
 
-class PlayersVotedWrapList extends StatelessWidget {
-  const PlayersVotedWrapList({
-    super.key,
-    required this.vm,
-  });
+class PlayersVotedWrapList extends ConsumerWidget {
+  const PlayersVotedWrapList({super.key});
+  
 
   static const double notVotedOpacity = 0.7;
-
-  final VotingPhaseViewModel vm;
 
   final Duration voteAnimationDuration = const Duration(milliseconds: 300);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final RoundStatus? roundStatus = ref.watch(getRoundStatusProvider);
+    final Iterable<VotingPlayer> votingPlayers =
+        ref.watch(getVotingPlayersProvider).values;
+
     return Center(
         child: RegularRectanglePacker(
-            items: vm.votingPlayers.values.map((e) {
+            items: votingPlayers.map((e) {
       final bool hasVoted = e.voteStatus == VoteStatus.hasVoted;
 
       final UtterBullPlayerAvatar avatar =
@@ -369,7 +345,7 @@ class PlayersVotedWrapList extends StatelessWidget {
         child: VoterAvatar(
             voteAnimationDuration: voteAnimationDuration,
             hasVoted: hasVoted,
-            isRoundInProgress: vm.roundStatus == RoundStatus.inProgress,
+            isRoundInProgress: roundStatus == RoundStatus.inProgress,
             notVotedOpacity: notVotedOpacity,
             avatar: avatar),
       );
@@ -515,157 +491,12 @@ class _TimesUpAnimationViewState extends State<TimesUpAnimationView> {
           decoration: const BoxDecoration(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: UglyOutlinedText(text: widget.message,
-                outlineColor: Theme.of(context).primaryColorDark, maxLines: 1),
+            child: UglyOutlinedText(
+                text: widget.message,
+                outlineColor: Theme.of(context).primaryColorDark,
+                maxLines: 1),
           ),
         ));
-  }
-}
-
-class TimeDisplayWidget extends StatefulWidget {
-  const TimeDisplayWidget(this.time, {super.key});
-
-  // TODO: Incoporate round status - rapidly count down timer when all votes are in
-  final TimeData time;
-
-  @override
-  State<TimeDisplayWidget> createState() => TimeDisplayWidgetState();
-}
-
-class TimeDisplayWidgetState extends State<TimeDisplayWidget>
-    with TickerProviderStateMixin {
-  late TimeData time = widget.time;
-
-  final double scale = 1.25;
-  final Curve curve = Curves.elasticOut;
-  final int ms = 750;
-
-  final int timeNearlyOverSeconds = 10;
-
-  final Color timeNearlyOverFillColor =
-      Color.lerp(Colors.red, Colors.white, 0.25)!;
-  final Color timeNearlyOverOutlineColor =
-      Color.lerp(Colors.red, Colors.black, 0.25)!;
-
-  Color get textColor =>
-      (time.timeRemaining?.inSeconds ?? 0) <= timeNearlyOverSeconds
-          ? timeNearlyOverFillColor
-          : Colors.white;
-  Color? get textOutlineColor =>
-      (time.timeRemaining?.inSeconds ?? 0) <= timeNearlyOverSeconds
-          ? timeNearlyOverOutlineColor
-          : null;
-
-  late final AnimationController _mAnimationController = AnimationController(
-      vsync: this, duration: Duration(milliseconds: ms), value: 1);
-  late final Animation<double> _mAnimation =
-      CurvedAnimation(parent: _mAnimationController, curve: curve)
-          .drive(Tween(begin: scale, end: 1.0));
-
-  late final AnimationController _sAnimationController = AnimationController(
-      vsync: this, duration: Duration(milliseconds: ms), value: 1);
-  late final Animation<double> _sAnimation =
-      CurvedAnimation(parent: _sAnimationController, curve: curve)
-          .drive(Tween(begin: scale, end: 1.0));
-
-  AnimationController? _windDownAnimationController;
-
-  void windDown() {
-    _windDownAnimationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 2000));
-    final Animation<Duration> windDownAnimation = CurvedAnimation(
-            parent: _windDownAnimationController!, curve: Curves.easeOut)
-        .drive(Tween(begin: time.timeRemaining, end: Duration.zero));
-
-    _windDownAnimationController!.addListener(() {
-      setTime(TimeData(windDownAnimation.value));
-    });
-
-    _windDownAnimationController!.forward();
-  }
-
-  void onChange(TimeData newTime) {
-    if (_windDownAnimationController?.isAnimating ?? false) return;
-    if (newTime.timeRemaining == Duration.zero &&
-        (time.timeRemaining?.inSeconds ?? 0) > 1) {
-      windDown();
-    } else {
-      setTime(newTime);
-    }
-  }
-
-  void setTime(TimeData newTime) {
-    if (time.secondString != newTime.secondString) {
-      _sAnimationController.forward(from: 0);
-    }
-    if (time.minuteString != newTime.minuteString) {
-      _mAnimationController.forward(from: 0);
-    }
-    setState(() {
-      time = newTime;
-    });
-  }
-
-  @override
-  void dispose() {
-    _mAnimationController.dispose();
-    _sAnimationController.dispose();
-    _windDownAnimationController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (time.timeRemaining == null) {
-      return const Center(child: UtterBullCircularProgressIndicator());
-    }
-
-    return Center(
-        child: Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Flexible(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                AnimatedBuilder(
-                    animation: _mAnimation,
-                    builder: (context, _) {
-                      return Transform.scale(
-                          scale: _mAnimation.value,
-                          child: UglyOutlinedText(text: 
-                            time.minuteString,
-                            fillColor: textColor,
-                            outlineColor: textOutlineColor,
-                            //style: Theme.of(context).textTheme.displayLarge,
-                          ));
-                    })
-              ],
-            )),
-        UglyOutlinedText(text: ': ', fillColor: textColor),
-        Flexible(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                AnimatedBuilder(
-                    animation: _sAnimation,
-                    builder: (context, _) {
-                      return Transform.scale(
-                          scale: _sAnimation.value,
-                          child: UglyOutlinedText(text: 
-                            time.secondString,
-                            fillColor: textColor,
-                            outlineColor: textOutlineColor,
-                            // style: Theme.of(context).textTheme.displayLarge,
-                          ));
-                    }),
-              ],
-            )),
-      ],
-    ));
   }
 }
 
@@ -682,13 +513,14 @@ class SaboteurPickerLayer extends StatefulWidget {
 class _SaboteurPickerLayerState extends State<SaboteurPickerLayer>
     with TickerProviderStateMixin {
   late final AnimationController _entryAnimationController =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+      AnimationController(
+          vsync: this, duration: const Duration(milliseconds: 500));
   late final Animation<double> _entryAnimation = CurvedAnimation(
           parent: _entryAnimationController, curve: Curves.elasticOut)
       .drive(Tween(begin: 0, end: scale));
 
-  late final AnimationController _exitAnimationController =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+  late final AnimationController _exitAnimationController = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 100));
   late final Animation<double> _exitAnimation = CurvedAnimation(
           parent: _exitAnimationController, curve: Curves.decelerate)
       .drive(Tween(begin: 1, end: exitScale));

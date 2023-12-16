@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:coordinated_page_route/coordinated_page_route.dart';
+import 'package:flutter_bull/src/enums/game_phases.dart';
 import 'package:flutter_bull/src/mixins/game_hooks.dart';
-import 'package:flutter_bull/src/new/notifiers/game/game_event_notifier.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
+import 'package:flutter_bull/src/providers/game_data.dart';
 import 'package:flutter_bull/src/style/utter_bull_theme.dart';
 import 'package:flutter_bull/src/views/3_game/0_lobby_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/1_writing_phase_view.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_bull/src/views/3_game/3_reveals_phase_view.dart';
 import 'package:flutter_bull/src/views/3_game/4_result_phase_view.dart';
 import 'package:flutter_bull/src/widgets/common/utter_bull_circular_progress_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class GameView extends ConsumerStatefulWidget {
   const GameView({super.key});
@@ -19,21 +21,32 @@ class GameView extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _GameViewState();
 }
 
-class _GameViewState extends ConsumerState<GameView> with GameHooks {
+class _GameViewState extends ConsumerState<GameView> {
+  
   late final _navKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(
-        gameEventNotifierProvider(gameId)
-            .select((value) => value.valueOrNull?.newGameRoute), (prev, next) {
+    
+    ref.listen(getPhaseProvider, (prev, next) {
+      Logger().d('getPhaseProvider $next');
       if (next != null) {
-        //if (prev?.phase != GamePhase.results) {
-        _navKey.currentState?.pushReplacementNamed(next.phase.name,
-            arguments: {'progress': next.progress, 'initial': prev == null});
-        //}
+        if (prev != GamePhase.results) {
+          _navKey.currentState?.pushReplacementNamed(next.name,
+              arguments: {'progress': 0, 'initial': prev == null});
+        }
       }
     });
+
+    // ref.listen(
+    //     getProgressProvider, (prev, next) {
+    //   if (next != null) {
+    //     //if (prev?.phase != GamePhase.results) {
+    //     _navKey.currentState?.pushReplacementNamed(next.name,
+    //         arguments: {'progress': next.progress, 'initial': prev == null});
+    //     //}
+    //   }
+    // });
 
     // ref.listen(vmProvider.select((value) => value.value?.playerState),
     //     (prev, next) {
@@ -49,27 +62,28 @@ class _GameViewState extends ConsumerState<GameView> with GameHooks {
           child: Navigator(
             key: _navKey,
             observers: [CoordinatedRouteObserver()],
-            initialRoute: phase?.name,
+            initialRoute: ref.read(getPhaseProvider)?.name,
             onGenerateRoute: (settings) {
               final Map? args = settings.arguments as Map?;
               switch (settings.name) {
                 case 'lobby':
-                  final lobby = LobbyPhaseView();
-                  if (args?['initial'])
+                  const lobby = LobbyPhaseView();
+                  if (args?['initial']) {
                     return ForwardPushRoute((context) => lobby);
-                  else
+                  } else {
                     return BackwardPushRoute((context) => lobby);
+                  }
                 case 'writing':
-                  return ForwardPushRoute((context) => WritingPhaseView());
+                  return ForwardPushRoute((context) => const WritingPhaseView());
                 case 'round':
                   final progressOverride = getProgressProvider
                       .overrideWithValue(args?['progress'] as int);
                   return ForwardPushRoute((context) => ProviderScope(
-                      overrides: [progressOverride], child: GameRoundView()));
+                      overrides: [progressOverride], child: const GameRoundView()));
                 case 'reveals':
-                  return ForwardPushRoute((context) => RevealsPhaseView());
+                  return ForwardPushRoute((context) => const RevealsPhaseView());
                 case 'results':
-                  return ForwardPushRoute((context) => ResultView());
+                  return ForwardPushRoute((context) => const ResultView());
               }
 
               return PageRouteBuilder(

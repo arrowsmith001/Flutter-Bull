@@ -12,8 +12,8 @@ class GameEvents with _$GameEvents {
   factory GameEvents({
     List<LobbyPlayer>? newPresentPlayers,
     GameRoute? newGameRoute,
-    TimeData? newTimeData, 
-    RoundStatus? newRoundStatus
+    // TimeData? newTimeData, 
+    // RoundStatus? newRoundStatus
     
     }) = _GameEvents;
 

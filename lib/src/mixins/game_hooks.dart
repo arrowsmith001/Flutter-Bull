@@ -4,8 +4,6 @@ import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/model/player.dart';
 import 'package:flutter_bull/src/new/notifiers/app/app_state.dart';
 import 'package:flutter_bull/src/new/notifiers/app/app_state_notifier.dart';
-import 'package:flutter_bull/src/new/notifiers/game/game_event_notifier.dart';
-import 'package:flutter_bull/src/new/notifiers/game/game_events.dart';
 import 'package:flutter_bull/src/new/notifiers/misc/auth_notifier.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
@@ -22,8 +20,6 @@ mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   GameNotifier get game => ref.read(gameNotifierProvider(gameId).notifier);
 
-  GameEventNotifierProvider get gameEvents => gameEventNotifierProvider(gameId);
-
   String? get gameCode => _watchThen(_getGameCode);
   GamePhase? get phase => _watchThen(_getGamePhase);
   int? get subPhase => _watchThen(_getGameSubphase);
@@ -39,8 +35,8 @@ mixin GameHooks<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   bool get enoughPlayers =>
       _watchThen((game) => game.gameRoom.playerIds.length >= 3) ?? false;
   PublicPlayer? get me => _watchPlayer(userId);
-  bool get canStartGame =>
-      _playerIds.every((id) => isPlayerReady(id) || id == _leaderId);
+  // bool get canStartGame =>
+  //     _playerIds.every((id) => isPlayerReady(id) || id == _leaderId);
   int get numberOfPlayers => _watchThen(_getNumberOfPlayers) ?? 0;
 
 
