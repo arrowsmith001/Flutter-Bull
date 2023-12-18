@@ -48,27 +48,25 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   UtterBullServer get _getServer => ref.read(utterBullServerProvider);
 
 
-  late final String gameId = ref.watch(getCurrentGameRoomIdProvider);
-  late final String userId = ref.watch(getSignedInPlayerIdProvider);
+  late String gameId = ref.watch(getCurrentGameRoomIdProvider);
+  late String userId = ref.watch(getSignedInPlayerIdProvider);
 
-     late final String? gameCode = ref.watch(getGameCodeProvider);
+  late String? gameCode = ref.watch(getGameCodeProvider);
         
-    late final bool isLeader = ref.watch(getIsUserLeaderProvider);
+  late bool? isLeader = ref.watch(getIsUserLeaderProvider);
     
-      late final bool enoughPlayers = ref.watch(getHasEnoughPlayersProvider);
+  late bool enoughPlayers = ref.watch(getHasEnoughPlayersProvider);
       
-        late final bool isReady = ref.watch(getIsUserReadingProvider);
+  late bool isReady = ref.watch(getIsUserReadingProvider);
         
-          late final int numberOfPlayers = ref.watch(getNumberOfPlayersProvider);
-                
+  late int numberOfPlayers = ref.watch(getNumberOfPlayersProvider);
 
-  late final bool canStartGame = ref.watch(canStartGameProvider);
-  late final bool isMidGame = ref.watch(isMidGameProvider);
+  late bool? isMidGame = ref.watch(isMidGameProvider);
   late final lobbyListInitialData = ref.watch(lobbyListInitialDataProvider);
 
   void onReadyUp(bool isReady) {
     _getServer.setPlayerState(
-        gameId!, userId!, isReady ? PlayerState.unready : PlayerState.ready);
+        gameId, userId, isReady ? PlayerState.unready : PlayerState.ready);
   }
 
   @override
@@ -173,10 +171,10 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   }
 
   Container _buildBottomControls() {
-    final button = isLeader
+    final button = (isLeader ?? false)
         ? UtterBullButton(
             onPressed: enoughPlayers
-                ? () => onStartGamePressed(canStartGame)
+                ? () => onStartGamePressed()
                 : null,
             title: 'Start Game')
         : isReady
@@ -211,7 +209,7 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: SizedBox(
                       height: 85,
-                      child: isStartingGame || isMidGame
+                      child: isStartingGame || (isMidGame ?? false)
                           ? const UtterBullCircularProgressIndicator()
                           : button,
                     ),
@@ -317,7 +315,10 @@ class _LobbyViewState extends ConsumerState<LobbyPhaseView>
   //   );
   // }
 
-  void onStartGamePressed(bool canStartGame) {
+  void onStartGamePressed() {
+    
+    late bool canStartGame = ref.read(canStartGameProvider);
+    
     if (canStartGame) {
       ref.read(gameNotifierProvider(gameId).notifier).startGame();
     } else {

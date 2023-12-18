@@ -6,284 +6,7 @@ part of 'game_data.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$streamGameHash() => r'af7b85d8b3a5b9fefca3e0ce50cef3b7c88906ea';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [streamGame].
-@ProviderFor(streamGame)
-const streamGameProvider = StreamGameFamily();
-
-/// See also [streamGame].
-class StreamGameFamily extends Family<AsyncValue<GameRoom>> {
-  /// See also [streamGame].
-  const StreamGameFamily();
-
-  /// See also [streamGame].
-  StreamGameProvider call(
-    String? id,
-  ) {
-    return StreamGameProvider(
-      id,
-    );
-  }
-
-  @override
-  StreamGameProvider getProviderOverride(
-    covariant StreamGameProvider provider,
-  ) {
-    return call(
-      provider.id,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'streamGameProvider';
-}
-
-/// See also [streamGame].
-class StreamGameProvider extends StreamProvider<GameRoom> {
-  /// See also [streamGame].
-  StreamGameProvider(
-    String? id,
-  ) : this._internal(
-          (ref) => streamGame(
-            ref as StreamGameRef,
-            id,
-          ),
-          from: streamGameProvider,
-          name: r'streamGameProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$streamGameHash,
-          dependencies: StreamGameFamily._dependencies,
-          allTransitiveDependencies:
-              StreamGameFamily._allTransitiveDependencies,
-          id: id,
-        );
-
-  StreamGameProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.id,
-  }) : super.internal();
-
-  final String? id;
-
-  @override
-  Override overrideWith(
-    Stream<GameRoom> Function(StreamGameRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: StreamGameProvider._internal(
-        (ref) => create(ref as StreamGameRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        id: id,
-      ),
-    );
-  }
-
-  @override
-  StreamProviderElement<GameRoom> createElement() {
-    return _StreamGameProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is StreamGameProvider && other.id == id;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, id.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin StreamGameRef on StreamProviderRef<GameRoom> {
-  /// The parameter `id` of this provider.
-  String? get id;
-}
-
-class _StreamGameProviderElement extends StreamProviderElement<GameRoom>
-    with StreamGameRef {
-  _StreamGameProviderElement(super.provider);
-
-  @override
-  String? get id => (origin as StreamGameProvider).id;
-}
-
-String _$streamPlayerHash() => r'07f6ee28ebf6761bff2b1cef8a3cb746dfeaaf1f';
-
-/// See also [streamPlayer].
-@ProviderFor(streamPlayer)
-const streamPlayerProvider = StreamPlayerFamily();
-
-/// See also [streamPlayer].
-class StreamPlayerFamily extends Family<AsyncValue<PublicPlayer>> {
-  /// See also [streamPlayer].
-  const StreamPlayerFamily();
-
-  /// See also [streamPlayer].
-  StreamPlayerProvider call(
-    String? id,
-  ) {
-    return StreamPlayerProvider(
-      id,
-    );
-  }
-
-  @override
-  StreamPlayerProvider getProviderOverride(
-    covariant StreamPlayerProvider provider,
-  ) {
-    return call(
-      provider.id,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'streamPlayerProvider';
-}
-
-/// See also [streamPlayer].
-class StreamPlayerProvider extends StreamProvider<PublicPlayer> {
-  /// See also [streamPlayer].
-  StreamPlayerProvider(
-    String? id,
-  ) : this._internal(
-          (ref) => streamPlayer(
-            ref as StreamPlayerRef,
-            id,
-          ),
-          from: streamPlayerProvider,
-          name: r'streamPlayerProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$streamPlayerHash,
-          dependencies: StreamPlayerFamily._dependencies,
-          allTransitiveDependencies:
-              StreamPlayerFamily._allTransitiveDependencies,
-          id: id,
-        );
-
-  StreamPlayerProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.id,
-  }) : super.internal();
-
-  final String? id;
-
-  @override
-  Override overrideWith(
-    Stream<PublicPlayer> Function(StreamPlayerRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: StreamPlayerProvider._internal(
-        (ref) => create(ref as StreamPlayerRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        id: id,
-      ),
-    );
-  }
-
-  @override
-  StreamProviderElement<PublicPlayer> createElement() {
-    return _StreamPlayerProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is StreamPlayerProvider && other.id == id;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, id.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin StreamPlayerRef on StreamProviderRef<PublicPlayer> {
-  /// The parameter `id` of this provider.
-  String? get id;
-}
-
-class _StreamPlayerProviderElement extends StreamProviderElement<PublicPlayer>
-    with StreamPlayerRef {
-  _StreamPlayerProviderElement(super.provider);
-
-  @override
-  String? get id => (origin as StreamPlayerProvider).id;
-}
-
-String _$getGameHash() => r'344a6f65de674f3ae010fd4e856bbca9c9d5461c';
+String _$getGameHash() => r'86bce9e47959eda86a7f3d06505661a61bf24577';
 
 /// See also [getGame].
 @ProviderFor(getGame)
@@ -292,15 +15,10 @@ final getGameProvider = Provider<GameRoom?>.internal(
   name: r'getGameProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$getGameHash,
-  dependencies: <ProviderOrFamily>[
-    getCurrentGameRoomIdProvider,
-    streamGameProvider
-  ],
+  dependencies: <ProviderOrFamily>[getCurrentGameRoomIdProvider],
   allTransitiveDependencies: <ProviderOrFamily>{
     getCurrentGameRoomIdProvider,
-    ...?getCurrentGameRoomIdProvider.allTransitiveDependencies,
-    streamGameProvider,
-    ...?streamGameProvider.allTransitiveDependencies
+    ...?getCurrentGameRoomIdProvider.allTransitiveDependencies
   },
 );
 
@@ -322,7 +40,7 @@ final getPlayersProvider = Provider<Map<String, PublicPlayer>?>.internal(
 );
 
 typedef GetPlayersRef = ProviderRef<Map<String, PublicPlayer>?>;
-String _$getGameCodeHash() => r'79c7f39c64124658ec37789ace4f950109379079';
+String _$getGameCodeHash() => r'db2db522a23605ceb057447de0fe4eda5b8fa727';
 
 /// See also [getGameCode].
 @ProviderFor(getGameCode)
@@ -331,10 +49,10 @@ final getGameCodeProvider = Provider<String?>.internal(
   name: r'getGameCodeProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$getGameCodeHash,
-  dependencies: <ProviderOrFamily>[getCurrentGameRoomIdProvider],
+  dependencies: <ProviderOrFamily>[getGameProvider],
   allTransitiveDependencies: <ProviderOrFamily>{
-    getCurrentGameRoomIdProvider,
-    ...?getCurrentGameRoomIdProvider.allTransitiveDependencies
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
   },
 );
 
@@ -356,7 +74,7 @@ final getPhaseProvider = Provider<GamePhase?>.internal(
 );
 
 typedef GetPhaseRef = ProviderRef<GamePhase?>;
-String _$getSubphaseHash() => r'3d04e10000cee262ecb418b3a3bf68791db63ead';
+String _$getSubphaseHash() => r'29807cbdb635cf3899fe1812fc88751c582a3988';
 
 /// See also [getSubphase].
 @ProviderFor(getSubphase)
@@ -365,12 +83,15 @@ final getSubphaseProvider = Provider<int?>.internal(
   name: r'getSubphaseProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$getSubphaseHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getGameProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  },
 );
 
 typedef GetSubphaseRef = ProviderRef<int?>;
-String _$getLeaderIdHash() => r'016635dac79e3313559ea84e98e8d871f258d685';
+String _$getLeaderIdHash() => r'1c89f03e7fc887b1f06155b84c1517d1dc7eddb5';
 
 /// See also [getLeaderId].
 @ProviderFor(getLeaderId)
@@ -379,13 +100,16 @@ final getLeaderIdProvider = Provider<String?>.internal(
   name: r'getLeaderIdProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$getLeaderIdHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getGameProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  },
 );
 
 typedef GetLeaderIdRef = ProviderRef<String?>;
 String _$getPseudoShuffledIdsHash() =>
-    r'5583fb3fc147b6f537eee119aef7aba6eebdfb49';
+    r'42036bb2582b5d6d49c9f79515cd4612b56b693b';
 
 /// See also [getPseudoShuffledIds].
 @ProviderFor(getPseudoShuffledIds)
@@ -395,42 +119,82 @@ final getPseudoShuffledIdsProvider = Provider<List<String>>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$getPseudoShuffledIdsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getGameProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  },
 );
 
 typedef GetPseudoShuffledIdsRef = ProviderRef<List<String>>;
-String _$getIsUserLeaderHash() => r'73b4ea50abebfd3d80ceb836b3bfbf4045634058';
+String _$getIsUserLeaderHash() => r'40097c703492a252931a2d59ba696b31d46a46ef';
 
 /// See also [getIsUserLeader].
 @ProviderFor(getIsUserLeader)
-final getIsUserLeaderProvider = AutoDisposeProvider<bool>.internal(
+final getIsUserLeaderProvider = Provider<bool?>.internal(
   getIsUserLeader,
   name: r'getIsUserLeaderProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$getIsUserLeaderHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    isPlayerLeaderProvider,
+    getSignedInPlayerIdProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    isPlayerLeaderProvider,
+    ...?isPlayerLeaderProvider.allTransitiveDependencies,
+    getSignedInPlayerIdProvider,
+    ...?getSignedInPlayerIdProvider.allTransitiveDependencies
+  },
 );
 
-typedef GetIsUserLeaderRef = AutoDisposeProviderRef<bool>;
-String _$getIsUserReadyHash() => r'42e4497d50891372c6909373a2572d48678a9662';
+typedef GetIsUserLeaderRef = ProviderRef<bool?>;
+String _$getIsUserReadyHash() => r'0257c2a3d4ced8a9cd3561061c5419c2a4fbef08';
 
 /// See also [getIsUserReady].
 @ProviderFor(getIsUserReady)
-final getIsUserReadyProvider = AutoDisposeProvider<bool>.internal(
+final getIsUserReadyProvider = Provider<bool>.internal(
   getIsUserReady,
   name: r'getIsUserReadyProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$getIsUserReadyHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    getGameProvider,
+    getSignedInPlayerIdProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    getSignedInPlayerIdProvider,
+    ...?getSignedInPlayerIdProvider.allTransitiveDependencies
+  },
 );
 
-typedef GetIsUserReadyRef = AutoDisposeProviderRef<bool>;
-String _$getPlayerStateHash() => r'2cb77db56e70d9bc11b2738d8cc5f433b50a5b04';
+typedef GetIsUserReadyRef = ProviderRef<bool>;
+String _$getPlayerStateHash() => r'04182490c9a15b90038543bea158c8faaffdc7ff';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
 
 /// See also [getPlayerState].
 @ProviderFor(getPlayerState)
@@ -459,12 +223,18 @@ class GetPlayerStateFamily extends Family<PlayerState?> {
     );
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  static final Iterable<ProviderOrFamily> _dependencies = <ProviderOrFamily>[
+    getGameProvider
+  ];
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
+      <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  };
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
@@ -559,7 +329,7 @@ class _GetPlayerStateProviderElement extends ProviderElement<PlayerState?>
 }
 
 String _$getNumberOfPlayersHash() =>
-    r'99dfc345155777099552e7313eb32352a05eda85';
+    r'a91814a7393a8026a451ec542268c03e57acb2cf';
 
 /// See also [getNumberOfPlayers].
 @ProviderFor(getNumberOfPlayers)
@@ -569,29 +339,35 @@ final getNumberOfPlayersProvider = Provider<int>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$getNumberOfPlayersHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getGameProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  },
 );
 
 typedef GetNumberOfPlayersRef = ProviderRef<int>;
 String _$getHasEnoughPlayersHash() =>
-    r'0e2e659aec2cc48ebd2369f16c142a355d7a96ae';
+    r'912055926f76fa38775f392d665b6501f35c5ac7';
 
 /// See also [getHasEnoughPlayers].
 @ProviderFor(getHasEnoughPlayers)
-final getHasEnoughPlayersProvider = AutoDisposeProvider<bool>.internal(
+final getHasEnoughPlayersProvider = Provider<bool>.internal(
   getHasEnoughPlayers,
   name: r'getHasEnoughPlayersProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$getHasEnoughPlayersHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getNumberOfPlayersProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getNumberOfPlayersProvider,
+    ...?getNumberOfPlayersProvider.allTransitiveDependencies
+  },
 );
 
-typedef GetHasEnoughPlayersRef = AutoDisposeProviderRef<bool>;
+typedef GetHasEnoughPlayersRef = ProviderRef<bool>;
 String _$lobbyListInitialDataHash() =>
-    r'c308173ac26beafd875b32664a92a6a5cbd27b1d';
+    r'eaecefc649fcf7193cc434c157cbaf18a3f824de';
 
 /// See also [lobbyListInitialData].
 @ProviderFor(lobbyListInitialData)
@@ -601,20 +377,26 @@ final lobbyListInitialDataProvider = Provider<List<LobbyPlayer>>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$lobbyListInitialDataHash,
-  dependencies: <ProviderOrFamily>[
-    getCurrentGameRoomIdProvider,
-    getGameProvider
-  ],
-  allTransitiveDependencies: <ProviderOrFamily>{
-    getCurrentGameRoomIdProvider,
-    ...?getCurrentGameRoomIdProvider.allTransitiveDependencies,
+  dependencies: <ProviderOrFamily>{
     getGameProvider,
-    ...?getGameProvider.allTransitiveDependencies
+    getPlayersProvider,
+    isPlayerLeaderProvider,
+    isPlayerReadyProvider
+  },
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    getPlayersProvider,
+    ...?getPlayersProvider.allTransitiveDependencies,
+    isPlayerLeaderProvider,
+    ...?isPlayerLeaderProvider.allTransitiveDependencies,
+    isPlayerReadyProvider,
+    ...?isPlayerReadyProvider.allTransitiveDependencies
   },
 );
 
 typedef LobbyListInitialDataRef = ProviderRef<List<LobbyPlayer>>;
-String _$userHash() => r'cec602eb70f3700966796fcaa4026dc719f42433';
+String _$userHash() => r'2a57e71b5362f9a4ed1c3c8904e8dbea0741e73b';
 
 /// See also [user].
 @ProviderFor(user)
@@ -623,47 +405,69 @@ final userProvider = AutoDisposeProvider<PublicPlayer?>.internal(
   name: r'userProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$userHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    getSignedInPlayerIdProvider,
+    getPlayersProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getSignedInPlayerIdProvider,
+    ...?getSignedInPlayerIdProvider.allTransitiveDependencies,
+    getPlayersProvider,
+    ...?getPlayersProvider.allTransitiveDependencies
+  },
 );
 
 typedef UserRef = AutoDisposeProviderRef<PublicPlayer?>;
-String _$canStartGameHash() => r'f3bb95d41c62a104f01a2c8fbdaf04755421ef10';
+String _$canStartGameHash() => r'5cb8cd33f307eb2a1fc4c83a959eddd466eb4037';
 
 /// See also [canStartGame].
 @ProviderFor(canStartGame)
-final canStartGameProvider = AutoDisposeProvider<bool>.internal(
+final canStartGameProvider = Provider<bool>.internal(
   canStartGame,
   name: r'canStartGameProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$canStartGameHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    getGameProvider,
+    isPlayerReadyProvider,
+    isPlayerLeaderProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    isPlayerReadyProvider,
+    ...?isPlayerReadyProvider.allTransitiveDependencies,
+    isPlayerLeaderProvider,
+    ...?isPlayerLeaderProvider.allTransitiveDependencies
+  },
 );
 
-typedef CanStartGameRef = AutoDisposeProviderRef<bool>;
-String _$isMidGameHash() => r'bc226e8669678061d9d70bc33e60e9db908999d2';
+typedef CanStartGameRef = ProviderRef<bool>;
+String _$isMidGameHash() => r'8aa214e529609ed474441cb77f3562653bf8aa61';
 
 /// See also [isMidGame].
 @ProviderFor(isMidGame)
-final isMidGameProvider = AutoDisposeProvider<bool>.internal(
+final isMidGameProvider = Provider<bool?>.internal(
   isMidGame,
   name: r'isMidGameProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$isMidGameHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getPhaseProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getPhaseProvider,
+    ...?getPhaseProvider.allTransitiveDependencies
+  },
 );
 
-typedef IsMidGameRef = AutoDisposeProviderRef<bool>;
-String _$isPlayerReadyHash() => r'6d5d593e0e5a181059fdd4330db0cf8b571ac8ce';
+typedef IsMidGameRef = ProviderRef<bool?>;
+String _$isPlayerReadyHash() => r'522d646f2e99c7f73af4f37e23ac945fcf2d4967';
 
 /// See also [isPlayerReady].
 @ProviderFor(isPlayerReady)
 const isPlayerReadyProvider = IsPlayerReadyFamily();
 
 /// See also [isPlayerReady].
-class IsPlayerReadyFamily extends Family<bool> {
+class IsPlayerReadyFamily extends Family<bool?> {
   /// See also [isPlayerReady].
   const IsPlayerReadyFamily();
 
@@ -685,12 +489,21 @@ class IsPlayerReadyFamily extends Family<bool> {
     );
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  static final Iterable<ProviderOrFamily> _dependencies = <ProviderOrFamily>[
+    getGameProvider,
+    getPlayerStateProvider
+  ];
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
+      <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    getPlayerStateProvider,
+    ...?getPlayerStateProvider.allTransitiveDependencies
+  };
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
@@ -701,7 +514,7 @@ class IsPlayerReadyFamily extends Family<bool> {
 }
 
 /// See also [isPlayerReady].
-class IsPlayerReadyProvider extends AutoDisposeProvider<bool> {
+class IsPlayerReadyProvider extends Provider<bool?> {
   /// See also [isPlayerReady].
   IsPlayerReadyProvider(
     String? id,
@@ -736,7 +549,7 @@ class IsPlayerReadyProvider extends AutoDisposeProvider<bool> {
 
   @override
   Override overrideWith(
-    bool Function(IsPlayerReadyRef provider) create,
+    bool? Function(IsPlayerReadyRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -753,7 +566,7 @@ class IsPlayerReadyProvider extends AutoDisposeProvider<bool> {
   }
 
   @override
-  AutoDisposeProviderElement<bool> createElement() {
+  ProviderElement<bool?> createElement() {
     return _IsPlayerReadyProviderElement(this);
   }
 
@@ -771,12 +584,12 @@ class IsPlayerReadyProvider extends AutoDisposeProvider<bool> {
   }
 }
 
-mixin IsPlayerReadyRef on AutoDisposeProviderRef<bool> {
+mixin IsPlayerReadyRef on ProviderRef<bool?> {
   /// The parameter `id` of this provider.
   String? get id;
 }
 
-class _IsPlayerReadyProviderElement extends AutoDisposeProviderElement<bool>
+class _IsPlayerReadyProviderElement extends ProviderElement<bool?>
     with IsPlayerReadyRef {
   _IsPlayerReadyProviderElement(super.provider);
 
@@ -784,14 +597,14 @@ class _IsPlayerReadyProviderElement extends AutoDisposeProviderElement<bool>
   String? get id => (origin as IsPlayerReadyProvider).id;
 }
 
-String _$isPlayerLeaderHash() => r'fd003b216b69edaff3dc58f97b9a04821da5a7e4';
+String _$isPlayerLeaderHash() => r'9d6bdb23977a5cf9870bb1ffabd734f6e863ac95';
 
 /// See also [isPlayerLeader].
 @ProviderFor(isPlayerLeader)
 const isPlayerLeaderProvider = IsPlayerLeaderFamily();
 
 /// See also [isPlayerLeader].
-class IsPlayerLeaderFamily extends Family<bool> {
+class IsPlayerLeaderFamily extends Family<bool?> {
   /// See also [isPlayerLeader].
   const IsPlayerLeaderFamily();
 
@@ -813,12 +626,18 @@ class IsPlayerLeaderFamily extends Family<bool> {
     );
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  static final Iterable<ProviderOrFamily> _dependencies = <ProviderOrFamily>[
+    getLeaderIdProvider
+  ];
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
+      <ProviderOrFamily>{
+    getLeaderIdProvider,
+    ...?getLeaderIdProvider.allTransitiveDependencies
+  };
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
@@ -829,7 +648,7 @@ class IsPlayerLeaderFamily extends Family<bool> {
 }
 
 /// See also [isPlayerLeader].
-class IsPlayerLeaderProvider extends AutoDisposeProvider<bool> {
+class IsPlayerLeaderProvider extends Provider<bool?> {
   /// See also [isPlayerLeader].
   IsPlayerLeaderProvider(
     String? id,
@@ -864,7 +683,7 @@ class IsPlayerLeaderProvider extends AutoDisposeProvider<bool> {
 
   @override
   Override overrideWith(
-    bool Function(IsPlayerLeaderRef provider) create,
+    bool? Function(IsPlayerLeaderRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -881,7 +700,7 @@ class IsPlayerLeaderProvider extends AutoDisposeProvider<bool> {
   }
 
   @override
-  AutoDisposeProviderElement<bool> createElement() {
+  ProviderElement<bool?> createElement() {
     return _IsPlayerLeaderProviderElement(this);
   }
 
@@ -899,12 +718,12 @@ class IsPlayerLeaderProvider extends AutoDisposeProvider<bool> {
   }
 }
 
-mixin IsPlayerLeaderRef on AutoDisposeProviderRef<bool> {
+mixin IsPlayerLeaderRef on ProviderRef<bool?> {
   /// The parameter `id` of this provider.
   String? get id;
 }
 
-class _IsPlayerLeaderProviderElement extends AutoDisposeProviderElement<bool>
+class _IsPlayerLeaderProviderElement extends ProviderElement<bool?>
     with IsPlayerLeaderRef {
   _IsPlayerLeaderProviderElement(super.provider);
 
@@ -913,30 +732,33 @@ class _IsPlayerLeaderProviderElement extends AutoDisposeProviderElement<bool>
 }
 
 String _$numberOfPlayersSubmittedTextHash() =>
-    r'b30855157f81bff4eb51431bea87e67347c1eae7';
+    r'2b9e20cf726877d4675372ff46247aa1a58c4aaa';
 
 /// See also [numberOfPlayersSubmittedText].
 @ProviderFor(numberOfPlayersSubmittedText)
-final numberOfPlayersSubmittedTextProvider = AutoDisposeProvider<int>.internal(
+final numberOfPlayersSubmittedTextProvider = Provider<int?>.internal(
   numberOfPlayersSubmittedText,
   name: r'numberOfPlayersSubmittedTextProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$numberOfPlayersSubmittedTextHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getGameProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  },
 );
 
-typedef NumberOfPlayersSubmittedTextRef = AutoDisposeProviderRef<int>;
+typedef NumberOfPlayersSubmittedTextRef = ProviderRef<int?>;
 String _$isPlayerTruthOrLieHash() =>
-    r'b887ec87ef87166ae94ee01dc7fb21435972c066';
+    r'9e5724b58500a18b905e583c3bdb987ce0088f72';
 
 /// See also [isPlayerTruthOrLie].
 @ProviderFor(isPlayerTruthOrLie)
 const isPlayerTruthOrLieProvider = IsPlayerTruthOrLieFamily();
 
 /// See also [isPlayerTruthOrLie].
-class IsPlayerTruthOrLieFamily extends Family<bool> {
+class IsPlayerTruthOrLieFamily extends Family<bool?> {
   /// See also [isPlayerTruthOrLie].
   const IsPlayerTruthOrLieFamily();
 
@@ -958,12 +780,18 @@ class IsPlayerTruthOrLieFamily extends Family<bool> {
     );
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  static final Iterable<ProviderOrFamily> _dependencies = <ProviderOrFamily>[
+    getGameProvider
+  ];
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
+      <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies
+  };
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
@@ -974,7 +802,7 @@ class IsPlayerTruthOrLieFamily extends Family<bool> {
 }
 
 /// See also [isPlayerTruthOrLie].
-class IsPlayerTruthOrLieProvider extends Provider<bool> {
+class IsPlayerTruthOrLieProvider extends Provider<bool?> {
   /// See also [isPlayerTruthOrLie].
   IsPlayerTruthOrLieProvider(
     String? id,
@@ -1009,7 +837,7 @@ class IsPlayerTruthOrLieProvider extends Provider<bool> {
 
   @override
   Override overrideWith(
-    bool Function(IsPlayerTruthOrLieRef provider) create,
+    bool? Function(IsPlayerTruthOrLieRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -1026,7 +854,7 @@ class IsPlayerTruthOrLieProvider extends Provider<bool> {
   }
 
   @override
-  ProviderElement<bool> createElement() {
+  ProviderElement<bool?> createElement() {
     return _IsPlayerTruthOrLieProviderElement(this);
   }
 
@@ -1044,12 +872,12 @@ class IsPlayerTruthOrLieProvider extends Provider<bool> {
   }
 }
 
-mixin IsPlayerTruthOrLieRef on ProviderRef<bool> {
+mixin IsPlayerTruthOrLieRef on ProviderRef<bool?> {
   /// The parameter `id` of this provider.
   String? get id;
 }
 
-class _IsPlayerTruthOrLieProviderElement extends ProviderElement<bool>
+class _IsPlayerTruthOrLieProviderElement extends ProviderElement<bool?>
     with IsPlayerTruthOrLieRef {
   _IsPlayerTruthOrLieProviderElement(super.provider);
 
@@ -1057,22 +885,30 @@ class _IsPlayerTruthOrLieProviderElement extends ProviderElement<bool>
   String? get id => (origin as IsPlayerTruthOrLieProvider).id;
 }
 
-String _$userWritingPromptHash() => r'65aa932a744a70d06503ec8de25f6aff45716fa0';
+String _$userWritingPromptHash() => r'5177d5f66c84e9a62eebf403b291ae17b9439bfe';
 
 /// See also [userWritingPrompt].
 @ProviderFor(userWritingPrompt)
-final userWritingPromptProvider = AutoDisposeProvider<WritingPrompt>.internal(
+final userWritingPromptProvider = Provider<WritingPrompt>.internal(
   userWritingPrompt,
   name: r'userWritingPromptProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$userWritingPromptHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    getGameProvider,
+    getSignedInPlayerIdProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    getSignedInPlayerIdProvider,
+    ...?getSignedInPlayerIdProvider.allTransitiveDependencies
+  },
 );
 
-typedef UserWritingPromptRef = AutoDisposeProviderRef<WritingPrompt>;
-String _$playerWritingForHash() => r'6645e9f166eee819952f7d01dd772d2fee1bd949';
+typedef UserWritingPromptRef = ProviderRef<WritingPrompt>;
+String _$playerWritingForHash() => r'd3372b1f6283a76c5a28c1ae91c1896b749d0407';
 
 /// See also [playerWritingFor].
 @ProviderFor(playerWritingFor)
@@ -1082,26 +918,42 @@ final playerWritingForProvider = AutoDisposeProvider<PublicPlayer?>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$playerWritingForHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    getPlayersProvider,
+    getSignedInPlayerIdProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getPlayersProvider,
+    ...?getPlayersProvider.allTransitiveDependencies,
+    getSignedInPlayerIdProvider,
+    ...?getSignedInPlayerIdProvider.allTransitiveDependencies
+  },
 );
 
 typedef PlayerWritingForRef = AutoDisposeProviderRef<PublicPlayer?>;
-String _$hasSubmittedTextHash() => r'5c1707236b7cd5ffbfcdc07f19ceb936e072c8aa';
+String _$hasSubmittedTextHash() => r'3dc8b34221dd9f8acab0371bcc989fa5cd764823';
 
 /// See also [hasSubmittedText].
 @ProviderFor(hasSubmittedText)
-final hasSubmittedTextProvider = AutoDisposeProvider<bool?>.internal(
+final hasSubmittedTextProvider = Provider<bool?>.internal(
   hasSubmittedText,
   name: r'hasSubmittedTextProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$hasSubmittedTextHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[
+    getGameProvider,
+    getSignedInPlayerIdProvider
+  ],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    getSignedInPlayerIdProvider,
+    ...?getSignedInPlayerIdProvider.allTransitiveDependencies
+  },
 );
 
-typedef HasSubmittedTextRef = AutoDisposeProviderRef<bool?>;
+typedef HasSubmittedTextRef = ProviderRef<bool?>;
 String _$isFinalRoundHash() => r'8ae16f5f27ab533402061181dd1d6136874e1bc5';
 
 /// See also [isFinalRound].
@@ -1116,7 +968,7 @@ final isFinalRoundProvider = AutoDisposeProvider<bool>.internal(
 );
 
 typedef IsFinalRoundRef = AutoDisposeProviderRef<bool>;
-String _$presentPlayersHash() => r'a08abd7dc23134d340867a59653302f84ec9c97c';
+String _$presentPlayersHash() => r'f72baef2d097a0ad58172011d31e7b5d1f1159d3';
 
 /// See also [presentPlayers].
 @ProviderFor(presentPlayers)
@@ -1126,24 +978,32 @@ final presentPlayersProvider = AutoDisposeProvider<List<PublicPlayer>>.internal(
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$presentPlayersHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getPlayersProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getPlayersProvider,
+    ...?getPlayersProvider.allTransitiveDependencies
+  },
 );
 
 typedef PresentPlayersRef = AutoDisposeProviderRef<List<PublicPlayer>>;
-String _$readyRosterHash() => r'7ace1269f9ad01a74c75be962d1c278aefb97a0d';
+String _$readyRosterHash() => r'48000ee42ee82a43faefc935c4df61159a69aadc';
 
 /// See also [readyRoster].
 @ProviderFor(readyRoster)
-final readyRosterProvider = AutoDisposeProvider<List<String>>.internal(
+final readyRosterProvider = Provider<List<String>>.internal(
   readyRoster,
   name: r'readyRosterProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$readyRosterHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
+  dependencies: <ProviderOrFamily>[getGameProvider, isPlayerReadyProvider],
+  allTransitiveDependencies: <ProviderOrFamily>{
+    getGameProvider,
+    ...?getGameProvider.allTransitiveDependencies,
+    isPlayerReadyProvider,
+    ...?isPlayerReadyProvider.allTransitiveDependencies
+  },
 );
 
-typedef ReadyRosterRef = AutoDisposeProviderRef<List<String>>;
+typedef ReadyRosterRef = ProviderRef<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

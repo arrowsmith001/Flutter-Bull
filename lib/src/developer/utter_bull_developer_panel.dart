@@ -70,11 +70,11 @@ class _UtterBullDeveloperPanelState
   @override
   Widget build(BuildContext context) {
     
-    return playerAsync.whenDefault((p) => p.player?.occupiedRoomId == null 
-      ? UtterBullCircularProgressIndicator() 
-      : ProviderScope(
-      overrides: [getCurrentGameRoomIdProvider.overrideWithValue(p.player!.occupiedRoomId!)],
-      child: W()));
+    // return playerAsync.whenDefault((p) => p.player?.occupiedRoomId == null 
+    //   ? UtterBullCircularProgressIndicator() 
+    //   : ProviderScope(
+    //   overrides: [getCurrentGameRoomIdProvider.overrideWithValue(p.player!.occupiedRoomId!)],
+    //   child: W()));
     
     
     return Container(

@@ -311,7 +311,7 @@ final getRoundStatusProvider = Provider<RoundStatus?>.internal(
 
 typedef GetRoundStatusRef = ProviderRef<RoundStatus?>;
 String _$getVoteOptionsStateHash() =>
-    r'0466926c54775482cedb281a2cbd60e6740e7c16';
+    r'9aa52c68d0fb954395dc6a977d213c77e5a83e9c';
 
 /// See also [getVoteOptionsState].
 @ProviderFor(getVoteOptionsState)

@@ -151,8 +151,10 @@ VoteOptionsState? getVoteOptionsState(Ref ref) {
   if(whoseTurnId == null || hasVoted == null || roundStatus == null) return null;
 
   final bool isReading = ref.watch(getIsUserReadingProvider);
-  final bool isTruth = ref.watch(isPlayerTruthOrLieProvider(whoseTurnId));
+  final bool? isTruth = ref.watch(isPlayerTruthOrLieProvider(whoseTurnId));
   final int elapsed = ref.watch(getRoundTimeRemainingSecondsProvider) ?? 0;
+
+  if(isTruth == null) return null;
 
   if (isReading) {
     if (!isTruth && elapsed < 30) {

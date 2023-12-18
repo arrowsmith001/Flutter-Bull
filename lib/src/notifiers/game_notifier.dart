@@ -40,12 +40,14 @@ class GameNotifier extends _$GameNotifier {
         //   _streamService.strea
         // })
         .asyncMap((room) {
+          
       return _buildState(room);
     });
   }
 
   // TODO: Create parallel combined streams
   Future<GameNotifierState> _buildState(GameRoom game) async {
+
     final playerAvatars = await _getPlayerAvatars(game.playerIds);
 
     final presentPlayers = playerAvatars.entries
@@ -62,11 +64,12 @@ class GameNotifier extends _$GameNotifier {
         .valueOrNull
         ?.timeRemaining;
 
-    final roundStatus = getRoundStatus(game, timeRemaining);
+    final roundStatus = RoundStatus.inProgress;
+   // getRoundStatus(game, timeRemaining);
 
     //final result = await _getResult(room.resultId);
     //final achievementsWithIcons = await _getAchievements(result);
-
+    Logger().d('GameNotifierState: ' + game.toJson().toString());
     return GameNotifierState(
       gameId: game.id!,
       gameRoom: game,

@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:flutter_bull/extensions/iterable.dart';
 import 'package:flutter_bull/extensions/object.dart';
-import 'package:flutter_bull/src/custom/data/abstract/storage_service.dart';
 import 'package:flutter_bull/src/enums/game_phases.dart';
+import 'package:flutter_bull/src/mixins/voting_phase_view_model.dart';
 import 'package:flutter_bull/src/model/game_room.dart';
 import 'package:flutter_bull/src/notifiers/game_notifier.dart';
 import 'package:flutter_bull/src/notifiers/player_notifier.dart';
+import 'package:flutter_bull/src/notifiers/states/game_notifier_state.dart';
 import 'package:flutter_bull/src/notifiers/view_models/lobby_player.dart';
 import 'package:flutter_bull/src/providers/app_services.dart';
 import 'package:flutter_bull/src/providers/app_states.dart';
@@ -17,46 +19,84 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'game_data.g.dart';
 
-// TODO: Continue
 
-@Riverpod(keepAlive: true)
-Stream<GameRoom> streamGame(Ref ref, String? id) async* {
-  // return GameRoom(roomCode: ref.watch(gameNotifierProvider(roomId)
-  //     .select((value) => value.valueOrNull?.gameRoom?.toJson().toString() ?? '')));
-  if (id == null) return;
-  DataStreamService streamService = ref.read(dataStreamServiceProvider);
-  yield* streamService.streamGameRoom(id);
-}
+// @Riverpod(keepAlive: true)
+// AsyncValue<GameNotifierState> streamGameState(Ref ref, String? id) {
+//   if (id == null) return;
 
-@Riverpod(keepAlive: true)
-Stream<PublicPlayer> streamPlayer(Ref ref, String? id) async* {
-  if (id == null) return;
+//   DataStreamService streamService = ref.read(dataStreamServiceProvider);
 
-  DataStreamService streamService = ref.read(dataStreamServiceProvider);
-  ImageStorageService imgService = ref.read(imageStorageServiceProvider);
+//   yield* streamService.streamGameRoom(id).asyncMap((game) async {
 
-  yield* streamService.streamPlayer(id).asyncMap((p) async {
-    final Uint8List? img = p.occupiedRoomId == null ? null : await imgService.downloadImage(p.occupiedRoomId!);
-    return PublicPlayer(p, img);
-  });
-}
+//     final playerFutureAvatars =
+//         game.playerIds.map((p) => ref.read(playerNotifierProvider(p).future));
 
-@Riverpod(keepAlive: true, dependencies: [getCurrentGameRoomId, streamGame])
+//     final avatarList = await Future.wait(playerFutureAvatars);
+
+//     final playerAvatars = Map.fromEntries(avatarList.map((e) => MapEntry(e.player.id!, e)));
+
+//     final presentPlayers = playerAvatars.entries
+//         .where((entry) => game.playerIds.contains(entry.key))
+//         .map((p) => LobbyPlayer(
+//             player: p.value,
+//             isLeader: p.key == game.leaderId,
+//             isReady: game.playerStates[p.key] == PlayerState.ready,
+//             isAbsent: game.playerIds.doesNotContain(p.key)))
+//         .toList();
+
+//     // final timeRemaining = ref
+//     //     .watch(timerNotifierProvider(game.roundEndUTC))
+//     //     .valueOrNull
+//     //     ?.timeRemaining;
+
+//     // final roundStatus = getRoundStatus(game, timeRemaining);
+
+//     //final result = await _getResult(room.resultId);
+//     //final achievementsWithIcons = await _getAchievements(result);
+    
+//     return GameNotifierState(
+//       gameId: game.id!,
+//       gameRoom: game,
+//       players: playerAvatars,
+//       presentPlayers: presentPlayers,
+//       timeRemaining: Duration.zero,// timeRemaining,
+//       roundStatus: RoundStatus.inProgress
+//       //result: result,
+//       //achievementsWithIcons: achievementsWithIcons
+//     );
+//   });
+// }
+
+// @Riverpod(keepAlive: true)
+// Stream<PublicPlayer> streamPlayer(Ref ref, String? id) async* {
+//   if (id == null) return;
+
+//   DataStreamService streamService = ref.read(dataStreamServiceProvider);
+//   ImageStorageService imgService = ref.read(imageStorageServiceProvider);
+
+//   yield* streamService.streamPlayer(id).asyncMap((p) async {
+//     final Uint8List? img = p.occupiedRoomId == null
+//         ? null
+//         : await imgService.downloadImage(p.occupiedRoomId!);
+//     return PublicPlayer(p, img);
+//   });
+// }
+
+@Riverpod(keepAlive: true, dependencies: [getCurrentGameRoomId])
 GameRoom? getGame(Ref ref) {
-  final String roomId = ref.watch(getCurrentGameRoomIdProvider);
   // return GameRoom(roomCode: ref.watch(gameNotifierProvider(roomId)
   //     .select((value) => value.valueOrNull?.gameRoom?.toJson().toString() ?? '')));
-  return ref.watch(streamGameProvider(roomId)).asData?.value;
+  final String roomId = ref.watch(getCurrentGameRoomIdProvider);
+  return ref.watch(gameNotifierProvider(roomId).select((value) => value.valueOrNull?.gameRoom));
 }
 
 @Riverpod(keepAlive: true, dependencies: [getCurrentGameRoomId])
 Map<String, PublicPlayer>? getPlayers(Ref ref) {
   final String roomId = ref.watch(getCurrentGameRoomIdProvider);
-  return ref.watch(gameNotifierProvider(roomId)
-      .select((value) => value.valueOrNull?.players));
+  return ref.watch(gameNotifierProvider(roomId).select((value) => value.valueOrNull?.players));
 }
 
-@Riverpod(keepAlive: true, dependencies: [getCurrentGameRoomId])
+@Riverpod(keepAlive: true, dependencies: [getGame])
 String? getGameCode(Ref ref) {
   return ref.watch(getGameProvider.select((value) => value?.roomCode));
 }
@@ -66,52 +106,53 @@ GamePhase? getPhase(Ref ref) {
   return ref.watch(getGameProvider.select((value) => value?.phase));
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [getGame])
 int? getSubphase(Ref ref) {
-  return ref.watch(getGameProvider)?.subPhase;
+  return ref.watch(getGameProvider.select((value) => value?.subPhase));
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [getGame])
 String? getLeaderId(Ref ref) {
-  return ref.watch(getGameProvider)?.leaderId;
+  return ref.watch(getGameProvider.select((value) => value?.leaderId));
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [getGame])
 List<String> getPseudoShuffledIds(Ref ref) {
   final GameRoom? g = ref.watch(getGameProvider);
   if (g == null) return [];
   return GameDataFunctions.getShuffledIds(g);
 }
 
-@Riverpod()
-bool getIsUserLeader(Ref ref) {
+@Riverpod(keepAlive: true, dependencies: [isPlayerLeader, getSignedInPlayerId])
+bool? getIsUserLeader(Ref ref) {
   final String? userId = ref.watch(getSignedInPlayerIdProvider);
-  return isPlayerLeader(ref, userId);
+  return ref.watch(isPlayerLeaderProvider(userId));
 }
 
-@Riverpod()
+@Riverpod(keepAlive: true, dependencies: [getGame, getSignedInPlayerId])
 bool getIsUserReady(Ref ref) {
   final String? userId = ref.watch(getSignedInPlayerIdProvider);
   return ref.watch(getPlayerStateProvider(userId)) == PlayerState.ready;
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [getGame])
 PlayerState? getPlayerState(Ref ref, String? id) {
   if (id == null) return null;
-  return ref.watch(getGameProvider)?.playerStates[id];
+  return ref.watch(getGameProvider.select((value) => value?.playerStates[id]));
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: [getGame])
 int getNumberOfPlayers(Ref ref) {
-  return ref.watch(getGameProvider)?.playerIds.length ?? 0;
+  return ref.watch(getGameProvider.select((value) => value?.playerIds.length ?? 0));
 }
 
-@Riverpod()
+@Riverpod(keepAlive: true, dependencies: [getNumberOfPlayers])
 bool getHasEnoughPlayers(Ref ref) {
   return ref.watch(getNumberOfPlayersProvider) >= 3;
 }
 
-@Riverpod(keepAlive: true, dependencies: [getCurrentGameRoomId, getGame])
+@Riverpod(
+    keepAlive: true, dependencies: [getGame, getPlayers, isPlayerLeader, isPlayerReady])
 List<LobbyPlayer> lobbyListInitialData(Ref ref) {
   final GameRoom? g = ref.watch(getGameProvider);
   if (g == null) return [];
@@ -122,73 +163,75 @@ List<LobbyPlayer> lobbyListInitialData(Ref ref) {
           .where((p) => g.playerIds.contains(p.player.id))
           .map((p) => LobbyPlayer(
               player: p,
-              isLeader: isPlayerLeader(ref, p.player.id),
-              isReady: isPlayerReady(ref, p.player.id),
+              isLeader: ref.watch(isPlayerLeaderProvider(p.player.id)) ?? false,
+              isReady: ref.watch(isPlayerReadyProvider(p.player.id)) ?? false,
               isAbsent: g.playerIds.contains(p.player.id)))
           .toList() ??
       [];
   return lobbyList;
 }
 
-@Riverpod()
+@Riverpod(dependencies: [getSignedInPlayerId, getPlayers])
 PublicPlayer? user(Ref ref) {
-  final String userId = getSignedInPlayerId(ref);
+  final String userId = ref.watch(getSignedInPlayerIdProvider);
   return ref.watch(getPlayersProvider)?[userId];
 }
 
-@Riverpod()
+
+@Riverpod(keepAlive: true, dependencies: [getGame, isPlayerReady, isPlayerLeader])
 bool canStartGame(Ref ref) {
-  final List<String> playerIds = ref.watch(getGameProvider)?.playerIds ?? [];
+  final List<String>? playerIds = ref.watch(getGameProvider.select((value) => value?.playerIds));
+  if(playerIds == null) return false;
   return playerIds
-      .every((id) => isPlayerReady(ref, id) || isPlayerLeader(ref, id));
+      .every((id) => (ref.watch(isPlayerReadyProvider(id)) ?? false) || (ref.watch(isPlayerLeaderProvider(id)) ?? false));
 }
 
-@Riverpod()
-bool isMidGame(Ref ref) {
+@Riverpod(keepAlive: true, dependencies: [getPhase])
+bool? isMidGame(Ref ref) {
   return ref
       .watch(getPhaseProvider)
       .isNotIn([null, GamePhase.lobby, GamePhase.results]);
 }
 
-@Riverpod()
-bool isPlayerReady(Ref ref, String? id) {
+@Riverpod(keepAlive: true, dependencies: [getGame, getPlayerState])
+bool? isPlayerReady(Ref ref, String? id) {
   if (id == null) return false;
   return ref.watch(getPlayerStateProvider(id)) == PlayerState.ready;
 }
 
-@Riverpod()
-bool isPlayerLeader(Ref ref, String? id) {
+@Riverpod(keepAlive: true, dependencies: [getLeaderId])
+bool? isPlayerLeader(Ref ref, String? id) {
   if (id == null) return false;
   return ref.watch(getLeaderIdProvider) == id;
 }
 
-@Riverpod()
-int numberOfPlayersSubmittedText(Ref ref) {
+@Riverpod(keepAlive: true, dependencies: [getGame])
+int? numberOfPlayersSubmittedText(Ref ref) {
   return ref.watch(getGameProvider)?.texts.length ?? 0;
 }
 
-@Riverpod(keepAlive: true)
-bool isPlayerTruthOrLie(Ref ref, String? id) {
+@Riverpod(keepAlive: true, dependencies: [getGame])
+bool? isPlayerTruthOrLie(Ref ref, String? id) {
   if (id == null) return false;
-  return ref.watch(getGameProvider)?.truths[id] ?? false;
+  return ref.watch(getGameProvider)?.truths[id];
 }
 
-@Riverpod()
+@Riverpod(keepAlive: true, dependencies: [getGame, getSignedInPlayerId])
 WritingPrompt userWritingPrompt(Ref ref) {
-  final String userId = getSignedInPlayerId(ref);
+  final String userId = ref.watch(getSignedInPlayerIdProvider);
   final GameRoom? g = ref.watch(getGameProvider);
   return WritingPrompt(g?.targets[userId]);
 }
 
-@Riverpod()
+@Riverpod(dependencies: [getPlayers, getSignedInPlayerId])
 PublicPlayer? playerWritingFor(Ref ref) {
-  final String userId = getSignedInPlayerId(ref);
-  final String? targetId = ref.watch(getGameProvider)?.targets[userId];
+  final String userId = ref.watch(getSignedInPlayerIdProvider);
+  final String? targetId = ref.watch(getGameProvider.select((value) => value?.targets[userId]));
   if (targetId == null) return null;
   return ref.watch(getPlayersProvider)?[targetId];
 }
 
-@Riverpod()
+@Riverpod(keepAlive: true, dependencies: [getGame, getSignedInPlayerId])
 bool? hasSubmittedText(Ref ref) {
   final String userId = ref.watch(getSignedInPlayerIdProvider);
   final GameRoom? game = ref.watch(getGameProvider);
@@ -203,7 +246,7 @@ bool isFinalRound(Ref ref) {
   return progress != null && progress == finalRound;
 }
 
-@Riverpod()
+@Riverpod(dependencies: [getPlayers])
 List<PublicPlayer> presentPlayers(Ref ref) {
   final GameRoom? game = ref.watch(getGameProvider);
   final List<PublicPlayer> players =
@@ -212,11 +255,11 @@ List<PublicPlayer> presentPlayers(Ref ref) {
   return players.where((p) => game.playerIds.contains(p.player.id)).toList();
 }
 
-@Riverpod()
+@Riverpod(keepAlive: true, dependencies: [getGame, isPlayerReady])
 List<String> readyRoster(Ref ref) {
   final GameRoom? game = ref.watch(getGameProvider);
   if (game == null) return [];
-  return game.playerIds.where((id) => isPlayerReady(ref, id)).toList();
+  return game.playerIds.where((id) => ref.watch(isPlayerReadyProvider(id)) ?? false).toList();
 }
 
 
